@@ -1,0 +1,31 @@
+<HTML>
+<HEAD>
+<TITLE>__TITLE__</TITLE>
+<STYLE TYPE="text/css">
+<!--
+a
+{
+	color: __LINK-COLOR__;
+	text-decoration: none;
+}
+a:hover
+{
+	text-decoration: underline;
+}
+body
+{
+	background-color: __BACK-COLOR__;
+}
+div
+{
+	color: __TEXT-COLOR__;
+	font-family: "ƒƒCƒŠƒI";
+	white-space: nowrap;
+}
+-->
+</STYLE>
+</HEAD>
+<BODY>
+__LIST__
+</BODY>
+</HTML>

@@ -1,0 +1,457 @@
+/*
+	FilerSv.exe [/S] [ポート番号]
+
+		/S ... 停止する。起動直後だと止まらないこともある。ポート番号の前であること。
+
+	----
+
+	http://localhost/C:/aaa/bbb/ccc.txt                 -> 内容を表示
+	http://localhost/C:/aaa/bbb/ccc.txt?mode=download   -> ダウンロード
+	http://localhost/C:/aaa/bbb/ccc.txt?mode=html       -> リンクを表示
+	http://localhost/C:/aaa/bbb/                        -> ディレクトリ内のリスト       ★パスの最後に '/' 必要
+	http://localhost/C:/aaa/bbb?mode=html               -> ディレクトリへのリンクを表示 ★パスの最後に '/' 不要
+*/
+
+#include "C:\Factory\Common\Options\SockServer.h"
+#include "C:\Factory\Common\Options\Random.h"
+#include "C:\Factory\Common\Options\crc.h"
+#include "C:\Factory\Labo\Socket\libs\http\ExtToContentType.h"
+#include "Common.h"
+
+// ---- I/O ----
+
+FILE *TryFileOpen(char *file, char *mode)
+{
+	FILE *fp = fopen(file, mode);
+
+	if(!fp)
+		cout("**** FILE OPEN ERROR ****\n");
+
+	return fp;
+}
+uint64 TryGetFileSize(FILE *fp)
+{
+	sint64 size;
+
+	if(_fseeki64(fp, 0I64, SEEK_END) != 0) // ? 失敗
+	{
+		cout("**** FILE SEEK END ERROR ****\n");
+		return 0;
+	}
+	size = _ftelli64(fp);
+
+	if(size < 0I64)
+	{
+		cout("**** FILE SIZE ERROR ****\n");
+		return 0;
+	}
+	if(_fseeki64(fp, 0I64, SEEK_SET) != 0) // ? 失敗
+	{
+		cout("**** FILE SEEK SET ERROR ****\n");
+		return 0;
+	}
+	return size;
+}
+autoBlock_t *TryReadBlock(FILE *fp, uint size)
+{
+	void *block = memAlloc(size);
+	uint readSize;
+
+	readSize = fread(block, 1, size, fp);
+
+	if(ferror(fp))
+	{
+		cout("**** FILE READ ERORR ****\n");
+		memFree(block);
+		return NULL;
+	}
+	return bindBlock(block, readSize);
+}
+void TryFileClose(FILE *fp)
+{
+	int ret = fclose(fp);
+
+	if(ret)
+		cout("**** FILE CLOSE ERROR ****\n");
+}
+
+static autoList_t *TGFL_InfoList; // 文字列 ...
+
+autoList_t *TryGetFileList(char *findPtn)
+{
+	/*
+		unsigned attrib;
+			_A_ARCH
+			_A_HIDDEN
+			_A_NORMAL
+			_A_RDONLY
+			_A_SUBDIR
+			_A_SYSTEM
+
+		time_t time_create;
+		time_t time_access;
+		time_t time_write;
+		_fsize_t size;
+		char name[_MAX_PATH];
+	*/
+	struct _finddata_t fd;
+	intptr_t h;
+	autoList_t *list = newList();
+
+	cout("findPtn: %s\n", findPtn);
+
+	if(TGFL_InfoList) // ? already inited
+	{
+		releaseDim(TGFL_InfoList, 1);
+	}
+	TGFL_InfoList = newList();
+
+	h = _findfirst(findPtn, &fd);
+
+	if(h != -1)
+	{
+		do
+		{
+			char *name = fd.name;
+			char *info;
+
+			name = strx(name);
+
+			if(!strcmp(name, ".") || !strcmp(name, "..") || fd.attrib & _A_SUBDIR)
+			{
+				name = addChar(name, '/');
+				info = strx("ディレクトリ");
+			}
+			else
+			{
+				char *lSize = xcout("%I64u", (uint64)fd.size);
+				time_t t = m_max(fd.time_create, fd.time_write);
+				char *stamp;
+
+				lSize = thousandComma(lSize);
+				stamp = makeJStamp(getStampDataTime(t), 0);
+				info = xcout("%s バイト　%s　<a href=\"%s?mode=download\" download=\"%s\">[ダウンロード]</a>", lSize, stamp, name, name);
+				memFree(lSize);
+				memFree(stamp);
+			}
+			addElement(list, (uint)name);
+			addElement(TGFL_InfoList, (uint)info);
+		}
+		while(_findnext(h, &fd) == 0);
+
+		_findclose(h);
+	}
+	return list;
+}
+
+// ---- ConnInfo ----
+
+typedef struct ConnInfo_st
+{
+	uint ConnectedTime;
+	autoBlock_t *RecvBuff;
+	autoBlock_t *SendBuff;
+	FILE *RFp;
+}
+ConnInfo_t;
+
+static void *CreateConnInfo(void)
+{
+	ConnInfo_t *i = nb(ConnInfo_t);
+
+	i->ConnectedTime = now();
+	i->RecvBuff = newBlock();
+
+	return i;
+}
+static void ReleaseConnInfo(void *vi)
+{
+	ConnInfo_t *i = (ConnInfo_t *)vi;
+
+	releaseAutoBlock(i->RecvBuff);
+
+	if(i->SendBuff)
+		releaseAutoBlock(i->SendBuff);
+
+	if(i->RFp)
+		TryFileClose(i->RFp);
+
+	memFree(i);
+}
+
+// ----
+
+static char *GetFileListTemplateHtml(void)
+{
+	static char *template;
+
+	if(!template)
+	{
+		char *file = combine(getSelfDir(), "FileListTemplate.html_");
+
+		template = readText(file);
+		memFree(file);
+	}
+	return template;
+}
+static char *GetRandColor(uint hexlow, uint hexhi)
+{
+	char *str = strx("#999999");
+	char *p;
+
+	for(p = str + 1; *p; p++)
+		*p = hexadecimal[mt19937_range(hexlow, hexhi)];
+
+	return str;
+}
+
+static char *B_LinkColor;
+static char *B_BackColor;
+static char *B_TextColor;
+
+static void Perform_FindPtn(ConnInfo_t *i, char *ttlPath, char *findPtn)
+{
+	char *body = GetFileListTemplateHtml();
+
+	body = strx(body);
+
+	{
+		char *title = xcout("[%s] %s", getEnvLine("COMPUTERNAME"), ttlPath);
+
+		body = replaceLine(body, "__TITLE__", title, 0);
+		memFree(title);
+	}
+
+	if(!B_LinkColor) // ? not inited B_
+	{
+		mt19937_initRnd(crc32CheckLine(getEnvLine("COMPUTERNAME")));
+
+		B_LinkColor = GetRandColor(0xd, 0xf);
+		B_BackColor = GetRandColor(6, 9);
+		B_TextColor = GetRandColor(0, 2);
+	}
+
+	body = replaceLine(body, "__LINK-COLOR__", B_LinkColor, 0);
+	body = replaceLine(body, "__BACK-COLOR__", B_BackColor, 0);
+	body = replaceLine(body, "__TEXT-COLOR__", B_TextColor, 0);
+
+	{
+		autoList_t *list = TryGetFileList(findPtn);
+		char *name;
+		uint index;
+		autoList_t *wLines = newList();
+		char *wText;
+
+		if(getCount(list))
+		{
+			foreach(list, name, index)
+			{
+				char *info = getLine(TGFL_InfoList, index);
+
+				addElement(wLines, (uint)strx("<div>"));
+				addElement(wLines, (uint)xcout("<a href=\"%s\">%s</a>　%s", name, name, info));
+				addElement(wLines, (uint)strx("</div>"));
+			}
+		}
+		else
+		{
+			addElement(wLines, (uint)strx("<div>ファイルリストを取得できません。</div>"));
+		}
+		wText = untokenize(wLines, "\r\n");
+
+		body = replaceLine(body, "__LIST__", wText, 0);
+
+		releaseDim(list, 1);
+		releaseDim(wLines, 1);
+		memFree(wText);
+	}
+
+	i->SendBuff = newBlock();
+
+	ab_addLine(i->SendBuff, "HTTP/1.1 200 OK\r\n");
+	ab_addLine_x(i->SendBuff, xcout("Content-Length: %u\r\n", strlen(body)));
+	ab_addLine(i->SendBuff, "Content-Type: text/html; charset=Shift_JIS\r\n");
+	ab_addLine(i->SendBuff, "Connection: close\r\n");
+	ab_addLine(i->SendBuff, "\r\n");
+	ab_addLine(i->SendBuff, body);
+
+	memFree(body);
+}
+static void Perform_Dir(ConnInfo_t *i, char *dir)
+{
+	char *wCard = combine(dir, "*");
+
+	Perform_FindPtn(i, dir, wCard);
+	memFree(wCard);
+}
+static int ParseHeaderTokens(ConnInfo_t *i, autoList_t *tokens)
+{
+	if(getCount(tokens) == 3 && !_stricmp("GET", getLine(tokens, 0)))
+	{
+		char *url = getLine(tokens, 1);
+		char *file;
+		FILE *fp;
+		char *contentType;
+
+		file = URLToPath(url);
+
+		if(!file)
+		{
+			cout("BAD URL\n");
+			return 0;
+		}
+		cout("FILE: %s\n", file);
+
+		if(UTP_HtmlMode)
+		{
+			Perform_FindPtn(i, file, file);
+			memFree(file);
+			return 1;
+		}
+		if(UTP_EndSlash)
+		{
+			Perform_Dir(i, file);
+			memFree(file);
+			return 1;
+		}
+		fp = TryFileOpen(file, "rb");
+
+		if(!fp)
+		{
+			memFree(file);
+			return 0;
+		}
+		i->SendBuff = newBlock();
+		i->RFp = fp;
+
+		if(UTP_DownloadMode)
+			contentType = "application/octet-stream";
+		else
+			contentType = httpExtToContentType(getExt(file));
+
+		cout("contentType: %s\n", contentType);
+
+		ab_addLine(i->SendBuff, "HTTP/1.1 200 OK\r\n");
+		ab_addLine_x(i->SendBuff, xcout("Content-Length: %I64u\r\n", TryGetFileSize(i->RFp)));
+		ab_addLine_x(i->SendBuff, xcout("Content-Type: %s\r\n", contentType));
+		ab_addLine(i->SendBuff, "Connection: close\r\n");
+		ab_addLine(i->SendBuff, "\r\n");
+
+		memFree(file);
+		return 1;
+	}
+	return 0;
+}
+static int Perform(int sock, void *vi)
+{
+	ConnInfo_t *i = (ConnInfo_t *)vi;
+
+	if(!i->SendBuff)
+	{
+		char *header;
+		char *p;
+		autoList_t *tokens;
+		int retval;
+
+		if(SockRecvSequ(sock, i->RecvBuff, sockUserTransmitIndex ? 0 : 100) == -1)
+		{
+			cout("RECV ERROR\n");
+			return 0;
+		}
+		header = ab_toLine(i->RecvBuff);
+		p = strchr(header, '\r');
+
+		if(!p)
+		{
+			if(i->ConnectedTime + 2 < now())
+			{
+				cout("RECV TIMEOUT\n");
+				memFree(header);
+				return 0;
+			}
+			return 1;
+		}
+		*p = '\0';
+		line2JLine(header, 0, 0, 0, 1);
+		cout("HEADER: %s\n", header);
+		tokens = tokenize(header, ' ');
+		retval = ParseHeaderTokens(i, tokens);
+		memFree(header);
+		releaseDim(tokens, 1);
+
+		if(!retval)
+		{
+			cout("PARSE HEADER FAULT\n");
+			return 0;
+		}
+	}
+	if(SockRecvSequ(sock, i->RecvBuff, 0) == -1)
+	{
+		cout("RECV GOMI ERROR\n");
+		return 0;
+	}
+	setSize(i->RecvBuff, 0);
+
+	if(getSize(i->SendBuff) < 2000000 && i->RFp)
+	{
+		autoBlock_t *block = TryReadBlock(i->RFp, 3000000);
+
+		if(!block)
+			return 0;
+
+		ab_addBytes_x(i->SendBuff, block);
+	}
+	if(SockSendSequ(sock, i->SendBuff, sockUserTransmitIndex ? 0 : 100) == -1)
+	{
+		cout("SEND ERROR\n");
+		return 0;
+	}
+	if(!getSize(i->SendBuff))
+	{
+		cout("SEND COMPLETED\n");
+		return 0;
+	}
+	return 1;
+}
+
+#define STOP_EV_UUID "{a4d9ba43-9760-4d4f-8c1b-19e630951b60}"
+
+static char *StopEvName;
+static uint StopEv;
+
+static int Idle(void)
+{
+	if(handleWaitForMillis(StopEv, 0))
+		return 0;
+
+	while(hasKey())
+		if(getKey() == 0x1b)
+			return 0;
+
+	return 1;
+}
+int main(int argc, char **argv)
+{
+	int stopFlag = 0;
+	uint portno = 60002;
+
+	if(argIs("/S"))
+		stopFlag = 1;
+
+	if(hasArgs(1))
+		portno = toValue(nextArg());
+
+	StopEvName = xcout(STOP_EV_UUID "_%u", portno);
+
+	if(stopFlag)
+	{
+		LOGPOS();
+		eventWakeup(StopEvName);
+		return;
+	}
+	StopEv = eventOpen(StopEvName);
+
+	sockServerUserTransmit(Perform, CreateConnInfo, ReleaseConnInfo, portno, 20, Idle);
+
+	handleClose(StopEv);
+}

@@ -1,0 +1,9 @@
+#pragma once
+
+#define SIGNATURE "CCSP-SEND-RECV-FILE"
+#define S_MODE_R "READ-MODE"
+#define S_MODE_W "WRITE-MODE"
+#define S_ENDFILEDATA "END-FILE-DATA"
+#define S_ENDRECV "END-RECV"
+
+#define DEF_PORTNO 60022

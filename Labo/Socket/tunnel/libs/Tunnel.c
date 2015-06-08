@@ -1,0 +1,135 @@
+#include "Tunnel.h"
+
+#define STOPEVENTUUID "{f7749b48-ebaa-4fdb-93e0-14a1b8c7f29b}"
+
+#define HOST_LENMAX 255
+#define DEF_CONNECT_MAX 1000
+
+uint PortNo;
+char *FwdHost;
+uint FwdPortNo;
+uint ConnectMax = DEF_CONNECT_MAX;
+
+static char *StopEventName;
+static uint StopEventHdl;
+
+static void (*UserPerform)(int sock, int fwdSock);
+
+static void PerformTh(int sock, char *strip)
+{
+	uchar ip[4] = { 0 };
+	int fwdSock;
+
+	fwdSock = sockConnect_NB(ip, FwdHost, FwdPortNo);
+
+	if(fwdSock == -1)
+		return;
+
+	errorCase(!UserPerform);
+
+	UserPerform(sock, fwdSock);
+	sockDisconnect(fwdSock);
+}
+static int IdleTh(void)
+{
+	int clsFlag = 0;
+
+	while(hasKey())
+	{
+		int key = getKey();
+
+		if(key == 0x20)
+			clsFlag = 1;
+
+		if(key == 0x1b) // ? エスケープキー押下 -> 停止要求
+			ProcDeadFlag = 1;
+
+		if(key == '1')
+			setDefConsoleColor();
+	}
+	if(handleWaitForMillis(StopEventHdl, 0)) // ? 停止要求
+		ProcDeadFlag = 1;
+
+	if(clsFlag)
+		execute("CLS");
+
+	if(!ProcDeadFlag)
+		return 1;
+
+	cout("停止します...\n");
+	return 0;
+}
+
+void (*TunnelPerformTh)(int sock, char *strip) = PerformTh;
+
+/*
+	userReadArgs      - NULL不可
+	userPerform       - NULL不可 (但しTunnelPerformThを設定していればNULL可)
+	title             - NULL不可
+	cb_getTitleSuffix - NULL可
+*/
+void TunnelMain(int (*userReadArgs)(void), void (*userPerform)(int sock, int fwdSock), char *title, char *(*cb_getTitleSuffix)(void))
+{
+	errorCase(!userReadArgs);
+	// userPerform
+	errorCase(!title);
+	// cb_getTitleSuffix
+
+	PortNo = toValue(nextArg());
+	FwdHost = nextArg();
+	FwdPortNo = toValue(nextArg());
+
+	errorCase(!PortNo || 0xffff < PortNo);
+	errorCase(m_isEmpty(FwdHost) || HOST_LENMAX < strlen(FwdHost));
+	errorCase(!FwdPortNo || 0xffff < FwdPortNo);
+
+	StopEventName = xcout(STOPEVENTUUID ".%u", PortNo);
+	StopEventHdl = eventOpen(StopEventName);
+
+readArgs:
+	if(argIs("/S"))
+	{
+		eventWakeupHandle(StopEventHdl);
+		return;
+	}
+	if(argIs("/C"))
+	{
+		ConnectMax = toValue(nextArg());
+		goto readArgs;
+	}
+	if(argIs("/DOSTO")) // todo: コメントに記載
+	{
+		DOSTimeoutSec = toValue(nextArg());
+		goto readArgs;
+	}
+	if(userReadArgs())
+	{
+		goto readArgs;
+	}
+	errorCase_m(hasArgs(1), "不明なオプションが指定されました。");
+
+	errorCase(!ConnectMax); // どのみち sockServerTh() でエラーになるけど..
+	errorCase(IMAX < DOSTimeoutSec);
+
+	execute_x(xcout("TITLE %s from localhost:%u to %s:%u C:%u %s", title, PortNo, FwdHost, FwdPortNo, ConnectMax, cb_getTitleSuffix ? cb_getTitleSuffix() : ""));
+
+	UserPerform = userPerform;
+	sockServerTh(TunnelPerformTh, PortNo, ConnectMax, IdleTh);
+	UserPerform = NULL;
+
+	handleClose(StopEventHdl);
+}
+
+// ---- Tools ----
+
+int IsTight(void)
+{
+	if(0.9 < sockConnectedRate)
+	{
+		cout("TIGHT!\n");
+		return 1;
+	}
+	return 0;
+}
+
+// ----
