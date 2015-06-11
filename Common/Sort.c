@@ -170,7 +170,7 @@ void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint))
 		addElement(rangeStack, pivotidx + 1);
 		addElement(rangeStack, endnextidx);
 
-		if(ABANDON <= getCount(rangeStack))
+		if(ABANDON < getCount(rangeStack))
 		{
 			combSort(list, funcComp);
 			goto endsort;
