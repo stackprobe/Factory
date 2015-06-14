@@ -60,7 +60,7 @@ autoList_t *readWAVFile(char *file)
 		name[4] = '\0';
 		size = readValue(fp);
 
-		errorCase(IMAX < size); // zantei
+		errorCase(IMAX < size); // 適当な上限
 
 		if(!strcmp(name, "fmt "))
 		{
@@ -105,20 +105,20 @@ autoList_t *readWAVFile(char *file)
 			addElement(wavData, (getByte(RawData, index) | getByte(RawData, index + 1) << 8) ^ 0x8000);
 		}
 	}
-	if(Fmt.ChannelNum == 1) // to ステレオ
+	if(Fmt.ChannelNum == 1) // monoral
 	{
-		uint *buff;
-
-		index = getCount(wavData);
-		nobSetCount(wavData, index * 2);
-		buff = (uint *)directGetList(wavData);
-
-		while(index)
+		for(index = 0; index < getCount(wavData); index++)
 		{
-			index--;
-			buff[index * 2 + 0] = buff[index];
-			buff[index * 2 + 1] = buff[index];
+			*directGetPoint(wavData, index) *= 0x00010001;
 		}
+	}
+	else // stereo
+	{
+		for(index = 0; index * 2 < getCount(wavData); index++)
+		{
+			*directGetPoint(wavData, index) = getElement(wavData, index * 2) << 16 | getElement(wavData, index * 2 + 1);
+		}
+		setCount(wavData, index);
 	}
 	releaseAutoBlock(RawData);
 	RawData = NULL;
@@ -129,5 +129,33 @@ autoList_t *readWAVFile(char *file)
 }
 void writeWAVFile(char *file, autoList_t *wavData, uint hz)
 {
-	// TODO
+	FILE *fp = fileOpen(file, "wb");
+	uint value;
+	uint index;
+
+	writeToken(fp, "RIFF");
+	writeValue(fp, 4 + 4 + 4 + 16 + 4 + 4 + getCount(wavData) * 4);
+	writeToken(fp,
+		"WAVE"
+		"fmt\40"
+		);
+	writeValue(fp, 16);
+	writeValueWidth(fp, 1, 2);
+	writeValueWidth(fp, 2, 2);
+	writeValue(fp, hz);
+	writeValue(fp, hz * 4);
+	writeValueWidth(fp, 4, 2);
+	writeValueWidth(fp, 16, 2);
+	writeToken(fp, "data");
+	writeValue(fp, getCount(wavData) * 4);
+
+	foreach(wavData, value, index)
+	{
+		uint v1 = value >> 16;
+		uint v2 = value & 0xffff;
+
+		writeValueWidth(fp, v1 ^ 0x8000, 2);
+		writeValueWidth(fp, v2 ^ 0x8000, 2);
+	}
+	fileClose(fp);
 }

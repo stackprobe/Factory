@@ -432,9 +432,13 @@ void writeValue64(FILE *fp, uint64 value)
 {
 	writeValue64Width(fp, value, sizeof(uint64));
 }
+void writeValueWidth(FILE *fp, uint value, uint width)
+{
+	writeValue64Width(fp, (uint64)value, width);
+}
 void writeValue(FILE *fp, uint value)
 {
-	writeValue64Width(fp, (uint64)value, sizeof(uint));
+	writeValueWidth(fp, value, sizeof(uint));
 }
 uint64 readValue64Width(FILE *fp, uint width)
 {

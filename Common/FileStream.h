@@ -43,6 +43,7 @@ void addLine2File(char *file, char *line);
 
 void writeValue64Width(FILE *fp, uint64 value, uint width);
 void writeValue64(FILE *fp, uint64 value);
+void writeValueWidth(FILE *fp, uint value, uint width);
 void writeValue(FILE *fp, uint value);
 uint64 readValue64Width(FILE *fp, uint width);
 uint64 readValue64(FILE *fp);
