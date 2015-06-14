@@ -46,6 +46,7 @@ void writeValue64(FILE *fp, uint64 value);
 void writeValue(FILE *fp, uint value);
 uint64 readValue64Width(FILE *fp, uint width);
 uint64 readValue64(FILE *fp);
+uint readValueWidth(FILE *fp, uint width);
 uint readValue(FILE *fp);
 
 uint readFirstValue(char *file);

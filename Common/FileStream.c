@@ -456,9 +456,13 @@ uint64 readValue64(FILE *fp)
 {
 	return readValue64Width(fp, sizeof(uint64));
 }
+uint readValueWidth(FILE *fp, uint width)
+{
+	return (uint)readValue64Width(fp, width);
+}
 uint readValue(FILE *fp)
 {
-	return (uint)readValue64Width(fp, sizeof(uint));
+	return readValueWidth(fp, sizeof(uint));
 }
 
 uint readFirstValue(char *file)
