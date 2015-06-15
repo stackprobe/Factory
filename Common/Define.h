@@ -57,7 +57,7 @@ typedef unsigned __int64 uint64;
 	} while(0)
 
 #define m_d2i(value) \
-	(sint)((value) + 0.5)
+	(uint)((value) + 0.5)
 
 #define m_sign(value) \
 	((value) < 0 ? -1 : (0 < (value) ? 1 : 0))
@@ -92,3 +92,6 @@ typedef struct d2D_st
 	double Y;
 }
 d2D_t;
+
+#define zeroclear(var) \
+	(memset(&(var), 0x00, sizeof(var)))

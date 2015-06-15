@@ -189,6 +189,15 @@ uint64 blockToValue64(void *block)
 		(uint64)blockToValue((uchar *)block + 4) << 32;
 }
 
+sint64 d2i64(double value)
+{
+	return (sint64)(value < 0.0 ? value - 0.5 : value + 0.5);
+}
+sint d2i(double value)
+{
+	return (sint)d2i64(value);
+}
+
 // _x
 uint64 toValue64Digits_xc(char *line, char *digits)
 {

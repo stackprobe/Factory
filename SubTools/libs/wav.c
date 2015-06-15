@@ -29,6 +29,10 @@ autoList_t *readWAVFile(char *file)
 	autoList_t *wavData;
 	uint index;
 
+	memset(&Header, 0x00, sizeof(Header));
+	memset(&Fmt, 0x00, sizeof(Fmt));
+	RawData = NULL;
+
 	Header.Riff[0] = readChar(fp);
 	Header.Riff[1] = readChar(fp);
 	Header.Riff[2] = readChar(fp);
@@ -60,7 +64,7 @@ autoList_t *readWAVFile(char *file)
 		name[4] = '\0';
 		size = readValue(fp);
 
-		errorCase(IMAX < size); // “K“–‚ÈãŒÀ
+		errorCase(IMAX < size);
 
 		if(!strcmp(name, "fmt "))
 		{
@@ -87,7 +91,13 @@ autoList_t *readWAVFile(char *file)
 	}
 	fileClose(fp);
 
-	errorCase(!RawData); // ? no 'data'
+	errorCase(Fmt.FormatID != 1); // ? ! PCM
+	errorCase(!m_isRange(Fmt.ChannelNum, 1, 2));
+	errorCase(!m_isRange(Fmt.Hz, 1, IMAX));
+	errorCase(!m_isRange(Fmt.BitPerSample, 8, 16) || Fmt.BitPerSample % 8);
+	errorCase(Fmt.BlockSize != Fmt.ChannelNum * (Fmt.BitPerSample >> 3));
+	errorCase(Fmt.BytePerSec != Fmt.Hz * Fmt.BlockSize);
+	errorCase(!RawData);
 
 	wavData = newList();
 
@@ -121,7 +131,6 @@ autoList_t *readWAVFile(char *file)
 		setCount(wavData, index);
 	}
 	releaseAutoBlock(RawData);
-	RawData = NULL;
 
 	lastWAV_Hz = Fmt.Hz;
 

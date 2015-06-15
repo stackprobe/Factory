@@ -72,11 +72,14 @@ static void WavCut4Game(char *rFile, char *wFile, uint fadeoutPos)
 
 	errorCase(lastWAV_Hz != HZ);
 
-	Fadeout(fadeoutPos, HZ / 2);
+	if(fadeoutPos)
+	{
+		Fadeout(fadeoutPos, (HZ * 9) / 10);
+	}
 	TrimEnd();
 	TrimBgn();
-	PutSilentEnd(HZ / 2);
-	PutSilentBgn(HZ / 2);
+	PutSilentEnd(HZ / 10);
+	PutSilentBgn(HZ / 10);
 
 	writeWAVFile(wFile, WavData, HZ);
 

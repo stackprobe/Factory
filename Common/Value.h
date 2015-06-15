@@ -36,6 +36,9 @@ uint blockToValue(void *block);
 void value64ToBlock(void *block, uint64 value);
 uint64 blockToValue64(void *block);
 
+sint64 d2i64(double value);
+sint d2i(double value);
+
 // _x
 uint64 toValue64Digits_xc(char *line, char *digits);
 uint toValueDigits_xc(char *line, char *digits);
