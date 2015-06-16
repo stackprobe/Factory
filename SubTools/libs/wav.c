@@ -29,8 +29,8 @@ autoList_t *readWAVFile(char *file)
 	autoList_t *wavData;
 	uint index;
 
-	memset(&Header, 0x00, sizeof(Header));
-	memset(&Fmt, 0x00, sizeof(Fmt));
+	zeroclear(Header);
+	zeroclear(Fmt);
 	RawData = NULL;
 
 	Header.Riff[0] = readChar(fp);

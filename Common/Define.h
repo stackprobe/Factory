@@ -94,4 +94,4 @@ typedef struct d2D_st
 d2D_t;
 
 #define zeroclear(var) \
-	(memset(&(var), 0x00, sizeof(var)))
+	(memset(&(var), 0x00, sizeof((var))))
