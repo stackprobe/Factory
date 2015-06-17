@@ -1,7 +1,8 @@
 /*
-	dmd5.exe [/I] ...
+	dmd5.exe [/I] [/-SVN] ...
 
-		/I ... ツリー比較時にパスの大文字／小文字を無視
+		/I    ... ツリー比較時にパスの大文字／小文字を無視
+		/-SVN ... サブバージョンを無視
 
 	dmd5.exe ... /C
 
@@ -189,9 +190,16 @@ static void MakeCredentials(char *dir)
 
 int main(int argc, char **argv)
 {
+readArgs:
 	if(argIs("/I")) // Ignore case of path
 	{
 		IgnoreCaseOfPath = 1;
+		goto readArgs;
+	}
+	if(argIs("/-SVN")) // Ignore .svn etc.
+	{
+		antiSubversion = 1;
+		goto readArgs;
 	}
 
 	if(argIs("/C")) // drop and Compare
