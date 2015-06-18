@@ -1,5 +1,5 @@
 /*
-	ZCluster.exe [/KB KEY-BUNDLE] (/M 入力パス 出力クラスタファイル |
+	ZCluster.exe [/KB KEY-BUNDLE] [/OAD] (/M 入力パス 出力クラスタファイル |
 		/MO 入力パス 出力クラスタファイル |
 		/BM 入力パス 出力クラスタファイル |
 		/R 入力クラスタファイル 出力パス |
@@ -10,11 +10,12 @@
 		/E+ 入出力ファイル |
 		/D+ 入出力ファイル)   ★コマンドモード
 
-	ZCluster.exe [/KB-KEYBUNDLE] [/C] [/-OW] [入出力パス]   ★自動判定モード
+	ZCluster.exe [/KB KEY-BUNDLE] [/C] [/-OW] [入出力パス]   ★自動判定モード
 
 	KEY-BUNDLE ... 鍵束ファイル or * or *PASS
 	/C   ... 自動判定モードのリストア時にカレントディレクトリに出力する。
 	/-OW ... 自動判定モードで上書き禁止（上書きしようとするとエラー）
+	/OAD ... 出力したら入力を削除する
 	/M   ... クラスタファイル作成
 	/MO  ... クラスタファイル作成（上書きする）
 	/BM  ... クラスタファイル作成（１世代だけバックアップする）
@@ -36,6 +37,20 @@
 #define EXT_CLUSTER "clu"
 #define EXT_PACKED "gz"
 #define EXT_ENCRYPTED "enc"
+
+static int OutputAndDeleteMode;
+
+static void PostOutput(char *rPath)
+{
+	cout("POST_OUTPUT: %s\n", rPath);
+
+	if(OutputAndDeleteMode)
+	{
+		cout("[DELETE]\n");
+
+		forceRemovePath(rPath);
+	}
+}
 
 // ---- auto action ----
 
@@ -193,6 +208,7 @@ static void AutoAction(char *rPath, autoBlock_t *rawKey)
 		removeFile(midFile);
 		memFree(midFile);
 	}
+	PostOutput(rPath);
 	memFree(rPath);
 }
 
@@ -231,6 +247,7 @@ static void MakeCluster(char *rPath, char *wFile, autoBlock_t *rawKey)
 		ZC_Encrypt(wFile, rawKey);
 		LOGPOS();
 	}
+	PostOutput(rPath);
 }
 static void Restore(char *rFile, char *wPath, autoBlock_t *rawKey, int restoreDirMode)
 {
@@ -270,6 +287,7 @@ static void Restore(char *rFile, char *wPath, autoBlock_t *rawKey, int restoreDi
 	}
 	removeFile(midFile);
 	memFree(midFile);
+	PostOutput(rFile);
 }
 
 static void EncryptMain(autoBlock_t *rawKey, int mode) // mode: "ED"
@@ -305,6 +323,7 @@ static void EncryptMain(autoBlock_t *rawKey, int mode) // mode: "ED"
 			termination(1);
 		}
 	}
+	PostOutput(rFile);
 	termination(0);
 }
 
@@ -339,6 +358,15 @@ readArgs:
 	if(argIs("/-OW"))
 	{
 		NoOverwriteMode = 1;
+		goto readArgs;
+	}
+	if(argIs("/OAD"))
+	{
+		cout("***********************\n");
+		cout("** OUTPUT AND DELETE **\n");
+		cout("***********************\n");
+
+		OutputAndDeleteMode = 1;
 		goto readArgs;
 	}
 	if(argIs("/M"))
@@ -407,6 +435,7 @@ readArgs:
 		wFile = nextArg();
 
 		ZC_Pack(rFile, wFile);
+		PostOutput(rFile);
 		return;
 	}
 	if(argIs("/U"))
@@ -418,6 +447,7 @@ readArgs:
 		wFile = nextArg();
 
 		ZC_Unpack(rFile, wFile);
+		PostOutput(rFile);
 		return;
 	}
 	if(argIs("/E"))
@@ -432,18 +462,24 @@ readArgs:
 	}
 	if(argIs("/E+"))
 	{
-		ZC_Encrypt(nextArg(), rawKey);
+		char *file = nextArg();
+
+		ZC_Encrypt(file, rawKey);
+		PostOutput(file);
 		return;
 	}
 	if(argIs("/D+"))
 	{
-		if(!ZC_Decrypt(nextArg(), rawKey))
+		char *file = nextArg();
+
+		if(!ZC_Decrypt(file, rawKey))
 		{
 			cout("+---------------------+\n");
 			cout("| 復号に失敗しました。|\n");
 			cout("+---------------------+\n");
 			termination(1);
 		}
+		PostOutput(file);
 		termination(0);
 	}
 	if(hasArgs(1))
