@@ -1,2 +1,5 @@
 START /B /WAIT /DC:\Factory\Common CL /W2 /WX /Oxt /J /GF /c *.c
-CALL Build.bat
+DEL C:\Factory\Common\memAllocTest.obj
+CL _Cx.c C:\Factory\Common\*.obj
+DEL _Cx.obj
+COPY /B _Cx.exe ..\Cx.exe

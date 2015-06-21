@@ -1,3 +1,13 @@
+/*
+	wavCut4Game.exe [/F FADEOUT-TIME] [/FL FADEOUT-MILLIS] [/E END-SILEND-MILLIS] [/B BGN-SILEND-MILLIS] [WAV-FILE]
+
+		/F  ... 省略時、フェードアウトしない。
+		FADEOUT-TIME ... S or M:S or M.S
+		/FL ... 省略時、900[ms]
+		/E  ... 省略時、100[ms]
+		/B  ... 省略時、100[ms]
+*/
+
 #include "C:\Factory\Common\all.h"
 #include "libs\wav.h"
 
@@ -66,37 +76,42 @@ static void PutSilentBgn(uint count)
 	releaseAutoList(WavData);
 	WavData = nwd;
 }
-static void WavCut4Game(char *rFile, char *wFile, uint fadeoutPos)
+
+static uint FadeoutPos; // 0 == 何もしない。
+static uint FadeoutLen = (HZ * 9) / 10;
+static uint SilentEndLen = HZ / 10;
+static uint SilentBgnLen = HZ / 10;
+
+static void WavCut4Game(char *rFile, char *wFile)
 {
 	WavData = readWAVFile(rFile);
 
 	errorCase(lastWAV_Hz != HZ);
 
-	if(fadeoutPos)
-	{
-		Fadeout(fadeoutPos, (HZ * 9) / 10);
-	}
+	if(FadeoutPos)
+		Fadeout(FadeoutPos, FadeoutLen);
+
 	TrimEnd();
 	TrimBgn();
-	PutSilentEnd(HZ / 10);
-	PutSilentBgn(HZ / 10);
+	PutSilentEnd(SilentEndLen);
+	PutSilentBgn(SilentBgnLen);
 
 	writeWAVFile(wFile, WavData, HZ);
 
 	releaseAutoList(WavData);
 	WavData = NULL;
 }
-static void WavCut4Game_F(char *file, uint fadeoutPos)
+static void WavCut4Game_F(char *file)
 {
 	char *rFile = file;
 	char *wFile;
 
 	wFile = strx(rFile);
 	wFile = changeExt(wFile, "");
-	wFile = addLine_x(wFile, xcout("_wc4g_fo%u.wav", fadeoutPos / HZ));
+	wFile = addLine_x(wFile, xcout("_wc4g_[%u_%u_%u_%u].wav", FadeoutPos, FadeoutLen, SilentEndLen, SilentBgnLen));
 	wFile = toCreatablePath(wFile, 1000);
 
-	WavCut4Game(rFile, wFile, fadeoutPos);
+	WavCut4Game(rFile, wFile);
 
 	memFree(wFile);
 }
@@ -107,6 +122,9 @@ static uint StrToSec(char *str)
 
 	str = strx(str);
 	p = strchr(str, ':');
+
+	if(!p)
+		p = strchr(str, '.');
 
 	if(p)
 	{
@@ -124,19 +142,39 @@ int main(int argc, char **argv)
 {
 	uint fadeoutPos;
 
-	fadeoutPos = StrToSec(nextArg()) * HZ;
+readArgs:
+	if(argIs("/F"))
+	{
+		FadeoutPos = StrToSec(nextArg()) * HZ;
+		goto readArgs;
+	}
+	if(argIs("/FL"))
+	{
+		FadeoutLen = (toValue(nextArg()) * HZ) / 1000;
+		goto readArgs;
+	}
+	if(argIs("/E"))
+	{
+		SilentEndLen = (toValue(nextArg()) * HZ) / 1000;
+		goto readArgs;
+	}
+	if(argIs("/B"))
+	{
+		SilentBgnLen = (toValue(nextArg()) * HZ) / 1000;
+		goto readArgs;
+	}
 
 	if(hasArgs(1))
 	{
 		char *file = nextArg();
 
-		WavCut4Game_F(file, fadeoutPos);
+		WavCut4Game_F(file);
 		return;
 	}
 
 	{
 		char *file = c_dropFile();
 
-		WavCut4Game_F(file, fadeoutPos);
+		WavCut4Game_F(file);
 	}
 }
