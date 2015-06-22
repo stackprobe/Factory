@@ -1,4 +1,4 @@
-#include "LCom_o1.h"
+#include "LCom_v1.h"
 
 #define PREF_MUTEX          "ccstackprobe Factory LCom mutex object "
 #define PREF_EVENT_REQUEST  "ccstackprobe Factory LCom event object Request "
