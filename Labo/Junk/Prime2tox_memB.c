@@ -37,7 +37,7 @@ static void DispSosu(void)
 
 	for(index = 3; index <= CountMax; index += 2)
 	{
-		if(index % 10000 == 0)
+		if(index % 10000 == 1)
 		{
 			while(hasKey())
 			{
@@ -82,7 +82,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	execute("TITLE Prime2tox - ŒvŽZŠ®—¹ o—Í’†...");
+	execute("TITLE Prime2tox_memB - ŒvŽZŠ®—¹ o—Í’†...");
 	DispSosu();
 
 	releaseBitList(SosuMap);
