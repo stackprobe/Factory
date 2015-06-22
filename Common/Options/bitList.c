@@ -2,9 +2,13 @@
 
 bitList_t *newBitList(void)
 {
+	return newBitList_A(0);
+}
+bitList_t *newBitList_A(uint64 allocBitSize)
+{
 	bitList_t *i = memAlloc(sizeof(bitList_t));
 
-	i->Buffer = newList();
+	i->Buffer = createAutoList((uint)((allocBitSize + 31) >> 5));
 
 	return i;
 }
@@ -16,30 +20,46 @@ void releaseBitList(bitList_t *i)
 
 // <-- cdtor
 
-uint refBit(bitList_t *i, uint index)
+uint refBit(bitList_t *i, uint64 index)
 {
-	return refElement(i->Buffer, index / 32) >> index % 32 & 1;
+	return refElement(i->Buffer, (uint)(index >> 5)) >> (uint)(index & 31) & 1;
 }
-void putBit(bitList_t *i, uint index, uint value)
+void putBit(bitList_t *i, uint64 index, uint value)
 {
-	uint c = refElement(i->Buffer, index / 32);
+	uint c = refElement(i->Buffer, (uint)(index >> 5));
 
 	if(value)
-		c |= 1 << (index % 32);
+		c |= 1 << (uint)(index & 31);
 	else
-		c &= ~(1 << (index % 32));
+		c &= ~(1 << (uint)(index & 31));
 
-	putElement(i->Buffer, index / 32, c);
+	putElement(i->Buffer, (uint)(index >> 5), c);
 }
-uint getBitListSize(bitList_t *i) // ret: ÅŒã‚Ì‚P‚ðŠÜ‚ÞÅ¬‚ÌƒTƒCƒY
+void putBits(bitList_t *i, uint64 index, uint64 size, uint value)
 {
-	uint c;
+	uint64 bgn = index;
+	uint64 end = index + size;
 
-	for(c = getCount(i->Buffer) * 32; c; c--)
-		if(refBit(i, c - 1))
-			break;
+	while(bgn < end && bgn & 31)
+	{
+		putBit(i, bgn, value);
+		bgn++;
+	}
+	while(bgn < end && end & 31)
+	{
+		end--;
+		putBit(i, end, value);
+	}
+	if(bgn < end)
+	{
+		uint index    = (uint)(bgn >> 5);
+		uint indexEnd = (uint)(end >> 5);
 
-	return c;
+		value = value ? 0xffffffff : 0;
+
+		for(index = 0; index < indexEnd; index++)
+			putElement(i->Buffer, index, value);
+	}
 }
 
 // <-- accessor

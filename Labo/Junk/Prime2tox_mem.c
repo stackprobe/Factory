@@ -27,7 +27,7 @@ static uint SosuList[] =
 static uint CountMax;
 static uchar *SosuMap;
 
-static uint Root(uint64 value)
+static uint Root(uint value)
 {
 	uint root = 0;
 	uint bit;
