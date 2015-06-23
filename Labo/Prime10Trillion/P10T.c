@@ -1,5 +1,19 @@
 #include "C:\Factory\Common\all.h"
+#include "Define.h"
 
+static uint StartedTime;
+
+static void ShowElapsed(void)
+{
+	static uint lastTime = UINTMAX;
+	uint currTime = now();
+
+	if(lastTime == UINTMAX)
+		lastTime = currTime;
+
+	cout("ELAPSED: %u (%u)\n", now() - StartedTime, currTime - lastTime);
+	lastTime = currTime;
+}
 static uint Root(uint64 value)
 {
 	uint ret = 0;
@@ -102,9 +116,6 @@ static void PutPrime3To29(void)
 
 // ---- File ----
 
-#define OUTPUT_FILE "P10T.dat"
-#define F_PRIME_SIZE 6
-
 static FILE *Fp;
 
 static void WritePrime(uint64 prime)
@@ -168,8 +179,12 @@ static void ProcFirstMap(void)
 	uint ppndx = 0;
 
 	LOGPOS();
+	ShowElapsed();
+
 	PutPrime3To29();
 	SetBit(0, 1); // 1 is not prime
+
+	ShowElapsed();
 
 	for(bit = 15; bit <= bitMax; bit++)
 	{
@@ -209,9 +224,13 @@ static void ProcFirstMap(void)
 	cout("ppndx: %u\n", ppndx);
 	errorCase(ppndx != PUT_PRIME_NUM);
 
+	ShowElapsed();
+
 	WritePrime2To29();
 	WriteMap(1, UINT64MAX);
+
 	LOGPOS();
+	ShowElapsed();
 }
 static void PutPrimeB(uint64 baseNumb, uint prime)
 {
@@ -234,8 +253,11 @@ static void ProcMap(uint64 baseNumb)
 
 	LOGPOS();
 	cout("baseNumb: %I64u\n", baseNumb);
+	ShowElapsed();
 
 	PutPrime3To29();
+
+	ShowElapsed();
 
 	for(index = 0; index < PUT_PRIME_NUM; index++)
 	{
@@ -244,8 +266,12 @@ static void ProcMap(uint64 baseNumb)
 
 		PutPrimeB(baseNumb, P_Primes[index]);
 	}
+	ShowElapsed();
+
 	WriteMap(baseNumb, PRIME_MAX);
+
 	LOGPOS();
+	ShowElapsed();
 }
 
 // ----
@@ -279,6 +305,8 @@ int main(int argc, char **argv)
 	{
 		TestMode = 1;
 	}
+
+	StartedTime = now();
 
 	Map = (uint *)memAlloc(MAP_LEN * sizeof(uint));
 	P_Primes = (uint *)memAlloc(PUT_PRIME_NUM * sizeof(uint));

@@ -1,13 +1,15 @@
 #include "C:\Factory\Common\all.h"
+#include "Define.h"
 
-#define DAT_FILE "P10T.dat"
+static autoList_t *KnownPrimes;
 
 static IsPrime(uint64 value)
 {
+	uint index;
 	uint denom;
 	uint maxDenom = iSqrt64(value);
 
-	cout("IsPrime_value: %I64u\n", value);
+//	cout("IsPrime_value: %I64u\n", value);
 
 	if(value < 2)
 		return 0;
@@ -15,14 +17,23 @@ static IsPrime(uint64 value)
 	if(value == 2)
 		return 1;
 
-	if(value % 2 == 0)
-		return 0;
+	foreach(KnownPrimes, denom, index)
+	{
+		if(maxDenom < denom)
+			break;
 
-	for(denom = 3; denom <= maxDenom; denom += 2)
 		if(value % denom == 0)
 			return 0;
-
+	}
 	return 1;
+}
+static void CheckPrime(uint64 value, int assume)
+{
+	if(IsPrime(value) ? !assume : assume)
+	{
+		cout("CheckPrime_value: %I64u %d\n", value, assume);
+		error();
+	}
 }
 
 static FILE *Fp;
@@ -32,13 +43,19 @@ static uint64 NextPrime(void)
 	uint ret;
 	uint64 prime;
 
-	ret = fread(&prime, 1, 6, Fp);
+	ret = fread(&prime, 1, F_PRIME_SIZE, Fp);
 
 	if(ret == 0)
 		return UINT64MAX;
 
-	errorCase(ret != 6);
-	return prime & 0x0000ffffffffffffui64;
+	errorCase(ret != F_PRIME_SIZE);
+	prime &= 0x0000ffffffffffffui64;
+//	cout("prime: %I64u\n", prime);
+
+	if(prime <= UINTMAX)
+		addElement(KnownPrimes, (uint)prime);
+
+	return prime;
 }
 static void DoTest(void)
 {
@@ -48,7 +65,8 @@ static void DoTest(void)
 	{
 		uint64 prime = NextPrime();
 
-		cout("prime: %I64u\n", prime);
+		if(pulseSec(2, NULL))
+			cout("prime: %I64u\n", prime);
 
 		if(prime == UINT64MAX)
 			break;
@@ -62,17 +80,18 @@ static void DoTest(void)
 			if(prime <= chaser)
 				break;
 
-			errorCase(IsPrime(chaser));
+			CheckPrime(chaser, 0);
 		}
-		errorCase(!IsPrime(chaser));
+		CheckPrime(chaser, 1);
 	}
 }
 int main(int argc, char **argv)
 {
-	Fp = fileOpen(DAT_FILE, "rb");
+	KnownPrimes = newList();
+	Fp = fileOpen(OUTPUT_FILE, "rb");
 
 	DoTest();
 
 	fileClose(Fp);
-	Fp = NULL;
+	releaseAutoList(KnownPrimes);
 }
