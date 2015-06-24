@@ -11,11 +11,11 @@
 
 		エディタを開いて貼り付けた文字列のバイナリを標準出力する。
 
-	bb.exe /SCT 入力ファイル [出力ファイル]
+	bb.exe (/SCT | /B2T) 入力ファイル [出力ファイル]
 
 		入力ファイルのバイナリを「シンプルな」16進数テキストとして出力する。
 
-	bb.exe /SCB 入力ファイル 出力ファイル
+	bb.exe (/SCT | /T2B) 入力ファイル 出力ファイル
 
 		入力された16進数テキストをバイナリとして出力する。
 		入力は、アスキー文字 0123456789abcdefABCDEF 以外を無視して、2文字毎に連結してバイト値にする。
@@ -23,6 +23,10 @@
 	bb.exe 入力ファイル 開始位置 バイト数
 
 		入力ファイルの「開始位置」から「バイト数」だけ16進数テキストとして標準出力する。
+
+	bb.exe /RNG 入力ファイル 開始位置 バイト数 出力ファイル
+
+		入力ファイルの「開始位置」から「バイト数」だけ出力ファイルに出力する。
 
 	bb.exe 入力ファイル1 入力ファイル2
 
@@ -275,14 +279,56 @@ int main(int argc, char **argv)
 		memFree(file);
 		return;
 	}
-	if(argIs("/SCT")) // Simple Conversion (to Text)
+	if(argIs("/SCT") || argIs("/B2T")) // Simple Conversion (to Text), Binary To Hex-Text
 	{
 		SimpleConvToText(getArg(0), hasArgs(2) ? getArg(1) : NULL);
 		return;
 	}
-	if(argIs("/SCB")) // Simple Conversion (to Binary)
+	if(argIs("/SCB") || argIs("/T2B")) // Simple Conversion (to Binary), Hex-Text To Binary
 	{
 		SimpleConvToBinary(getArg(0), getArg(1));
+		return;
+	}
+	if(argIs("/RNG"))
+	{
+		char *rFile;
+		char *wFile;
+		uint64 start;
+		uint64 size;
+		FILE *rfp;
+		FILE *wfp;
+		uint64 count;
+
+		rFile = nextArg();
+		start = toValue64(nextArg());
+		size = toValue64(nextArg());
+		wFile = nextArg();
+
+		cout("< %s\n", rFile);
+		cout("# %I64u, %I64u\n", start, size);
+		cout("> %s\n", wFile);
+
+		errorCase(SINT64MAX < start);
+
+		if(!size)
+			size = UINT64MAX;
+
+		rfp = fileOpen(rFile, "rb");
+		wfp = fileOpen(wFile, "wb");
+
+		fileSeek(rfp, SEEK_SET, start);
+
+		for(count = 0; count < size; count++)
+		{
+			int chr = readChar(rfp);
+
+			if(chr == EOF)
+				break;
+
+			writeChar(wfp, chr);
+		}
+		fileClose(rfp);
+		fileClose(wfp);
 		return;
 	}
 	if(hasArgs(3))
