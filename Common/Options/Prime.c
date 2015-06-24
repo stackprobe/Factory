@@ -81,6 +81,8 @@ static int LoadPBits(void)
 
 // ---- INIT ----
 
+#define P13_LEN 15015
+
 static void PutPrime(uint prime, uint maxNumb)
 {
 	uint64 count;
@@ -93,16 +95,18 @@ static void PutPrime(uint prime, uint maxNumb)
 static void PutPrimeTo13(void)
 {
 	uint primes[] = { 3, 5, 7, 11, 13 };
-	const uint PB_BND = 15015;
 	uint index;
+
+	for(index = 0; index < P13_LEN; index++)
+		PBits[index] = 0;
 
 	for(index = 0; index < lengthof(primes); index++)
 	{
-		PutPrime(primes[index], PB_BND * 64 - 1);
+		PutPrime(primes[index], P13_LEN * 64 - 1);
 		SetPBit(primes[index], 1);
 	}
-	for(index = PB_BND; index < PBIT_LEN; index++)
-		PBits[index] = PBits[index % PB_BND];
+	for(index = P13_LEN; index < PBIT_LEN; index++)
+		PBits[index] = PBits[index % P13_LEN];
 
 	for(index = 0; index < lengthof(primes); index++)
 		SetPBit(primes[index], 0);
@@ -119,7 +123,7 @@ static void PutPrimeFrom17(void)
 }
 static void DoINIT(void)
 {
-	PBits = (uint *)memCalloc(PBIT_LEN * sizeof(uint));
+	PBits = (uint *)memAlloc(PBIT_LEN * sizeof(uint));
 
 	if(LoadPBits())
 		return;
