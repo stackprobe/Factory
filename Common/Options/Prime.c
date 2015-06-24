@@ -49,6 +49,36 @@ static void SetPBit(uint prime, int flag)
 	PBits[index] = c;
 }
 
+// ---- Save Load ----
+
+#define DAT_FILE "C:\\Factory\\tmp\\Prime.dat"
+
+static void SavePBits(void)
+{
+	autoBlock_t gab;
+
+	if(isFactoryDirDisabled())
+		return;
+
+	writeBinary(DAT_FILE, gndBlockVar(PBits, PBIT_LEN * sizeof(uint), gab));
+}
+static int LoadPBits(void)
+{
+	FILE *fp;
+	autoBlock_t gab;
+
+	if(isFactoryDirDisabled() || !existFile(DAT_FILE))
+		return 0;
+
+	errorCase(getFileSize(DAT_FILE) != PBIT_LEN * sizeof(uint));
+
+	fp = fileOpen(DAT_FILE, "rb");
+	fileRead(fp, gndBlockVar(PBits, PBIT_LEN * sizeof(uint), gab));
+	fileClose(fp);
+
+	return 1;
+}
+
 // ---- INIT ----
 
 static void PutPrime(uint prime, uint maxNumb)
@@ -91,11 +121,16 @@ static void DoINIT(void)
 {
 	PBits = (uint *)memCalloc(PBIT_LEN * sizeof(uint));
 
+	if(LoadPBits())
+		return;
+
 	LOGPOS();
 	PutPrimeTo13();
 	LOGPOS();
 	PutPrimeFrom17();
 	LOGPOS();
+
+	SavePBits();
 }
 static void INIT(void)
 {

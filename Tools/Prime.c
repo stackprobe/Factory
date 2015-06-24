@@ -38,28 +38,10 @@ int main(int argc, char **argv)
 
 		return;
 	}
-	if(hasArgs(1))
+
 	{
 		uint64 value = toValue64(nextArg());
 
 		cout("%I64u %s prime.\n", value, IsPrime(value) ? "is" : "is not");
-	}
-
-	for(; ; )
-	{
-		char *line;
-		uint64 value;
-
-		cout("input:\n");
-		line = coInputLine();
-
-		if(!*line)
-		{
-			memFree(line);
-			break;
-		}
-		value = toValue64(line);
-		cout("%I64u %s prime.\n", value, IsPrime(value) ? "is" : "is not");
-		memFree(line);
 	}
 }
