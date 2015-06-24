@@ -161,7 +161,7 @@ int IsPrime(uint64 value)
 	if(value % 2 == 0)
 		return 0;
 
-	maxDenom = iSqrt(value);
+	maxDenom = iSqrt64(value);
 
 	for(denom = 3; denom <= maxDenom; denom += 2)
 		if(IsPrime_32(denom) && value % denom == 0)
@@ -188,7 +188,7 @@ void Factorization(uint64 value, uint64 dest[64]) // dest: Å‘å 63 ŒÂ, ÅŒã‚Ì—v‘
 	else
 	{
 		uint64 denom; // maxDenom is max UINTMAX
-		uint maxDenom = iSqrt(value);
+		uint maxDenom = iSqrt64(value);
 
 		while(value % 2 == 0)
 		{
@@ -198,7 +198,7 @@ void Factorization(uint64 value, uint64 dest[64]) // dest: Å‘å 63 ŒÂ, ÅŒã‚Ì—v‘
 			if(value < 2)
 				goto value_one;
 		}
-		for(denom = 3; denom < maxDenom; denom += 2)
+		for(denom = 3; denom <= maxDenom; denom += 2)
 		{
 			if(IsPrime_32(denom))
 			{
