@@ -1,6 +1,18 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Prime.h"
 
+static int PrintPrimeOnlyFlag;
+
+static void PrintIsPrime(uint64 value)
+{
+	if(PrintPrimeOnlyFlag)
+	{
+		if(IsPrime(value))
+			cout("%I64u\n", value);
+	}
+	else
+		cout("%I64u %s prime.\n", value, IsPrime(value) ? "is" : "is not");
+}
 int main(int argc, char **argv)
 {
 	if(argIs("/F"))
@@ -18,6 +30,33 @@ int main(int argc, char **argv)
 
 		return;
 	}
+	if(argIs("/C"))
+	{
+		uint64 minval;
+		uint64 maxval;
+		uint64 value;
+		uint64 count = 0;
+
+		minval = toValue64(nextArg());
+		maxval = toValue64(nextArg());
+
+		if(maxval == 0)
+			maxval = UINT64MAX - 1;
+
+		errorCase(maxval < minval);
+		errorCase(maxval == UINT64MAX);
+
+		for(value = minval; value <= maxval; value++)
+			if(IsPrime(value))
+				count++;
+
+		cout("%I64u\n", count);
+		return;
+	}
+	if(argIs("/P"))
+	{
+		PrintPrimeOnlyFlag = 1;
+	}
 	if(hasArgs(2))
 	{
 		uint64 minval;
@@ -34,14 +73,25 @@ int main(int argc, char **argv)
 		errorCase(maxval == UINT64MAX);
 
 		for(value = minval; value <= maxval; value++)
-			cout("%I64u %s prime.\n", value, IsPrime(value) ? "is" : "is not");
+		{
+			if(eqIntPulseSec(2, NULL))
+			{
+				int cancelled = 0;
 
+				while(hasKey())
+					if(getKey() == 0x1b)
+						cancelled = 1;
+
+				if(cancelled)
+				{
+					cout("CANCELLED\n");
+					break;
+				}
+			}
+			PrintIsPrime(value);
+		}
 		return;
 	}
 
-	{
-		uint64 value = toValue64(nextArg());
-
-		cout("%I64u %s prime.\n", value, IsPrime(value) ? "is" : "is not");
-	}
+	PrintIsPrime(toValue64(nextArg()));
 }
