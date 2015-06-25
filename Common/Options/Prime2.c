@@ -74,19 +74,49 @@ static void PutPrimeTo13(void)
 	for(index = P13_LEN; index < PBIT_LEN; index++)
 		PBits[index] = PBits[index % P13_LEN];
 }
-static void PutPrime(uint prime, uint64 maxNumb)
+static void PutPrime(uint prime)
 {
-	// TODO
+	uint64 count = BaseNumb % prime;
+
+	count = prime - count;
+//	count %= prime;
+
+	if(count % 2 == 0)
+		count += prime;
+
+	for(; count < PBIT_P_NUM; count += (uint64)prime * 2)
+	{
+/*
+if(429496720000341359ui64 % PBIT_P_NUM == count) {
+cout("%u\n", prime);
+cout("%I64u\n", BaseNumb);
+cout("%I64u\n", count);
+cout("%I64u\n", BaseNumb + count);
+error();
+}
+*/
+		SetPBit(count, 1);
+	}
 }
 static void PutPrimeFrom17(void)
 {
-	// TODO
-
+	uint64 maxNumb;
+	uint maxPrime;
 	uint64 prime;
 
-	for(prime = 17; prime <= 0xffff; prime += 2)
-		if(!GetPBit(prime))
-			PutPrime(prime, UINTMAX);
+	if(BaseNumb < UINT64MAX - PBIT_P_NUM)
+		maxNumb = UINT64MAX;
+	else
+		maxNumb = BaseNumb + PBIT_P_NUM - 1;
+
+	maxPrime = iSqrt64(maxNumb);
+
+	if(maxPrime == UINTMAX) // UINTMAX is not prime
+		maxPrime = UINTMAX - 1;
+
+	for(prime = 17; prime <= maxPrime; prime += 2)
+		if(IsPrime(prime))
+			PutPrime(prime);
 }
 static void SetRange(uint64 value)
 {
@@ -95,7 +125,7 @@ static void SetRange(uint64 value)
 	BaseNumb = (value / PBIT_P_NUM) * PBIT_P_NUM;
 
 	if(!PBits)
-		PBits = memAlloc(PBIT_LEN * sizeof(uint));
+		PBits = (uint *)memAlloc(PBIT_LEN * sizeof(uint));
 
 	LOGPOS();
 	PutPrimeTo13();
@@ -103,13 +133,13 @@ static void SetRange(uint64 value)
 	PutPrimeFrom17();
 	LOGPOS();
 }
-int IsPrimeEx(uint64 value)
+int IsPrime_R(uint64 value)
 {
 	uint index;
 	uint bit;
 
 	if(value <= UINTMAX)
-		return IsPrime((uint)value);
+		return IsPrime(value);
 
 	if(value % 2 == 0)
 		return 0;
