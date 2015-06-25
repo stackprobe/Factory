@@ -7,7 +7,7 @@ static uint Sq[N];
 static uint SumTbl[2][N][N];
 static uint Totals[2];
 
-static void DoSort(void)
+static void DoShuffle(void)
 {
 	uint index;
 	uint mode;
@@ -67,7 +67,7 @@ static void DoTest(void)
 
 	for(; ; )
 	{
-		DoSort();
+		DoShuffle();
 
 		for(index = 0; index < N; index++)
 		{

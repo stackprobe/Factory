@@ -31,13 +31,13 @@ static void SetPBit(uint prime, int flag)
 	uint index;
 	uint c;
 
-	errorCase(prime % 2 == 0);
+//	errorCase(prime % 2 == 0);
 
 	bit = prime / 2;
 	index = bit / 32;
 	bit = bit % 32;
 
-	errorCase(PBIT_LEN <= index);
+//	errorCase(PBIT_LEN <= index);
 
 	c = PBits[index];
 
@@ -79,22 +79,13 @@ static void PutPrime(uint prime)
 	uint64 count = BaseNumb % prime;
 
 	count = prime - count;
-//	count %= prime;
+//	count %= prime; // count == prime はありえる気がするけど、下があるので意味ない。
 
 	if(count % 2 == 0)
 		count += prime;
 
 	for(; count < PBIT_P_NUM; count += (uint64)prime * 2)
 	{
-/*
-if(429496720000341359ui64 % PBIT_P_NUM == count) {
-cout("%u\n", prime);
-cout("%I64u\n", BaseNumb);
-cout("%I64u\n", count);
-cout("%I64u\n", BaseNumb + count);
-error();
-}
-*/
 		SetPBit(count, 1);
 	}
 }
@@ -104,7 +95,7 @@ static void PutPrimeFrom17(void)
 	uint maxPrime;
 	uint64 prime;
 
-	if(BaseNumb < UINT64MAX - PBIT_P_NUM)
+	if(BaseNumb < UINT64MAX - PBIT_P_NUM) // xxx アバウトな位置
 		maxNumb = UINT64MAX;
 	else
 		maxNumb = BaseNumb + PBIT_P_NUM - 1;

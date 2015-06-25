@@ -60,7 +60,11 @@ static void SavePBits(void)
 	if(isFactoryDirDisabled())
 		return;
 
-	writeBinary(DAT_FILE, gndBlockVar(PBits, PBIT_LEN * sizeof(uint), gab));
+	mutex();
+	{
+		writeBinary(DAT_FILE, gndBlockVar(PBits, PBIT_LEN * sizeof(uint), gab));
+	}
+	unmutex();
 }
 static int LoadPBits(void)
 {
@@ -72,9 +76,13 @@ static int LoadPBits(void)
 
 	errorCase(getFileSize(DAT_FILE) != PBIT_LEN * sizeof(uint));
 
-	fp = fileOpen(DAT_FILE, "rb");
-	fileRead(fp, gndBlockVar(PBits, PBIT_LEN * sizeof(uint), gab));
-	fileClose(fp);
+	mutex();
+	{
+		fp = fileOpen(DAT_FILE, "rb");
+		fileRead(fp, gndBlockVar(PBits, PBIT_LEN * sizeof(uint), gab));
+		fileClose(fp);
+	}
+	unmutex();
 
 	return 1;
 }
