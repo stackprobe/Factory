@@ -122,7 +122,7 @@ static void PutPrimeFrom17(void)
 		if(IsPrime(prime))
 			PutPrime(prime);
 }
-static void SetRange(uint64 value)
+static void InitRange(uint64 value)
 {
 	uint index;
 
@@ -149,7 +149,7 @@ int IsPrime_R(uint64 value)
 		return 0;
 
 	if(BaseNumb != (value / PBIT_P_NUM) * PBIT_P_NUM)
-		SetRange(value);
+		InitRange(value);
 
 	return !GetPBit(value - BaseNumb);
 }
