@@ -51,18 +51,26 @@ static void SetPBit(uint prime, int flag)
 
 // ---- Save Load ----
 
-#define DAT_FILE "C:\\Factory\\tmp\\Prime.dat"
+static char *GetDatFile(void)
+{
+	static char *file;
 
+	if(!file)
+	{
+		if(isFactoryDirEnabled())
+			file = "C:\\Factory\\tmp\\Prime.dat";
+		else
+			file = combine(getSelfDir(), "Prime.dat");
+	}
+	return file;
+}
 static void SavePBits(void)
 {
 	autoBlock_t gab;
 
-	if(isFactoryDirDisabled())
-		return;
-
 	mutex();
 	{
-		writeBinary(DAT_FILE, gndBlockVar(PBits, PBIT_LEN * sizeof(uint), gab));
+		writeBinary(GetDatFile(), gndBlockVar(PBits, PBIT_LEN * sizeof(uint), gab));
 	}
 	unmutex();
 }
@@ -71,14 +79,14 @@ static int LoadPBits(void)
 	FILE *fp;
 	autoBlock_t gab;
 
-	if(isFactoryDirDisabled() || !existFile(DAT_FILE))
+	if(!existFile(GetDatFile()))
 		return 0;
 
-	errorCase(getFileSize(DAT_FILE) != PBIT_LEN * sizeof(uint));
+	errorCase(getFileSize(GetDatFile()) != PBIT_LEN * sizeof(uint));
 
 	mutex();
 	{
-		fp = fileOpen(DAT_FILE, "rb");
+		fp = fileOpen(GetDatFile(), "rb");
 		fileRead(fp, gndBlockVar(PBits, PBIT_LEN * sizeof(uint), gab));
 		fileClose(fp);
 	}

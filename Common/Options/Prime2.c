@@ -79,10 +79,23 @@ static void PutPrime(uint prime)
 	uint64 count = BaseNumb % prime;
 
 	count = prime - count;
-//	count %= prime; // count == prime はありえる気がするけど、下があるので意味ない。
+//	count %= prime; // count == prime はありえる気がするけど、+= prime; があるので意味ない。
 
 	if(count % 2 == 0)
 		count += prime;
+
+	/*
+		prime^2 が BaseNumb を超える範囲は sqrt(BaseNum + PBIT_P_NUM) - sqrt(BaseNumb)
+		-> 狭いので prime^2 から始める必要無さそう？
+
+		BaseNumb   sqrt(BaseNum + PBIT_P_NUM) - sqrt(BaseNumb)
+		------------------------------------------------------
+		42億       25392.882
+		50億       23820.228
+		100億      18051.227
+		150億      15133.987
+		200億      13291.578
+	*/
 
 	for(; count < PBIT_P_NUM; count += (uint64)prime * 2)
 	{
