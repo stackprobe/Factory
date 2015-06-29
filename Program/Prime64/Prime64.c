@@ -47,7 +47,7 @@ static void PrimeRange(uint64 minval, uint64 maxval, char *outFile, char *cancel
 
 	for(count = minval; count <= maxval; count += 2)
 	{
-		if(count % 100000000 == 1)
+		if(count % 0x08000000 == 1)
 		{
 			if(handleWaitForMillis(cancelEv, 0))
 			{
