@@ -1,9 +1,21 @@
 #include "Prime2.h"
 
+#if 1
 #define P13_LEN 15015
 #define P13_P_NUM 960960 // == P13_LEN * 64
 #define PBIT_LEN 61501440 // == P13_LEN * 4096
 #define PBIT_P_NUM 3936092160 // == PBIT_LEN * 64
+#else // test
+#define P13_LEN 15015
+#define P13_P_NUM (P13_LEN * 64)
+//#define PBIT_LEN  (P13_LEN * 256)
+//#define PBIT_LEN  (P13_LEN * 512)
+#define PBIT_LEN  (P13_LEN * 1024)
+//#define PBIT_LEN  (P13_LEN * 2048)
+//#define PBIT_LEN  (P13_LEN * 3072)
+//#define PBIT_LEN  (P13_LEN * 4096)
+#define PBIT_P_NUM ((uint)PBIT_LEN * 64)
+#endif
 
 // ---- PBit ----
 
@@ -108,7 +120,7 @@ static void PutPrimeFrom17(void)
 	uint maxPrime;
 	uint64 prime;
 
-	if(BaseNumb < UINT64MAX - PBIT_P_NUM) // xxx アバウトな位置
+	if(BaseNumb < UINT64MAX - PBIT_P_NUM) // fixme 適当な位置
 		maxNumb = UINT64MAX;
 	else
 		maxNumb = BaseNumb + PBIT_P_NUM - 1;
@@ -122,7 +134,7 @@ static void PutPrimeFrom17(void)
 		if(IsPrime(prime))
 			PutPrime(prime);
 }
-static void InitRange(uint64 value)
+static void SetRange(uint64 value)
 {
 	uint index;
 
@@ -149,7 +161,7 @@ int IsPrime_R(uint64 value)
 		return 0;
 
 	if(BaseNumb != (value / PBIT_P_NUM) * PBIT_P_NUM)
-		InitRange(value);
+		SetRange(value);
 
 	return !GetPBit(value - BaseNumb);
 }
