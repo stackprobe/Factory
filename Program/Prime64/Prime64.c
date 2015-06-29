@@ -80,7 +80,21 @@ int main(int argc, char **argv)
 
 		return;
 	}
-	if(argIs("/N"))
+	if(argIs("/L"))
+	{
+		uint64 value = toValue64(nextArg());
+
+		cout("%I64u\n", GetLowPrime(value));
+		return;
+	}
+	if(argIs("/H"))
+	{
+		uint64 value = toValue64(nextArg());
+
+		cout("%I64u\n", GetHiPrime(value));
+		return;
+	}
+	if(argIs("/LH"))
 	{
 		uint64 value = toValue64(nextArg());
 
