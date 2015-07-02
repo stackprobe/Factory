@@ -54,15 +54,22 @@ static void PrimeRange(uint64 minval, uint64 maxval, char *outFile, char *cancel
 				errorCase(fprintf(fp, "CANCELLED\n") < 0);
 				break;
 			}
+
 			handleWaitForever(reportMtx);
 			writeOneLine_cx(reportFile, xcout("%I64u\n", count));
 			mutexRelease(reportMtx);
+
 			eventSet(reportEv);
 		}
 		if(IsPrime_R(count))
 			errorCase(fprintf(fp, "%I64u\n", count) < 0);
 	}
 	fileClose(fp);
+
+	handleWaitForever(reportMtx);
+	removeFileIfExist(reportFile);
+	mutexRelease(reportMtx);
+
 	handleClose(cancelEv);
 	handleClose(reportEv);
 	handleClose(reportMtx);
@@ -121,6 +128,20 @@ int main(int argc, char **argv)
 		reportFile = nextArg();
 
 		PrimeRange(minval, maxval, outFile, cancelEvName, reportEvName, reportMtxName, reportFile);
+		return;
+	}
+	if(argIs("/F"))
+	{
+		uint64 value = toValue64(nextArg());
+		uint64 dest[64];
+		uint index;
+
+		Factorization(value, dest);
+
+		for(index = 0; dest[index] != 0; index++)
+		{
+			cout("%I64u\n", dest[index]);
+		}
 		return;
 	}
 }
