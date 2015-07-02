@@ -1,8 +1,28 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Prime2.h"
 
-#define PRIME_MAX 18446744073709551557ui64
+#define PRIME_MAX 18446744073709551557ui64 // uint64 ç≈ëÂÇÃëfêî
 
+#define DUMMY_UUID "{905cac95-9d4c-482d-a189-e6a941c68fbe}"
+
+static void WrUI64(FILE *fp, uint64 value)
+{
+	static char buff[] = "12345678901234567890\n";
+	char *p = buff + 20;
+	uint s;
+
+	do
+	{
+		p--;
+		*p = '0' + (value % 10);
+		value /= 10;
+	}
+	while(value != 0);
+
+	s = ((uint)buff + 21) - (uint)p;
+
+	errorCase(fwrite(p, 1, s, fp) != s);
+}
 static uint64 GetLowPrime(uint64 value)
 {
 	while(2 < value)
@@ -33,6 +53,8 @@ static void PrimeRange(uint64 minval, uint64 maxval, char *outFile, char *cancel
 	uint reportMtx = mutexOpen(reportMtxName);
 	uint64 count;
 
+	errorCase(setvbuf(fp, NULL, _IOFBF, 64 * 1024 * 1024)); // ? é∏îs
+
 	if(minval <= 2)
 	{
 		if(2 <= maxval)
@@ -51,7 +73,7 @@ static void PrimeRange(uint64 minval, uint64 maxval, char *outFile, char *cancel
 		{
 			if(handleWaitForMillis(cancelEv, 0))
 			{
-				errorCase(fprintf(fp, "CANCELLED\n") < 0);
+				errorCase(fprintf(fp, "íÜé~ÇµÇ‹ÇµÇΩÅB\n") < 0);
 				break;
 			}
 
@@ -62,7 +84,8 @@ static void PrimeRange(uint64 minval, uint64 maxval, char *outFile, char *cancel
 			eventSet(reportEv);
 		}
 		if(IsPrime_R(count))
-			errorCase(fprintf(fp, "%I64u\n", count) < 0);
+//			errorCase(fprintf(fp, "%I64u\n", count) < 0);
+			WrUI64(fp, count);
 	}
 	fileClose(fp);
 
@@ -110,6 +133,27 @@ int main(int argc, char **argv)
 		return;
 	}
 	if(argIs("/R"))
+	{
+		uint64 minval;
+		uint64 maxval;
+		char *outFile;
+
+		minval = toValue64(nextArg());
+		maxval = toValue64(nextArg());
+		outFile = nextArg();
+
+		PrimeRange(
+			minval,
+			maxval,
+			outFile,
+			DUMMY_UUID "_1",
+			DUMMY_UUID "_2",
+			DUMMY_UUID "_3",
+			makeTempFile("tmp")
+			);
+		return;
+	}
+	if(argIs("/R2"))
 	{
 		uint64 minval;
 		uint64 maxval;
