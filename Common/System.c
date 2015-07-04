@@ -473,14 +473,14 @@ static void ReadSysArgs(void)
 
 			releaseAutoList(subArgs);
 		}
-		else if(!_stricmp(arg, "//O")) // 標準出力(coutの出力)をファイルに書き出す。
+		else if(!_stricmp(arg, "//O")) // 標準出力(coutの出力)をファイルに書き出す。★注意：termination();しないとストリーム開きっぱ！
 		{
 			desertElement(Args, argi);
 			arg = (char *)desertElement(Args, argi);
 
 			setCoutWrFile(arg, 0);
 		}
-		else if(!_stricmp(arg, "//A")) // 標準出力(coutの出力)をファイルに追記する。
+		else if(!_stricmp(arg, "//A")) // 標準出力(coutの出力)をファイルに追記する。★注意：termination();しないとストリーム開きっぱ！
 		{
 			desertElement(Args, argi);
 			arg = (char *)desertElement(Args, argi);
@@ -569,7 +569,7 @@ void setArgIndex(uint index)
 	ArgIndex = index;
 }
 
-// ----
+// ---- innerResPathFltr ----
 
 static char *FPP_Path;
 
@@ -619,4 +619,16 @@ writeOneLine(getOutFile("innerResPathFltr_path.txt"), path); // XXX
 foundPath:
 	cout("res: %s\n", path);
 	return path; // path, strx() 混在しているが const char[] として扱うこと。
+}
+
+// ----
+
+char *LOGPOS_Time(void)
+{
+	static char buff[23]; // UINT64MAX -> "307445734561825:51.615"
+	uint64 millis = nowTick();
+
+	sprintf(buff, "%I64u:%02u.%03u", millis / 60000, (uint)((millis / 1000) % 60), (uint)(millis % 1000));
+
+	return buff;
 }

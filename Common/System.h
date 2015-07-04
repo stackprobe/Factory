@@ -53,3 +53,5 @@ uint getArgIndex(void);
 void setArgIndex(uint index);
 
 char *innerResPathFltr(char *path);
+
+char *LOGPOS_Time(void);

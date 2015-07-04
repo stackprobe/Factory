@@ -47,7 +47,7 @@ typedef unsigned __int64 uint64;
 	for(index = 0; index < getCount(list) ? (*(uint *)&element = getElement(list, index), 1) : (*(uint *)&element = 0); index++)
 
 #define LOGPOS() \
-	cout("%s (%d) %s %u\n", __FILE__, __LINE__, __FUNCTION__, GetCurrentThreadId())
+	cout("%s (%d) %s %u %s\n", __FILE__, __LINE__, __FUNCTION__, GetCurrentThreadId(), LOGPOS_Time())
 
 #define m_swap(lop1, lop2, TYPE_T) \
 	do { \

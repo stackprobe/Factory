@@ -202,7 +202,7 @@ static char *InsSepOp(char *line, uint ranks)
 	}
 	return line;
 }
-int main(int argc, char **argv)
+static void Main2(void)
 {
 	uint radix = 10;
 	uint basement = 10;
@@ -216,7 +216,7 @@ int main(int argc, char **argv)
 	if(argIs("/H")) // Hex
 	{
 		HexKeisan();
-		return;
+		goto endFunc;
 	}
 
 readArgs:
@@ -304,6 +304,11 @@ readArgs:
 	}
 	memFree(op1);
 
+endFunc:
 	FnlzMemory();
+}
+int main(int argc, char **argv)
+{
+	Main2();
 	termination(0);
 }

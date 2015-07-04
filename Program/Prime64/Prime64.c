@@ -5,11 +5,28 @@
 
 #define DUMMY_UUID "{905cac95-9d4c-482d-a189-e6a941c68fbe}"
 
+// ---- WrUI64 ----
+
+#define WR_BUFF_SIZE 67000000
+
+static uchar WrBuff[WR_BUFF_SIZE];
+static uchar *WrPos = WrBuff;
+
+static void WrUI64Flush(FILE *fp)
+{
+	uint size = (uint)WrPos - (uint)WrBuff;
+
+	errorCase(fwrite(WrBuff, 1, size, fp) != size); // ? Ž¸”s
+	WrPos = WrBuff;
+}
 static void WrUI64(FILE *fp, uint64 value)
 {
-	static char buff[] = "12345678901234567890\n";
+	static char buff[] = "01234567890123456789\n";
 	char *p = buff + 20;
 	uint s;
+
+	if(WrBuff + WR_BUFF_SIZE < WrPos + 21)
+		WrUI64Flush(fp);
 
 	do
 	{
@@ -21,8 +38,13 @@ static void WrUI64(FILE *fp, uint64 value)
 
 	s = ((uint)buff + 21) - (uint)p;
 
-	errorCase(fwrite(p, 1, s, fp) != s);
+//	errorCase(fwrite(p, 1, s, fp) != s);
+	memcpy(WrPos, p, s);
+	WrPos += s;
 }
+
+// ----
+
 static uint64 GetLowPrime(uint64 value)
 {
 	while(2 < value)
@@ -53,7 +75,7 @@ static void PrimeRange(uint64 minval, uint64 maxval, char *outFile, char *cancel
 	uint reportMtx = mutexOpen(reportMtxName);
 	uint64 count;
 
-	errorCase(setvbuf(fp, NULL, _IOFBF, 64 * 1024 * 1024)); // ? Ž¸”s
+//	errorCase(setvbuf(fp, NULL, _IOFBF, 64 * 1024 * 1024)); // ? Ž¸”s
 
 	if(minval <= 2)
 	{
@@ -87,6 +109,7 @@ static void PrimeRange(uint64 minval, uint64 maxval, char *outFile, char *cancel
 //			errorCase(fprintf(fp, "%I64u\n", count) < 0);
 			WrUI64(fp, count);
 	}
+	WrUI64Flush(fp);
 	fileClose(fp);
 
 	handleWaitForever(reportMtx);
@@ -97,7 +120,7 @@ static void PrimeRange(uint64 minval, uint64 maxval, char *outFile, char *cancel
 	handleClose(reportEv);
 	handleClose(reportMtx);
 }
-int main(int argc, char **argv)
+static void Main2(void)
 {
 	if(argIs("/P"))
 	{
@@ -188,4 +211,38 @@ int main(int argc, char **argv)
 		}
 		return;
 	}
+	if(argIs("/C"))
+	{
+		uint64 minval;
+		uint64 maxval;
+		char *outFile;
+		uint64 value;
+		uint64 count = 0;
+
+		minval = toValue64(nextArg());
+		maxval = toValue64(nextArg());
+
+		if(hasArgs(1))
+			outFile = nextArg();
+		else
+			outFile = NULL;
+
+		m_minim(maxval, PRIME_MAX);
+
+		for(value = minval; value <= maxval; value++)
+			if(IsPrime_R(value))
+				count++;
+
+		cout("%I64u\n", count);
+
+		if(outFile)
+			writeOneLine_cx(outFile, xcout("%I64u", count));
+
+		return;
+	}
+}
+int main(int argc, char **argv)
+{
+	Main2();
+	termination(0);
 }
