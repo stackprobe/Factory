@@ -210,7 +210,7 @@ static void Main2(void)
 	char *pop;
 	char *op2;
 	char *ans;
-	int showMarumeFlag = 1;
+	int noShowMarume = 0;
 
 	InitMemory();
 
@@ -238,7 +238,7 @@ readArgs:
 	}
 	if(argIs("/-M"))
 	{
-		showMarumeFlag = 0;
+		noShowMarume = 1;
 		goto readArgs;
 	}
 
@@ -302,7 +302,7 @@ readArgs:
 		default:
 			error();
 		}
-		if(calcLastMarume && showMarumeFlag)
+		if(calcLastMarume && !noShowMarume)
 		{
 			char *tmp;
 
