@@ -16,10 +16,9 @@
 		‘Î”     -> 1 / 1                  ’[”Ø‚èÌ‚Ä, 0 ‚Ö‚ÌŠÛ‚ß
 
 	“Áê‚È‰ğ
-		x / 0 -> 0
-		x L 0 -> 0
-		x L 1 -> 0
-		0 L x -> 0
+		x / 0   -> 0
+		x L `1 -> 0
+		`1 L x -> 0
 		‘Î”‚Ì‰ğ‚ª2^32ˆÈã‚É‚È‚éê‡ -> •s’è
 */
 
@@ -747,12 +746,14 @@ uint calcLogarithm(char *line1, char *line2, uint radix) // line2: ’ê, set calcL
 
 	line1 = trimCalcLine(line1, radix);
 	line2 = trimCalcLine(line2, radix);
-	if(line1[0] == '-') eraseChar(line1); // line1 = abs(line1);
-	if(line2[0] == '-') eraseChar(line2); // line2 = abs(line2);
+//	if(line1[0] == '-') eraseChar(line1); // line1 = abs(line1);
+//	if(line2[0] == '-') eraseChar(line2); // line2 = abs(line2);
 
 	if(
-		!strcmp(line1, "0") || !strcmp(line1, "1") ||
-		!strcmp(line2, "0") || !strcmp(line2, "1")
+		compCalcLine(line1, "1", radix) <= 0 ||
+		compCalcLine(line2, "1", radix) <= 0
+//		!strcmp(line1, "0") || !strcmp(line1, "1") ||
+//		!strcmp(line2, "0") || !strcmp(line2, "1")
 		)
 	{
 		exponent = 0;

@@ -1,4 +1,8 @@
 /*
+	C:\Factory\Tools\Keisan.c ‚©‚ç•ª—£ @ 2015.7.6
+
+	----
+
 	12 * 34 + 56 / 78
 		Keisan.exe 12 * 34 = L ; 56 / 79 = R ; @L + @R
 		Keisan.exe 56 / 79 = R ; 12 * 34 + @R
@@ -210,7 +214,6 @@ static void Main2(void)
 	char *pop;
 	char *op2;
 	char *ans;
-	int noShowMarume = 0;
 
 	InitMemory();
 
@@ -236,11 +239,6 @@ readArgs:
 		calcBracketedDecimalMin = toValue(nextArg());
 		goto readArgs;
 	}
-	if(argIs("/-M"))
-	{
-		noShowMarume = 1;
-		goto readArgs;
-	}
 
 	op1 = strx(nextArg());
 
@@ -255,7 +253,6 @@ readArgs:
 			memFree(op2);
 			op2 = ans;
 		}
-		calcLastMarume = 0;
 	reopration:
 		switch(m_tolower(*pop))
 		{
@@ -302,20 +299,7 @@ readArgs:
 		default:
 			error();
 		}
-		if(calcLastMarume && !noShowMarume)
-		{
-			char *tmp;
-
-			if(strchr(ans, '.'))
-				tmp = xcout("%s*", ans);
-			else
-				tmp = xcout("%s.*", ans);
-
-			cout("%s\n", tmp);
-			memFree(tmp);
-		}
-		else
-			cout("%s\n", ans);
+		cout("%s\n", ans);
 
 		memFree(op1);
 		memFree(op2);
