@@ -14,6 +14,8 @@ extern uint calcRadix;
 extern uint calcBasement;
 extern uint calcBracketedDecimalMin;
 
+int calcLastMarume;
+
 calcOperand_t *addCalc(calcOperand_t *op1, calcOperand_t *op2);
 calcOperand_t *subCalc(calcOperand_t *op1, calcOperand_t *op2);
 calcOperand_t *mulCalc(calcOperand_t *op1, calcOperand_t *op2);

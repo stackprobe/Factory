@@ -10,7 +10,7 @@
 		Œ¸ŽZ     -> ŠÛ‚ß–³‚µ
 		æŽZ     -> ŠÛ‚ß–³‚µ
 		œŽZ     -> 1 / (radix ^ basement) ’[”Ø‚èŽÌ‚Ä, 0 ‚Ö‚ÌŠÛ‚ß
-		i”•ÏŠ· -> 1 / (radix ^ basement) ’[”Ø‚èŽÌ‚Ä, 0 ‚Ö‚ÌŠÛ‚ß
+		Šî”•ÏŠ· -> 1 / (radix ^ basement) ’[”Ø‚èŽÌ‚Ä, 0 ‚Ö‚ÌŠÛ‚ß
 		‚×‚«æ   -> ŠÛ‚ß–³‚µ
 		‚×‚«æª -> 1 / (radix ^ basement) ’[”Ø‚èŽÌ‚Ä, 0 ‚Ö‚ÌŠÛ‚ß
 		‘Î”     -> 1 / 1                  ’[”Ø‚èŽÌ‚Ä, 0 ‚Ö‚ÌŠÛ‚ß
@@ -31,6 +31,8 @@
 uint calcRadix = 10; // RADIX_MIN ` RADIX_MAX
 uint calcBasement;
 uint calcBracketedDecimalMin = 36; // 0 ` 36
+
+int calcLastMarume; // ? ÅŒã‚ÌuœŽZbŠî”•ÏŠ·b‚×‚«æªb‘Î”v‚ÅŠÛ‚ß‚ðs‚Á‚½B
 
 /*
 	“Á‚Éª‹’‚Ì–³‚¢ãŒÀ
@@ -222,7 +224,7 @@ calcOperand_t *mulCalc(calcOperand_t *op1, calcOperand_t *op2)
 	TrimOp(ans);
 	return ans;
 }
-calcOperand_t *divCalc(calcOperand_t *op1, calcOperand_t *op2)
+calcOperand_t *divCalc(calcOperand_t *op1, calcOperand_t *op2) // set calcLastMarume
 {
 	calcOperand_t *ans = makeCalcOperand("0");
 	uint shiftCnt;
@@ -230,6 +232,8 @@ calcOperand_t *divCalc(calcOperand_t *op1, calcOperand_t *op2)
 
 	errorCase(!CheckOp(op1));
 	errorCase(!CheckOp(op2));
+
+	calcLastMarume = 0;
 
 	TrimOp(op1);
 	TrimOp(op2);
@@ -280,6 +284,8 @@ calcOperand_t *divCalc(calcOperand_t *op1, calcOperand_t *op2)
 		}
 	}
 	ans->DecIndex = calcBasement;
+
+	calcLastMarume = getSize(op1->Figures);
 
 	releaseCalcOperand(op1);
 	releaseCalcOperand(op2);
@@ -509,7 +515,7 @@ sint compCalcLine(char *line1, char *line2, uint radix)
 
 	return ret;
 }
-char *changeRadixCalcLine(char *line, uint radix, uint newRadix, uint basement)
+char *changeRadixCalcLine(char *line, uint radix, uint newRadix, uint basement) // set calcLastMarume
 {
 	calcOperand_t *newRdxOp;
 	calcOperand_t *newOp;
@@ -591,8 +597,10 @@ char *changeRadixCalcLine(char *line, uint radix, uint newRadix, uint basement)
 	newOp->DecIndex = basement;
 	newOp->Sign = newSign;
 
-//	calcRadix = newRadix;
 	line = makeLineCalcOperand(newOp);
+
+//	calcRadix = newRadix;
+	calcLastMarume = getSize(op->Figures);
 
 	releaseCalcOperand(newRdxOp);
 	releaseCalcOperand(newOp);
@@ -623,7 +631,7 @@ char *calcPower(char *line, uint exponent, uint radix)
 	}
 	return ansLine;
 }
-char *calcRootPower(char *line, uint exponent, uint radix, uint basement)
+char *calcRootPower(char *line, uint exponent, uint radix, uint basement) // set calcLastMarume
 {
 	char *ansLine = strx("0");
 	char *expLine;
@@ -655,12 +663,18 @@ char *calcRootPower(char *line, uint exponent, uint radix, uint basement)
 		memFree(tmpLine);
 	}
 
+	calcLastMarume = 1;
+
 	while(strcmp(expLine, "0")) // ? expLine != 0
 	{
+		sint ret;
+
 		anxLine = calcLine(ansLine, '+', expLine, radix, 0);
 		tmpLine = calcPower(anxLine, exponent, radix);
 
-		if(compCalcLine(line, tmpLine, radix) == -1) // ? line < tmpLine
+		ret = compCalcLine(line, tmpLine, radix);
+
+		if(ret == -1) // ? line < tmpLine
 		{
 			memFree(anxLine);
 			memFree(tmpLine);
@@ -674,6 +688,12 @@ char *calcRootPower(char *line, uint exponent, uint radix, uint basement)
 			memFree(tmpLine);
 
 			ansLine = anxLine;
+
+			if(!ret)
+			{
+				calcLastMarume = 0;
+				break;
+			}
 		}
 	}
 	memFree(line);
@@ -683,14 +703,17 @@ char *calcRootPower(char *line, uint exponent, uint radix, uint basement)
 }
 static uint GetLogarithm(char *line1, char *line2, char **p_expLine, uint radix)
 {
-	char *pLine = calcLine(line2, '*', line2, radix, 0);
+	char *pLine;
 	char *qLine;
 	char *rLine;
 	uint exponent;
 
 	if(compCalcLine(line1, line2, radix) == -1) // ? line1 < line2
+	{
+		*p_expLine = NULL;
 		return 0;
-
+	}
+	pLine = calcLine(line2, '*', line2, radix, 0);
 	exponent = GetLogarithm(line1, pLine, &qLine, radix);
 
 	if(!exponent)
@@ -713,9 +736,9 @@ static uint GetLogarithm(char *line1, char *line2, char **p_expLine, uint radix)
 	*p_expLine = qLine;
 	return exponent;
 }
-uint calcLogarithm(char *line1, char *line2, uint radix) // line2: ’ê
+uint calcLogarithm(char *line1, char *line2, uint radix) // line2: ’ê, set calcLastMarume
 {
-	char *dummy;
+	char *expLine;
 	uint exponent;
 
 	errorCase(!line1);
@@ -733,11 +756,19 @@ uint calcLogarithm(char *line1, char *line2, uint radix) // line2: ’ê
 		)
 	{
 		exponent = 0;
+		calcLastMarume = 0;
 	}
 	else
 	{
-		exponent = GetLogarithm(line1, line2, &dummy, radix);
-		memFree(dummy);
+		exponent = GetLogarithm(line1, line2, &expLine, radix);
+
+		if(expLine)
+		{
+			calcLastMarume = strcmp(line1, expLine);
+			memFree(expLine);
+		}
+		else
+			calcLastMarume = 1;
 	}
 	memFree(line1);
 	memFree(line2);

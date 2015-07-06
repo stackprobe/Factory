@@ -210,6 +210,7 @@ static void Main2(void)
 	char *pop;
 	char *op2;
 	char *ans;
+	int showMarumeFlag = 1;
 
 	InitMemory();
 
@@ -235,6 +236,11 @@ readArgs:
 		calcBracketedDecimalMin = toValue(nextArg());
 		goto readArgs;
 	}
+	if(argIs("/-M"))
+	{
+		showMarumeFlag = 0;
+		goto readArgs;
+	}
 
 	op1 = strx(nextArg());
 
@@ -249,6 +255,7 @@ readArgs:
 			memFree(op2);
 			op2 = ans;
 		}
+		calcLastMarume = 0;
 	reopration:
 		switch(m_tolower(*pop))
 		{
@@ -295,7 +302,19 @@ readArgs:
 		default:
 			error();
 		}
-		cout("%s\n", ans);
+		if(calcLastMarume && showMarumeFlag)
+		{
+			char *tmp;
+
+			if(strchr(ans, '.'))
+				tmp = xcout("%s*", ans);
+			else
+				tmp = xcout("%s.*", ans);
+
+			cout("%s\n", tmp);
+		}
+		else
+			cout("%s\n", ans);
 
 		memFree(op1);
 		memFree(op2);
