@@ -23,10 +23,30 @@
 	bb.exe 入力ファイル 開始位置 バイト数
 
 		入力ファイルの「開始位置」から「バイト数」だけ16進数テキストとして標準出力する。
+		開始位置がファイルの終端を超える場合、何も出力しない。
+		バイト数が 0 か、ファイルの終端を超える場合、ファイルの終端まで。
 
 	bb.exe /RNG 入力ファイル 開始位置 バイト数 出力ファイル
 
 		入力ファイルの「開始位置」から「バイト数」だけ出力ファイルに出力する。
+		開始位置がファイルの終端を超える場合、何も出力しない。
+		バイト数が 0 か、ファイルの終端を超える場合、ファイルの終端まで。
+
+	bb.exe /MID 入力ファイル 開始位置 バイト数 [出力ファイル]
+
+		入力ファイルの「開始位置」から「バイト数」だけ「標準出力｜出力ファイル」に出力する。
+		開始位置がファイルの終端を超える場合、/TAIL と同じ。
+		バイト数が 0 か、ファイルの終端を超える場合、ファイルの終端まで。
+
+	bb.exe /HEAD 入力ファイル バイト数 [出力ファイル]
+
+		入力ファイルの先頭から「バイト数」だけ「標準出力｜出力ファイル」に出力する。
+		バイト数がファイルサイズより大きい場合、ファイル全体。
+
+	bb.exe /TAIL 入力ファイル バイト数 [出力ファイル]
+
+		入力ファイルの終端から「バイト数」だけ「標準出力｜出力ファイル」に出力する。
+		バイト数がファイルサイズより大きい場合、ファイル全体。
 
 	bb.exe 入力ファイル1 入力ファイル2
 
@@ -236,6 +256,61 @@ static void SimpleConvToBinary(char *file, char *outFile)
 	fileClose(fp);
 	fileClose(outFp);
 }
+static void DoMid(char *rFile, uint64 start, uint64 size, char *wFile) // wFile: NULL == stdout
+{
+	uint64 rFileSize = getFileSize(rFile);
+	uint64 count;
+	FILE *rfp;
+	FILE *wfp;
+
+	if(rFileSize < start)
+	{
+		m_minim(size, rFileSize);
+		start = rFileSize - size;
+	}
+	else
+		m_minim(size, rFileSize - start);
+
+	rfp = fileOpen(rFile, "rb");
+	fileSeek(rfp, SEEK_SET, start);
+
+	if(wFile)
+	{
+		cout("< %s\n", rFile);
+		cout("# %I64u, %I64u\n", start, size);
+		cout("> %s\n", wFile);
+
+		wfp = fileOpen(wFile, "wb");
+
+		for(count = 0; count < size; count++)
+		{
+			writeChar(wfp, readChar(rfp));
+		}
+		fileClose(wfp);
+	}
+	else
+	{
+		for(count = 0; count < size; count++)
+		{
+			int chr = readChar(rfp);
+			int lf;
+			int ret;
+
+			lf = chr == '\n';
+			m_toHalf(chr);
+
+			ret = putc(chr, stdout); // macro
+			errorCase(ret != chr);
+
+			if(lf)
+			{
+				ret = putc('\n', stdout); // macro
+				errorCase(ret != '\n');
+			}
+		}
+	}
+	fileClose(rfp);
+}
 
 int main(int argc, char **argv)
 {
@@ -329,6 +404,53 @@ int main(int argc, char **argv)
 		}
 		fileClose(rfp);
 		fileClose(wfp);
+		return;
+	}
+	if(argIs("/MID"))
+	{
+		char *rFile;
+		char *wFile = NULL;
+		uint64 start;
+		uint64 size;
+
+		rFile = nextArg();
+		start = toValue64(nextArg());
+		size = toValue64(nextArg());
+
+		if(hasArgs(1))
+			wFile = nextArg();
+
+		DoMid(rFile, start, size, wFile);
+		return;
+	}
+	if(argIs("/HEAD"))
+	{
+		char *rFile;
+		char *wFile = NULL;
+		uint64 size;
+
+		rFile = nextArg();
+		size = toValue64(nextArg());
+
+		if(hasArgs(1))
+			wFile = nextArg();
+
+		DoMid(rFile, 0, size, wFile);
+		return;
+	}
+	if(argIs("/TAIL"))
+	{
+		char *rFile;
+		char *wFile = NULL;
+		uint64 size;
+
+		rFile = nextArg();
+		size = toValue64(nextArg());
+
+		if(hasArgs(1))
+			wFile = nextArg();
+
+		DoMid(rFile, UINT64MAX, size, wFile);
 		return;
 	}
 	if(hasArgs(3))
