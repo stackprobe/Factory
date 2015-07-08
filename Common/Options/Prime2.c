@@ -27,13 +27,13 @@ static int GetPBit(uint prime)
 	uint bit;
 	uint index;
 
-	errorCase(prime % 2 == 0);
+//	errorCase(prime % 2 == 0);
 
 	bit = prime / 2;
 	index = bit / 32;
 	bit = bit % 32;
 
-	errorCase(PBIT_LEN <= index);
+//	errorCase(PBIT_LEN <= index);
 
 	return PBits[index] >> bit & 1;
 }

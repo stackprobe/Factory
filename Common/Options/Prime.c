@@ -31,7 +31,7 @@ static void SetPBit(uint prime, int flag)
 	uint index;
 	uint c;
 
-	errorCase(prime % 2 == 0);
+//	errorCase(prime % 2 == 0);
 
 	bit = prime / 2;
 	index = bit / 32;

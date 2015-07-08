@@ -1,6 +1,6 @@
 #include "C:\Factory\Common\all.h"
 
-static void Touch(char *file)
+static void Touch_File(char *file)
 {
 	stampData_t *sd = getStampDataTime(0);
 	uint64 stamp;
@@ -17,6 +17,22 @@ static void Touch(char *file)
 
 	setFileStamp(file, 0ui64, stamp, stamp);
 }
+static void Touch(char *path)
+{
+	if(existDir(path))
+	{
+		autoList_t *files = lssFiles(path);
+		char *file;
+		uint index;
+
+		foreach(files, file, index)
+			Touch_File(file);
+
+		releaseDim(files, 1);
+	}
+	else
+		Touch_File(path);
+}
 int main(int argc, char **argv)
 {
 	if(hasArgs(1))
@@ -31,7 +47,7 @@ int main(int argc, char **argv)
 	{
 		for(; ; )
 		{
-			Touch(c_dropFile());
+			Touch(c_dropDirFile());
 			cout("\n");
 		}
 	}
