@@ -21,7 +21,13 @@
 	‘Î”       L      ‘½”{’·   ‘½”{’·     10iuint   ®”,                   ­”‘æ 1 ˆÊˆÈ‰ºØ‚èŽÌ‚Ä
 	i”•ÏŠ·   X      ‘½”{’·   10iuint   ‘½”{’·     ­”‘æ basement ˆÊ‚Ü‚Å, ­”‘æ basement + 1 ˆÊˆÈ‰ºØ‚èŽÌ‚Ä
 
-	'10iuint' ‚Í RADIX ‚ÉŠÖ‚í‚ç‚¸ 10 i” 0 ` 4294967295
+	'10iuint' ‚Í radix, basement ‚ÉŠÖ‚í‚ç‚¸ 10 i” 0 ` 4294967295 ‚Ì®”
+
+	“ÁŽê‚È‰ð
+		x / 0   -> 0
+		`1 L x -> 0
+		x L `1 -> 0
+		‘Î”‚Ì‰ð‚ª 2^32 ˆÈã‚Ìê‡ -> •s’è
 */
 
 #include "C:\Factory\Common\all.h"
@@ -306,10 +312,10 @@ readArgs:
 		{
 			char *tmp;
 
-			if(strchr(ans, '.'))
-				tmp = xcout("%s*", ans);
+			if(m_tolower(*pop) == 'l')
+				tmp = calcLineToMarume(ans, 0);
 			else
-				tmp = xcout("%s.*", ans);
+				tmp = calcLineToMarume(ans, basement);
 
 			cout("%s\n", tmp);
 			memFree(tmp);

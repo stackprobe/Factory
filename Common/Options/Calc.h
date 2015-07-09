@@ -36,6 +36,8 @@ char *calcPower(char *line, uint exponent, uint radix);
 char *calcRootPower(char *line, uint exponent, uint radix, uint basement);
 uint calcLogarithm(char *line1, char *line2, uint radix);
 
+char *calcLineToMarume(char *line, uint basement);
+
 // _x
 char *calcLine_cx(char *line1, int operator, char *line2, uint radix, uint basement);
 char *calcLine_xc(char *line1, int operator, char *line2, uint radix, uint basement);

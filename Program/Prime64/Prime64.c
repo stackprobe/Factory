@@ -174,11 +174,21 @@ static void PrimeCount(uint64 minval, uint64 maxval, char *outFile, char *cancel
 	handleClose(reportEv);
 	handleClose(reportMtx);
 }
+static uint64 ToValue_Check(char *str)
+{
+	uint64 value = toValue64(str);
+	char *tmp;
+
+	tmp = xcout("%I64u", value);
+	errorCase_m(strcmp(str, tmp), "10進整数ではない又は値域外");
+	memFree(tmp);
+	return value;
+}
 static void Main2(void)
 {
 	if(argIs("/P"))
 	{
-		uint64 value = toValue64(nextArg());
+		uint64 value = ToValue_Check(nextArg());
 
 		if(IsPrime(value))
 			cout("IS_PRIME\n");
@@ -189,21 +199,21 @@ static void Main2(void)
 	}
 	if(argIs("/L"))
 	{
-		uint64 value = toValue64(nextArg());
+		uint64 value = ToValue_Check(nextArg());
 
 		cout("%I64u\n", GetLowPrime(value));
 		return;
 	}
 	if(argIs("/H"))
 	{
-		uint64 value = toValue64(nextArg());
+		uint64 value = ToValue_Check(nextArg());
 
 		cout("%I64u\n", GetHiPrime(value));
 		return;
 	}
 	if(argIs("/LH"))
 	{
-		uint64 value = toValue64(nextArg());
+		uint64 value = ToValue_Check(nextArg());
 
 		cout("%I64u\n", GetLowPrime(value));
 		cout("%I64u\n", GetHiPrime(value));
@@ -215,8 +225,8 @@ static void Main2(void)
 		uint64 maxval;
 		char *outFile;
 
-		minval = toValue64(nextArg());
-		maxval = toValue64(nextArg());
+		minval = ToValue_Check(nextArg());
+		maxval = ToValue_Check(nextArg());
 		outFile = nextArg();
 
 		PrimeRange(
@@ -253,7 +263,7 @@ static void Main2(void)
 	}
 	if(argIs("/F"))
 	{
-		uint64 value = toValue64(nextArg());
+		uint64 value = ToValue_Check(nextArg());
 		uint64 dest[64];
 		uint index;
 
@@ -273,8 +283,8 @@ static void Main2(void)
 		uint64 value;
 		uint64 count = 0;
 
-		minval = toValue64(nextArg());
-		maxval = toValue64(nextArg());
+		minval = ToValue_Check(nextArg());
+		maxval = ToValue_Check(nextArg());
 
 		if(hasArgs(1))
 			outFile = nextArg();
@@ -325,6 +335,7 @@ static void Main2(void)
 		PrimeCount(minval, maxval, outFile, cancelEvName, reportEvName, reportMtxName, reportFile);
 		return;
 	}
+	error_m("不明な引数");
 }
 int main(int argc, char **argv)
 {

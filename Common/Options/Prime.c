@@ -207,8 +207,8 @@ void Factorization(uint64 value, uint64 dest[64]) // dest: Å‘å 63 ŒÂ, ÅŒã‚Ì—v‘
 	}
 	else
 	{
-		uint64 denom; // maxDenom is max UINTMAX
-		uint maxDenom = iSqrt64(value);
+		uint64 denom; // maxDenom is max UINTMAX -> 18446744073709551557 ‚Æ‚© uint ‚¾‚Æ–³ŒÀƒ‹[ƒv‚É‚È‚é‹C‚ª‚·‚éB
+		uint maxDenom;
 
 		while(value % 2 == 0)
 		{
@@ -218,6 +218,8 @@ void Factorization(uint64 value, uint64 dest[64]) // dest: Å‘å 63 ŒÂ, ÅŒã‚Ì—v‘
 			if(value < 2)
 				goto value_one;
 		}
+		maxDenom = iSqrt64(value);
+
 		for(denom = 3; denom <= maxDenom; denom += 2)
 		{
 			if(IsPrime_32(denom))
@@ -229,6 +231,8 @@ void Factorization(uint64 value, uint64 dest[64]) // dest: Å‘å 63 ŒÂ, ÅŒã‚Ì—v‘
 
 					if(value < 2)
 						goto value_one;
+
+					maxDenom = iSqrt64(value);
 				}
 			}
 		}

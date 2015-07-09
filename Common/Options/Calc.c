@@ -777,6 +777,29 @@ uint calcLogarithm(char *line1, char *line2, uint radix) // line2: 底, set calcL
 	return exponent;
 }
 
+/*
+	表示用に丸めを行ったよに見える文字列にする。
+*/
+char *calcLineToMarume(char *line, uint basement)
+{
+	char *p;
+	uint bLen;
+
+	line = strx(line);
+	p = strchr(line, '.');
+
+	if(!p)
+	{
+		line = addChar(line, '.');
+		p = strchr(line, '.');
+	}
+	for(bLen = strlen(p + 1); bLen < basement; bLen++)
+		line = addChar(line, '0');
+
+	line = addChar(line, '*');
+	return line;
+}
+
 // _x
 char *calcLine_cx(char *line1, int operator, char *line2, uint radix, uint basement)
 {

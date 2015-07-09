@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 
 				if(cancelled)
 				{
-					cout("CANCELLED\n");
+					cout("íÜé~ÇµÇ‹ÇµÇΩÅB\n");
 					break;
 				}
 			}
