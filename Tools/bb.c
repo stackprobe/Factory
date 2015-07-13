@@ -11,11 +11,11 @@
 
 		エディタを開いて貼り付けた文字列のバイナリを標準出力する。
 
-	bb.exe (/SCT | /B2T) 入力ファイル [出力ファイル]
+	bb.exe (/SCT | /B2T | /B2H) 入力ファイル [出力ファイル]
 
 		入力ファイルのバイナリを「シンプルな」16進数テキストとして出力する。
 
-	bb.exe (/SCT | /T2B) 入力ファイル 出力ファイル
+	bb.exe (/SCT | /T2B | /H2B) 入力ファイル 出力ファイル
 
 		入力された16進数テキストをバイナリとして出力する。
 		入力は、アスキー文字 0123456789abcdefABCDEF 以外を無視して、2文字毎に連結してバイト値にする。
@@ -55,6 +55,14 @@
 	bb.exe 入力ファイル
 
 		入力ファイルのバイナリを16進数テキストとして標準出力する。
+
+	bb.exe /D
+
+		ドロップしたファイルのバイナリを16進数テキストとして標準出力する。
+
+	bb.exe
+
+		標準入力のバイナリを16進数テキストとして標準出力する。
 */
 
 #include "C:\Factory\Common\all.h"
@@ -192,9 +200,9 @@ reedit:
 	releaseDim(lines, 1);
 	releaseDim(edLines, 1);
 }
-static void DumpBinFile(char *file)
+static void DumpBinFile(char *file) // file == NULL のときは stdin から
 {
-	autoBlock_t *block = readBinary(file);
+	autoBlock_t *block = file ? readBinary(file) : readBinaryToEnd(stdin, NULL);
 	autoList_t *lines;
 	char *line;
 	uint index;
@@ -314,6 +322,8 @@ static void DoMid(char *rFile, uint64 start, uint64 size, char *wFile) // wFile:
 
 int main(int argc, char **argv)
 {
+	stdin_set_bin();
+
 	if(argIs("/C")) // drop and Compare
 	{
 		char *file1;
@@ -354,12 +364,12 @@ int main(int argc, char **argv)
 		memFree(file);
 		return;
 	}
-	if(argIs("/SCT") || argIs("/B2T")) // Simple Conversion (to Text), Binary To Hex-Text
+	if(argIs("/SCT") || argIs("/B2T") || argIs("/B2H")) // Simple Conversion (to Text), Binary To Hex-Text
 	{
 		SimpleConvToText(getArg(0), hasArgs(2) ? getArg(1) : NULL);
 		return;
 	}
-	if(argIs("/SCB") || argIs("/T2B")) // Simple Conversion (to Binary), Hex-Text To Binary
+	if(argIs("/SCB") || argIs("/T2B") || argIs("/H2B")) // Simple Conversion (to Binary), Hex-Text To Binary
 	{
 		SimpleConvToBinary(getArg(0), getArg(1));
 		return;
@@ -453,6 +463,11 @@ int main(int argc, char **argv)
 		DoMid(rFile, UINT64MAX, size, wFile);
 		return;
 	}
+	if(argIs("/D"))
+	{
+		DumpBinFile(c_dropFile());
+		return;
+	}
 	if(hasArgs(3))
 	{
 		char *file = getArg(0);
@@ -500,5 +515,5 @@ int main(int argc, char **argv)
 		DumpBinFile(nextArg());
 		return;
 	}
-	DumpBinFile(c_dropFile());
+	DumpBinFile(NULL);
 }

@@ -1,5 +1,14 @@
 #include "all.h"
 
+void stdin_set_bin(void)
+{
+	errorCase(_setmode(_fileno(stdin), _O_BINARY) == -1); // ? 失敗
+}
+void stdin_set_text(void) // テキストモードがデフォルトなので元に戻す。
+{
+	errorCase(_setmode(_fileno(stdin), _O_TEXT) == -1); // ? 失敗
+}
+
 static autoList_t *OpenedFPList;
 
 static void AddOpenedFP(FILE *fp)
@@ -194,6 +203,24 @@ autoBlock_t *readBinary(char *file)
 	fileClose(fp);
 
 	return fileImage;
+}
+autoBlock_t *readBinaryToEnd(FILE *fp, autoBlock_t *buff) // buff: NULL == 新しいバッファを生成, ret: buff
+{
+	errorCase(!fp); // 2bs
+
+	if(!buff)
+		buff = newBlock();
+
+	for(; ; )
+	{
+		autoBlock_t *tmp = readBinaryStream(fp, 1024 * 1024 * 16);
+
+		if(!tmp)
+			break;
+
+		ab_addBytes_x(buff, tmp);
+	}
+	return buff;
 }
 void writeBinaryBlock(FILE *fp, autoBlock_t *block) // getSize(block) == 0 でも可
 {

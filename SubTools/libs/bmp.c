@@ -1,6 +1,6 @@
 #include "bmp.h"
 
-#define PIXNUMMAX 0x50000000 // UINTMAX / 3 あたり、GetSizeImage() を考慮しただけ。
+#define PIXNUMMAX 0x55550000 // UINTMAX / 3 あたり、GetSizeImage() を考慮しただけ。
 
 static struct
 {
@@ -28,6 +28,9 @@ static struct
 }
 Bfi;
 
+/*
+	フォーマットエラー -> error();
+*/
 autoList_t *readBMPFile(char *file)
 {
 	FILE *fp = fileOpen(file, "rb");
@@ -38,17 +41,17 @@ autoList_t *readBMPFile(char *file)
 	uint y;
 	uint hiSign;
 
-	Bfh.Type = (uint)readValue64Width(fp, 2); // 'BM'
+	Bfh.Type = readValueWidth(fp, 2); // 'BM'
 	Bfh.Size = readValue(fp);
-	Bfh.Reserved_01 = (uint)readValue64Width(fp, 2);
-	Bfh.Reserved_02 = (uint)readValue64Width(fp, 2);
+	Bfh.Reserved_01 = readValueWidth(fp, 2);
+	Bfh.Reserved_02 = readValueWidth(fp, 2);
 	Bfh.OffBits = readValue(fp);
 
 	Bfi.Size = readValue(fp);
 	Bfi.Width = readValue(fp);
 	Bfi.Height = readValue(fp);
-	Bfi.Planes = (uint)readValue64Width(fp, 2);
-	Bfi.BitCount = (uint)readValue64Width(fp, 2);
+	Bfi.Planes = readValueWidth(fp, 2);
+	Bfi.BitCount = readValueWidth(fp, 2);
 	Bfi.Compression = readValue(fp);
 	Bfi.SizeImage = readValue(fp);
 	Bfi.XPelsPerMeter = readValue(fp);
@@ -65,7 +68,7 @@ autoList_t *readBMPFile(char *file)
 
 	errorCase(!Bfi.Width);
 	errorCase(!Bfi.Height);
-	errorCase(PIXNUMMAX / Bfi.Width < Bfi.Height);
+	errorCase(PIXNUMMAX / Bfi.Width < Bfi.Height); // XXX これ必要か？
 
 	switch(Bfi.BitCount)
 	{

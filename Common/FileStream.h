@@ -1,5 +1,8 @@
 #include "all.h"
 
+void stdin_set_bin(void);
+void stdin_set_text(void);
+
 void termination_fileCloseAll(void);
 
 FILE *rfopen(char *file, char *mode);
@@ -16,6 +19,7 @@ autoBlock_t *readBinaryStream(FILE *fp, uint size);
 autoBlock_t *readBinaryBlock(FILE *fp, uint size);
 autoBlock_t *neReadBinaryBlock(FILE *fp, uint size);
 autoBlock_t *readBinary(char *file);
+autoBlock_t *readBinaryToEnd(FILE *fp, autoBlock_t *buff);
 void writeBinaryBlock(FILE *fp, autoBlock_t *block);
 void writeBinary(char *file, autoBlock_t *block);
 void writeJoinBinary(char *file, autoBlock_t *block);

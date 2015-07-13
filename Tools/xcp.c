@@ -1,4 +1,8 @@
 /*
+	smpl -> zcp
+
+	----
+
 	xcp.exe [/C] [/V [/R]] SOURCE-DIR DESTINATION-DIR
 
 	SOURCE-DIR
