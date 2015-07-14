@@ -76,16 +76,18 @@ static void SavePBits(void)
 }
 static int LoadPBits(void)
 {
-	FILE *fp;
-	autoBlock_t gab;
-
-	if(!existFile(GetDatFile()))
-		return 0;
-
-	errorCase(getFileSize(GetDatFile()) != PBIT_LEN * sizeof(uint));
-
 	mutex();
 	{
+		FILE *fp;
+		autoBlock_t gab;
+
+		if(!existFile(GetDatFile()))
+		{
+			unmutex();
+			return 0;
+		}
+		errorCase(getFileSize(GetDatFile()) != PBIT_LEN * sizeof(uint));
+
 		fp = fileOpen(GetDatFile(), "rb");
 		fileRead(fp, gndBlockVar(PBits, PBIT_LEN * sizeof(uint), gab));
 		fileClose(fp);
