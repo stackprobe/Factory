@@ -1,13 +1,13 @@
 /*
-	bb.exe /C
+	bb.exe [/A] /C
 
 		ドロップした2つのファイルを比較する。
 
-	bb.exe /E [ファイル]
+	bb.exe [/A] /E [ファイル]
 
 		ファイルを閲覧・編集する。エディタで開く。
 
-	bb.exe /P
+	bb.exe [/A] /P
 
 		エディタを開いて貼り付けた文字列のバイナリを標準出力する。
 
@@ -48,44 +48,70 @@
 		入力ファイルの終端から「バイト数」だけ「標準出力｜出力ファイル」に出力する。
 		バイト数がファイルサイズより大きい場合、ファイル全体。
 
-	bb.exe 入力ファイル1 入力ファイル2
+	bb.exe [/A] 入力ファイル1 入力ファイル2
 
 		2つの入力ファイルを比較する。
 
-	bb.exe 入力ファイル
+	bb.exe [/A] 入力ファイル
 
 		入力ファイルのバイナリを16進数テキストとして標準出力する。
 
-	bb.exe /D
+	bb.exe [/A] /D
 
 		ドロップしたファイルのバイナリを16進数テキストとして標準出力する。
 
-	bb.exe
+	bb.exe [/A]
 
 		標準入力のバイナリを16進数テキストとして標準出力する。
 */
 
 #include "C:\Factory\Common\all.h"
 
+// ---- Bin_To_Text ----
+
 #define BYTE_PER_LINE 16
+#define TEXT_SEP_POS 61
+#define TEXT_SEP_CHAR '|'
+
+static int AppendTextMode;
 
 static autoList_t *BinToText(autoBlock_t *block)
 {
 	autoList_t *lines = newList();
 	uint index;
+	char text[BYTE_PER_LINE + 1];
 
 	for(index = 0; index < getSize(block); index += BYTE_PER_LINE)
 	{
 		char *line = xcout("%08x", index);
 		uint bidx;
+		char *text_p = text;
 
 		for(bidx = 0; bidx < BYTE_PER_LINE && index + bidx < getSize(block); bidx++)
 		{
+			int chr = getByte(block, index + bidx);
+
 			if(bidx == 0 || bidx == BYTE_PER_LINE / 2)
-			{
 				line = addChar(line, ' ');
-			}
-			line = addLine_x(line, xcout(" %02x", getByte(block, index + bidx)));
+
+			line = addLine_x(line, xcout(" %02x", chr));
+
+			if(chr == '\0')
+				chr = '_';
+
+			*text_p++ = chr;
+		}
+		if(AppendTextMode)
+		{
+			*text_p = '\0';
+			line2JLine(text, 1, 0, 0, 1);
+
+			while(strlen(line) < TEXT_SEP_POS)
+				line = addChar(line, ' ');
+
+			line = addChar(line, TEXT_SEP_CHAR);
+			line = addChar(line, ' ');
+			line = addLine(line, text);
 		}
 		addElement(lines, (uint)line);
 	}
@@ -105,6 +131,7 @@ static autoBlock_t *TextToBin(autoList_t *lines)
 	foreach(lines, line, index)
 	{
 		line = strx(line);
+		strchrEnd(line, TEXT_SEP_CHAR)[0] = '\0'; // @ AppendTextMode
 		removeChar(line, ' ');
 
 		if(!lineExp("<09afAF>", line) || strlen(line) < 8 || strlen(line) % 2 != 0)
@@ -117,6 +144,8 @@ static autoBlock_t *TextToBin(autoList_t *lines)
 	}
 	return block;
 }
+
+// ----
 
 static void CompareBinFile(char *file1, char *file2)
 {
@@ -323,6 +352,13 @@ static void DoMid(char *rFile, uint64 start, uint64 size, char *wFile) // wFile:
 int main(int argc, char **argv)
 {
 	stdin_set_bin();
+
+readArgs:
+	if(argIs("/A"))
+	{
+		AppendTextMode = 1;
+		goto readArgs;
+	}
 
 	if(argIs("/C")) // drop and Compare
 	{
