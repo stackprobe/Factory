@@ -239,8 +239,6 @@ void sockServerTh(void (*funcTransmit)(int, char *), uint portno, uint connectma
 	}
 	SockCleanup();
 
-	sockServerMode = 0;
-
 	memFree(TransInfos);
 	memFree(TransInfoStock);
 	memFree(TransInfoDead);
