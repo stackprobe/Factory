@@ -421,6 +421,8 @@ void sockServerEx(int (*funcPerform)(char *, char *),
 	errorCase(retval);
 
 	SockCleanup();
+
+	sockServerMode = 0;
 }
 void sockServer(int (*funcPerform)(char *, char *), uint portno, uint connectmax, uint64 uploadmax, int (*funcIdle)(void))
 {
