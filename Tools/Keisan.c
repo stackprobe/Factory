@@ -285,6 +285,7 @@ readArgs:
 				ans = calcLine(op1, '-', opm, radix, 0); // •„†‚Í op1 ‚Éˆê’v‚·‚éB
 				memFree(opd);
 				memFree(opm);
+				calcLastMarume = 0;
 			}
 			break;
 

@@ -67,6 +67,23 @@ static uint64 GetHiPrime(uint64 value)
 	}
 	return 0;
 }
+static int IsShortRange(uint64 minval, uint64 maxval)
+{
+	uint64 range = maxval - minval;
+	int ret;
+
+	ret =
+//		maxval < 11000000000 && range < 1100000 ||
+//		maxval < 110000000000 && range < 310000 ||
+		maxval < 1100000000000 && range < 110000 ||
+		maxval < 11000000000000 && range < 31000 ||
+		maxval < 110000000000000 && range < 11000 ||
+		maxval < 1100000000000000 && range < 3100 ||
+		maxval < 11000000000000000 && range < 1100;
+
+	cout("IsShortRange_ret: %d\n", ret);
+	return ret;
+}
 static void PrimeRange(uint64 minval, uint64 maxval, char *outFile, char *cancelEvName, char *reportEvName, char *reportMtxName, char *reportFile)
 {
 	FILE *fp = fileOpen(outFile, "wb");
@@ -75,7 +92,7 @@ static void PrimeRange(uint64 minval, uint64 maxval, char *outFile, char *cancel
 	uint reportMtx = mutexOpen(reportMtxName);
 	uint64 value;
 
-//	errorCase(setvbuf(fp, NULL, _IOFBF, 64 * 1024 * 1024)); // ? Ž¸”s
+//	errorCase(setvbuf(fp, NULL, _IOFBF, 64 * 1024 * 1024)); // ? Ž¸”s // old
 
 	if(minval <= 2)
 	{
@@ -89,26 +106,35 @@ static void PrimeRange(uint64 minval, uint64 maxval, char *outFile, char *cancel
 
 	m_minim(maxval, PRIME_MAX);
 
-	for(value = minval; value <= maxval; value += 2)
+	if(IsShortRange(minval, maxval))
 	{
-		if(value % 0x08000000 == 1)
+		for(value = minval; value <= maxval; value += 2)
+			if(IsPrime(value))
+				WrUI64(fp, value);
+	}
+	else
+	{
+		for(value = minval; value <= maxval; value += 2)
 		{
-			if(handleWaitForMillis(cancelEv, 0))
+			if(value % 0x08000000 == 1)
 			{
-				WrUI64Flush(fp);
-				errorCase(fprintf(fp, "’†Ž~‚µ‚Ü‚µ‚½B\n") < 0);
-				break;
+				if(handleWaitForMillis(cancelEv, 0))
+				{
+					WrUI64Flush(fp);
+					errorCase(fprintf(fp, "’†Ž~‚µ‚Ü‚µ‚½B\n") < 0);
+					break;
+				}
+
+				handleWaitForever(reportMtx);
+				writeOneLine_cx(reportFile, xcout("%I64u", value));
+				mutexRelease(reportMtx);
+
+				eventSet(reportEv);
 			}
-
-			handleWaitForever(reportMtx);
-			writeOneLine_cx(reportFile, xcout("%I64u", value));
-			mutexRelease(reportMtx);
-
-			eventSet(reportEv);
+			if(IsPrime_R(value))
+//				errorCase(fprintf(fp, "%I64u\n", value) < 0); // ’x‚¢I
+				WrUI64(fp, value);
 		}
-		if(IsPrime_R(value))
-//			errorCase(fprintf(fp, "%I64u\n", value) < 0);
-			WrUI64(fp, value);
 	}
 	WrUI64Flush(fp);
 	fileClose(fp);
@@ -144,24 +170,33 @@ static void PrimeCount(uint64 minval, uint64 maxval, char *outFile, char *cancel
 
 	m_minim(maxval, PRIME_MAX);
 
-	for(value = minval; value <= maxval; value += 2)
+	if(IsShortRange(minval, maxval))
 	{
-		if(value % 0x10000000 == 1)
+		for(value = minval; value <= maxval; value += 2)
+			if(IsPrime(value))
+				count++;
+	}
+	else
+	{
+		for(value = minval; value <= maxval; value += 2)
 		{
-			if(handleWaitForMillis(cancelEv, 0))
+			if(value % 0x10000000 == 1)
 			{
-				cancelled = 1;
-				break;
+				if(handleWaitForMillis(cancelEv, 0))
+				{
+					cancelled = 1;
+					break;
+				}
+
+				handleWaitForever(reportMtx);
+				writeOneLine_cx(reportFile, xcout("%I64u\n%I64u", value, count));
+				mutexRelease(reportMtx);
+
+				eventSet(reportEv);
 			}
-
-			handleWaitForever(reportMtx);
-			writeOneLine_cx(reportFile, xcout("%I64u\n%I64u", value, count));
-			mutexRelease(reportMtx);
-
-			eventSet(reportEv);
+			if(IsPrime_R(value))
+				count++;
 		}
-		if(IsPrime_R(value))
-			count++;
 	}
 	if(!cancelled)
 		writeOneLine_cx(outFile, xcout("%I64u", count));
@@ -184,6 +219,10 @@ static uint64 ToValue_Check(char *str)
 	memFree(tmp);
 	return value;
 }
+static void Values_CheckRange(uint64 minval, uint64 maxval)
+{
+	errorCase_m(maxval < minval, "Å¬’l‚ªÅ‘å’l‚æ‚è‘å‚«‚¢");
+}
 static void Main2(void)
 {
 	if(argIs("/P"))
@@ -195,6 +234,20 @@ static void Main2(void)
 		else
 			cout("IS_NOT_PRIME\n");
 
+		return;
+	}
+	if(argIs("/F"))
+	{
+		uint64 value = ToValue_Check(nextArg());
+		uint64 dest[64];
+		uint index;
+
+		Factorization(value, dest);
+
+		for(index = 0; dest[index] != 0; index++)
+		{
+			cout("%I64u\n", dest[index]);
+		}
 		return;
 	}
 	if(argIs("/L"))
@@ -229,6 +282,8 @@ static void Main2(void)
 		maxval = ToValue_Check(nextArg());
 		outFile = nextArg();
 
+		Values_CheckRange(minval, maxval);
+
 		PrimeRange(
 			minval,
 			maxval,
@@ -261,57 +316,27 @@ static void Main2(void)
 		PrimeRange(minval, maxval, outFile, cancelEvName, reportEvName, reportMtxName, reportFile);
 		return;
 	}
-	if(argIs("/F"))
-	{
-		uint64 value = ToValue_Check(nextArg());
-		uint64 dest[64];
-		uint index;
-
-		Factorization(value, dest);
-
-		for(index = 0; dest[index] != 0; index++)
-		{
-			cout("%I64u\n", dest[index]);
-		}
-		return;
-	}
 	if(argIs("/C"))
 	{
 		uint64 minval;
 		uint64 maxval;
 		char *outFile;
-		uint64 value;
-		uint64 count = 0;
 
 		minval = ToValue_Check(nextArg());
 		maxval = ToValue_Check(nextArg());
+		outFile = nextArg();
 
-		if(hasArgs(1))
-			outFile = nextArg();
-		else
-			outFile = NULL;
+		Values_CheckRange(minval, maxval);
 
-		if(minval <= 2)
-		{
-			if(2 <= maxval)
-				count++;
-
-			minval = 3;
-		}
-		else
-			minval |= 1;
-
-		m_minim(maxval, PRIME_MAX);
-
-		for(value = minval; value <= maxval; value += 2)
-			if(IsPrime_R(value))
-				count++;
-
-		cout("%I64u\n", count);
-
-		if(outFile)
-			writeOneLine_cx(outFile, xcout("%I64u", count));
-
+		PrimeCount(
+			minval,
+			maxval,
+			outFile,
+			DUMMY_UUID "_1",
+			DUMMY_UUID "_2",
+			DUMMY_UUID "_3",
+			makeTempFile("tmp")
+			);
 		return;
 	}
 	if(argIs("/C2"))

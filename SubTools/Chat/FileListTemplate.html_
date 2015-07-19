@@ -21,6 +21,8 @@ div
 	color: __TEXT-COLOR__;
 	font-family: "ƒƒCƒŠƒI";
 	white-space: nowrap;
+	margin-left: 0.5em;
+	line-height: 150%;
 }
 -->
 </STYLE>

@@ -120,15 +120,20 @@ static void PutPrimeFrom17(void)
 	uint maxPrime;
 	uint64 prime;
 
-	if(BaseNumb < UINT64MAX - PBIT_P_NUM) // fixme “K“–‚ÈˆÊ’u
+	cout("BaseNumb: %I64u\n", BaseNumb);
+
+	if(BaseNumb == (UINT64MAX / PBIT_P_NUM) * PBIT_P_NUM) // ? ÅŒã‚Ì”ÍˆÍ
 		maxNumb = UINT64MAX;
 	else
 		maxNumb = BaseNumb + PBIT_P_NUM - 1;
 
+	cout("maxNumb: %I64u\n", maxNumb);
 	maxPrime = iSqrt64(maxNumb);
 
 	if(maxPrime == UINTMAX) // UINTMAX is not prime
 		maxPrime = UINTMAX - 1;
+
+	cout("maxPrime: %u\n", maxPrime);
 
 	for(prime = 17; prime <= maxPrime; prime += 2)
 		if(IsPrime(prime))

@@ -17,6 +17,7 @@ static uint TimeLineSize;
 
 static autoList_t *Members;  // { Member_t * ... }
 static uint MemberTotalSize;
+static uint64 HeartbeatLoginLogoutSerial;
 
 // ---- remark ----
 
@@ -56,11 +57,15 @@ static void Member_Added(Member_t *i)
 {
 	MemberTotalSize += strlen(i->Ident);
 	MemberTotalSize += strlen(i->Message);
+
+	HeartbeatLoginLogoutSerial++;
 }
 static void Member_Removed(Member_t *i)
 {
 	MemberTotalSize -= strlen(i->Ident);
 	MemberTotalSize -= strlen(i->Message);
+
+	HeartbeatLoginLogoutSerial++;
 }
 static void ReleaseMember(Member_t *i)
 {
@@ -201,6 +206,12 @@ static int Perform(char *prmFile, char *ansFile)
 		Remark_t *remark;
 		uint remark_index;
 		autoBlock_t *buff = newBlock();
+
+		// extra data >
+
+		ab_addLine_x(buff, xcout("%I64u\n", HeartbeatLoginLogoutSerial));
+
+		// < extra data
 
 		cout("TIME-LINE %s -> %s\n", bgnStmp, endStmp);
 

@@ -1,10 +1,11 @@
 #include "Common.h"
 
+char *UTP_Path;
 int UTP_DownloadMode;
 int UTP_HtmlMode;
 int UTP_EndSlash;
 
-char *URLToPath(char *url) // ret: NULL == 不正なパス, 表示可能
+char *URLToPath(char *url) // ret: 表示可能, NULL == 不正なパス
 {
 	autoList_t *tokens;
 	char *token;
@@ -47,6 +48,9 @@ char *URLToPath(char *url) // ret: NULL == 不正なパス, 表示可能
 	}
 	else
 		UTP_EndSlash = 0;
+
+	memFree(UTP_Path);
+	UTP_Path = strx(url);
 
 	escapeYen(url);
 
@@ -95,8 +99,27 @@ char *URLToPath(char *url) // ret: NULL == 不正なパス, 表示可能
 	releaseDim(tokens, 1);
 	return path;
 }
-char *PathToURL(char *path)
+char *PathToURL(char *path) // ret: ファイル -> "/C$/abc/def.txt", ディレクトリ -> "/C$/abc/def/", ネットワーク -> "/$$/host/abc/def.txt"
 {
-	error(); // todo
-	return NULL;
+	if(startsWith(path, "\\\\")) // ? ネットワークパス
+	{
+		path = strx(path);
+		escapeYen(path);
+		path =insertLine(path, 1, "$$");
+	}
+	else
+	{
+		int dirFlag;
+
+		path = makeFullPath(path);
+		dirFlag = isAbsRootDir(path) || existDir(path);
+		escapeYen(path);
+		path[1] = '$';
+		path = insertChar(path, 0, '/');
+
+		if(dirFlag)
+			path = addChar(path, '/');
+	}
+	path = urlEncoder_x(path);
+	return path;
 }

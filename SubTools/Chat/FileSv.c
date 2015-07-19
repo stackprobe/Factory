@@ -1,7 +1,9 @@
 /*
-	FilerSv.exe [/S] [ポート番号]
+	FilerSv.exe [/S] [/CL リンク色] [/CB 背景色] [/CT 文字色] [/DD デフォルトDIR] [ポート番号]
 
 		/S ... 停止する。起動直後だと止まらないこともある。ポート番号の前であること。
+
+		デフォルトDIR ... ローカルのファイル・ディレクトリを指定すること。
 
 	----
 
@@ -194,6 +196,21 @@ static char *GetFileListTemplateHtml(void)
 	}
 	return template;
 }
+static char *GetFileListElementTemplateHtml(void)
+{
+	static char *template;
+
+	if(!template)
+	{
+		char *file = combine(getSelfDir(), "FileListElementTemplate.html_");
+
+		template = readText(file);
+		memFree(file);
+	}
+	return template;
+}
+// old
+/*
 static char *GetRandColor(uint hexlow, uint hexhi)
 {
 	char *str = strx("#999999");
@@ -204,10 +221,13 @@ static char *GetRandColor(uint hexlow, uint hexhi)
 
 	return str;
 }
+*/
 
-static char *B_LinkColor;
-static char *B_BackColor;
-static char *B_TextColor;
+static char *B_LinkColor = "#0080ff";
+static char *B_BackColor = "#ffffff";
+static char *B_TextColor = "#000000";
+
+static char *DefaultDir; // ローカル・フルパス
 
 static void Perform_FindPtn(ConnInfo_t *i, char *ttlPath, char *findPtn)
 {
@@ -222,14 +242,17 @@ static void Perform_FindPtn(ConnInfo_t *i, char *ttlPath, char *findPtn)
 		memFree(title);
 	}
 
+	// old
+	/*
 	if(!B_LinkColor) // ? not inited B_
 	{
 		mt19937_initRnd(crc32CheckLine(getEnvLine("COMPUTERNAME")));
 
-		B_LinkColor = GetRandColor(0xd, 0xf);
-		B_BackColor = GetRandColor(6, 9);
-		B_TextColor = GetRandColor(0, 2);
+		B_LinkColor = GetRandColor(0xb, 0xf);
+		B_BackColor = GetRandColor(6, 0xa);
+		B_TextColor = GetRandColor(0, 5);
 	}
+	*/
 
 	body = replaceLine(body, "__LINK-COLOR__", B_LinkColor, 0);
 	body = replaceLine(body, "__BACK-COLOR__", B_BackColor, 0);
@@ -246,16 +269,27 @@ static void Perform_FindPtn(ConnInfo_t *i, char *ttlPath, char *findPtn)
 		{
 			foreach(list, name, index)
 			{
+				char *element = GetFileListElementTemplateHtml();
 				char *info = getLine(TGFL_InfoList, index);
 
-				addElement(wLines, (uint)strx("<div>"));
-				addElement(wLines, (uint)xcout("<a href=\"%s\">%s</a>　%s", name, name, info));
-				addElement(wLines, (uint)strx("</div>"));
+				element = strx(element);
+
+				element = replaceLine(element, "__NAME__", name, 0);
+				element = replaceLine(element, "__INFO__", info, 0);
+
+				addElement(wLines, (uint)element);
+
+				// old
+				/*
+				addElement(wLines, (uint)strx("<DIV>"));
+				addElement(wLines, (uint)xcout("<A HREF=\"%s\">%s</A>　%s", name, name, info));
+				addElement(wLines, (uint)strx("</DIV>"));
+				*/
 			}
 		}
 		else
 		{
-			addElement(wLines, (uint)strx("<div>ファイルリストを取得できません。</div>"));
+			addElement(wLines, (uint)strx("<DIV>ファイルリストを取得できません。</DIV>"));
 		}
 		wText = untokenize(wLines, "\r\n");
 
@@ -279,7 +313,12 @@ static void Perform_FindPtn(ConnInfo_t *i, char *ttlPath, char *findPtn)
 }
 static void Perform_Dir(ConnInfo_t *i, char *dir)
 {
-	char *wCard = combine(dir, "*");
+	char *wCard = strx(dir);//combine(dir, "*"); // fixme: combine() はネットワークパスを考慮しない。
+
+	if(endsWith(wCard, "\\"))
+		wCard = addChar(wCard, '*');
+	else
+		wCard = addLine(wCard, "\\*");
 
 	Perform_FindPtn(i, dir, wCard);
 	memFree(wCard);
@@ -298,6 +337,23 @@ static int ParseHeaderTokens(ConnInfo_t *i, autoList_t *tokens)
 		if(!file)
 		{
 			cout("BAD URL\n");
+
+			if(UTP_Path[0] == '\0') // ? パスを指定しなかった。
+			{
+				char *redDir = PathToURL(DefaultDir);
+
+				cout("REDIRECT_1\n");
+
+				i->SendBuff = newBlock();
+
+				ab_addLine(i->SendBuff, "HTTP/1.1 302 REDIRECT\r\n");
+				ab_addLine_x(i->SendBuff, xcout("Location: %s\r\n", redDir));
+				ab_addLine(i->SendBuff, "Connection: close\r\n");
+				ab_addLine(i->SendBuff, "\r\n");
+
+				memFree(redDir);
+				return 1;
+			}
 			return 0;
 		}
 		cout("FILE: %s\n", file);
@@ -318,6 +374,23 @@ static int ParseHeaderTokens(ConnInfo_t *i, autoList_t *tokens)
 
 		if(!fp)
 		{
+			if(m_isalpha(file[0]) && existDir(file)) // ? ローカル && 存在するディレクトリ
+			{
+				char *redDir = PathToURL(file);
+
+				cout("REDIRECT_2\n");
+
+				i->SendBuff = newBlock();
+
+				ab_addLine(i->SendBuff, "HTTP/1.1 302 REDIRECT\r\n");
+				ab_addLine_x(i->SendBuff, xcout("Location: %s\r\n", redDir));
+				ab_addLine(i->SendBuff, "Connection: close\r\n");
+				ab_addLine(i->SendBuff, "\r\n");
+
+				memFree(redDir);
+				memFree(file);
+				return 1;
+			}
 			memFree(file);
 			return 0;
 		}
@@ -433,13 +506,42 @@ static int Idle(void)
 int main(int argc, char **argv)
 {
 	int stopFlag = 0;
-	uint portno = 60002;
+	uint portno = 80;//60002;
 
+readArgs:
 	if(argIs("/S"))
+	{
 		stopFlag = 1;
+		goto readArgs;
+	}
+	if(argIs("/CL"))
+	{
+		B_LinkColor = nextArg(); // ex. "#0080ff"
+		goto readArgs;
+	}
+	if(argIs("/CB"))
+	{
+		B_BackColor = nextArg(); // ex. "#0080ff"
+		goto readArgs;
+	}
+	if(argIs("/CT"))
+	{
+		B_TextColor = nextArg(); // ex. "#0080ff"
+		goto readArgs;
+	}
+	if(argIs("/DD"))
+	{
+		DefaultDir = nextArg();
+		goto readArgs;
+	}
 
 	if(hasArgs(1))
 		portno = toValue(nextArg());
+
+	if(!DefaultDir)
+		DefaultDir = getSelfDir();
+	else
+		DefaultDir = makeFullPath(DefaultDir);
 
 	StopEvName = xcout(STOP_EV_UUID "_%u", portno);
 
