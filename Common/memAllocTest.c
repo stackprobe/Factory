@@ -71,7 +71,7 @@ static void CheckAround(void)
 	}
 }
 
-#define MSIZEMAX 0x7fff0000
+#define MSIZEMAX SINTMAX
 
 static void *Inner_memAlloc(uint size)
 {

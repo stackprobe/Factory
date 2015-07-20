@@ -1,5 +1,6 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Prime2.h"
+#include "C:\Factory\Common\Options\csv.h"
 
 #define PRIME_MAX 18446744073709551557ui64 // uint64 最大の素数
 
@@ -223,6 +224,109 @@ static void Values_CheckRange(uint64 minval, uint64 maxval)
 {
 	errorCase_m(maxval < minval, "最小値が最大値より大きい");
 }
+static void DoBatch(int mode, char *rFile, char *wFile) // mode: "PFC"
+{
+	autoList_t *rCsv = readCSVFileTrim(rFile);
+	autoList_t *rRow;
+	uint rowidx;
+	autoList_t *wCsv = newList();
+
+	errorCase_m(!overwritable(wFile), "出力ファイルを作成できません。"); // テスト
+
+	foreach(rCsv, rRow, rowidx)
+	{
+		autoList_t *wRow = newList();
+
+		cout("%u 行目を処理しています...\n", rowidx + 1);
+
+		switch(mode)
+		{
+		case 'P': // Prime
+			{
+				uint64 value = ToValue_Check(getLine(rRow, 0));
+				char *ans;
+
+				cout("%I64u -> ", value);
+				addElement(wRow, (uint)xcout("%I64u", value));
+
+				if(IsPrime(value))
+					ans = "IS_PRIME";
+				else
+					ans = "IS_NOT_PRIME";
+
+				cout("%s\n", ans);
+				addElement(wRow, (uint)strx(ans));
+			}
+			break;
+
+		case 'F': // Factorization
+			{
+				uint64 value = ToValue_Check(getLine(rRow, 0));
+				uint64 factors[64];
+				uint64 *fp;
+
+				cout("%I64u ->", value);
+				addElement(wRow, (uint)xcout("%I64u", value));
+				Factorization(value, factors);
+
+				for(fp = factors; *fp; fp++)
+				{
+					cout(" %I64u", *fp);
+					addElement(wRow, (uint)xcout("%I64u", *fp));
+				}
+				cout("\n");
+			}
+			break;
+
+		case 'C': // Count
+			{
+				uint64 minval;
+				uint64 maxval;
+				char *outFile = makeTempFile("tmp");
+				char *tmpFile = makeTempFile("tmp");
+				char *line;
+
+				minval = ToValue_Check(getLine(rRow, 0));
+				maxval = ToValue_Check(getLine(rRow, 1));
+
+				Values_CheckRange(minval, maxval);
+
+				cout("%I64u to %I64u -> ", minval, maxval);
+
+				addElement(wRow, (uint)xcout("%I64u", minval));
+				addElement(wRow, (uint)xcout("%I64u", maxval));
+
+				PrimeCount(
+					minval,
+					maxval,
+					outFile,
+					DUMMY_UUID "_1",
+					DUMMY_UUID "_2",
+					DUMMY_UUID "_3",
+					tmpFile
+					);
+				line = readFirstLine(outFile);
+				removeFile(outFile);
+				cout("%s\n", line);
+				addElement(wRow, (uint)line);
+
+				memFree(outFile);
+				memFree(tmpFile);
+			}
+			break;
+
+		default:
+			error();
+		}
+		addElement(wCsv, (uint)wRow);
+	}
+	cout("全行処理しました。\n");
+
+	writeCSVFile(wFile, wCsv);
+
+	releaseDim(rCsv, 2);
+	releaseDim(wCsv, 2);
+}
 static void Main2(void)
 {
 	if(argIs("/P"))
@@ -358,6 +462,39 @@ static void Main2(void)
 		reportFile = nextArg();
 
 		PrimeCount(minval, maxval, outFile, cancelEvName, reportEvName, reportMtxName, reportFile);
+		return;
+	}
+	if(argIs("/BP"))
+	{
+		char *rFile;
+		char *wFile;
+
+		rFile = nextArg();
+		wFile = nextArg();
+
+		DoBatch('P', rFile, wFile);
+		return;
+	}
+	if(argIs("/BF"))
+	{
+		char *rFile;
+		char *wFile;
+
+		rFile = nextArg();
+		wFile = nextArg();
+
+		DoBatch('F', rFile, wFile);
+		return;
+	}
+	if(argIs("/BC"))
+	{
+		char *rFile;
+		char *wFile;
+
+		rFile = nextArg();
+		wFile = nextArg();
+
+		DoBatch('C', rFile, wFile);
 		return;
 	}
 	error_m("不明な引数");

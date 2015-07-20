@@ -325,15 +325,25 @@ static void Perform_Dir(ConnInfo_t *i, char *dir)
 }
 static int ParseHeaderTokens(ConnInfo_t *i, autoList_t *tokens)
 {
-	if(getCount(tokens) == 3 && !_stricmp("GET", getLine(tokens, 0)))
+	uint token_num = getCount(tokens);
+
+	if((token_num == 3 || token_num == 4) && !_stricmp("GET", getLine(tokens, 0)))
 	{
 		char *url = getLine(tokens, 1);
 		char *file;
+		char *url302Pfx = "";
 		FILE *fp;
 		char *contentType;
 
 		file = URLToPath(url);
 
+		if(token_num == 4)
+		{
+			url302Pfx = getLine(tokens, 3);
+			url302Pfx = strchrNext(url302Pfx, '=');
+			line2JLine(url302Pfx, 0, 0, 0, 0); // •\Ž¦‚Ì‚½‚ß
+			cout("šurl302Pfx: %s\n", url302Pfx);
+		}
 		if(!file)
 		{
 			cout("BAD URL\n");
@@ -347,7 +357,7 @@ static int ParseHeaderTokens(ConnInfo_t *i, autoList_t *tokens)
 				i->SendBuff = newBlock();
 
 				ab_addLine(i->SendBuff, "HTTP/1.1 302 REDIRECT\r\n");
-				ab_addLine_x(i->SendBuff, xcout("Location: %s\r\n", redDir));
+				ab_addLine_x(i->SendBuff, xcout("Location: %s%s\r\n", url302Pfx, redDir));
 				ab_addLine(i->SendBuff, "Connection: close\r\n");
 				ab_addLine(i->SendBuff, "\r\n");
 
@@ -383,7 +393,7 @@ static int ParseHeaderTokens(ConnInfo_t *i, autoList_t *tokens)
 				i->SendBuff = newBlock();
 
 				ab_addLine(i->SendBuff, "HTTP/1.1 302 REDIRECT\r\n");
-				ab_addLine_x(i->SendBuff, xcout("Location: %s\r\n", redDir));
+				ab_addLine_x(i->SendBuff, xcout("Location: %s%s\r\n", url302Pfx, redDir));
 				ab_addLine(i->SendBuff, "Connection: close\r\n");
 				ab_addLine(i->SendBuff, "\r\n");
 

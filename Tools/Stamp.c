@@ -105,10 +105,15 @@ static void ApplyStampList(char *stampListFile, char *dir)
 		cout("UPDATE TIME %I64u\n", updateTime);
 		cout("> %s\n", file);
 
-		/*
-			不正な日時は setFileStamp() 内で error() にしてくれるはず。
-		*/
-		setFileStamp(file, createTime, accessTime, updateTime);
+		if(existFile(file))
+		{
+			/*
+				不正な日時は setFileStamp() 内で error() にしてくれるはず。
+			*/
+			setFileStamp(file, createTime, accessTime, updateTime);
+		}
+		else
+			cout("ファイルが存在しないのでスキップします。\n");
 
 		releaseDim(tokens, 1);
 	}

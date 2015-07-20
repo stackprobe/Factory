@@ -57,15 +57,11 @@ static void Member_Added(Member_t *i)
 {
 	MemberTotalSize += strlen(i->Ident);
 	MemberTotalSize += strlen(i->Message);
-
-	HeartbeatLoginLogoutSerial++;
 }
 static void Member_Removed(Member_t *i)
 {
 	MemberTotalSize -= strlen(i->Ident);
 	MemberTotalSize -= strlen(i->Message);
-
-	HeartbeatLoginLogoutSerial++;
 }
 static void ReleaseMember(Member_t *i)
 {
@@ -249,6 +245,17 @@ static int Perform(char *prmFile, char *ansFile)
 		if(member)
 		{
 			Member_Removed(member);
+
+			if(strcmp(member->Message, message)) // ? メッセージが変更された。
+			{
+				cout("★★★ MESSAGE CHANGED [%s]\n", ident);
+
+				HeartbeatLoginLogoutSerial++;
+			}
+			else
+				cout("☆☆☆ message not changed [%s]\n", ident);
+
+			memFree(member->Message);
 			member->Message = strx(message);
 		}
 		else
@@ -259,6 +266,8 @@ static int Perform(char *prmFile, char *ansFile)
 			member->Ident = strx(ident);
 			member->Message = strx(message);
 			addElement(Members, (uint)member);
+
+			HeartbeatLoginLogoutSerial++;
 		}
 		member->LastTime = time(NULL);
 		Member_Added(member);
@@ -273,6 +282,8 @@ static int Perform(char *prmFile, char *ansFile)
 
 				ReleaseMember(member);
 				setElement(Members, index, 0);
+
+				HeartbeatLoginLogoutSerial++;
 			}
 		}
 		removeZero(Members);
@@ -298,6 +309,8 @@ static int Perform(char *prmFile, char *ansFile)
 
 			ReleaseMember(member);
 			fastDesertElement(Members, oldestPos);
+
+			HeartbeatLoginLogoutSerial++;
 		}
 
 		// ----
@@ -333,6 +346,8 @@ static int Perform(char *prmFile, char *ansFile)
 
 				ReleaseMember(member);
 				setElement(Members, index, 0);
+
+				HeartbeatLoginLogoutSerial++;
 			}
 		}
 		removeZero(Members);

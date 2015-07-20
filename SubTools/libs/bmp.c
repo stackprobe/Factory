@@ -1,6 +1,6 @@
 #include "bmp.h"
 
-#define PIXNUMMAX 0x55550000 // UINTMAX / 3 あたり、GetSizeImage() を考慮しただけ。
+#define PIXNUMMAX 0x50000000 // UINTMAX / 3 あたり、GetSizeImage() を考慮しただけ。
 
 static struct
 {
@@ -75,9 +75,7 @@ autoList_t *readBMPFile(char *file)
 	case 1: colPalCnt = 2; break;
 	case 4: colPalCnt = 16; break;
 	case 8: colPalCnt = 256; break;
-	case 24:
-		colPalCnt = 0;
-		break;
+	case 24: colPalCnt = 0; break;
 
 	default:
 		error();

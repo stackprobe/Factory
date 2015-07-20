@@ -1,5 +1,5 @@
 /*
-	zcp.exe [/F] [/M | /R] SOURCE-PATH DESTINATION-PATH
+	zcp.exe [/F] [/M | /R] [/EF] SOURCE-PATH DESTINATION-PATH
 
 		/F ... 強制モード
 
@@ -8,16 +8,38 @@
 		/M, /R ... 移動モード
 
 			コピー元を削除する。つまり移動する。
+
+		/EF ... 拡張子フィルタ
+
+			コピー先のファイル・ディレクトリ名の終端の '_' を除去する。
 */
 
 #include "C:\Factory\Common\all.h"
 
+static void E_Fltr(char *path)
+{
+	char *ext = getExt(path);
+
+	if(lineExp("<1,,09AZaz>_", ext))
+	{
+		char *newPath = strx(path);
+
+		strchr(newPath, '\0')[-1] = '\0';
+
+		cout("< %s\n", path);
+		cout("> %s\n", newPath);
+
+		moveFile(path, newPath);
+		memFree(newPath);
+	}
+}
 int main(int argc, char **argv)
 {
 	char *srcPath;
 	char *destPath;
 	int force_mode = 0;
 	int move_mode = 0;
+	int ef_mode = 0;
 
 readArgs:
 	if(argIs("/F"))
@@ -30,9 +52,24 @@ readArgs:
 		move_mode = 1;
 		goto readArgs;
 	}
+	if(argIs("/EF"))
+	{
+		ef_mode = 1;
+		goto readArgs;
+	}
 
-	srcPath = makeFullPath(nextArg());
-	destPath = makeFullPath(nextArg());
+	srcPath = nextArg();
+	destPath = nextArg();
+
+	/*
+		オプションを間違えた？ -> 念のため error
+	*/
+	errorCase(srcPath[0] == '/');
+	errorCase(destPath[0] == '/');
+	errorCase(hasArgs(1));
+
+	srcPath = makeFullPath(srcPath);
+	destPath = makeFullPath(destPath);
 
 	cout("< %s\n", srcPath);
 	cout("> %s\n", destPath);
@@ -78,6 +115,30 @@ readArgs:
 		else
 		{
 			copyDir(srcPath, destPath);
+		}
+	}
+
+	if(ef_mode)
+	{
+		cout("ef=%s\n", destPath);
+
+		if(existFile(destPath))
+		{
+			E_Fltr(destPath);
+		}
+		else
+		{
+			autoList_t *paths = lss(destPath);
+			char *path;
+			uint index;
+
+			reverseElements(paths);
+
+			foreach(paths, path, index)
+			{
+				E_Fltr(path);
+			}
+			releaseDim(paths, 1);
 		}
 	}
 

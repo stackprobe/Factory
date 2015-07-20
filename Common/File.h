@@ -32,6 +32,7 @@ void dirFileSort(autoList_t *paths);
 void dirFileSortDirCount(autoList_t *paths, uint dirCount);
 
 int creatable(char *path);
+int overwritable(char *path);
 void createDir(char *dir);
 void createFile(char *file);
 void createDirIfNotExist(char *dir);

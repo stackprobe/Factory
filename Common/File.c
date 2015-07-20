@@ -323,6 +323,10 @@ int creatable(char *path)
 	removeDir(path);
 	return 1;
 }
+int overwritable(char *path)
+{
+	return existFile(path) || creatable(path); // リードオンリーとかだったらダメだけど、まあいいや。
+}
 void createDir(char *dir)
 {
 	if(_mkdir(dir)) // ? 失敗

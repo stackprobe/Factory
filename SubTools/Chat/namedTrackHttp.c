@@ -25,6 +25,7 @@ static char *ChangeHeader(char *header) // ret: ? NULL == Ž¸”s
 	char *nameBgn;
 	char *nameEnd;
 	char *name;
+	char *url302Pfx;
 	char *ret = NULL;
 
 	method  = refLine(tokens, 0);
@@ -59,10 +60,13 @@ static char *ChangeHeader(char *header) // ret: ? NULL == Ž¸”s
 	copyLine(nameBgn, nameEnd + 1);
 
 	url = urlEncoder_x(url);
+	url302Pfx = urlEncoder(name);
 
-	ret = xcout("%s\r\n%s %s %s", name, method, url, httpVer);
+//	ret = xcout("%s\r\n%s %s %s", name, method, url, httpVer);
+	ret = xcout("%s\r\n%s %s %s URL302PFX=/%s", name, method, url, httpVer, url302Pfx);
 
 	memFree(name);
+	memFree(url302Pfx);
 endfunc:
 	releaseDim(tokens, 1);
 	memFree(url);
