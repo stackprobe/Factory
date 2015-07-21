@@ -1,6 +1,7 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Prime2.h"
 #include "C:\Factory\Common\Options\csv.h"
+#include "libs\UlamSpiral.h"
 
 #define PRIME_MAX 18446744073709551557ui64 // uint64 ç≈ëÂÇÃëfêî
 
@@ -495,6 +496,42 @@ static void Main2(void)
 		wFile = nextArg();
 
 		DoBatch('C', rFile, wFile);
+		return;
+	}
+	if(argIs("/US"))
+	{
+		sint64 l;
+		sint64 t;
+		sint64 r;
+		sint64 b;
+		uint primeColor;
+		uint notPrimeColor;
+		uint centerColor;
+		char *outBmpFile;
+
+		l = _atoi64(nextArg());
+		t = _atoi64(nextArg());
+		r = _atoi64(nextArg());
+		b = _atoi64(nextArg());
+		primeColor    = toValueDigits(nextArg(), hexadecimal);
+		notPrimeColor = toValueDigits(nextArg(), hexadecimal);
+		centerColor   = toValueDigits(nextArg(), hexadecimal);
+		outBmpFile = nextArg();
+
+		MakeUlamSpiral(
+			l,
+			t,
+			r,
+			b,
+			primeColor,
+			notPrimeColor,
+			centerColor,
+			outBmpFile,
+			DUMMY_UUID "_1",
+			DUMMY_UUID "_2",
+			DUMMY_UUID "_3",
+			makeTempFile("tmp")
+			);
 		return;
 	}
 	error_m("ïsñæÇ»à¯êî");
