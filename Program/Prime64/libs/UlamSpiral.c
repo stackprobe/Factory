@@ -177,7 +177,7 @@ void MakeUlamSpiral(
 
 	LOGPOS();
 }
-void MakeUlamSpiral_N(sint64 l, sint64 t, sint64 r, sint64 b, char *outCsvFile)
+void MakeUlamSpiral_Csv(sint64 l, sint64 t, sint64 r, sint64 b, int mode, char *outCsvFile) // mode: "NP"
 {
 	uint w;
 	uint h;
@@ -207,7 +207,19 @@ void MakeUlamSpiral_N(sint64 l, sint64 t, sint64 r, sint64 b, char *outCsvFile)
 			{
 				cout("ulam_csv %u %u now...\n", x, y);
 			}
-			addElement(row, (uint)xcout("%I64u", XYToNumb(l + x, t + y)));
+			switch(mode)
+			{
+			case 'N':
+				addElement(row, (uint)xcout("%I64u", XYToNumb(l + x, t + y)));
+				break;
+
+			case 'P':
+				addElement(row, (uint)(IsPrime(XYToNumb(l + x, t + y)) ? "1" : "0"));
+				break;
+
+			default:
+				error();
+			}
 		}
 		addElement(csv, (uint)row);
 	}

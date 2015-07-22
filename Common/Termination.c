@@ -48,7 +48,7 @@ void error2(char *source, uint lineno, char *function, char *message)
 	// 再帰防止
 	if(busy)
 	{
-		system("START ?_Double_Error"); // せめて何か出す。
+		system("START ?_Error_In_Error"); // せめて何か出す。
 		exit(2);
 	}
 	busy = 1;

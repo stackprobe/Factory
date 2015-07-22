@@ -20,4 +20,4 @@ void MakeUlamSpiral(
 	char *reportFile
 	);
 
-void MakeUlamSpiral_N(sint64 l, sint64 t, sint64 r, sint64 b, char *outCsvFile);
+void MakeUlamSpiral_Csv(sint64 l, sint64 t, sint64 r, sint64 b, int mode, char *outCsvFile);

@@ -534,7 +534,51 @@ static void Main2(void)
 			);
 		return;
 	}
-	if(argIs("/USN"))
+	if(argIs("/US2"))
+	{
+		sint64 l;
+		sint64 t;
+		sint64 r;
+		sint64 b;
+		uint primeColor;
+		uint notPrimeColor;
+		uint centerColor;
+		char *outBmpFile;
+		char *cancelEvName;
+		char *reportEvName;
+		char *reportMtxName;
+		char *reportFile;
+
+		l = _atoi64(nextArg());
+		t = _atoi64(nextArg());
+		r = _atoi64(nextArg());
+		b = _atoi64(nextArg());
+		primeColor    = toValueDigits(nextArg(), hexadecimal);
+		notPrimeColor = toValueDigits(nextArg(), hexadecimal);
+		centerColor   = toValueDigits(nextArg(), hexadecimal);
+		outBmpFile = nextArg();
+		cancelEvName = nextArg();
+		reportEvName = nextArg();
+		reportMtxName = nextArg();
+		reportFile = nextArg();
+
+		MakeUlamSpiral(
+			l,
+			t,
+			r,
+			b,
+			primeColor,
+			notPrimeColor,
+			centerColor,
+			outBmpFile,
+			cancelEvName,
+			reportEvName,
+			reportMtxName,
+			reportFile
+			);
+		return;
+	}
+	if(argIs("/USC"))
 	{
 		sint64 l;
 		sint64 t;
@@ -548,7 +592,24 @@ static void Main2(void)
 		b = _atoi64(nextArg());
 		outCsvFile = nextArg();
 
-		MakeUlamSpiral_N(l, t, r, b, outCsvFile);
+		MakeUlamSpiral_Csv(l, t, r, b, 'P', outCsvFile);
+		return;
+	}
+	if(argIs("/USCN"))
+	{
+		sint64 l;
+		sint64 t;
+		sint64 r;
+		sint64 b;
+		char *outCsvFile;
+
+		l = _atoi64(nextArg());
+		t = _atoi64(nextArg());
+		r = _atoi64(nextArg());
+		b = _atoi64(nextArg());
+		outCsvFile = nextArg();
+
+		MakeUlamSpiral_Csv(l, t, r, b, 'N', outCsvFile);
 		return;
 	}
 	error_m("ïsñæÇ»à¯êî");
