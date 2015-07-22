@@ -59,6 +59,7 @@ static void CheckFile(char *file)
 }
 
 static char *Conv_NewLine;
+static int UnsafeOverwriteMode;
 
 static void ConvFile(char *file)
 {
@@ -110,7 +111,11 @@ static void ConvFile(char *file)
 	fileClose(rfp);
 	fileClose(wfp);
 
-	semiRemovePath(file);
+	if(UnsafeOverwriteMode)
+		removeFile(file);
+	else
+		semiRemovePath(file);
+
 	moveFile(midFile, file);
 	memFree(midFile);
 }
@@ -138,6 +143,11 @@ readArgs:
 	if(argIs("/LF"))
 	{
 		Conv_NewLine = "\n";
+		goto readArgs;
+	}
+	if(argIs("/X"))
+	{
+		UnsafeOverwriteMode = 1;
 		goto readArgs;
 	}
 

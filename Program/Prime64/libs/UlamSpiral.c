@@ -10,6 +10,11 @@
 
 static void CheckLTRB(sint64 l, sint64 t, sint64 r, sint64 b)
 {
+	cout("l: %I64d\n", l);
+	cout("t: %I64d\n", t);
+	cout("r: %I64d\n", r);
+	cout("b: %I64d\n", b);
+
 	errorCase(r < l);
 	errorCase(b < t);
 	errorCase(l < X_MIN);
