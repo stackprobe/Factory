@@ -8,6 +8,17 @@
 #define Y_MIN -0x80000000i64
 #define Y_MAX  0x7fffffffi64
 
+static void CheckLTRB(sint64 l, sint64 t, sint64 r, sint64 b)
+{
+	errorCase(r < l);
+	errorCase(b < t);
+	errorCase(l < X_MIN);
+	errorCase(X_MAX < r);
+	errorCase(t < Y_MIN);
+	errorCase(Y_MAX < b);
+	errorCase(W_MAX <= r - l);
+	errorCase(H_MAX <= b - t);
+}
 static uint64 XYToNumb(sint64 x, sint64 y) // ret: 2^64 以上のとき 0 を返す。
 {
 	__int64 ax;
@@ -48,10 +59,10 @@ static uint64 XYToNumb(sint64 x, sint64 y) // ret: 2^64 以上のとき 0 を返す。
 	numb -= r * 2;
 
 	if(y <= -ax) // 上
-		return numb - (x - r);
+		return numb - (x - (-r));
 
 	numb -= r * 2;
-	return numb - (y - r); // 右
+	return numb - (y - (-r)); // 右
 }
 void MakeUlamSpiral(
 	sint64 l,
@@ -80,14 +91,7 @@ void MakeUlamSpiral(
 
 	LOGPOS();
 
-	errorCase(r < l);
-	errorCase(b < t);
-	errorCase(l < X_MIN);
-	errorCase(X_MAX < r);
-	errorCase(t < Y_MIN);
-	errorCase(Y_MAX < b);
-	errorCase(W_MAX <= r - l);
-	errorCase(H_MAX <= b - t);
+	CheckLTRB(l, t, r, b);
 	// primeColor
 	// notPrimeColor
 	// centerColor
@@ -165,6 +169,44 @@ void MakeUlamSpiral(
 	handleClose(cancelEv);
 	handleClose(reportEv);
 	handleClose(reportMtx);
+
+	LOGPOS();
+}
+void MakeUlamSpiral_N(sint64 l, sint64 t, sint64 r, sint64 b, char *outCsvFile)
+{
+	uint w;
+	uint h;
+	uint x;
+	uint y;
+	autoList_t *csv;
+
+	LOGPOS();
+
+	CheckLTRB(l, t, r, b);
+	errorCase(m_isEmpty(outCsvFile));
+
+	w = r - l + 1;
+	h = b - t + 1;
+
+	csv = newList();
+
+	for(y = 0; y < h; y++)
+	{
+		autoList_t *row = newList();
+
+		for(x = 0; x < w; x++)
+		{
+			static uint ps_nextSec;
+
+			if(x % 100 == 0 && pulseSec(10, &ps_nextSec))
+			{
+				cout("ulam_csv %u %u now...\n", x, y);
+			}
+			addElement(row, (uint)xcout("%I64u", XYToNumb(l + x, t + y)));
+		}
+		addElement(csv, (uint)row);
+	}
+	writeCSVFile_cx(outCsvFile, csv);
 
 	LOGPOS();
 }

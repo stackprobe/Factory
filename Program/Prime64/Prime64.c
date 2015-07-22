@@ -534,6 +534,23 @@ static void Main2(void)
 			);
 		return;
 	}
+	if(argIs("/USN"))
+	{
+		sint64 l;
+		sint64 t;
+		sint64 r;
+		sint64 b;
+		char *outCsvFile;
+
+		l = _atoi64(nextArg());
+		t = _atoi64(nextArg());
+		r = _atoi64(nextArg());
+		b = _atoi64(nextArg());
+		outCsvFile = nextArg();
+
+		MakeUlamSpiral_N(l, t, r, b, outCsvFile);
+		return;
+	}
 	error_m("ïsñæÇ»à¯êî");
 }
 int main(int argc, char **argv)
