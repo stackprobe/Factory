@@ -162,6 +162,13 @@ void MakeUlamSpiral(
 			}
 		}
 	}
+
+	handleWaitForever(reportMtx);
+	writeOneLine_cx(reportFile, xcout("%u\n%u\n%u\n%u", 0, h, w, h));
+	mutexRelease(reportMtx);
+
+	eventSet(reportEv);
+
 	writeBMPFile_cx(outBmpFile, bmp);
 
 cancelled:

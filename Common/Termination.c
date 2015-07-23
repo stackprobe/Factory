@@ -111,6 +111,12 @@ void error2(char *source, uint lineno, char *function, char *message)
 		memFree(strw);
 		memFree(mbMessage);
 
+		/*
+			@ 2015.7.23
+			このプロセスのメモリが逼迫している(2G近くになる)と、下の vbs が実行されないことがあるぽい。
+			system はちゃんとキックしてるぽい。
+		*/
+
 		if(isFactoryDirEnabled())
 			execute(vbsfile);
 		else

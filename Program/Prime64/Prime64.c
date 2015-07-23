@@ -251,9 +251,9 @@ static void DoBatch(int mode, char *rFile, char *wFile) // mode: "PFC"
 				addElement(wRow, (uint)xcout("%I64u", value));
 
 				if(IsPrime(value))
-					ans = "IS_PRIME";
+					ans = "1";
 				else
-					ans = "IS_NOT_PRIME";
+					ans = "0";
 
 				cout("%s\n", ans);
 				addElement(wRow, (uint)strx(ans));
