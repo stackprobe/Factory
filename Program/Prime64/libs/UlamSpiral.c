@@ -92,7 +92,6 @@ void MakeUlamSpiral(
 	uint x;
 	uint y;
 	autoList_t *bmp;
-	int cancelled = 0;
 
 	LOGPOS();
 
@@ -138,16 +137,15 @@ void MakeUlamSpiral(
 			uint64 numb;
 			static uint ps_nextSec;
 
-			if(x % 100 == 0 && pulseSec(10, &ps_nextSec))
+			if(pulseSec(2, &ps_nextSec))
 			{
 				if(handleWaitForMillis(cancelEv, 0))
 				{
-					cancelled = 1;
-					break;
+					goto cancelled;
 				}
 
 				handleWaitForever(reportMtx);
-				writeOneLine_cx(reportFile, xcout("%u\n%u\n%u\n%u", y, x, h, w));
+				writeOneLine_cx(reportFile, xcout("%u\n%u\n%u\n%u", x, y, w, h));
 				mutexRelease(reportMtx);
 
 				eventSet(reportEv);
@@ -164,9 +162,9 @@ void MakeUlamSpiral(
 			}
 		}
 	}
-	if(!cancelled)
-		writeBMPFile_cx(outBmpFile, bmp);
+	writeBMPFile_cx(outBmpFile, bmp);
 
+cancelled:
 	handleWaitForever(reportMtx);
 	removeFileIfExist(reportFile);
 	mutexRelease(reportMtx);
@@ -203,7 +201,7 @@ void MakeUlamSpiral_Csv(sint64 l, sint64 t, sint64 r, sint64 b, int mode, char *
 		{
 			static uint ps_nextSec;
 
-			if(x % 100 == 0 && pulseSec(10, &ps_nextSec))
+			if(pulseSec(2, &ps_nextSec))
 			{
 				cout("ulam_csv %u %u now...\n", x, y);
 			}
