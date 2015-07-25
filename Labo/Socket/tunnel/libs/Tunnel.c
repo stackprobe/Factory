@@ -15,6 +15,8 @@ static uint StopEventHdl;
 
 static void (*UserPerform)(int sock, int fwdSock);
 
+void (*TunnelKeyEvent)(int key) = (void (*)(int))noop_u;
+
 static void PerformTh(int sock, char *strip)
 {
 	uchar ip[4] = { 0 };
@@ -46,6 +48,12 @@ static int IdleTh(void)
 
 		if(key == '1')
 			setDefConsoleColor();
+
+		// ‚±‚ÌêŠ‚Å '0' ` '9' ‚ğ—\–ñ
+
+		// ENTER ‚Íg—p‚µ‚È‚¢‚±‚ÆI
+
+		TunnelKeyEvent(key);
 	}
 	if(handleWaitForMillis(StopEventHdl, 0)) // ? ’â~—v‹
 		ProcDeadFlag = 1;

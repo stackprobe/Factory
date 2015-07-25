@@ -8,6 +8,7 @@ extern char *FwdHost;
 extern uint FwdPortNo;
 extern uint ConnectMax;
 
+extern void (*TunnelKeyEvent)(int key);
 extern void (*TunnelPerformTh)(int sock, char *strip);
 
 void TunnelMain(int (*userReadArgs)(void), void (*userPerform)(int sock, int fwdSock), char *title, char *(*cb_getTitleSuffix)(void));

@@ -27,6 +27,20 @@ static char *OutputMode;
 static FILE *OutputFp;
 static int DirectionMode;
 
+static void Co_WriteLine(FILE *fp, char *line)
+{
+	cout("%s\n", line);
+	writeLine(fp, line);
+}
+static void KeyEvent(int key)
+{
+	if(key == '+' && OutputFp)
+	{
+		Co_WriteLine(OutputFp, "++++++++++++++++++++++++++");
+		Co_WriteLine(OutputFp, "++++++++++ PLUS ++++++++++");
+		Co_WriteLine(OutputFp, "++++++++++++++++++++++++++");
+	}
+}
 static void PrintDataFltr(autoBlock_t *buff, uint header)
 {
 	autoBlock_t *pBuff = newBlock();
@@ -37,8 +51,11 @@ static void PrintDataFltr(autoBlock_t *buff, uint header)
 		uint index;
 
 		if(OutputFp)
-			writeLine(OutputFp, (char *)header);
-
+		{
+			writeToken(OutputFp, (char *)header);
+			writeChar(OutputFp, ' ');
+			writeLine_x(OutputFp, makeJStamp(NULL, 1));
+		}
 		for(index = 0; index < getSize(buff); index++)
 		{
 			int chr = getByte(buff, index);
@@ -159,6 +176,7 @@ static int ReadArgs(void)
 }
 int main(int argc, char **argv)
 {
+	TunnelKeyEvent = KeyEvent;
 	TunnelMain(ReadArgs, Perform, "Tunnel", NULL);
 
 	if(OutputFp)

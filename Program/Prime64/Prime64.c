@@ -211,6 +211,9 @@ static void PrimeCount(uint64 minval, uint64 maxval, char *outFile, char *cancel
 	handleClose(reportEv);
 	handleClose(reportMtx);
 }
+
+// ---- check ----
+
 static uint64 ToValue_Check(char *str)
 {
 	uint64 value = toValue64(str);
@@ -225,6 +228,9 @@ static void Values_CheckRange(uint64 minval, uint64 maxval)
 {
 	errorCase_m(maxval < minval, "Å¬’l‚ªÅ‘å’l‚æ‚è‘å‚«‚¢");
 }
+
+// ----
+
 static void DoBatch(int mode, char *rFile, char *wFile) // mode: "PFC"
 {
 	autoList_t *rCsv = readCSVFileTrim(rFile);
@@ -265,10 +271,15 @@ static void DoBatch(int mode, char *rFile, char *wFile) // mode: "PFC"
 				uint64 value = ToValue_Check(getLine(rRow, 0));
 				uint64 factors[64];
 				uint64 *fp;
+				uint count;
 
 				cout("%I64u ->", value);
 				addElement(wRow, (uint)xcout("%I64u", value));
 				Factorization(value, factors);
+
+				for(count = 0; factors[count] != 0; count++);
+
+				addElement(wRow, (uint)xcout("%u", count));
 
 				for(fp = factors; *fp; fp++)
 				{
