@@ -107,7 +107,7 @@ void ReceptorLoopResFile(char *resFile, int (*perform)(char *prmFile, char *ansF
 	autoList_t *resLines;
 
 	if(!resFile)
-		resFile = "Adapter.cfg"; // default
+		resFile = "Adapter.conf"; // default
 
 	resLines = readResourceLines(innerResPathFltr(resFile));
 

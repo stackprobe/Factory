@@ -1,5 +1,5 @@
 /*
-	Adapter.cfg
+	Adapter.conf
 		ミューテックス名
 		イベント名_1
 		イベント名_2
