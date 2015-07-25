@@ -27,7 +27,7 @@ static char *OutputMode;
 static FILE *OutputFp;
 static int DirectionMode;
 
-static void Co_WriteLine(FILE *fp, char *line)
+static void Cout_WrLine(FILE *fp, char *line)
 {
 	cout("%s\n", line);
 	writeLine(fp, line);
@@ -36,9 +36,9 @@ static void KeyEvent(int key)
 {
 	if(key == '+' && OutputFp)
 	{
-		Co_WriteLine(OutputFp, "++++++++++++++++++++++++++");
-		Co_WriteLine(OutputFp, "++++++++++ PLUS ++++++++++");
-		Co_WriteLine(OutputFp, "++++++++++++++++++++++++++");
+		Cout_WrLine(OutputFp, "++++++++++++++++++++++++++");
+		Cout_WrLine(OutputFp, "++++++++++ PLUS ++++++++++");
+		Cout_WrLine(OutputFp, "++++++++++++++++++++++++++");
 	}
 }
 static void PrintDataFltr(autoBlock_t *buff, uint header)
