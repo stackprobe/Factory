@@ -54,6 +54,23 @@ static void Test_01(void)
 		UINT64MAX
 		);
 
+	// ----
+
+	DoTest(
+		UINT64MAX - 30100,
+		UINT64MAX - 30000
+		);
+	DoTest(
+		UINT64MAX - 20100,
+		UINT64MAX - 20000
+		);
+	DoTest(
+		UINT64MAX - 10100,
+		UINT64MAX - 10000
+		);
+
+	// ----
+
 	cout("OK!\n");
 }
 int main(int argc, char **argv)

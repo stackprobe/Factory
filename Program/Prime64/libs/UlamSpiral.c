@@ -8,6 +8,17 @@
 #define Y_MIN -0x80000000i64
 #define Y_MAX  0x7fffffffi64
 
+int US_OddMode;
+int US_OddUn5Mode;
+int US_Mul2Mode;
+int US_Mul3Mode;
+int US_Mul5Mode;
+int US_Mul7Mode;
+int US_Mul11Mode;
+int US_Mul13Mode;
+int US_Mul17Mode;
+int US_Mul19Mode;
+
 static void CheckLTRB(sint64 l, sint64 t, sint64 r, sint64 b)
 {
 	cout("l: %I64d\n", l);
@@ -24,7 +35,7 @@ static void CheckLTRB(sint64 l, sint64 t, sint64 r, sint64 b)
 	errorCase(W_MAX <= r - l);
 	errorCase(H_MAX <= b - t);
 }
-static uint64 XYToNumb(sint64 x, sint64 y) // ret: 2^64 以上のとき 0 を返す。
+static uint64 XYToNumb_True(sint64 x, sint64 y) // ret: 2^64 以上のとき 0 を返す。
 {
 	__int64 ax;
 	__int64 ay;
@@ -68,6 +79,26 @@ static uint64 XYToNumb(sint64 x, sint64 y) // ret: 2^64 以上のとき 0 を返す。
 
 	numb -= r * 2;
 	return numb - (y - (-r)); // 右
+}
+static uint64 XYToNumb(sint64 x, sint64 y)
+{
+	uint64 numb = XYToNumb_True(x, y);
+
+	if(US_OddMode)
+	{
+		if(m_isRange(numb, 1, 0x8000000000000000))
+			numb = (numb - 1) * 2 + 1;
+		else
+			numb = 0;
+	}
+	else if(US_OddUn5Mode)
+	{
+		if(m_isRange(numb, 1, 7378697629483820646))
+			numb = ((numb + (numb + 1) / 4) - 1) * 2 + 1;
+		else
+			numb = 0;
+	}
+	return numb;
 }
 void MakeUlamSpiral(
 	sint64 l,
@@ -152,7 +183,17 @@ void MakeUlamSpiral(
 			}
 			numb = XYToNumb(rx, ry);
 
-			if(numb == 1)
+			if(
+				numb == 1 ||
+				US_Mul2Mode && numb % 2 == 0 ||
+				US_Mul3Mode && numb % 3 == 0 ||
+				US_Mul5Mode && numb % 5 == 0 ||
+				US_Mul7Mode && numb % 7 == 0 ||
+				US_Mul11Mode && numb % 11 == 0 ||
+				US_Mul13Mode && numb % 13 == 0 ||
+				US_Mul17Mode && numb % 17 == 0 ||
+				US_Mul19Mode && numb % 19 == 0
+				)
 			{
 				setElement(row, x, centerColor);
 			}

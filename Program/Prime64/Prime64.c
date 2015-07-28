@@ -509,6 +509,63 @@ static void Main2(void)
 		DoBatch('C', rFile, wFile);
 		return;
 	}
+
+	// ---- us options ----
+
+us_readArgs:
+	if(argIs("/O"))
+	{
+		US_OddMode = 1;
+		goto us_readArgs;
+	}
+	if(argIs("/O-5"))
+	{
+		US_OddUn5Mode = 1;
+		goto us_readArgs;
+	}
+	if(argIs("/2"))
+	{
+		US_Mul2Mode = 1;
+		goto us_readArgs;
+	}
+	if(argIs("/3"))
+	{
+		US_Mul3Mode = 1;
+		goto us_readArgs;
+	}
+	if(argIs("/5"))
+	{
+		US_Mul5Mode = 1;
+		goto us_readArgs;
+	}
+	if(argIs("/7"))
+	{
+		US_Mul7Mode = 1;
+		goto us_readArgs;
+	}
+	if(argIs("/11"))
+	{
+		US_Mul11Mode = 1;
+		goto us_readArgs;
+	}
+	if(argIs("/13"))
+	{
+		US_Mul13Mode = 1;
+		goto us_readArgs;
+	}
+	if(argIs("/17"))
+	{
+		US_Mul17Mode = 1;
+		goto us_readArgs;
+	}
+	if(argIs("/19"))
+	{
+		US_Mul19Mode = 1;
+		goto us_readArgs;
+	}
+
+	// ----
+
 	if(argIs("/US"))
 	{
 		sint64 l;

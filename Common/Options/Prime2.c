@@ -2,19 +2,25 @@
 
 #if 1
 #define P13_LEN 15015
-#define P13_P_NUM 960960 // == P13_LEN * 64
-#define PBIT_LEN 61501440 // == P13_LEN * 4096
-#define PBIT_P_NUM 3936092160 // == PBIT_LEN * 64
-#else // test
-#define P13_LEN 15015
 #define P13_P_NUM (P13_LEN * 64)
-//#define PBIT_LEN  (P13_LEN * 256)
-//#define PBIT_LEN  (P13_LEN * 512)
-#define PBIT_LEN  (P13_LEN * 1024)
-//#define PBIT_LEN  (P13_LEN * 2048)
-//#define PBIT_LEN  (P13_LEN * 3072)
-//#define PBIT_LEN  (P13_LEN * 4096)
+
+//#define PBIT_LEN (P13_LEN * 16)
+//#define PBIT_LEN (P13_LEN * 32)
+//#define PBIT_LEN (P13_LEN * 64)
+//#define PBIT_LEN (P13_LEN * 128)
+//#define PBIT_LEN (P13_LEN * 256)
+//#define PBIT_LEN (P13_LEN * 512)
+//#define PBIT_LEN (P13_LEN * 1024)
+//#define PBIT_LEN (P13_LEN * 2048)
+//#define PBIT_LEN (P13_LEN * 3072)
+#define PBIT_LEN (P13_LEN * 4096)
+
 #define PBIT_P_NUM ((uint)PBIT_LEN * 64)
+#else
+#define P13_LEN 15015
+#define P13_P_NUM (P13_LEN * 64) // == 960960
+#define PBIT_LEN (P13_LEN * 4096) // == 61501440
+#define PBIT_P_NUM ((uint)PBIT_LEN * 64) // == 3936092160
 #endif
 
 // ---- PBit ----
@@ -84,7 +90,7 @@ static void PutPrimeTo13(void)
 		PutP13(primes[index]);
 
 	for(index = P13_LEN; index < PBIT_LEN; index++)
-		PBits[index] = PBits[index % P13_LEN];
+		PBits[index] = PBits[index - P13_LEN];
 }
 static void PutPrime(uint prime)
 {
