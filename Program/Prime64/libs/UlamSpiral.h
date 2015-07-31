@@ -7,14 +7,8 @@
 
 extern int US_OddMode;
 extern int US_OddUn5Mode;
-extern int US_Mul2Mode;
-extern int US_Mul3Mode;
-extern int US_Mul5Mode;
-extern int US_Mul7Mode;
-extern int US_Mul11Mode;
-extern int US_Mul13Mode;
-extern int US_Mul17Mode;
-extern int US_Mul19Mode;
+extern autoList_t *US_MulNumbs;
+extern autoList_t *US_MulColors;
 
 void MakeUlamSpiral(
 	sint64 l,

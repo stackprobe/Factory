@@ -10,15 +10,30 @@
 
 int US_OddMode;
 int US_OddUn5Mode;
-int US_Mul2Mode;
-int US_Mul3Mode;
-int US_Mul5Mode;
-int US_Mul7Mode;
-int US_Mul11Mode;
-int US_Mul13Mode;
-int US_Mul17Mode;
-int US_Mul19Mode;
+autoList_t *US_MulNumbs; // NULL == not inited
+autoList_t *US_MulColors;
 
+static uint LastMulColor;
+
+static int IsMulNumb(uint64 numb)
+{
+	if(US_MulNumbs)
+	{
+		uint index;
+		uint mulNumb;
+
+		foreach(US_MulNumbs, mulNumb, index)
+			if(numb % mulNumb == 0)
+				break;
+
+		if(index < getCount(US_MulNumbs))
+		{
+			LastMulColor = getElement(US_MulColors, index);
+			return 1;
+		}
+	}
+	return 0;
+}
 static void CheckLTRB(sint64 l, sint64 t, sint64 r, sint64 b)
 {
 	cout("l: %I64d\n", l);
@@ -136,6 +151,17 @@ void MakeUlamSpiral(
 	errorCase(m_isEmpty(reportMtxName));
 	errorCase(m_isEmpty(reportFile));
 
+	if(US_MulNumbs) // check US_MulNumbs, US_MulColors
+	{
+		uint mulNumb;
+		uint index;
+
+		errorCase(!US_MulColors);
+
+		foreach(US_MulNumbs, mulNumb, index)
+			errorCase(!mulNumb);
+	}
+
 	removeFileIfExist(outBmpFile);
 
 	cancelEv = eventOpen(cancelEvName);
@@ -183,19 +209,13 @@ void MakeUlamSpiral(
 			}
 			numb = XYToNumb(rx, ry);
 
-			if(
-				numb == 1 ||
-				US_Mul2Mode && numb % 2 == 0 ||
-				US_Mul3Mode && numb % 3 == 0 ||
-				US_Mul5Mode && numb % 5 == 0 ||
-				US_Mul7Mode && numb % 7 == 0 ||
-				US_Mul11Mode && numb % 11 == 0 ||
-				US_Mul13Mode && numb % 13 == 0 ||
-				US_Mul17Mode && numb % 17 == 0 ||
-				US_Mul19Mode && numb % 19 == 0
-				)
+			if(numb == 1)
 			{
 				setElement(row, x, centerColor);
+			}
+			else if(IsMulNumb(numb))
+			{
+				setElement(row, x, LastMulColor);
 			}
 			else if(IsPrime(numb))
 			{

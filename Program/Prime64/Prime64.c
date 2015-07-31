@@ -512,6 +512,9 @@ static void Main2(void)
 
 	// ---- us options ----
 
+	US_MulNumbs = newList();
+	US_MulColors = newList();
+
 us_readArgs:
 	if(argIs("/O"))
 	{
@@ -523,44 +526,18 @@ us_readArgs:
 		US_OddUn5Mode = 1;
 		goto us_readArgs;
 	}
-	if(argIs("/2"))
+	if(argIs("/M"))
 	{
-		US_Mul2Mode = 1;
-		goto us_readArgs;
-	}
-	if(argIs("/3"))
-	{
-		US_Mul3Mode = 1;
-		goto us_readArgs;
-	}
-	if(argIs("/5"))
-	{
-		US_Mul5Mode = 1;
-		goto us_readArgs;
-	}
-	if(argIs("/7"))
-	{
-		US_Mul7Mode = 1;
-		goto us_readArgs;
-	}
-	if(argIs("/11"))
-	{
-		US_Mul11Mode = 1;
-		goto us_readArgs;
-	}
-	if(argIs("/13"))
-	{
-		US_Mul13Mode = 1;
-		goto us_readArgs;
-	}
-	if(argIs("/17"))
-	{
-		US_Mul17Mode = 1;
-		goto us_readArgs;
-	}
-	if(argIs("/19"))
-	{
-		US_Mul19Mode = 1;
+		uint mulNumb;
+		uint mulColor;
+
+		mulNumb = toValue(nextArg());
+		mulColor = toValueDigits(nextArg(), hexadecimal);
+
+		errorCase(!mulNumb);
+
+		addElement(US_MulNumbs, mulNumb);
+		addElement(US_MulColors, mulColor);
 		goto us_readArgs;
 	}
 
