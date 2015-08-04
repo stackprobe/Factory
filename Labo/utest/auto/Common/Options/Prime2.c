@@ -1,6 +1,5 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Prime2.h"
-#include "C:\Factory\Common\Options\Random.h"
 
 #define PBIT_P_NUM 3936092160 // from Prime2.c
 
@@ -75,7 +74,5 @@ static void Test_01(void)
 }
 int main(int argc, char **argv)
 {
-	mt19937_initRnd(time(NULL));
-
 	Test_01();
 }
