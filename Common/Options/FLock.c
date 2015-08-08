@@ -1,5 +1,12 @@
 #include "FLock.h"
 
+FILE *FLockLoop(char *file)
+{
+	FILE *fp;
+
+	while(fp = FLock(file));
+	return fp;
+}
 FILE *FLock(char *file)
 {
 	FILE *fp = fileOpen(file, "rb");

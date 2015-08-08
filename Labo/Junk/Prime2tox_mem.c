@@ -4,7 +4,7 @@
 		最大値 ... 23～
 
 	最大値以下の素数を表示する。
-	メモリが充分にあれば Prime2tox_mem.exe 1700000000 くらいまでいけるはず。
+	メモリが十分にあれば Prime2tox_mem.exe 1700000000 くらいまでいけるはず。
 */
 
 #include "C:\Factory\Common\all.h"

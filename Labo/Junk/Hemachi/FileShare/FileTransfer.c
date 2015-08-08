@@ -331,7 +331,7 @@ static void DownloadFile(char *file, char *svrPath, int autoCreateParentMode)
 				ABC$DEF.dat
 		*/
 		if(existPath(file))
-			file = addExt(file, "overlapped"); // 上限は適当、重複は多くて１組なので１回の回避で充分だと思う。(ファイルが先だとアウト...)
+			file = addExt(file, "overlapped"); // 上限は適当、重複は多くて１組なので１回の回避で十分だと思う。(ファイルが先だとアウト...)
 
 		moveFile(midFile, file);
 		memFree(file);

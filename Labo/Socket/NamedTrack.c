@@ -409,7 +409,7 @@ static void RefluxPerform(uint connectmax)
 					SockSendLine(ss, TrackName);
 					ReleaseSockStream(ss);
 
-					retval = SockTransmit(sock, signal, 1, REFLUX_POLLING_CYCLE * 3, 0); // 鯖で2回待つので、3回分待てば充分でしょ。
+					retval = SockTransmit(sock, signal, 1, REFLUX_POLLING_CYCLE * 3, 0); // 鯖で2回待つので、3回分待てば十分でしょ。
 
 					if(retval == 1 && signal[0] == REFLUX_CONNECTED_SIGNAL)
 					{

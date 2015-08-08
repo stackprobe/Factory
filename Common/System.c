@@ -208,10 +208,10 @@ uint64 nextCommonCount(void)
 		counter = toValue64Digits_xc(makeCompactStamp(NULL), hexadecimal) << 8;
 		// ex. 1980/01/02 02:03:55 -> 0x1980010202035500
 	}
-	errorCase(counter == UINT64MAX); // カンスト
+	errorCase(counter == UINT64MAX); // カンスト..有り得ないだろうけど..
 
 	if(UINT64MAX / 2 < counter)
-		LOGPOS(); // カンスト注意
+		LOGPOS(); // カンスト注意..有り得ないだろうけど..
 
 	line = xcout("%I64u", counter + 1);
 	writeOneLine(FILE_SHARE_COUNTER, line);
@@ -223,11 +223,11 @@ uint64 nextCommonCount(void)
 }
 static char *c_GetTempSuffix(void)
 {
-	static char *result;
+	static char *ret;
 	static int useFactoryTmpDir;
 
-	if(result)
-		memFree(result);
+	if(ret)
+		memFree(ret);
 	else
 		useFactoryTmpDir = isFactoryDirEnabled() && existDir("C:\\Factory\\tmp");
 
@@ -237,24 +237,24 @@ static char *c_GetTempSuffix(void)
 		static uint64 pFATime;
 		static uint64 counter;
 
-		errorCase(counter == UINT64MAX); // カンスト
+		errorCase(counter == UINT64MAX); // カンスト..有り得ないだろうけど..
 
 		if(UINT64MAX / 2 < counter)
-			LOGPOS(); // カンスト注意
+			LOGPOS(); // カンスト注意..有り得ないだろうけど..
 
 		if(!pid)
 		{
 			pid = (uint)GetCurrentProcessId();
-			errorCase(!pid); // 0 -> System Idle Process
+			errorCase(!pid); // 0 == System Idle Process
 			pFATime = (uint64)time(NULL);
 		}
-		result = xcout("%x_%I64x_%I64x", pid, pFATime, counter);
+		ret = xcout("%x_%I64x_%I64x", pid, pFATime, counter);
 		counter++;
 	}
 	else
-		result = xcout("%I64x", nextCommonCount());
+		ret = xcout("%I64x", nextCommonCount());
 
-	return result;
+	return ret;
 }
 char *makeTempPath(char *ext) // ext: NULL ok
 {

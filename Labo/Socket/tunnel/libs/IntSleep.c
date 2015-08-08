@@ -98,10 +98,10 @@ void IntSleepInt(void) // ts_
 
 	critical();
 	{
-		errorCase(SerialNo == UINT64MAX); // カンスト
+		errorCase(SerialNo == UINT64MAX); // カンスト..有り得ないだろうけど..
 
 		if(UINT64MAX / 2 < SerialNo)
-			LOGPOS(); // カンスト注意
+			LOGPOS(); // カンスト注意..有り得ないだろうけど..
 
 		SerialNo++;
 
