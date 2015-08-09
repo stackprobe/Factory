@@ -1,9 +1,9 @@
 #include "C:\Factory\Common\all.h"
 #include "libs\bmptbl.h"
 
-static int SubMode = 'S'; // "SXB";
+static int MixMode = 'A'; // "ABSX";
 
-static void SubBmp(char *rFile1, char *rFile2, char *wFile)
+static void MixBmp(char *rFile1, char *rFile2, char *wFile)
 {
 	autoTable_t *bmp1 = tReadBMPFile(rFile1);
 	autoTable_t *bmp2 = tReadBMPFile(rFile2);
@@ -56,8 +56,20 @@ static void SubBmp(char *rFile1, char *rFile2, char *wFile)
 		cG2 = c2 >> 8 & 0xff;
 		cB2 = c2 & 0xff;
 
-		switch(SubMode)
+		switch(MixMode)
 		{
+		case 'A':
+			cR3 = (cR1 + cR2) / 2;
+			cG3 = (cG1 + cG2) / 2;
+			cB3 = (cB1 + cB2) / 2;
+			break;
+
+		case 'B':
+			cR3 = cR1 == cR2 ? 0 : 255;
+			cG3 = cG1 == cG2 ? 0 : 255;
+			cB3 = cB1 == cB2 ? 0 : 255;
+			break;
+
 		case 'S':
 			cR3 = cR1 + 0x100 - cR2 & 0xff;
 			cG3 = cG1 + 0x100 - cG2 & 0xff;
@@ -68,12 +80,6 @@ static void SubBmp(char *rFile1, char *rFile2, char *wFile)
 			cR3 = cR1 ^ cR2;
 			cG3 = cG1 ^ cG2;
 			cB3 = cB1 ^ cB2;
-			break;
-
-		case 'B':
-			cR3 = cR1 == cR2 ? 0 : 255;
-			cG3 = cG1 == cG2 ? 0 : 255;
-			cB3 = cB1 == cB2 ? 0 : 255;
 			break;
 
 		default:
@@ -88,13 +94,17 @@ static void SubBmp(char *rFile1, char *rFile2, char *wFile)
 }
 int main(int argc, char **argv)
 {
-	if(argIs("/X"))
-	{
-		SubMode = 'X';
-	}
 	if(argIs("/B"))
 	{
-		SubMode = 'B';
+		MixMode = 'B';
+	}
+	if(argIs("/S"))
+	{
+		MixMode = 'S';
+	}
+	if(argIs("/X"))
+	{
+		MixMode = 'X';
 	}
 
 	{
@@ -106,6 +116,6 @@ int main(int argc, char **argv)
 		rFile2 = nextArg();
 		wFile = nextArg();
 
-		SubBmp(rFile1, rFile2, wFile);
+		MixBmp(rFile1, rFile2, wFile);
 	}
 }
