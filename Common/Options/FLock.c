@@ -2,10 +2,18 @@
 
 FILE *FLockLoop(char *file)
 {
-	FILE *fp;
+	uint millis = 100;
 
-	while(fp = FLock(file));
-	return fp;
+	for(; ; )
+	{
+		FILE *fp = FLock(file);
+
+		if(fp)
+			return fp;
+
+		coSleep(millis + getCryptoRand16() % 2000);
+		millis = m_min(millis + 100, 5000);
+	}
 }
 FILE *FLock(char *file)
 {
