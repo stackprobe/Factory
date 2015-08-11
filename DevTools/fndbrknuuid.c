@@ -74,8 +74,9 @@ static int IsUUIDPoi(char *line)
 		if(lineExp("<>\"<>{}<>\"<>", line)) return 0;
 		if(lineExp("<>\"<>{ <>}<>\"<>", line)) return 0;
 		if(lineExp("<>\"<>{<> }<>\"<>", line)) return 0;
-		if(lineExp("<>\"<>{\"<>\"}<>\"<>", line)) return 0;
 		if(lineExp("<>\"<>{<,10,>}<>\"<>", line)) return 0;
+		if(lineExp("<>\"<>{\"<>\"}<>\"<>", line)) return 0;
+		if(lineExp("<>\"<>{\\\"<>\"}<>\"<>", line)) return 0;
 
 		return 1;
 	}
