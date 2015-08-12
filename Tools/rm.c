@@ -9,7 +9,7 @@
 
 	rm.exe ... /D [FILE-OR-DIR]
 
-		ファイルまたはディレクトリを削除する。
+		ファイルまたはディレクトリを削除する。無ければ何もしない。
 
 	rm.exe ... [DIR]
 
@@ -82,6 +82,11 @@ static void RemoveExOne(char *path)
 	uint geb;
 	autoList_t gab;
 
+	if(!existPath(path))
+	{
+		cout("指定されたパスが見つからないので、何もしません。\n");
+		return;
+	}
 	RemoveEx(gndOneElementVar((uint)path, geb, gab));
 }
 static void SelectRemoveEx(char *dir)
