@@ -1,2 +1,2 @@
-CALL clean_somefiles.bat
 CALL clean_temp.bat
+rem CALL clean_somefiles.bat
