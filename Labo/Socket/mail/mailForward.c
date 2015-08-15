@@ -342,13 +342,13 @@ static void RecvLoop(void)
 
 		currHTm = now() / 3600.0;
 
-		if(index || lastHTm < 0.0)
+		if(index) // ? 何かメールを受信した。
 			lastHTm = currHTm;
 
-		if(currHTm < lastHTm + 1.0) // ? 最後の受信からあまり経っていない。
-			waitMax = 3;
-		else
+		if(lastHTm + 1.0 < currHTm) // ? 最後の受信からかなり経った。
 			waitMax = 30;
+		else
+			waitMax = 3;
 
 		cout("lastHTm: %f\n", lastHTm);
 		cout("currHTm: %f\n", currHTm);
@@ -372,10 +372,6 @@ int main(int argc, char **argv)
 	SendOnlyMemberList = newList();
 
 readArgs:
-	if(argIs("/S")) // 停止
-	{
-
-	}
 	if(argIs("/PD")) // Pop server Domain
 	{
 		PopServer = nextArg();
