@@ -10,6 +10,14 @@ int lastSystemRet; // ? ! コマンドが正常に実行出来て 0 を返した。
 
 void execute(char *commandLine)
 {
+	if(startsWithICase(commandLine, "START")) // zantei
+	{
+		LOGPOS();
+		mutex();
+		sleep(2000);
+		unmutex();
+		LOGPOS();
+	}
 	lastSystemRet = system(commandLine);
 }
 void execute_x(char *commandLine)
@@ -542,10 +550,14 @@ void skipArg(uint count)
 {
 	for(; count; count--) nextArg();
 }
+/*
+	ret: 残りのコマンド引数の index 番目以降全てを返す。
+		index が残り個数と同じ場合 { } を返す。
+*/
 autoList_t *getFollowArgs(uint index)
 {
 	errorCase(getCount(GetArgs()) - ArgIndex < index);
-	return recreateAutoList((uint *)directGetList(GetArgs()) + ArgIndex + index, getCount(GetArgs()) - (ArgIndex + index));
+	return recreateAutoList((uint *)directGetList(GetArgs()) + ArgIndex + index, getCount(GetArgs()) - ArgIndex - index);
 }
 autoList_t *allArgs(void)
 {
