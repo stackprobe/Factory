@@ -69,7 +69,7 @@ static void MkBatUndone(void)
 
 		if(CountMode)
 		{
-			copyFile("C:\\Factory\\Labo\\Program\\Prime64\\sub\\Summary.exe", "Summary.exe");
+			copyFile("C:\\Factory\\Labo\\Tools\\Prime64\\sub\\Summary.exe", "Summary.exe");
 			coExecute("C:\\Factory\\SubTools\\EmbedConfig.exe --factory-dir-disabled Summary.exe");
 			writeOneLine("_Summary.bat", "Summary.exe out out\\_Summary.txt\nSTART out\\_Summary.txt");
 		}
