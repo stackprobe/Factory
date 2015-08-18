@@ -10,14 +10,6 @@ int lastSystemRet; // ? ! コマンドが正常に実行出来て 0 を返した。
 
 void execute(char *commandLine)
 {
-	if(startsWithICase(commandLine, "START")) // zantei
-	{
-		LOGPOS();
-		mutex();
-		sleep(2000);
-		unmutex();
-		LOGPOS();
-	}
 	lastSystemRet = system(commandLine);
 }
 void execute_x(char *commandLine)
