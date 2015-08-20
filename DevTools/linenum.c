@@ -1,24 +1,72 @@
 #include "C:\Factory\Common\all.h"
 
+static int SkipLine(FILE *fp)
+{
+	int chr = readChar(fp);
+
+	if(chr == EOF) // ? 0文字のEOFで終わる行 <- 行と見なさない。
+		return 0;
+
+	while(chr != '\n') // ? ! 改行
+	{
+		chr = readChar(fp);
+
+		if(chr == EOF) // ? 1文字以上のEOFで終わる行 <- 行と見なす。
+			break;
+	}
+	return 1;
+}
+static void LineMid(char *file, uint64 minLineNo, uint64 maxLineNo)
+{
+	FILE *fp = fileOpen(file, "rb");
+	uint64 lineNo = 1;
+
+	errorCase(minLineNo < 1);
+	errorCase(maxLineNo < minLineNo);
+
+	while(lineNo < minLineNo)
+	{
+		errorCase(!SkipLine(fp)); // ? 開始行より前にファイルが終了した。
+		lineNo++;
+	}
+	while(lineNo <= maxLineNo)
+	{
+		char *line = readLine(fp);
+
+		errorCase(!line); // ? 終了行より前にファイルが終了した。
+
+		cout("%s\n", line);
+		memFree(line);
+		lineNo++;
+	}
+	fileClose(fp);
+}
 static void LineNumMain(char *file)
 {
 	FILE *fp = fileOpen(file, "rb");
 	uint64 linenum = 0;
 
-	for(; ; )
+	while(SkipLine(fp))
 	{
-		char *line = readLine(fp);
-
-		if(!line)
-			break;
-
 		linenum++;
-		memFree(line);
 	}
 	cout("%I64u\n", linenum);
 	fileClose(fp);
 }
 int main(int argc, char **argv)
 {
+	if(argIs("/M"))
+	{
+		uint64 minLineNo;
+		uint64 maxLineNo;
+		char *file;
+
+		minLineNo = toValue64(nextArg());
+		maxLineNo = toValue64(nextArg());
+		file = nextArg();
+
+		LineMid(file, minLineNo, maxLineNo);
+		return;
+	}
 	LineNumMain(nextArg());
 }

@@ -23,6 +23,9 @@ static void CleanupGitDir(char *dir)
 
 		errorCase(path[0] == '.'); // ? 新しい git のファイルかしら？
 
+		if(path[0] == '_') // ? _doc とか
+			continue;
+
 		forceRemovePath(path);
 	}
 	releaseDim(paths, 1);
