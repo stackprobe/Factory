@@ -9,7 +9,7 @@
 #define HOSTLENMAX 300
 
 /*
-	NULL でなければヘッダの最初の行以外の行を addElement(, line) する。各行は lineToPrintLine() する。
+	NULL でなければ「最初の行を含む」全てのヘッダ行を addElement(, hdr_line) する。各行は lineToPrintLine() されている。
 	解放は呼び出し側で releaseDim(, 1); 相当を行うこと。
 	一時的な使用であるならば NULL に戻すことを忘れずに。
 */
@@ -42,6 +42,9 @@ void httpRecvRequestHeader(SockStream_t *i, char **pHeader, int *pChunked, uint 
 	}
 
 	header = SockRecvLine(i, HEADERLENMAX);
+
+	if(httpRecvedHeader)
+		addElement(httpRecvedHeader, (uint)lineToPrintLine(header, 0));
 
 	for(; ; )
 	{
@@ -108,9 +111,8 @@ void httpRecvRequestHeader(SockStream_t *i, char **pHeader, int *pChunked, uint 
 		}
 
 		if(httpRecvedHeader)
-		{
 			addElement(httpRecvedHeader, (uint)lineToPrintLine(line, 0));
-		}
+
 		memFree(line);
 	}
 	if(httpRecvRequestHostValue)
