@@ -73,6 +73,12 @@ static void MkBatUndone(void)
 			coExecute("C:\\Factory\\SubTools\\EmbedConfig.exe --factory-dir-disabled Summary.exe");
 			writeOneLine("_Summary.bat", "Summary.exe out out\\_Summary.txt\nSTART out\\_Summary.txt");
 		}
+		else
+		{
+			copyFile("C:\\Factory\\Labo\\Tools\\Prime64\\sub\\Join.exe", "Join.exe");
+			coExecute("C:\\Factory\\SubTools\\EmbedConfig.exe --factory-dir-disabled Join.exe");
+			writeOneLine("_Join.bat", "Join.exe out out\\_Join.txt\nSTART out"); // Ç≈Ç©âﬂÇ¨ÇƒäJÇØÇ»Ç¢ÅB
+		}
 		createDir("out");
 		createDir("tmp");
 	}
