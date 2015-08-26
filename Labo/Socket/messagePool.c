@@ -8,6 +8,8 @@
 		00000 からカウントを始め 99999 の次は 00000 とする。
 
 	起動したら http://localhost/ にアクセスしてみて下さい。
+
+	stdoutが喧しいけど、ウェイトちゃんと入れてないみたいなので、わかりやすいからこれでいいや。@ 2015.8.25
 */
 
 #include "C:\Factory\Common\Options\SockServer.h"
