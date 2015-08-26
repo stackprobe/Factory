@@ -93,6 +93,8 @@ char *repeatChar(int chr, uint num);
 char *charSetChar(char *chrs);
 char *kanjiPunch(char *str, int knjChr);
 void setStrLenMax(char *str, uint lenmax);
+void toAsciiLine(char *str, int okRet, int okTab, int okSpc);
+int isAsciiLine(char *str, int okRet, int okTab, int okSpc);
 
 // c_
 char *c_thousandComma(char *line);

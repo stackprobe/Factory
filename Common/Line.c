@@ -612,6 +612,53 @@ void setStrLenMax(char *str, uint lenmax)
 	if(lenmax < strlen(str))
 		str[lenmax] = '\0';
 }
+void toAsciiLine(char *str, int okRet, int okTab, int okSpc)
+{
+	char *p;
+
+	for(p = str; *p; p++)
+	{
+		if(*p == '\r') // CR-LF –”‚Í CR ‚ð LF ‚É‚·‚éB
+		{
+			if(p[1] == '\n')
+				copyLine(p, p + 1);
+			else
+				*p = '\n';
+
+			goto found_n;
+		}
+		else if(*p == '\n')
+		{
+		found_n:
+			if(!okRet) goto enc_chr;
+		}
+		else if(*p == '\t')
+		{
+			if(!okTab) goto enc_chr;
+		}
+		else if(*p == ' ')
+		{
+			if(!okSpc) goto enc_chr;
+		}
+		else if(m_isRange(*p, '\x21', '\x7e'))
+		{}
+		else
+		{
+		enc_chr:
+			*p = (*p & 0x1f) | 0xc0;
+		}
+	}
+}
+int isAsciiLine(char *str, int okRet, int okTab, int okSpc)
+{
+	char *tmp = strx(str);
+	int ret;
+
+	toAsciiLine(tmp, okRet, okTab, okSpc);
+	ret = !strcmp(tmp, str);
+	memFree(tmp);
+	return ret;
+}
 
 // c_
 char *c_thousandComma(char *line)
