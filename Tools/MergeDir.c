@@ -48,14 +48,15 @@ restart:
 	}
 
 	{
-		char *dir1 = getOutFile("s");
-		char *dir2 = getOutFile("m");
+		char *dir0 = getOutFile("1");
+		char *dir1;
+		char *dir2;
 		char *file;
 		uint index;
 
-		// 2Žü–Ú—p
-		forceRemoveDirIfExist(dir1);
-		forceRemoveDirIfExist(dir2);
+		dir0 = toCreatablePath(dir0, UINTMAX); // 2Žü–Ú—p
+		dir1 = combine(dir0, "s");
+		dir2 = combine(dir0, "m");
 
 		foreach(RWFiles, file, index)
 		{
@@ -77,8 +78,9 @@ restart:
 			memFree(file1);
 			memFree(file2);
 		}
-		openOutDir();
+		execute_x(xcout("START \"\" \"%s\"", dir0));
 
+		memFree(dir0);
 		memFree(dir1);
 		memFree(dir2);
 	}
