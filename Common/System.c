@@ -372,6 +372,12 @@ char *c_getOutFile(char *localFile)
 	memFree(outFile);
 	return outFile = getOutFile(localFile);
 }
+char *getOutFile_x(char *localFile)
+{
+	char *ret = getOutFile(localFile);
+	memFree(localFile);
+	return ret;
+}
 void openOutDir(void)
 {
 	execute_x(xcout("START %s", GetOutDir()));
