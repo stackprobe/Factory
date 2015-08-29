@@ -10,36 +10,35 @@
 */
 
 #include "C:\Factory\Common\all.h"
+#include "C:\Factory\SubTools\libs\crlf.h"
 
-#define CRLF_EXE_FILE "C:\\Factory\\Tools\\crlf.exe"
-#define CRLF_MAX_SIZE 20000000
+#define CRLF_CONV_SIZE_MAX 165000
 
 static char *RDir;
 static char *WDir;
 static autoList_t *RWFiles;
+
+// ---- DoSearch ----
 
 static int DS_IsSameFile(char *file1, char *file2)
 {
 	int ret;
 
 	if(
-		getFileSize(file1) < CRLF_MAX_SIZE &&
-		getFileSize(file2) < CRLF_MAX_SIZE
+		getFileSize(file1) < CRLF_CONV_SIZE_MAX &&
+		getFileSize(file2) < CRLF_CONV_SIZE_MAX
 		)
 	{
-		char *wkFile1 = makeTempPath(NULL);
-		char *wkFile2 = makeTempPath(NULL);
+		char *tmpFile1 = makeTempPath(NULL);
+		char *tmpFile2 = makeTempPath(NULL);
 
-		copyFile(file1, wkFile1);
-		copyFile(file2, wkFile2);
+		CRLF_ConvFile(file1, tmpFile1, "\n");
+		CRLF_ConvFile(file2, tmpFile2, "\n");
 
-		coExecute_x(xcout("START /B /WAIT \"\" \"%s\" /LF \"%s\"", CRLF_EXE_FILE, wkFile1));
-		coExecute_x(xcout("START /B /WAIT \"\" \"%s\" /LF \"%s\"", CRLF_EXE_FILE, wkFile2));
+		ret = isSameFile(tmpFile1, tmpFile2);
 
-		ret = isSameFile(wkFile1, wkFile2);
-
-		removeFile_x(wkFile1);
-		removeFile_x(wkFile2);
+		removeFile_x(tmpFile1);
+		removeFile_x(tmpFile2);
 	}
 	else
 		ret = isSameFile(file1, file2);
@@ -65,6 +64,39 @@ static void DoSearch(void)
 		memFree(wFile);
 	}
 	releaseDim(files, 1);
+}
+
+// ---- DoConfirm ----
+
+static void DC_DispRWFiles(void)
+{
+	char *file;
+	uint index;
+
+	foreach(RWFiles, file, index)
+	{
+		cout("[%u] %s\n", index + 1, file);
+
+		{
+			char *file1 = combine(RDir, file);
+			char *file2 = combine(WDir, file);
+
+			if(
+				existFile(file2) &&
+				getFileSize(file1) < CRLF_CONV_SIZE_MAX &&
+				getFileSize(file2) < CRLF_CONV_SIZE_MAX
+				)
+			{
+				uint top1 = CRLF_GetTopFile(file1);
+				uint top2 = CRLF_GetTopFile(file2);
+
+				if(top1 != top2)
+					cout("### 改行コードが違います。### %u %u\n", top1, top2);
+			}
+			memFree(file1);
+			memFree(file2);
+		}
+	}
 }
 static void DC_OutputDiff(int keepTree)
 {
@@ -138,40 +170,7 @@ restart:
 	cout("< %s\n", RDir);
 	cout("> %s\n", WDir);
 
-	{
-		char *file;
-		uint index;
-
-		foreach(RWFiles, file, index)
-		{
-			{
-				char *rFile = combine(RDir, file);
-				char *wFile = combine(WDir, file);
-
-				if(
-					existFile(wFile) &&
-					getFileSize(rFile) < CRLF_MAX_SIZE &&
-					getFileSize(wFile) < CRLF_MAX_SIZE
-					)
-				{
-					int r_nlt;
-					int w_nlt;
-
-					execute_x(xcout("START /B /WAIT \"\" \"%s\" \"%s\"", CRLF_EXE_FILE, rFile));
-					r_nlt = lastSystemRet;
-					execute_x(xcout("START /B /WAIT \"\" \"%s\" \"%s\"", CRLF_EXE_FILE, wFile));
-					w_nlt = lastSystemRet;
-
-					if(r_nlt != w_nlt)
-						cout("### 改行コードが違います。### %u -> %u", r_nlt, w_nlt);
-				}
-				memFree(rFile);
-				memFree(wFile);
-			}
-
-			cout("[%u] %s\n", index + 1, file);
-		}
-	}
+	DC_DispRWFiles();
 
 	cout("------------\n");
 	cout("ENTER = 続行\n");
@@ -217,6 +216,9 @@ restart:
 		memFree(line);
 	}
 }
+
+// ---- DoMerge ----
+
 static void DoMerge(void)
 {
 	char *file;
@@ -239,6 +241,8 @@ static void DoMerge(void)
 		copyFile(rFile, wFile);
 	}
 }
+
+// ----
 
 static void MergeDir(char *masterDir, char *slaveDir)
 {

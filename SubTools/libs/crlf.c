@@ -48,16 +48,33 @@ void CRLF_CheckFile(char *file, uint *p_num_cr, uint *p_num_crlf, uint *p_num_lf
 	if(p_num_crlf) *p_num_crlf = num_crlf;
 	if(p_num_lf)   *p_num_lf   = num_lf;
 }
+uint CRLF_GetTopFile(char *file)
+{
+	uint num_cr;
+	uint num_crlf;
+	uint num_lf;
+
+	CRLF_CheckFile(file, &num_cr, &num_crlf, &num_lf);
+
+	if(num_cr < num_lf)
+	{
+		if(num_crlf < num_lf)
+			return NEWLINE_LF;
+	}
+	else
+	{
+		if(num_crlf < num_cr)
+			return NEWLINE_CR;
+	}
+	return NEWLINE_CRLF;
+}
 void CRLF_ConvFile(char *rFile, char *wFile, char *newLine) // newLine: "\r", "\r\n", "\n", etc.
 {
-	FILE *rfp;
-	FILE *wfp;
+	FILE *rfp = fileOpen(rFile, "rb");
+	FILE *wfp = fileOpen(wFile, "wb");
 	int backed = 0;
 	int backedChr;
 	int chr;
-
-	rfp = fileOpen(rFile, "rb");
-	wfp = fileOpen(wFile, "wb");
 
 	for(; ; )
 	{
