@@ -292,7 +292,7 @@ int main(int argc, char **argv)
 	errorCase(!existFile(ZIP7_LOCAL_FILE) && !existFile(ZIP7_FILE));
 
 	/*
-		パスはこの関数内でフルパスにすること。
+		★★★ パスはこの関数内でフルパスにすること。★★★
 	*/
 
 	if(argIs("/P"))
