@@ -107,7 +107,7 @@ static void TryRenumber(Frtwv_t *i)
 	}
 }
 
-void Frtwv_Send(Frtwv_t *i, void *data, uint depth)
+void Frtwv_SendOL(Frtwv_t *i, void *data, uint depth)
 {
 	autoBlock_t *sendData;
 
@@ -116,10 +116,10 @@ void Frtwv_Send(Frtwv_t *i, void *data, uint depth)
 	// depth
 
 	sendData = Stllt_Serializer(data, depth);
-	Frtwv_SendSD(i, sendData);
+	Frtwv_Send(i, sendData);
 	releaseAutoBlock(sendData);
 }
-void Frtwv_SendSD(Frtwv_t *i, autoBlock_t *sendData)
+void Frtwv_Send(Frtwv_t *i, autoBlock_t *sendData)
 {
 	errorCase(!i);
 	errorCase(!sendData);
@@ -143,7 +143,7 @@ void Frtwv_SendSD(Frtwv_t *i, autoBlock_t *sendData)
 	eventSet(i->MessagePostEvent);
 }
 
-void *Frtwv_Recv(Frtwv_t *i, uint depth, uint millis)
+void *Frtwv_RecvOL(Frtwv_t *i, uint depth, uint millis)
 {
 	autoBlock_t *recvData;
 	void *ret;
@@ -151,7 +151,7 @@ void *Frtwv_Recv(Frtwv_t *i, uint depth, uint millis)
 	errorCase(!i);
 	// depth
 
-	recvData = Frtwv_RecvSD(i, millis);
+	recvData = Frtwv_Recv(i, millis);
 	ret = Stllt_Deserializer(recvData, depth);
 	releaseAutoBlock(recvData);
 	return ret;
@@ -180,7 +180,7 @@ static autoBlock_t *TryRecv(Frtwv_t *i)
 
 	return recvData;
 }
-autoBlock_t *Frtwv_RecvSD(Frtwv_t *i, uint millis)
+autoBlock_t *Frtwv_Recv(Frtwv_t *i, uint millis)
 {
 	autoBlock_t *recvData;
 

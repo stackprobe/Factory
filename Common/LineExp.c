@@ -7,7 +7,7 @@
 	<,max,RANGES>    - 0 ～ max
 	<min,max,RANGES> - min ～ max (min <= max)
 
-	RANGES 省略時は全マッチ (\x01\xffと同じ)
+	RANGES が空文字列のときは全マッチ (\x01\xffと同じ) ex. <10,> ... 10バイトのあらゆる文字列
 
 	エスケープ
 

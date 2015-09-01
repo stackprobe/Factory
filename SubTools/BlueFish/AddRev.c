@@ -1,5 +1,7 @@
 #include "C:\Factory\Common\all.h"
 
+#define REV_MAX 100
+
 static int IsAsciiStr(char *str)
 {
 	char *p;
@@ -23,6 +25,26 @@ static char *GetRevision(void)
 	removeFile(file);
 	memFree(file);
 	return revision;
+}
+static void TrimRev(char *appDir)
+{
+	autoList_t *revDirs = lsDirs(appDir);
+
+	sortJLinesICase(revDirs);
+	reverseElements(revDirs); // 終端 == 最も旧いリビジョン
+
+	while(REV_MAX < getCount(revDirs))
+	{
+		char *revDir = (char *)unaddElement(revDirs); // 最も旧いリビジョンを取り出す。
+
+		cout("[DEL_REV] %s\n", revDir);
+
+		errorCase(!lineExp("<4,09>.<3,09>.<5,09>", getLocal(revDir))); // 2bs
+
+		forceRemoveDir(revDir);
+		memFree(revDir);
+	}
+	releaseDim(revDirs, 1);
 }
 static void AddRev_File(char *arcFile, char *docRoot)
 {
@@ -65,6 +87,8 @@ static void AddRev_File(char *arcFile, char *docRoot)
 	moveFile(arcFile, wFile);
 
 	cout("★★★移動しました★★★\n");
+
+	TrimRev(appDir);
 
 endFunc:
 	memFree(appName);
