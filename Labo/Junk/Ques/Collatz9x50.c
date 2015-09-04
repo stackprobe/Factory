@@ -23,5 +23,5 @@ int main(int argc, char **argv)
 			numb = calc_xc(numb, '*', "0.5");
 	}
 	memFree(numb);
-	memFree(0); // dbg
+	termination(0); // mem_dbg
 }

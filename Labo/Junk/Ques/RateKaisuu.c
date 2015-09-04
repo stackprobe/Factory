@@ -1,5 +1,7 @@
 /*
 	n回に1回起こる現象が平均何回の試行で起こるか？
+
+	-> n回ぽい。
 */
 
 #include "C:\Factory\Common\all.h"
