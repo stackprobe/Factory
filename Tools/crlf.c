@@ -1,5 +1,5 @@
 /*
-	crlf.exe [/CR | /CRLF | /LF] (/LSS | 対象ファイル名)
+	crlf.exe [(/CR | /CRLF | /LF) [/K]] (/LSS | 対象ファイル名)
 
 		改行コードを指定しなかった場合 ... チェックのみ
 		改行コードを指定した場合       ... 指定された改行コードに置き換える。
@@ -59,6 +59,7 @@ static void CheckFile(char *file)
 }
 
 static char *Conv_NewLine;
+static int Conv_KeepTimeStamp;
 
 static void ConvFile(char *file)
 {
@@ -68,8 +69,14 @@ static void ConvFile(char *file)
 	int backed = 0;
 	int backedChr;
 	int chr;
+	uint64 cTm;
+	uint64 aTm;
+	uint64 uTm;
 
 	cout("Conv: %s\n", file);
+
+	if(Conv_KeepTimeStamp)
+		getFileStamp(file, &cTm, &aTm, &uTm);
 
 	rfp = fileOpen(file, "rb");
 	wfp = fileOpen(midFile, "wb");
@@ -113,6 +120,9 @@ static void ConvFile(char *file)
 	semiRemovePath(file);
 	moveFile(midFile, file);
 	memFree(midFile);
+
+	if(Conv_KeepTimeStamp)
+		setFileStamp(file, cTm, aTm, uTm);
 }
 
 static void FileAction(char *file)
@@ -138,6 +148,11 @@ readArgs:
 	if(argIs("/LF"))
 	{
 		Conv_NewLine = "\n";
+		goto readArgs;
+	}
+	if(argIs("/K"))
+	{
+		Conv_KeepTimeStamp = 1;
 		goto readArgs;
 	}
 

@@ -43,7 +43,7 @@ static void LineMid(char *file, uint64 minLineNo, uint64 maxLineNo)
 }
 static void LineNumMain(char *file)
 {
-	FILE *fp = fileOpen(file, "rb");
+	FILE *fp = file ? fileOpen(file, "rb") : (stdin_set_bin(), stdin);
 	uint64 linenum = 0;
 
 	while(SkipLine(fp))
@@ -51,7 +51,9 @@ static void LineNumMain(char *file)
 		linenum++;
 	}
 	cout("%I64u\n", linenum);
-	fileClose(fp);
+
+	if(file)
+		fileClose(fp);
 }
 int main(int argc, char **argv)
 {
@@ -68,5 +70,8 @@ int main(int argc, char **argv)
 		LineMid(file, minLineNo, maxLineNo);
 		return;
 	}
-	LineNumMain(nextArg());
+	if(hasArgs(1))
+		LineNumMain(nextArg());
+	else
+		LineNumMain(NULL);
 }
