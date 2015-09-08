@@ -1,11 +1,21 @@
 /*
-	CloseWin.exe [/-V] [/O] EXE-NAME
-	CloseWin.exe [/-V] /OT WIN-TITLE
+	CloseWin.exe [/-V] ...
 
-		/-V       ... 非表示のウィンドウも閉じる。(IsWindowVisible()によるチェックをしない)
-		/O        ... ウィンドウが開くのを待ちます。(EXE-NAME で検索する)
-		/OT       ... ウィンドウが開くのを待ちます。(WIN-TITLE で検索する)
-		EXE-NAME  ... 実行ファイルのローカル名, タスクマネージャのイメージ名と(たぶん)同じ, 大文字・小文字を区別しない。
+		/-V ... 非表示のウィンドウも対象にする。(IsWindowVisible()によるチェックをしない)
+
+	CloseWin.exe ... EXE-NAME
+
+		ウィンドウを閉じます。
+
+	CloseWin.exe ... /O EXE-NAME
+
+		ウィンドウが開くのを待ちます。
+
+	CloseWin.exe ... /OT WIN-TITLE
+
+		ウィンドウが開くのを待ちます。
+
+		EXE-NAME  ... 実行ファイルのローカル名, タスクマネージャのイメージ名と多分同じ, 大文字・小文字を区別しない。
 		WIN-TITLE ... ウィンドウのタイトル, 部分一致, 大文字・小文字を区別しない。
 */
 

@@ -4,7 +4,8 @@
 
 	----
 
-	Cluster.exe [/C] [/Q] [/T] [/OAC] [/OAD] [/K クラスタファイル |
+	Cluster.exe [/C] [/Q] [/T] [/OAC] [/OAD] [/E-] [クラスタファイル | 入力ディレクトリ |
+	             /K  クラスタファイル |
 	             /M  出力クラスタファイル 入力DIR |
 	             /MO 出力クラスタファイル 入力DIR |
 	             /BM 出力クラスタファイル 入力DIR |
@@ -18,6 +19,7 @@
 		/OAC ... 出力後、入力ファイルを削除する。入力ディレクトリは空にする。
 		/OAD ... 出力後、入力ファイルを削除する。入力ディレクトリも削除する。
 		/K   ... チェックのみ
+		/E-  ... 自動判定でクラスタファイルを展開したとき、配下に一つもファイルが無かった場合はエクスプローラを開かない。
 
 		/M
 			クラスタファイル生成
@@ -52,6 +54,16 @@
 
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\SumStream.h"
+
+static int IsNoFilesDir(char *dir)
+{
+	autoList_t *paths = lssFiles(dir);
+	int ret;
+
+	ret = getCount(paths) == 0;
+	releaseDim(paths, 1);
+	return ret;
+}
 
 #define EXT_CLUSTER "clu"
 
@@ -188,6 +200,7 @@ static void CheckCluster(char *file)
 
 static int RestoreSameDirMode;
 static int NoCheckClusterMode;
+static int UnopenEmptyDirMode;
 
 static void AutoActCluster(char *path)
 {
@@ -220,7 +233,9 @@ static void AutoActCluster(char *path)
 
 		if(fdir)
 		{
-			execute_x(xcout("START %s\n", fdir));
+			if(!UnopenEmptyDirMode || !IsNoFilesDir(fdir))
+				execute_x(xcout("START %s\n", fdir));
+
 			memFree(fdir);
 		}
 		memFree(dir);
@@ -265,6 +280,11 @@ readArgs:
 		cout("***********************\n");
 
 		OutputAndDeleteMode = 1;
+		goto readArgs;
+	}
+	if(argIs("/E-"))
+	{
+		UnopenEmptyDirMode = 1;
 		goto readArgs;
 	}
 

@@ -1,3 +1,10 @@
+/*
+	HTTP のマルチパート body を作成する。
+
+	fileStore, Post/Uploader の場合、ヘッダに boundary を書かなくても良い。
+	<- マルチパートと見なして body の先頭を { "--" + boundary + CRLF } と見なすため。
+*/
+
 #include "MakeMultiPartContent.h"
 
 #define CRLF "\r\n"
