@@ -1,8 +1,9 @@
 /*
 	HTTP のマルチパート body を作成する。
 
-	fileStore, Post/Uploader の場合、ヘッダに boundary を書かなくても良い。
-	<- マルチパートと見なして body の先頭を { "--" + boundary + CRLF } と見なすため。
+	fileStore, Post/Uploader の場合、ヘッダの Content-Type に boundary を書かなくても良い。
+	<- マルチパートであること前提なので body の先頭部を { "--" + boundary + CRLF } と見なして、
+	ここから boundary を読み取るため。
 */
 
 #include "MakeMultiPartContent.h"
