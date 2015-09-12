@@ -37,11 +37,11 @@ autoBlock_t *ab_makeBlockLine_x(char *line);
 #define ab_fromLine_x(line) \
 	(ab_makeBlockLine_x((line)))
 
-#define ab_toLine(line) \
-	(ab_makeLine((line)))
+#define ab_toLine(block) \
+	(ab_makeLine((block)))
 
-#define ab_toLine_x(line) \
-	(ab_makeLine_x((line)))
+#define ab_toLine_x(block) \
+	(ab_makeLine_x((block)))
 
 // ---- バイト列 from_to 16進_文字列 ----
 
@@ -51,11 +51,11 @@ autoBlock_t *ab_makeBlockLine_x(char *line);
 #define ab_fromHexLine_x(line) \
 	(makeBlockHexLine_x((line)))
 
-#define ab_toHexLine(line) \
-	(makeHexLine((line)))
+#define ab_toHexLine(block) \
+	(makeHexLine((block)))
 
-#define ab_toHexLine_x(line) \
-	(makeHexLine_x((line)))
+#define ab_toHexLine_x(block) \
+	(makeHexLine_x((block)))
 
 // ----
 

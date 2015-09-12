@@ -56,6 +56,8 @@ uint readValue(FILE *fp);
 
 uint readFirstValue(char *file);
 void writeOneValue(char *file, uint value);
+uint64 readFirstValue64(char *file);
+void writeOneValue64(char *file, uint64 value);
 
 typedef struct BUFF_st
 {
@@ -77,6 +79,7 @@ void buffUnreadBuffer(BUFF *bp);
 FILE *fileOpen_cx(char *file, char *mode);
 FILE *fileOpen_xc(char *file, char *mode);
 FILE *fileOpen_xx(char *file, char *mode);
+char *readText_x(char *file);
 void writeToken_x(FILE *fp, char *line);
 void writeLine_x(FILE *fp, char *line);
 void writeOneLine_cx(char *file, char *line);
@@ -90,3 +93,4 @@ void writeLines_xx(char *file, autoList_t *lines);
 void addLines2File_cx(char *file, autoList_t *lines);
 void writeBinaryBlock_x(FILE *fp, autoBlock_t *block);
 void writeBinary_cx(char *file, autoBlock_t *block);
+void writeJoinBinary_cx(char *file, autoBlock_t *block);

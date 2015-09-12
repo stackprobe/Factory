@@ -76,6 +76,16 @@ typedef unsigned __int64 uint64;
 */
 #define IMAX 1000000000
 
+/*
+	64ビット整数の上限として何となく決めた値
+	・IMAX ^ 2
+	・100京
+	・19桁
+	・18桁の最大値+1
+	・9倍しても _I64_MAX より小さい
+*/
+#define IMAX_64 1000000000000000000i64
+
 #define m_01(flag) \
 	((flag) == 0 ? 0 : 1)
 

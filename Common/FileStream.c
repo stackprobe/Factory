@@ -513,6 +513,23 @@ void writeOneValue(char *file, uint value)
 	fileClose(fp);
 }
 
+uint64 readFirstValue64(char *file)
+{
+	FILE *fp = fileOpen(file, "rb");
+	uint value;
+
+	value = readValue64(fp);
+	fileClose(fp);
+	return value;
+}
+void writeOneValue64(char *file, uint64 value)
+{
+	FILE *fp = fileOpen(file, "wb");
+
+	writeValue64(fp, value);
+	fileClose(fp);
+}
+
 BUFF *buffBind(FILE *fp, uint buffSize) // fp's mode == "rb" only
 {
 	BUFF *bp = (BUFF *)memAlloc(sizeof(BUFF));
@@ -601,6 +618,12 @@ FILE *fileOpen_xx(char *file, char *mode)
 	memFree(mode);
 	return out;
 }
+char *readText_x(char *file)
+{
+	char *out = readText(file);
+	memFree(file);
+	return out;
+}
 void writeToken_x(FILE *fp, char *line)
 {
 	writeToken(fp, line);
@@ -665,5 +688,10 @@ void writeBinaryBlock_x(FILE *fp, autoBlock_t *block)
 void writeBinary_cx(char *file, autoBlock_t *block)
 {
 	writeBinary(file, block);
+	releaseAutoBlock(block);
+}
+void writeJoinBinary_cx(char *file, autoBlock_t *block)
+{
+	writeJoinBinary(file, block);
 	releaseAutoBlock(block);
 }

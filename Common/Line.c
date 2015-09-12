@@ -645,7 +645,7 @@ void toAsciiLine(char *str, int okRet, int okTab, int okSpc)
 		else
 		{
 		enc_chr:
-			*p = (*p & 0x1f) | 0xc0;
+			*p = (*p & 0x1f) | 0x40;
 		}
 	}
 }

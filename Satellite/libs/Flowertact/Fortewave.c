@@ -152,6 +152,10 @@ void *Frtwv_RecvOL(Frtwv_t *i, uint depth, uint millis)
 	// depth
 
 	recvData = Frtwv_Recv(i, millis);
+
+	if(!recvData)
+		return NULL;
+
 	ret = Stllt_Deserializer(recvData, depth);
 	releaseAutoBlock(recvData);
 	return ret;

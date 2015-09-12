@@ -1,4 +1,15 @@
 /*
+	ncpServer.exe [/P RECV-PORT] [/C CONNECT-MAX] [/X UPLOAD-MAX] [/R ROOT-DIR]
+
+		RECV-PORT   ... 受信町ポート、デフォルトは 60022
+		CONNECT-MAX ... 最大同時接続数、デフォルトは 10
+		UPLOAD-MAX  ... 一回の接続で送信できるファイル・ディレクトリサイズの上限
+		                sockServer() の引数なので数十バイト程度の誤差アリ、デフォルトは無制限
+		ROOT-DIR    ... ファイル・ディレクトリのアップロード先のルートDIR（終了時削除しない）
+		                省略した場合は C:\1, C:\2, C:\3... を作成し、プログラム終了時削除する。
+
+	----
+
 	★セキュリティを考慮していません。
 	LANで使うか、crypTunnelとかで暗号化してね。
 

@@ -1,3 +1,31 @@
+/*
+	ncp.exe [/S SERVER-DOMAIN] [/P SERVER-PORT] [/F] ...
+
+		SERVER-DOMAIN ... サーバードメイン、デフォルトは localhost
+		SERVER-PORT   ... サーバーポート番号、デフォルトは 60022
+		/F            ... (サーバー側の)強制上書きモード、/UP, /MV のとき作用する。
+
+	ncp.exe ... /UP LOCAL-PATH SERVER-PATH
+
+		ファイル・ディレクトリのアップロード
+
+	ncp.exe ... /DL LOCAL-PATH SERVER-PATH
+
+		ファイル・ディレクトリのダウンロード
+
+	ncp.exe ... /SV SERVER-PATH
+
+		ファイル・ディレクトリのサイズを得る。
+
+	ncp.exe ... /MV SERVER-PATH-1 SERVER-PATH-2
+
+		ファイル・ディレクトリを移動する。
+
+	ncp.exe ... /RM SERVER-PATH
+
+		ファイル・ディレクトリを削除する。
+*/
+
 #include "C:\Factory\Common\Options\SockClient.h"
 #include "C:\Factory\Common\Options\DirToStream.h"
 #include "C:\Factory\Common\Options\PadFile.h"
@@ -324,7 +352,7 @@ readArgs:
 		writeLine(PrmFp, serverPath1);
 		writeLine(PrmFp, serverPath2);
 		writeChar(PrmFp, 'M');
-		writeChar(PrmFp, '-');
+		writeChar(PrmFp, ForceOverwriteMode ? 'F' : '-');
 
 		ClientRequest();
 	}
