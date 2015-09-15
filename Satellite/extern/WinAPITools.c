@@ -228,4 +228,23 @@ int main(int argc, char **argv)
 
 		return;
 	}
+	if(argIs("/EXTRACT"))
+	{
+		char *rFile;
+		char *wFile;
+		uint hdl;
+
+		rFile = nextArg();
+		wFile = nextArg();
+
+		hdl = mutexLock("{aed96b6d-8a77-40fb-9285-9b75405fc3b2}");
+		{
+			createPath(wFile, 'X');
+			removeFileIfExist(wFile);
+			moveFile(rFile, wFile);
+		}
+		mutexUnlock(hdl);
+
+		return;
+	}
 }
