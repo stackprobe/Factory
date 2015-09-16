@@ -42,7 +42,10 @@ static void ShowBuildTime(char *path)
 
 		foreach(files, file, index)
 		{
-			if(!_stricmp("EXE", getExt(file)))
+			if(
+				!_stricmp("exe", getExt(file)) ||
+				!_stricmp("exe_", getExt(file))
+				)
 			{
 				ShowBuildTime_File(file, getLocal(file));
 			}

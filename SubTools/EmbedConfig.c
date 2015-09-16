@@ -53,7 +53,7 @@ static void ChangeEmbedConfig(uint cfgPos, int cfgVal)
 	cout("[%u] = %02x\n", cfgPos, cfgVal);
 
 	errorCase(!existFile(file));
-	errorCase(_stricmp("exe", getExt(file))); // ? 実行ファイルではない。
+//	errorCase(_stricmp("exe", getExt(file))); // ? 実行ファイルではない。
 
 	ChangeEmbedConfig_File(file, cfgPos, cfgVal);
 
