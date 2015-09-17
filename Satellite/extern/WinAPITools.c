@@ -1,4 +1,5 @@
 #include "C:\Factory\Common\all.h"
+#include "C:\Factory\Satellite\libs\Flowertact\Fortewave.h"
 #include <tlhelp32.h>
 
 // ---- ParentProcId ----
@@ -228,23 +229,98 @@ int main(int argc, char **argv)
 
 		return;
 	}
+	if(argIs("/SEND-TO-FORTEWAVE"))
+	{
+		char *identHash;
+		char *dir;
+
+		identHash = nextArg();
+		dir = nextArg();
+
+		{
+			Frtwv_t *i = Frtwv_CreateIH(identHash);
+			uint index;
+
+			for(index = 0; ; index++)
+			{
+				char *file = combine_cx(dir, xcout("%04u", index));
+				autoBlock_t *sendData;
+
+				if(!existFile(file))
+				{
+					memFree(file);
+					break;
+				}
+				sendData = readBinary(file);
+				Frtwv_Send(i, sendData);
+				releaseAutoBlock(sendData);
+				removeFile(file);
+				memFree(file);
+			}
+			Frtwv_Release(i);
+		}
+		removeDir(dir);
+		return;
+	}
+	if(argIs("/RECV-FROM-FORTEWAVE"))
+	{
+		char *identHash;
+		char *dir;
+		uint millis;
+		uint recvLimit;
+
+		identHash = nextArg();
+		dir = nextArg();
+		millis = toValue(nextArg());
+		recvLimit = toValue(nextArg());
+
+		{
+			Frtwv_t *i = Frtwv_CreateIH(identHash);
+			uint index;
+
+			for(index = 0; index < recvLimit; index++)
+			{
+				autoBlock_t *recvData = Frtwv_Recv(i, millis);
+				char *file;
+
+				if(!recvData)
+					break;
+
+				file = combine_cx(dir, xcout("%04u", index));
+				writeBinary(file, recvData);
+				releaseAutoBlock(recvData);
+				memFree(file);
+			}
+			Frtwv_Release(i);
+		}
+		return;
+	}
 	if(argIs("/EXTRACT"))
 	{
 		char *rFile;
 		char *wFile;
+		char *extractedFile;
 		uint hdl;
 
 		rFile = nextArg();
 		wFile = nextArg();
 
+		extractedFile = xcout("%s.1", wFile);
+
 		hdl = mutexLock("{aed96b6d-8a77-40fb-9285-9b75405fc3b2}");
 		{
-			createPath(wFile, 'X');
-			removeFileIfExist(wFile);
-			moveFile(rFile, wFile);
+			if(!existFile(extractedFile))
+			{
+				createPath(wFile, 'X');
+				removeFileIfExist(wFile);
+				moveFile(rFile, wFile);
+
+				createFile(extractedFile);
+			}
 		}
 		mutexUnlock(hdl);
 
+		memFree(extractedFile);
 		return;
 	}
 }

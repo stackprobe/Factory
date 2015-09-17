@@ -14,6 +14,7 @@ typedef struct Frtwv_st
 Frtwv_t;
 
 Frtwv_t *Frtwv_Create(uchar *ident);
+Frtwv_t *Frtwv_CreateIH(uchar *identHash);
 void Frtwv_Release(Frtwv_t *i);
 void Frtwv_Clear(Frtwv_t *i);
 void Frtwv_SendOL(Frtwv_t *i, void *data, uint depth);

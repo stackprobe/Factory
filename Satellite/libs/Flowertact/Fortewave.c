@@ -4,14 +4,25 @@
 
 Frtwv_t *Frtwv_Create(uchar *ident)
 {
-	Frtwv_t *i = nb(Frtwv_t);
+	Frtwv_t *i;
 	char *identHash;
-	char *mIdent;
-	char *eIdent;
 
 	errorCase(!ident);
 
 	identHash = GetSHA512_128String(ident);
+	i = Frtwv_CreateIH(identHash);
+	memFree(identHash);
+	return i;
+}
+Frtwv_t *Frtwv_CreateIH(uchar *identHash)
+{
+	Frtwv_t *i = nb(Frtwv_t);
+	char *ident;
+	char *mIdent;
+	char *eIdent;
+
+	errorCase(!identHash);
+
 	ident = xcout(IDENT_PREFIX "%s", identHash);
 	mIdent = xcout("%s_m", ident);
 	eIdent = xcout("%s_e", ident);
@@ -21,8 +32,7 @@ Frtwv_t *Frtwv_Create(uchar *ident)
 	i->MessagePostEvent = eventOpen(eIdent);
 	i->MessageDir = combine(GetTmp(), ident);
 
-	memFree(identHash);
-//	memFree(ident);
+//	memFree(ident); // binded
 	memFree(mIdent);
 	memFree(eIdent);
 
