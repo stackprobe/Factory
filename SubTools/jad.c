@@ -56,17 +56,26 @@ static void ClassToJava(char *classFile, char *javaFile)
 
 	{
 		autoList_t *files = lsFiles(".");
-		char *file;
 
-		// TODO: 失敗時にダミーファイル作成
+		if(getCount(files) == 1)
+		{
+			moveFile(getLine(files, 0), javaFile);
+		}
+		else
+		{
+			FILE *fp = fileOpen(javaFile, "wt");
+			char *file;
+			uint index;
 
-		errorCase(getCount(files) != 1);
+			writeLine(fp, "失敗しました。");
+			writeLine_x(fp, xcout("クラスファイル=%s", classFile));
 
-		file = getLine(files, 0);
-		moveFile(file, javaFile);
+			foreach(files, file, index)
+				writeLine_x(fp, xcout("出力ファイル=%s", file));
 
-		memFree(file);
-		releaseAutoList(files);
+			fileClose(fp);
+		}
+		releaseDim(files, 1);
 	}
 
 	unaddCwd();

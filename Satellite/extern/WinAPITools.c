@@ -280,7 +280,7 @@ int main(int argc, char **argv)
 
 			for(index = 0; index < recvLimit; index++)
 			{
-				autoBlock_t *recvData = Frtwv_Recv(i, millis);
+				autoBlock_t *recvData = Frtwv_Recv(i, index ? 0 : millis);
 				char *file;
 
 				if(!recvData)
