@@ -1,27 +1,48 @@
 /*
 	zip.exe /P ZIP-FILE SRC-DIR [BASE-NAME]
 
-		SRC-DIR -> ZIP-FILE
+		... SRC-DIR を ZIP-FILE にパックする。
+			不要な最上位階層を除去する。
+			BASE-NAME を指定すると、この名前をパック内の最上位階層にする。
+			ZIP-FILE の拡張子は "zip" でなくても良い。
 
 	zip.exe /R ZIP-FILE [BASE-NAME]
 
-		ZIP-FILE -> ZIP-FILE
+		... ZIP-FILE を再パックする。
+			不要な最上位階層を除去する。
+			BASE-NAME を指定すると、この名前をパック内の最上位階層にする。
+			ZIP-FILE の拡張子は "zip" でなくても良い。
 
 	zip.exe /RB ZIP-FILE
 
-		ZIP-FILE -> ZIP-FILE
+		... ZIP-FILE を再パックする。
+			不要な最上位階層を除去する。
+			ZIP-FILE のローカル名の拡張子を除去した名前をパック内の最上位階層にする。
+			ZIP-FILE の拡張子は "zip" でなくても良い。
 
 	zip.exe /RBD ROOT-DIR
 
-		{ ZIP-FILE -> ZIP-FILE } @ under ROOT-DIR
+		... ROOT-DIR 配下の全ての「拡張子 "zip" のファイル」について
+			> zip.exe /RB ZIP-FILE
+			と同じ処理を行う。
 
 	zip.exe /O OUT-DIR PROJ-NAME
 
-		OUT-DIR -> OUT-DIR \\ { PROJ-NAME } .zip
+		... OUT-DIR -> OUT-DIR \\ { PROJ-NAME } .zip
 
 	zip.exe /G OUT-DIR PROJ-NAME
 
-		OUT-DIR -> OUT-DIR \\ { PROJ-NAME } _v123.zip
+		... OUT-DIR -> OUT-DIR \\ { PROJ-NAME } _v123.zip
+
+	zip.exe /X ZIP-FILE OUT-DIR
+
+		... ZIP-FILE を OUT-DIR に展開する。
+			OUT-DIR が存在しなければ作成する。
+			不要な最上位階層を除去しない！
+			ZIP-FILE の拡張子は "zip" でなくても良い。
+			OUT-DIR に既存のファイルがあったら上書きする。
+			OUT-DIR の既存のファイルに対してディレクトリの上書きは失敗する。error(); にならない。
+			OUT-DIR の既存のディレクトリに対してファイルの上書きは失敗する。error(); にならない。
 */
 
 #include "C:\Factory\Common\all.h"
@@ -73,7 +94,7 @@ static char *IntoIfOneDir(char *dir)
 }
 static void ExtractZipFile(char *zipFile, char *destDir)
 {
-	coExecute_x(xcout("%s x \"%s\" -o\"%s\"", GetZip7File(), zipFile, destDir));
+	coExecute_x(xcout("%s x -y \"%s\" -o\"%s\"", GetZip7File(), zipFile, destDir));
 }
 static void PackZipFile(char *zipFile, char *srcDir)
 {
@@ -432,6 +453,25 @@ int main(int argc, char **argv)
 		memFree(projName);
 		memFree(destZipFile);
 		memFree(midZipFile);
+		return;
+	}
+	if(argIs("/X"))
+	{
+		char *zipFile;
+		char *outDir;
+
+		zipFile = makeFullPath(nextArg());
+		outDir  = makeFullPath(nextArg());
+
+		errorCase(!existFile(zipFile));
+
+		if(!existDir(outDir))
+			createPath(outDir, 'D');
+
+		ExtractZipFile(zipFile, outDir);
+
+		memFree(zipFile);
+		memFree(outDir);
 		return;
 	}
 }

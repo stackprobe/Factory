@@ -1,0 +1,12 @@
+C:\1 ～ 999
+
+C:\app\7za920 ... 7-Zip Command line version 9.20
+C:\app\jad158g.win ... Jad 1.5.8g for Windows 9x/NT/2000 on Intel platform @ http://varaneckas.com/jad/
+C:\app\kit\*
+
+C:\appdata ... 今は使ってない。@ 2015.9.18
+
+C:\Factory ... 本体
+
+C:\temp ... テンポラリ、PC再起動時にクリア、今は使ってない。@ 2015.9.18
+C:\tmp  ... テンポラリ、勝手にクリアしない、今は使ってない。@ 2015.9.18
