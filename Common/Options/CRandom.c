@@ -39,6 +39,31 @@ char *MakeUUID(int bracket)
 	}
 	return buff;
 }
+int GetRandIDChar(void)
+{
+	int chr;
+
+	do
+	{
+		chr = getCryptoByte();
+	}
+	while(chr < 252);
+
+	chr %= 36;
+	chr = m_i2c(chr);
+
+	return chr;
+}
+char *MakeRandID(void)
+{
+	char *buff = strx("");
+	uint index;
+
+	for(index = 0; index < 25; index++)
+		buff = addChar(buff, GetRandIDChar());
+
+	return buff;
+}
 autoBlock_t *GetConcreteRawKey(void)
 {
 	static autoBlock_t *rawKey;
