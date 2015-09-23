@@ -900,6 +900,35 @@ void semiRemovePath(char *path)
 	destCount++;
 }
 
+static autoList_t *RFAT_Files;
+
+void removeFileAtTermination(char *file)
+{
+	errorCase(m_isEmpty(file));
+
+	if(!RFAT_Files)
+		RFAT_Files = newList();
+
+	addElement(RFAT_Files, (uint)strx(file));
+}
+void termination_scheduledRemoveFile(void)
+{
+	if(RFAT_Files)
+	{
+		char *file;
+		uint index;
+
+		foreach(RFAT_Files, file, index)
+		{
+			LOGPOS();
+			cout("%s\n", file);
+			removeFile(file);
+		}
+		releaseDim(RFAT_Files, 1);
+		RFAT_Files = NULL;
+	}
+}
+
 // c_
 char *c_getCwd(void)
 {

@@ -32,6 +32,7 @@ void termination(uint errorlevel)
 {
 	runFinalizers();
 	termination_fileCloseAll();
+	termination_scheduledRemoveFile();
 	exit(errorlevel);
 }
 

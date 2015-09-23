@@ -85,6 +85,9 @@ autoList_t *editTextLines(autoList_t *lines);
 void viewTextLines(autoList_t *lines);
 void semiRemovePath(char *path);
 
+void removeFileAtTermination(char *file);
+void termination_scheduledRemoveFile(void);
+
 // c_
 char *c_getCwd(void);
 char *c_changeLocal(char *path, char *newLocal);
