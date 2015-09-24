@@ -909,7 +909,7 @@ void removeFileAtTermination(char *file)
 	if(!RFAT_Files)
 		RFAT_Files = newList();
 
-	addElement(RFAT_Files, (uint)strx(file));
+	addElement(RFAT_Files, (uint)makeFullPath(file));
 }
 void termination_scheduledRemoveFile(void)
 {
@@ -918,10 +918,11 @@ void termination_scheduledRemoveFile(void)
 		char *file;
 		uint index;
 
+		LOGPOS();
+
 		foreach(RFAT_Files, file, index)
 		{
-			LOGPOS();
-			cout("%s\n", file);
+			cout("### %s\n", file);
 			removeFile(file);
 		}
 		releaseDim(RFAT_Files, 1);
