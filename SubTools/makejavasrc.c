@@ -163,12 +163,17 @@ static void ExtractJar(char *jarFile, char *wDir)
 
 	coExecute_x(xcout("C:\\Factory\\SubTools\\zip.exe /X \"%s\" \"%s\"", jarFile, dir));
 
+	addCwd(dir);
+	coExecute("ATTRIB.EXE -R /S");
+	unaddCwd();
+
+	ExtractAllJava(dir, wDir);
 	ExtractAllClass(dir, wDir);
 
 	forceRemoveDir(dir);
 	memFree(dir);
 }
-static void ExtractAllJar(char *rDir, char *wDir)
+static void ExtractAllJar(char *rDir, char *wDir, char *target_ext)
 {
 	autoList_t *files = lssFiles(rDir);
 	char *file;
@@ -177,7 +182,7 @@ static void ExtractAllJar(char *rDir, char *wDir)
 	sortJLinesICase(files);
 
 	foreach(files, file, index)
-		if(!_stricmp("jar", getExt(file)))
+		if(!_stricmp(target_ext, getExt(file)))
 			ExtractJar(file, wDir);
 
 	releaseDim(files, 1);
@@ -195,8 +200,9 @@ static void MakeJavaSrc(char *rDir, char *wDir)
 	createDirIfNotExist(wDir);
 
 	ExtractAllJava(rDir, wDir);
+	ExtractAllJar(rDir, wDir, "zip");
 	ExtractAllClass(rDir, wDir);
-	ExtractAllJar(rDir, wDir);
+	ExtractAllJar(rDir, wDir, "jar");
 
 	memFree(rDir);
 	memFree(wDir);
