@@ -2,11 +2,25 @@
 #include "C:\Factory\Satellite\libs\Flowertact\Fortewave.h"
 #include <tlhelp32.h>
 
-// ---- ParentProcId ----
+// ---- Process ----
 
-static int ParentProcId = -1;
+static char *ParentProcMonitorName;
 
 static int IsParentAlive(void)
+{
+	int alive = 1;
+	uint hdl = mutexOpen(ParentProcMonitorName);
+addLine2File("C:\\temp\\1.txt", "a"); // test
+
+	if(handleWaitForMillis(hdl, 0)) // ? ロックできた。-> ロックされていない。-> 親プロセス停止
+	{
+		alive = 0;
+		mutexRelease(hdl);
+	}
+	handleClose(hdl);
+	return alive;
+}
+static int IsProcessAlive(uint targetProcId)
 {
 	int alive = 0;
 	HANDLE hSnapshot;
@@ -24,7 +38,7 @@ static int IsParentAlive(void)
 			{
 				int procId = (int)pe32.th32ProcessID;
 
-				if(procId == ParentProcId)
+				if(procId == targetProcId)
 					alive = 1;
 			}
 			while(Process32Next(hSnapshot, &pe32));
@@ -82,7 +96,7 @@ int main(int argc, char **argv)
 		beganName = nextArg();
 		wObj0File = nextArg();
 		endName = nextArg();
-		ParentProcId = toValue(nextArg());
+		ParentProcMonitorName = nextArg();
 
 		targetMutex = mutexOpen(targetName);
 		beganEvent = eventOpen(beganName);
@@ -117,7 +131,7 @@ int main(int argc, char **argv)
 		targetName = nextArg();
 		beganName = nextArg();
 		endName = nextArg();
-		ParentProcId = toValue(nextArg());
+		ParentProcMonitorName = nextArg();
 
 		targetEvent = eventOpen(targetName);
 		beganEvent = eventOpen(beganName);
@@ -153,7 +167,7 @@ int main(int argc, char **argv)
 
 		targetName = nextArg();
 		millis = toValue(nextArg());
-		ParentProcId = toValue(nextArg());
+		ParentProcMonitorName = nextArg();
 
 		targetEvent = eventOpen(targetName);
 
@@ -190,7 +204,7 @@ int main(int argc, char **argv)
 		deadName = nextArg();
 		mtxName = nextArg();
 		targetPath = nextArg();
-		ParentProcId = toValue(nextArg());
+		ParentProcMonitorName = nextArg();
 
 		beganEvent = eventOpen(beganName);
 		deadEvent = eventOpen(deadName);
@@ -219,14 +233,34 @@ int main(int argc, char **argv)
 	}
 	if(argIs("/CHECK-PROCESS-ALIVE"))
 	{
+		uint targetProcId;
 		char *trueFile;
 
-		ParentProcId = toValue(nextArg());
+		targetProcId = toValue(nextArg());
 		trueFile = nextArg();
 
-		if(IsParentAlive())
+		if(IsProcessAlive(targetProcId))
 			createFile(trueFile);
 
+		return;
+	}
+	if(argIs("/CHECK-MUTEX-LOCKED"))
+	{
+		char *targetName;
+		char *trueFile;
+		uint mtx;
+
+		targetName = nextArg();
+		trueFile = nextArg();
+
+		mtx = mutexOpen(targetName);
+
+		if(handleWaitForMillis(mtx, 0))
+			mutexRelease(mtx);
+		else
+			createFile(trueFile);
+
+		handleClose(mtx);
 		return;
 	}
 	if(argIs("/SEND-TO-FORTEWAVE"))
@@ -321,6 +355,28 @@ int main(int argc, char **argv)
 		mutexUnlock(hdl);
 
 		memFree(extractedFile);
+		return;
+	}
+	if(argIs("/MONITOR"))
+	{
+		uint parentProcId;
+		uint hdl;
+		uint mtx;
+
+		parentProcId = toValue(nextArg());
+		ParentProcMonitorName = nextArg();
+
+		hdl = (uint)OpenProcess(PROCESS_ALL_ACCESS, 0, parentProcId);
+		errorCase(hdl == 0);
+
+		mtx = mutexOpen(ParentProcMonitorName);
+
+		handleWaitForever(mtx);
+		handleWaitForever(hdl);
+		mutexRelease(mtx);
+
+		handleClose(hdl);
+		handleClose(mtx);
 		return;
 	}
 }

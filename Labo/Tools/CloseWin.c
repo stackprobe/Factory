@@ -17,6 +17,10 @@
 
 		EXE-NAME  ... 実行ファイルのローカル名, タスクマネージャのイメージ名と多分同じ, 大文字・小文字を区別しない。
 		WIN-TITLE ... ウィンドウのタイトル, 部分一致, 大文字・小文字を区別しない。
+
+	CloseWin.exe ... /L
+
+		リストを表示するだけ。
 */
 
 #pragma comment(lib, "user32.lib")
@@ -156,6 +160,11 @@ int main(int argc, char **argv)
 	if(argIs("/-V"))
 	{
 		NoCheckVisible = 1;
+	}
+	if(argIs("/L"))
+	{
+		SearchProcByExeName("", (void (*)(PROCESSENTRY32 pe32))noop);
+		return;
 	}
 	if(argIs("/O"))
 	{
