@@ -197,6 +197,8 @@ static void DispAllUUID()
 
 // ----
 
+static autoList_t *FoundList;
+
 static uint GetUUIDCount(char *target)
 {
 	UUID_t *i;
@@ -238,6 +240,8 @@ static void DispAllSharedNumError(void)
 			cout("Žw’è‚ÌŒÂ”%u\n", i->SharedNum);
 			cout("ŽÀÛ‚ÌŒÂ”%u\n", GetUUIDCount(i->UUID));
 			cout("%s (%u)\n", i->File, i->LineNo);
+
+			addElement(FoundList, (uint)strx(i->File));
 		}
 	}
 }
@@ -253,6 +257,8 @@ static void DispAllCollision(void)
 			cout("----\n");
 			cout("yŒxzd•¡‚µ‚Ä‚¢‚éB\n");
 			cout("%s (%u)\n", i->File, i->LineNo);
+
+			addElement(FoundList, (uint)strx(i->File));
 		}
 	}
 }
@@ -261,9 +267,13 @@ int main(int argc, char **argv)
 {
 	antiSubversion = 1;
 
+	FoundList = newList();
+
 	CollectUUID();
 	DispAllUUID();
 	DispAllWarning();
 	DispAllSharedNumError();
 	DispAllCollision();
+
+	writeLines(FOUNDLISTFILE, FoundList);
 }

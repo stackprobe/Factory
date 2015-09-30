@@ -10,9 +10,8 @@ static int IsParentAlive(void)
 {
 	int alive = 1;
 	uint hdl = mutexOpen(ParentProcMonitorName);
-addLine2File("C:\\temp\\1.txt", "a"); // test
 
-	if(handleWaitForMillis(hdl, 0)) // ? ロックできた。-> ロックされていない。-> 親プロセス停止
+	if(handleWaitForMillis(hdl, 0)) // ? ロックできた。== ロックされていない。-> 親プロセス停止中
 	{
 		alive = 0;
 		mutexRelease(hdl);
