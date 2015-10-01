@@ -1,5 +1,7 @@
 #include "C:\Factory\Common\all.h"
 
+static int UnknownFlag;
+
 static char *GetPackage(char *javaFile)
 {
 	FILE *fp = fileOpen(javaFile, "rb");
@@ -13,7 +15,8 @@ static char *GetPackage(char *javaFile)
 
 		if(!line)
 		{
-			ret = strx("_UnknownPackage");
+			UnknownFlag = 1;
+			ret = strx("_$UnknownPackage");
 			break;
 		}
 		ucTrim(line);
@@ -52,7 +55,8 @@ static char *GetJavaClassName(char *javaFile)
 
 		if(!line)
 		{
-			ret = strx("_UnknownClass");
+			UnknownFlag = 1;
+			ret = strx("_$UnknownClass");
 			break;
 		}
 		ucTrim(line);
@@ -102,16 +106,22 @@ static void ExtractJava(char *javaFile, char *packageRootDir)
 	char *className;
 	char *wFile;
 
+	UnknownFlag = 0;
+
 	package = GetPackage(javaFile);
 	className = GetJavaClassName(javaFile);
 
 	replaceChar(package, '.', '/');
-	wFile = xcout("%s/%s.java", package, className);
+	wFile = xcout("%s/%s.java%s", package, className, UnknownFlag ? ".txt" : "");
 	restoreYen(wFile);
 	wFile = lineToFairRelPath_x(wFile, strlen(packageRootDir));
 	wFile = combine_cx(packageRootDir, wFile);
-	wFile = toCreatablePath(wFile, UINTMAX);
 
+	if(existPath(wFile))
+	{
+		wFile = addExt(wFile, "_$Collision.txt");
+		wFile = toCreatablePath(wFile, UINTMAX);
+	}
 	createPath(wFile, 'X');
 	copyFile(javaFile, wFile);
 
@@ -170,7 +180,9 @@ static void ExtractJar(char *jarFile, char *wDir)
 	ExtractAllJava(dir, wDir);
 	ExtractAllClass(dir, wDir);
 
-	forceRemoveDir(dir);
+//	forceRemoveDir(dir); // utfñ¢ëŒâûÅI
+	coExecute_x(xcout("RD /S /Q \"%s\"", dir));
+
 	memFree(dir);
 }
 static void ExtractAllJar(char *rDir, char *wDir, char *target_ext)
@@ -210,6 +222,7 @@ static void MakeJavaSrc(char *rDir, char *wDir)
 int main(int argc, char **argv)
 {
 	antiSubversion = 1;
+	ignoreUtfPath = 1;
 
 	{
 		char *rDir;

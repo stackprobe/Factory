@@ -15,6 +15,7 @@ static void AddPath(autoList_t *paths, char *path, FILE *extra_fp)
 }
 
 int antiSubversion; // extra-prm
+int ignoreUtfPath; // extra-prm
 
 /*
 	unsigned attrib;
@@ -74,13 +75,16 @@ autoList_t *ls(char *dir)
 					continue;
 				}
 			}
-			path = combine(absDir, name);
-
 			if(strchr(name, '?')) // ? •Ï‚È•¶Žš‚ðŠÜ‚Þ
 			{
-				cout("%s\n", path);
+				cout("UTF-PATH: %s\n", path);
+
+				if(ignoreUtfPath)
+					continue;
+
 				error();
 			}
+			path = combine(absDir, name);
 
 			if(lastFindData.attrib & _A_SUBDIR) // ? dir
 			{
