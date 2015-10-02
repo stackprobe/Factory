@@ -1,12 +1,12 @@
 typedef struct stampData_st
 {
-	uint year;
+	uint year;  // 1970 ` 3001
 	uint month; // 1 ` 12
-	uint day; // 1 ` 31
-	uint weekday; // 0 ` 6
-	uint hour;
-	uint minute;
-	uint second;
+	uint day;   // 1 ` 31
+	uint weekday; // 0 ` 6 == “ú ` “y
+	uint hour;   // 0 ` 23
+	uint minute; // 0 ` 59
+	uint second; // 0 ` 59
 }
 stampData_t;
 

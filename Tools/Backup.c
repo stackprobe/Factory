@@ -54,6 +54,9 @@ static autoList_t *GetTargetDirs(void)
 			!_stricmp(dir, "C:\\Users") || // for 7
 
 			dir[3] == '_' || m_isdecimal(dir[3]) || // _ 0～9 で始まるフォルダは対象外
+
+			!_stricmp(dir, "C:\\huge") || // 運用上
+
 			0
 			)
 		{

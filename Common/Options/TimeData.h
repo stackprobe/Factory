@@ -1,0 +1,27 @@
+#pragma once
+
+#include "C:\Factory\Common\all.h"
+#include "Date2Day.h"
+
+typedef struct TimeData_st
+{
+	uint Y; // 1 Å` 2^32-1
+	uint M; // 1 Å` 12
+	uint D; // 1 Å` 31
+	uint W; // 0 Å` 6 == åé Å` ì˙
+	uint H; // 0 Å` 23
+	uint I; // 0 Å` 59
+	uint S; // 0 Å` 59
+}
+TimeData_t;
+
+TimeData_t GetTimeData(uint y, uint m, uint d, uint h, uint i, uint s);
+
+TimeData_t Sec2TimeData(uint64 sec);
+uint64 TimeData2Sec(TimeData_t i);
+
+TimeData_t Stamp2TimeData(uint64 stamp);
+uint64 TimeData2Stamp(TimeData_t td);
+
+TimeData_t GetNowTimeData(void);
+uint64 GetNowSec(void);
