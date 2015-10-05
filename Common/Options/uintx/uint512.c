@@ -1,154 +1,120 @@
 #include "uint512.h"
 
-uint UI512_Overflow;
-uint UI512_Ununderflow;
-uint512_t UI512_Hi;
-
-uint512_t ToUI512(uint src[16])
+void ToUI512(uint src[16], uint512_t *dest)
 {
-	uint512_t ans;
-
-	ans.L = ToUI256(src);
-	ans.H = ToUI256(src + 8);
-
-	return ans;
+	ToUI256(src, &dest->L);
+	ToUI256(src + 8, &dest->H);
 }
-uint512_t UI512_0(void)
+void UI512_0(uint512_t *dest)
 {
-	uint512_t ans;
-
-	ans.L = UI256_0();
-	ans.H = UI256_0();
-
-	return ans;
+	UI256_0(&dest->L);
+	UI256_0(&dest->H);
 }
-uint512_t UI512_x(uint x)
+void UI512_x(uint x, uint512_t *dest)
 {
-	uint512_t ans;
-
-	ans.L = UI256_x(x);
-	ans.H = UI256_0();
-
-	return ans;
+	UI256_x(x, &dest->L);
+//	UI256_0(&dest->H); // XXX
 }
-uint512_t UI512_msb1(void)
+void UI512_msb1(uint512_t *dest)
 {
-	uint512_t ans;
-
-	ans.L = UI256_0();
-	ans.H = UI256_msb1();
-
-	return ans;
+	UI256_0(&dest->L);
+	UI256_msb1(&dest->H);
 }
-void UnUI512(uint512_t src, uint dest[16])
+void UnUI512(uint512_t *src, uint dest[16])
 {
-	UnUI256(src.L, dest);
-	UnUI256(src.H, dest + 8);
+	UnUI256(&src->L, dest);
+	UnUI256(&src->H, dest + 8);
 }
 
-uint512_t UI512_Add(uint512_t a, uint512_t b)
+uint UI512_Add(uint512_t *a, uint512_t *b, uint512_t *ans) // ret: overflow ? 1 : 0
 {
-	uint512_t ans;
+	static uint256_t tmp;
 	uint ofL;
 	uint ofH;
 
-	ans.L = UI256_Add(a.L, b.L);
-	ofL = UI256_Overflow;
-	ans.H = UI256_Add(a.H, b.H);
-	ofH = UI256_Overflow;
-	ans.H = UI256_Add(ans.H, UI256_x(ofL));
+	ofL = UI256_Add(&a->L, &b->L, &ans->L);
+	ofH = UI256_Add(&a->H, &b->H, &ans->H);
 
-	UI512_Overflow = ofH | UI256_Overflow;
+	UI256_x(ofL, &tmp);
 
-	return ans;
+	return ofH | UI256_Add(&ans->H, &tmp, &ans->H);
 }
-uint512_t UI512_Sub(uint512_t a, uint512_t b)
+uint UI512_Sub(uint512_t *a, uint512_t *b, uint512_t *ans) // ret: underflow ? 0 : 1
 {
-	uint512_t ans;
+	static uint256_t tmp;
 	uint ufL;
 	uint ufH;
 
-	ans.L = UI256_Sub(a.L, b.L);
-	ufL = UI256_Ununderflow;
-	ans.H = UI256_Sub(a.H, b.H);
-	ufH = UI256_Ununderflow;
-	ans.H = UI256_Sub(ans.H, UI256_x(ufL ^ 1));
+	ufL = UI256_Sub(&a->L, &b->L, &ans->L);
+	ufH = UI256_Sub(&a->H, &b->H, &ans->H);
 
-	UI512_Ununderflow = ufH & UI256_Ununderflow;
+	UI256_x(ufL ^ 1, &tmp);
 
-	return ans;
+	return ufH & UI256_Sub(&ans->H, &tmp, &ans->H);
 }
-uint512_t UI512_Mul(uint512_t a, uint512_t b)
+void UI512_Mul(uint512_t *a, uint512_t *b, uint512_t *ans, uint512_t *ans_hi)
 {
-	uint512_t ans;
-	uint512_t tmp1L;
-	uint512_t tmp1H;
-	uint512_t tmp2L;
-	uint512_t tmp2H;
+	static uint512_t tmp1L;
+	static uint512_t tmp1H;
+	static uint512_t tmp2L;
+	static uint512_t tmp2H;
+	static uint512_t tmp;
 
-	ans.L = UI256_Mul(a.L, b.L);
-	ans.H = UI256_Hi;
+	UI256_Mul(&a->L, &b->L, &ans->L, &ans->H);
+	UI256_Mul(&a->H, &b->H, &ans_hi->L, &ans_hi->H);
 
-	UI512_Hi.L = UI256_Mul(a.H, b.H);
-	UI512_Hi.H = UI256_Hi;
+	UI256_0(&tmp1L.L);
+	UI256_Mul(&a->L, &b->H, &tmp1L.H, &tmp1H.L);
+	UI256_0(&tmp1H.H);
+	UI256_0(&tmp2L.L);
+	UI256_Mul(&a->H, &b->L, &tmp2L.H, &tmp2H.L);
+	UI256_0(&tmp2H.H);
 
-	tmp1L.L = UI256_0();
-	tmp1L.H = UI256_Mul(a.L, b.H);
-	tmp1H.L = UI256_Hi;
-	tmp1H.H = UI256_0();
-	tmp2L.L = UI256_0();
-	tmp2L.H = UI256_Mul(a.H, b.L);
-	tmp2H.L = UI256_Hi;
-	tmp2H.H = UI256_0();
-
-	ans = UI512_Add(ans, tmp1L);
-	UI512_Hi = UI512_Add(UI512_Hi, UI512_x(UI256_Overflow));
-	ans = UI512_Add(ans, tmp2L);
-	UI512_Hi = UI512_Add(UI512_Hi, UI512_x(UI256_Overflow));
-	UI512_Hi = UI512_Add(UI512_Hi, tmp1H);
-	UI512_Hi = UI512_Add(UI512_Hi, tmp2H);
-
-	return ans;
+	UI512_x(UI512_Add(ans, &tmp1L, ans), &tmp);
+	UI512_Add(ans_hi, &tmp, ans_hi);
+	UI512_x(UI512_Add(ans, &tmp2L, ans), &tmp);
+	UI512_Add(ans_hi, &tmp, ans_hi);
+	UI512_Add(ans_hi, &tmp1H, ans_hi);
+	UI512_Add(ans_hi, &tmp2H, ans_hi);
 }
-uint512_t UI512_Div(uint512_t a, uint512_t b)
+void UI512_Div(uint512_t *a, uint512_t *b, uint512_t *ans)
 {
-	uint512_t ans = UI512_0();
-	uint512_t mask = UI512_msb1();
-	uint512_t t;
-	uint512_t m;
+	static uint512_t mask;
+	static uint512_t t;
+	static uint512_t m;
+	static uint512_t h;
+	static uint512_t dummy;
 
-	if(!UI512_IsZero(b)) // ? ! ƒ[ƒœŽZ
+	UI512_0(ans);
+
+	if(UI512_IsZero(b)) // ? ƒ[ƒœŽZ
+		return;
+
+	UI512_msb1(&mask);
+
+	do
 	{
-		do
-		{
-			t = UI512_or(ans, mask);
-			m = UI512_Mul(b, t);
+		UI512_or(ans, &mask, &t);
+		UI512_Mul(b, &t, &m, &h);
 
-			if(UI512_IsZero(UI512_Hi))
-			{
-				UI512_Comp(a, m);
-
-				if(UI512_Ununderflow)
-					ans = t;
-			}
-		}
-		while(!UI512_rs(&mask, 0));
+		if(UI512_IsZero(&h) && UI512_Sub(a, &m, &dummy))
+			*ans = t;
 	}
-	return ans;
+	while(!UI512_rs(&mask, 0));
 }
 
-int UI512_IsZero(uint512_t a)
+int UI512_IsZero(uint512_t *a)
 {
-	return UI256_IsZero(a.L) && UI256_IsZero(a.H);
+	return UI256_IsZero(&a->L) && UI256_IsZero(&a->H);
 }
-int UI512_Comp(uint512_t a, uint512_t b)
+int UI512_Comp(uint512_t *a, uint512_t *b)
 {
-	uint512_t ans = UI512_Sub(a, b);
+	static uint512_t ans;
 
-	if(!UI512_Ununderflow)
+	if(!UI512_Sub(a, b, &ans))
 		return -1;
 
-	if(UI512_IsZero(ans))
+	if(UI512_IsZero(&ans))
 		return 0;
 
 	return 1;
@@ -157,12 +123,8 @@ uint UI512_rs(uint512_t *a, uint msb)
 {
 	return UI256_rs(&a->L, UI256_rs(&a->H, msb));
 }
-uint512_t UI512_or(uint512_t a, uint512_t b)
+void UI512_or(uint512_t *a, uint512_t *b, uint512_t *ans)
 {
-	uint512_t ans;
-
-	ans.L = UI256_or(a.L, b.L);
-	ans.H = UI256_or(a.H, b.H);
-
-	return ans;
+	UI256_or(&a->L, &b->L, &ans->L);
+	UI256_or(&a->H, &b->H, &ans->H);
 }

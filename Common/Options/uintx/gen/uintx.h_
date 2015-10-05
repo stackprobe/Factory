@@ -10,22 +10,18 @@ typedef struct uint%HBIT%_st
 }
 uint%HBIT%_t;
 
-extern uint UI%HBIT%_Overflow;
-extern uint UI%HBIT%_Ununderflow;
-extern uint%HBIT%_t UI%HBIT%_Hi;
+void ToUI%HBIT%(uint src[%HSZ%], uint%HBIT%_t *dest);
+void UI%HBIT%_0(uint%HBIT%_t *dest);
+void UI%HBIT%_x(uint x, uint%HBIT%_t *dest);
+void UI%HBIT%_msb1(uint%HBIT%_t *dest);
+void UnUI%HBIT%(uint%HBIT%_t *src, uint dest[%HSZ%]);
 
-uint%HBIT%_t ToUI%HBIT%(uint src[%HSZ%]);
-uint%HBIT%_t UI%HBIT%_0(void);
-uint%HBIT%_t UI%HBIT%_x(uint x);
-uint%HBIT%_t UI%HBIT%_msb1(void);
-void UnUI%HBIT%(uint%HBIT%_t src, uint dest[%HSZ%]);
+uint UI%HBIT%_Add(uint%HBIT%_t *a, uint%HBIT%_t *b, uint%HBIT%_t *ans) ;
+uint UI%HBIT%_Sub(uint%HBIT%_t *a, uint%HBIT%_t *b, uint%HBIT%_t *ans) ;
+void UI%HBIT%_Mul(uint%HBIT%_t *a, uint%HBIT%_t *b, uint%HBIT%_t *ans, uint%HBIT%_t *ans_hi);
+void UI%HBIT%_Div(uint%HBIT%_t *a, uint%HBIT%_t *b, uint%HBIT%_t *ans);
 
-uint%HBIT%_t UI%HBIT%_Add(uint%HBIT%_t a, uint%HBIT%_t b);
-uint%HBIT%_t UI%HBIT%_Sub(uint%HBIT%_t a, uint%HBIT%_t b);
-uint%HBIT%_t UI%HBIT%_Mul(uint%HBIT%_t a, uint%HBIT%_t b);
-uint%HBIT%_t UI%HBIT%_Div(uint%HBIT%_t a, uint%HBIT%_t b);
-
-int UI%HBIT%_IsZero(uint%HBIT%_t a);
-int UI%HBIT%_Comp(uint%HBIT%_t a, uint%HBIT%_t b);
+int UI%HBIT%_IsZero(uint%HBIT%_t *a);
+int UI%HBIT%_Comp(uint%HBIT%_t *a, uint%HBIT%_t *b);
 uint UI%HBIT%_rs(uint%HBIT%_t *a, uint msb);
-uint%HBIT%_t UI%HBIT%_or(uint%HBIT%_t a, uint%HBIT%_t b);
+void UI%HBIT%_or(uint%HBIT%_t *a, uint%HBIT%_t *b, uint%HBIT%_t *ans);

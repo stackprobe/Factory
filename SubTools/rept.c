@@ -2,10 +2,10 @@
 
 static autoList_t *FindPtns;
 static autoList_t *DestPtns;
+static int ForceMode;
 static int IgnoreCaseFlag;
-static int KeepTimeStamp;
 
-static void RepText(char *rFile, char *wFile)
+static void RepText_Main(char *rFile, char *wFile)
 {
 	char *text = readText_b(rFile);
 	char *findPtn;
@@ -17,20 +17,33 @@ static void RepText(char *rFile, char *wFile)
 
 		text = replaceLine(text, findPtn, destPtn, IgnoreCaseFlag);
 	}
-	if(KeepTimeStamp && existFile(wFile))
+	writeOneLineNoRet_b(wFile, text);
+	memFree(text);
+}
+static void RepText(char *rFile, char *wFile)
+{
+	if(ForceMode || !existFile(wFile))
 	{
-		uint64 cTm;
-		uint64 aTm;
-		uint64 uTm;
-
-		getFileStamp(wFile, &cTm, &aTm, &uTm);
-		writeOneLineNoRet_b(wFile, text);
-		setFileStamp(wFile, cTm, aTm, uTm);
+		RepText_Main(rFile, wFile);
 	}
 	else
-		writeOneLineNoRet_b(wFile, text);
+	{
+		char *midFile = makeTempPath(NULL);
 
-	memFree(text);
+		RepText_Main(rFile, midFile);
+
+		if(isSameFile(midFile, wFile)) // ? 同じ -> 適用不要
+		{
+			cout("SKIP!\n");
+			removeFile(midFile);
+		}
+		else
+		{
+			removeFile(wFile);
+			moveFile(midFile, wFile);
+		}
+		memFree(midFile);
+	}
 }
 int main(int argc, char **argv)
 {
@@ -38,14 +51,14 @@ int main(int argc, char **argv)
 	DestPtns = newList();
 
 readArgs:
+	if(argIs("/F")) // Force mode
+	{
+		ForceMode = 1;
+		goto readArgs;
+	}
 	if(argIs("/I")) // Ignore case
 	{
 		IgnoreCaseFlag = 1;
-		goto readArgs;
-	}
-	if(argIs("/K")) // Keep time stamp
-	{
-		KeepTimeStamp = 1;
 		goto readArgs;
 	}
 	if(argIs("/P")) // Pair

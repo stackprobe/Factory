@@ -1,154 +1,120 @@
 #include "uint4096.h"
 
-uint UI4096_Overflow;
-uint UI4096_Ununderflow;
-uint4096_t UI4096_Hi;
-
-uint4096_t ToUI4096(uint src[128])
+void ToUI4096(uint src[128], uint4096_t *dest)
 {
-	uint4096_t ans;
-
-	ans.L = ToUI2048(src);
-	ans.H = ToUI2048(src + 64);
-
-	return ans;
+	ToUI2048(src, &dest->L);
+	ToUI2048(src + 64, &dest->H);
 }
-uint4096_t UI4096_0(void)
+void UI4096_0(uint4096_t *dest)
 {
-	uint4096_t ans;
-
-	ans.L = UI2048_0();
-	ans.H = UI2048_0();
-
-	return ans;
+	UI2048_0(&dest->L);
+	UI2048_0(&dest->H);
 }
-uint4096_t UI4096_x(uint x)
+void UI4096_x(uint x, uint4096_t *dest)
 {
-	uint4096_t ans;
-
-	ans.L = UI2048_x(x);
-	ans.H = UI2048_0();
-
-	return ans;
+	UI2048_x(x, &dest->L);
+//	UI2048_0(&dest->H); // XXX
 }
-uint4096_t UI4096_msb1(void)
+void UI4096_msb1(uint4096_t *dest)
 {
-	uint4096_t ans;
-
-	ans.L = UI2048_0();
-	ans.H = UI2048_msb1();
-
-	return ans;
+	UI2048_0(&dest->L);
+	UI2048_msb1(&dest->H);
 }
-void UnUI4096(uint4096_t src, uint dest[128])
+void UnUI4096(uint4096_t *src, uint dest[128])
 {
-	UnUI2048(src.L, dest);
-	UnUI2048(src.H, dest + 64);
+	UnUI2048(&src->L, dest);
+	UnUI2048(&src->H, dest + 64);
 }
 
-uint4096_t UI4096_Add(uint4096_t a, uint4096_t b)
+uint UI4096_Add(uint4096_t *a, uint4096_t *b, uint4096_t *ans) // ret: overflow ? 1 : 0
 {
-	uint4096_t ans;
+	static uint2048_t tmp;
 	uint ofL;
 	uint ofH;
 
-	ans.L = UI2048_Add(a.L, b.L);
-	ofL = UI2048_Overflow;
-	ans.H = UI2048_Add(a.H, b.H);
-	ofH = UI2048_Overflow;
-	ans.H = UI2048_Add(ans.H, UI2048_x(ofL));
+	ofL = UI2048_Add(&a->L, &b->L, &ans->L);
+	ofH = UI2048_Add(&a->H, &b->H, &ans->H);
 
-	UI4096_Overflow = ofH | UI2048_Overflow;
+	UI2048_x(ofL, &tmp);
 
-	return ans;
+	return ofH | UI2048_Add(&ans->H, &tmp, &ans->H);
 }
-uint4096_t UI4096_Sub(uint4096_t a, uint4096_t b)
+uint UI4096_Sub(uint4096_t *a, uint4096_t *b, uint4096_t *ans) // ret: underflow ? 0 : 1
 {
-	uint4096_t ans;
+	static uint2048_t tmp;
 	uint ufL;
 	uint ufH;
 
-	ans.L = UI2048_Sub(a.L, b.L);
-	ufL = UI2048_Ununderflow;
-	ans.H = UI2048_Sub(a.H, b.H);
-	ufH = UI2048_Ununderflow;
-	ans.H = UI2048_Sub(ans.H, UI2048_x(ufL ^ 1));
+	ufL = UI2048_Sub(&a->L, &b->L, &ans->L);
+	ufH = UI2048_Sub(&a->H, &b->H, &ans->H);
 
-	UI4096_Ununderflow = ufH & UI2048_Ununderflow;
+	UI2048_x(ufL ^ 1, &tmp);
 
-	return ans;
+	return ufH & UI2048_Sub(&ans->H, &tmp, &ans->H);
 }
-uint4096_t UI4096_Mul(uint4096_t a, uint4096_t b)
+void UI4096_Mul(uint4096_t *a, uint4096_t *b, uint4096_t *ans, uint4096_t *ans_hi)
 {
-	uint4096_t ans;
-	uint4096_t tmp1L;
-	uint4096_t tmp1H;
-	uint4096_t tmp2L;
-	uint4096_t tmp2H;
+	static uint4096_t tmp1L;
+	static uint4096_t tmp1H;
+	static uint4096_t tmp2L;
+	static uint4096_t tmp2H;
+	static uint4096_t tmp;
 
-	ans.L = UI2048_Mul(a.L, b.L);
-	ans.H = UI2048_Hi;
+	UI2048_Mul(&a->L, &b->L, &ans->L, &ans->H);
+	UI2048_Mul(&a->H, &b->H, &ans_hi->L, &ans_hi->H);
 
-	UI4096_Hi.L = UI2048_Mul(a.H, b.H);
-	UI4096_Hi.H = UI2048_Hi;
+	UI2048_0(&tmp1L.L);
+	UI2048_Mul(&a->L, &b->H, &tmp1L.H, &tmp1H.L);
+	UI2048_0(&tmp1H.H);
+	UI2048_0(&tmp2L.L);
+	UI2048_Mul(&a->H, &b->L, &tmp2L.H, &tmp2H.L);
+	UI2048_0(&tmp2H.H);
 
-	tmp1L.L = UI2048_0();
-	tmp1L.H = UI2048_Mul(a.L, b.H);
-	tmp1H.L = UI2048_Hi;
-	tmp1H.H = UI2048_0();
-	tmp2L.L = UI2048_0();
-	tmp2L.H = UI2048_Mul(a.H, b.L);
-	tmp2H.L = UI2048_Hi;
-	tmp2H.H = UI2048_0();
-
-	ans = UI4096_Add(ans, tmp1L);
-	UI4096_Hi = UI4096_Add(UI4096_Hi, UI4096_x(UI2048_Overflow));
-	ans = UI4096_Add(ans, tmp2L);
-	UI4096_Hi = UI4096_Add(UI4096_Hi, UI4096_x(UI2048_Overflow));
-	UI4096_Hi = UI4096_Add(UI4096_Hi, tmp1H);
-	UI4096_Hi = UI4096_Add(UI4096_Hi, tmp2H);
-
-	return ans;
+	UI4096_x(UI4096_Add(ans, &tmp1L, ans), &tmp);
+	UI4096_Add(ans_hi, &tmp, ans_hi);
+	UI4096_x(UI4096_Add(ans, &tmp2L, ans), &tmp);
+	UI4096_Add(ans_hi, &tmp, ans_hi);
+	UI4096_Add(ans_hi, &tmp1H, ans_hi);
+	UI4096_Add(ans_hi, &tmp2H, ans_hi);
 }
-uint4096_t UI4096_Div(uint4096_t a, uint4096_t b)
+void UI4096_Div(uint4096_t *a, uint4096_t *b, uint4096_t *ans)
 {
-	uint4096_t ans = UI4096_0();
-	uint4096_t mask = UI4096_msb1();
-	uint4096_t t;
-	uint4096_t m;
+	static uint4096_t mask;
+	static uint4096_t t;
+	static uint4096_t m;
+	static uint4096_t h;
+	static uint4096_t dummy;
 
-	if(!UI4096_IsZero(b)) // ? ! ƒ[ƒœŽZ
+	UI4096_0(ans);
+
+	if(UI4096_IsZero(b)) // ? ƒ[ƒœŽZ
+		return;
+
+	UI4096_msb1(&mask);
+
+	do
 	{
-		do
-		{
-			t = UI4096_or(ans, mask);
-			m = UI4096_Mul(b, t);
+		UI4096_or(ans, &mask, &t);
+		UI4096_Mul(b, &t, &m, &h);
 
-			if(UI4096_IsZero(UI4096_Hi))
-			{
-				UI4096_Comp(a, m);
-
-				if(UI4096_Ununderflow)
-					ans = t;
-			}
-		}
-		while(!UI4096_rs(&mask, 0));
+		if(UI4096_IsZero(&h) && UI4096_Sub(a, &m, &dummy))
+			*ans = t;
 	}
-	return ans;
+	while(!UI4096_rs(&mask, 0));
 }
 
-int UI4096_IsZero(uint4096_t a)
+int UI4096_IsZero(uint4096_t *a)
 {
-	return UI2048_IsZero(a.L) && UI2048_IsZero(a.H);
+	return UI2048_IsZero(&a->L) && UI2048_IsZero(&a->H);
 }
-int UI4096_Comp(uint4096_t a, uint4096_t b)
+int UI4096_Comp(uint4096_t *a, uint4096_t *b)
 {
-	uint4096_t ans = UI4096_Sub(a, b);
+	static uint4096_t ans;
 
-	if(!UI4096_Ununderflow)
+	if(!UI4096_Sub(a, b, &ans))
 		return -1;
 
-	if(UI4096_IsZero(ans))
+	if(UI4096_IsZero(&ans))
 		return 0;
 
 	return 1;
@@ -157,12 +123,8 @@ uint UI4096_rs(uint4096_t *a, uint msb)
 {
 	return UI2048_rs(&a->L, UI2048_rs(&a->H, msb));
 }
-uint4096_t UI4096_or(uint4096_t a, uint4096_t b)
+void UI4096_or(uint4096_t *a, uint4096_t *b, uint4096_t *ans)
 {
-	uint4096_t ans;
-
-	ans.L = UI2048_or(a.L, b.L);
-	ans.H = UI2048_or(a.H, b.H);
-
-	return ans;
+	UI2048_or(&a->L, &b->L, &ans->L);
+	UI2048_or(&a->H, &b->H, &ans->H);
 }
