@@ -220,7 +220,7 @@ static int HTTPDecode(autoBlock_t *rBuff, autoBlock_t *wBuff)
 
 	// from Query
 	{
-		autoList_t *tokens = ucStrTokenize(HttpDat.H_Request);
+		autoList_t *tokens = ucTokenize(HttpDat.H_Request);
 		char *url;
 
 		url = strx(refLine(tokens, 1));

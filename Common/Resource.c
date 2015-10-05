@@ -68,7 +68,7 @@ void ucTrimSqTrail(char *line)
 	trimSequ(line, ' ');
 	trimTrail(line, ' ');
 }
-autoList_t *ucStrTokenize(char *line)
+autoList_t *ucTokenize(char *line)
 {
 	autoList_t *tokens;
 
@@ -79,7 +79,7 @@ autoList_t *ucStrTokenize(char *line)
 	trimLines(tokens);
 	return tokens;
 }
-autoList_t *ucStrTokenizeDs(char *line, char *delims)
+autoList_t *ucTokenizeDs(char *line, char *delims)
 {
 	autoList_t *tokens = tokenizeDs(line, delims);
 	char *token;

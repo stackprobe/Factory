@@ -19,4 +19,4 @@ PATH=%PATH%;C:\Factory\Build
 PATH=%PATH%;C:\Factory\DevTools
 PATH=%PATH%;C:\Factory\Tools
 
-ds.exe /s tmp
+rem ds.exe /s tmp

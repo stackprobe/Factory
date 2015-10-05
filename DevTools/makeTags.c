@@ -125,7 +125,7 @@ static void CheckTagLine(char *line, char *srcFile, uint srcLineNo)
 		if(!__iscsym(*p))
 			*p = ' ';
 
-	tokens = ucStrTokenize(tmpl);
+	tokens = ucTokenize(tmpl);
 
 	if(lineExp("typedef<1,  ><>", line))
 	{

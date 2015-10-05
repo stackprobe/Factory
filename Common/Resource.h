@@ -4,8 +4,8 @@ void ucTrim(char *line);
 void ucTrimEdge(char *line);
 void ucTrimSqLead(char *line);
 void ucTrimSqTrail(char *line);
-autoList_t *ucStrTokenize(char *line);
-autoList_t *ucStrTokenizeDs(char *line, char *delims);
+autoList_t *ucTokenize(char *line);
+autoList_t *ucTokenizeDs(char *line, char *delims);
 void removeBlank(char *line);
 
 void ucTrimAllLine(autoList_t *lines);

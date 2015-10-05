@@ -67,7 +67,7 @@ static void RecvEvent(autoList_t *mail)
 
 	foreach(FromPatternsList, ptns, index)
 	{
-		autoList_t *ptnList = ucStrTokenize(ptns);
+		autoList_t *ptnList = ucTokenize(ptns);
 		uint ptnndx;
 
 		foreach(ptnList, ptn, ptnndx)

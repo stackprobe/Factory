@@ -1,0 +1,168 @@
+#include "uint%HBIT%.h"
+
+uint UI%HBIT%_Overflow;
+uint UI%HBIT%_Ununderflow;
+uint%HBIT%_t UI%HBIT%_Hi;
+
+uint%HBIT%_t ToUI%HBIT%(uint src[%HSZ%])
+{
+	uint%HBIT%_t ans;
+
+	ans.L = ToUI%LBIT%(src);
+	ans.H = ToUI%LBIT%(src + %LSZ%);
+
+	return ans;
+}
+uint%HBIT%_t UI%HBIT%_0(void)
+{
+	uint%HBIT%_t ans;
+
+	ans.L = UI%LBIT%_0();
+	ans.H = UI%LBIT%_0();
+
+	return ans;
+}
+uint%HBIT%_t UI%HBIT%_x(uint x)
+{
+	uint%HBIT%_t ans;
+
+	ans.L = UI%LBIT%_x(x);
+	ans.H = UI%LBIT%_0();
+
+	return ans;
+}
+uint%HBIT%_t UI%HBIT%_msb1(void)
+{
+	uint%HBIT%_t ans;
+
+	ans.L = UI%LBIT%_0();
+	ans.H = UI%LBIT%_msb1();
+
+	return ans;
+}
+void UnUI%HBIT%(uint%HBIT%_t src, uint dest[%HSZ%])
+{
+	UnUI%LBIT%(src.L, dest);
+	UnUI%LBIT%(src.H, dest + %LSZ%);
+}
+
+uint%HBIT%_t UI%HBIT%_Add(uint%HBIT%_t a, uint%HBIT%_t b)
+{
+	uint%HBIT%_t ans;
+	uint ofL;
+	uint ofH;
+
+	ans.L = UI%LBIT%_Add(a.L, b.L);
+	ofL = UI%LBIT%_Overflow;
+	ans.H = UI%LBIT%_Add(a.H, b.H);
+	ofH = UI%LBIT%_Overflow;
+	ans.H = UI%LBIT%_Add(ans.H, UI%LBIT%_x(ofL));
+
+	UI%HBIT%_Overflow = ofH | UI%LBIT%_Overflow;
+
+	return ans;
+}
+uint%HBIT%_t UI%HBIT%_Sub(uint%HBIT%_t a, uint%HBIT%_t b)
+{
+	uint%HBIT%_t ans;
+	uint ufL;
+	uint ufH;
+
+	ans.L = UI%LBIT%_Sub(a.L, b.L);
+	ufL = UI%LBIT%_Ununderflow;
+	ans.H = UI%LBIT%_Sub(a.H, b.H);
+	ufH = UI%LBIT%_Ununderflow;
+	ans.H = UI%LBIT%_Sub(ans.H, UI%LBIT%_x(ufL ^ 1));
+
+	UI%HBIT%_Ununderflow = ufH & UI%LBIT%_Ununderflow;
+
+	return ans;
+}
+uint%HBIT%_t UI%HBIT%_Mul(uint%HBIT%_t a, uint%HBIT%_t b)
+{
+	uint%HBIT%_t ans;
+	uint%HBIT%_t tmp1L;
+	uint%HBIT%_t tmp1H;
+	uint%HBIT%_t tmp2L;
+	uint%HBIT%_t tmp2H;
+
+	ans.L = UI%LBIT%_Mul(a.L, b.L);
+	ans.H = UI%LBIT%_Hi;
+
+	UI%HBIT%_Hi.L = UI%LBIT%_Mul(a.H, b.H);
+	UI%HBIT%_Hi.H = UI%LBIT%_Hi;
+
+	tmp1L.L = UI%LBIT%_0();
+	tmp1L.H = UI%LBIT%_Mul(a.L, b.H);
+	tmp1H.L = UI%LBIT%_Hi;
+	tmp1H.H = UI%LBIT%_0();
+	tmp2L.L = UI%LBIT%_0();
+	tmp2L.H = UI%LBIT%_Mul(a.H, b.L);
+	tmp2H.L = UI%LBIT%_Hi;
+	tmp2H.H = UI%LBIT%_0();
+
+	ans = UI%HBIT%_Add(ans, tmp1L);
+	UI%HBIT%_Hi = UI%HBIT%_Add(UI%HBIT%_Hi, UI%HBIT%_x(UI%LBIT%_Overflow));
+	ans = UI%HBIT%_Add(ans, tmp2L);
+	UI%HBIT%_Hi = UI%HBIT%_Add(UI%HBIT%_Hi, UI%HBIT%_x(UI%LBIT%_Overflow));
+	UI%HBIT%_Hi = UI%HBIT%_Add(UI%HBIT%_Hi, tmp1H);
+	UI%HBIT%_Hi = UI%HBIT%_Add(UI%HBIT%_Hi, tmp2H);
+
+	return ans;
+}
+uint%HBIT%_t UI%HBIT%_Div(uint%HBIT%_t a, uint%HBIT%_t b)
+{
+	uint%HBIT%_t ans = UI%HBIT%_0();
+	uint%HBIT%_t mask = UI%HBIT%_msb1();
+	uint%HBIT%_t t;
+	uint%HBIT%_t m;
+
+	if(!UI%HBIT%_IsZero(b)) // ? ! ƒ[ƒœŽZ
+	{
+		do
+		{
+			t = UI%HBIT%_or(ans, mask);
+			m = UI%HBIT%_Mul(b, t);
+
+			if(UI%HBIT%_IsZero(UI%HBIT%_Hi))
+			{
+				UI%HBIT%_Comp(a, m);
+
+				if(UI%HBIT%_Ununderflow)
+					ans = t;
+			}
+		}
+		while(!UI%HBIT%_rs(&mask, 0));
+	}
+	return ans;
+}
+
+int UI%HBIT%_IsZero(uint%HBIT%_t a)
+{
+	return UI%LBIT%_IsZero(a.L) && UI%LBIT%_IsZero(a.H);
+}
+int UI%HBIT%_Comp(uint%HBIT%_t a, uint%HBIT%_t b)
+{
+	uint%HBIT%_t ans = UI%HBIT%_Sub(a, b);
+
+	if(!UI%HBIT%_Ununderflow)
+		return -1;
+
+	if(UI%HBIT%_IsZero(ans))
+		return 0;
+
+	return 1;
+}
+uint UI%HBIT%_rs(uint%HBIT%_t *a, uint msb)
+{
+	return UI%LBIT%_rs(&a->L, UI%LBIT%_rs(&a->H, msb));
+}
+uint%HBIT%_t UI%HBIT%_or(uint%HBIT%_t a, uint%HBIT%_t b)
+{
+	uint%HBIT%_t ans;
+
+	ans.L = UI%LBIT%_or(a.L, b.L);
+	ans.H = UI%LBIT%_or(a.H, b.H);
+
+	return ans;
+}

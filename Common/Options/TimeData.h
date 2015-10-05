@@ -25,3 +25,7 @@ uint64 TimeData2Stamp(TimeData_t td);
 
 TimeData_t GetNowTimeData(void);
 uint64 GetNowSec(void);
+
+TimeData_t ResStamp2TimeData(uint64 prmStamp);
+TimeData_t Res2TimeData(char *prm);
+TimeData_t Res2TimeData_x(char *prm);

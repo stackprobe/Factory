@@ -166,7 +166,7 @@ static int ReadArgs(void)
 
 		foreach(lines, line, index)
 		{
-			autoList_t *tokens = ucStrTokenize(line);
+			autoList_t *tokens = ucTokenize(line);
 
 			errorCase(getCount(tokens) != 3);
 
