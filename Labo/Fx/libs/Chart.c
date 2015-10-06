@@ -29,6 +29,8 @@ static void LoadDayPrice(DayPrice_t *i, uint64 day)
 	char *file;
 	uint pr_index;
 
+	LOGPOS();
+
 	for(pr_index = 0; pr_index < 43200; pr_index++) // ‰Šú‰» -- ‚±‚Ì“ú‚ªŒ‡—Ž‚µ‚Ä‚¢‚½ê‡
 	{
 		i->Prices[pr_index].Ask = DEF_PRICE;
@@ -140,7 +142,11 @@ static Price_t *GetPrice(uint64 sec)
 		}
 	}
 	day_index = (uint)(day - BaseDay);
+
 	errorCase(DAY_MAX <= day_index); // 2bs
+
+	day_index += BasePos;
+	day_index %= DAY_MAX;
 
 	if(!DayPrices[day_index].Loaded)
 		LoadDayPrice(DayPrices + day_index, day);
