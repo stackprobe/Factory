@@ -13,7 +13,7 @@ void UI128_0(uint128_t *dest)
 void UI128_x(uint x, uint128_t *dest)
 {
 	UI64_x(x, &dest->L);
-//	UI64_0(&dest->H); // XXX
+	UI64_0(&dest->H);
 }
 void UI128_msb1(uint128_t *dest)
 {
@@ -77,8 +77,45 @@ void UI128_Mul(uint128_t *a, uint128_t *b, uint128_t *ans, uint128_t *ans_hi)
 	UI128_Add(ans_hi, &tmp1H, ans_hi);
 	UI128_Add(ans_hi, &tmp2H, ans_hi);
 }
+/*
+	---- H, L に 0 を持つ場合 ----
+
+	0 0 / 0 0 = 0 div
+	A 0 / 0 0 = 0 div
+	0 a / 0 0 = 0 div
+	0 0 / B 0 = 0
+	0 0 / 0 b = 0
+	A a / 0 0 = 0 div
+	A 0 / B 0 = A / B
+	A 0 / 0 b = x
+	0 a / B 0 = 0
+	0 a / 0 b = a / b
+	0 0 / B b = 0
+	A a / B 0 = A / B
+	A a / 0 b = x
+	A 0 / B b = z
+	0 a / B b = 0
+	A a / B b = z
+
+	---- case x ----
+
+	A < b
+		ans += A * (fill / b) [再帰]
+	else
+		ans += (A / b) << Hi [再帰]
+
+	---- case z ----
+
+	A < B ... 0
+	A = B ... a < b ? 0 : 1
+	A > B ...
+
+		ans += A / (B + 1) + (A / B - A / (B + 1)) / (fill / b) [再帰] <-- TODO これでいいのか？
+*/
 void UI128_Div(uint128_t *a, uint128_t *b, uint128_t *ans)
 {
+	// TODO 遅い！
+
 	static uint128_t mask;
 	static uint128_t t;
 	static uint128_t m;

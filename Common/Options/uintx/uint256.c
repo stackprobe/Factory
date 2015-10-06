@@ -13,7 +13,7 @@ void UI256_0(uint256_t *dest)
 void UI256_x(uint x, uint256_t *dest)
 {
 	UI128_x(x, &dest->L);
-//	UI128_0(&dest->H); // XXX
+	UI128_0(&dest->H);
 }
 void UI256_msb1(uint256_t *dest)
 {
@@ -77,8 +77,45 @@ void UI256_Mul(uint256_t *a, uint256_t *b, uint256_t *ans, uint256_t *ans_hi)
 	UI256_Add(ans_hi, &tmp1H, ans_hi);
 	UI256_Add(ans_hi, &tmp2H, ans_hi);
 }
+/*
+	---- H, L に 0 を持つ場合 ----
+
+	0 0 / 0 0 = 0 div
+	A 0 / 0 0 = 0 div
+	0 a / 0 0 = 0 div
+	0 0 / B 0 = 0
+	0 0 / 0 b = 0
+	A a / 0 0 = 0 div
+	A 0 / B 0 = A / B
+	A 0 / 0 b = x
+	0 a / B 0 = 0
+	0 a / 0 b = a / b
+	0 0 / B b = 0
+	A a / B 0 = A / B
+	A a / 0 b = x
+	A 0 / B b = z
+	0 a / B b = 0
+	A a / B b = z
+
+	---- case x ----
+
+	A < b
+		ans += A * (fill / b) [再帰]
+	else
+		ans += (A / b) << Hi [再帰]
+
+	---- case z ----
+
+	A < B ... 0
+	A = B ... a < b ? 0 : 1
+	A > B ...
+
+		ans += A / (B + 1) + (A / B - A / (B + 1)) / (fill / b) [再帰] <-- TODO これでいいのか？
+*/
 void UI256_Div(uint256_t *a, uint256_t *b, uint256_t *ans)
 {
+	// TODO 遅い！
+
 	static uint256_t mask;
 	static uint256_t t;
 	static uint256_t m;

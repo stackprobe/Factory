@@ -13,7 +13,7 @@ void UI%HBIT%_0(uint%HBIT%_t *dest)
 void UI%HBIT%_x(uint x, uint%HBIT%_t *dest)
 {
 	UI%LBIT%_x(x, &dest->L);
-//	UI%LBIT%_0(&dest->H); // XXX
+	UI%LBIT%_0(&dest->H);
 }
 void UI%HBIT%_msb1(uint%HBIT%_t *dest)
 {
@@ -77,8 +77,45 @@ void UI%HBIT%_Mul(uint%HBIT%_t *a, uint%HBIT%_t *b, uint%HBIT%_t *ans, uint%HBIT
 	UI%HBIT%_Add(ans_hi, &tmp1H, ans_hi);
 	UI%HBIT%_Add(ans_hi, &tmp2H, ans_hi);
 }
+/*
+	---- H, L に 0 を持つ場合 ----
+
+	0 0 / 0 0 = 0 div
+	A 0 / 0 0 = 0 div
+	0 a / 0 0 = 0 div
+	0 0 / B 0 = 0
+	0 0 / 0 b = 0
+	A a / 0 0 = 0 div
+	A 0 / B 0 = A / B
+	A 0 / 0 b = x
+	0 a / B 0 = 0
+	0 a / 0 b = a / b
+	0 0 / B b = 0
+	A a / B 0 = A / B
+	A a / 0 b = x
+	A 0 / B b = z
+	0 a / B b = 0
+	A a / B b = z
+
+	---- case x ----
+
+	A < b
+		ans += A * (fill / b) [再帰]
+	else
+		ans += (A / b) << Hi [再帰]
+
+	---- case z ----
+
+	A < B ... 0
+	A = B ... a < b ? 0 : 1
+	A > B ...
+
+		ans += A / (B + 1) + (A / B - A / (B + 1)) / (fill / b) [再帰] <-- TODO これでいいのか？
+*/
 void UI%HBIT%_Div(uint%HBIT%_t *a, uint%HBIT%_t *b, uint%HBIT%_t *ans)
 {
+	// TODO 遅い！
+
 	static uint%HBIT%_t mask;
 	static uint%HBIT%_t t;
 	static uint%HBIT%_t m;
