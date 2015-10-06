@@ -3,7 +3,7 @@
 #define DATA_DIR "C:\\tmp\\Fx"
 #define CURR_PAIR "USDJPY"
 #define DEF_PRICE 120.0
-#define DAY_MAX 100
+#define DAY_MAX 40
 
 typedef struct Price_st
 {

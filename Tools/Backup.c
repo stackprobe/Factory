@@ -220,6 +220,8 @@ int main(int argc, char **argv)
 	errorCase(existPath(destDir));
 	createDir(destDir);
 
+	coExecute_x(xcout("Compact.exe /C /S:\"%s\"", destDir));
+
 	addCwd(destDir);
 	BackupDirs(targetDirs);
 	unaddCwd();
