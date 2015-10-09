@@ -635,18 +635,31 @@ foundPath:
 
 char *LOGPOS_Time(void)
 {
-	static char buff[35]; // Å‘å’l -> "307445734561825:51.615 +4294967296"
+	static char buff[66]; // Å‘å’l -> "307445734561825:51.615 18446744073709551615 +18446744073709551615"
+	static uint64 firstMillis;
 	static uint64 lastMillis;
 	uint64 millis = nowTick();
-	uint elapse;
 
 	if(!buff[0]) // ? ‰‰ñ
-		elapse = 0;
+	{
+		sprintf(buff, "%I64u:%02u.%03u"
+			,millis / 60000
+			,(uint)((millis / 1000) % 60)
+			,(uint)(millis % 1000)
+			);
+
+		firstMillis = millis;
+	}
 	else
-		elapse = (uint)(millis - lastMillis);
-
-	sprintf(buff, "%I64u:%02u.%03u +%u", millis / 60000, (uint)((millis / 1000) % 60), (uint)(millis % 1000), elapse);
-
+	{
+		sprintf(buff, "%I64u:%02u.%03u %I64u +%I64u"
+			,millis / 60000
+			,(uint)((millis / 1000) % 60)
+			,(uint)(millis % 1000)
+			,millis - firstMillis
+			,millis - lastMillis
+			);
+	}
 	lastMillis = millis;
 	return buff;
 }
