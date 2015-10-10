@@ -10,7 +10,7 @@ static void MakeBatch(uint64 minval, uint64 maxval, uint bat_no)
 {
 	writeOneLine_xx(
 		xcout("%04u.bat_undone", bat_no),
-		xcout("Prime64.exe %s %I64u %I64u out\\%04u.txt", CountMode ? "/C" : "/R", minval, maxval, bat_no)
+		xcout("Prime64.exe %s %I64u %I64u out\\%04u_%I64u-%I64u.txt", CountMode ? "/C" : "/R", minval, maxval, bat_no, minval, maxval)
 		);
 }
 static void MkBatUndone(void)
