@@ -97,7 +97,7 @@ static void GitFactory(char *rDir, char *wDir, int allowOverwrite)
 
 	antiSubversion = 1;
 	files = lss(rDir);
-	eraseRoots(files, rDir);
+	changeRoots(files, rDir, NULL);
 	RemoveIgnoreFiles(files);
 	sortJLinesICase(files);
 

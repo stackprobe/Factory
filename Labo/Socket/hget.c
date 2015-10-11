@@ -72,6 +72,7 @@ int main(int argc, char **argv)
 	int successful = 0;
 	uint lastStartTime;
 	int outputAndOpenOutDir = 0;
+	char *hdrOutFile = NULL;
 
 	httpM4UServerMode = 1;
 	timeout = 86400;
@@ -164,6 +165,12 @@ readArgs:
 		httpRecvedHeader = newList();
 		goto readArgs;
 	}
+	if(argIs("/HHO")) // 受信ヘッダをファイルに保存する。
+	{
+		httpRecvedHeader = newList();
+		hdrOutFile = nextArg();
+		goto readArgs;
+	}
 
 	if(hasArgs(1))
 	{
@@ -214,6 +221,12 @@ readArgs:
 retry:
 	lastStartTime = now();
 
+	if(httpRecvedHeader)
+	{
+		releaseDim(httpRecvedHeader, 1);
+		httpRecvedHeader = newList();
+	}
+
 	ProgressBegin();
 	SockSendInterlude = Progress_Wrap;
 	SockRecvInterlude = Progress_Wrap;
@@ -226,23 +239,26 @@ retry:
 
 	execute("TITLE hget - done");
 
-	if(httpRecvedHeader)
-	{
-		char *rh_line;
-		uint rh_index;
-
-		cout("★受信ヘッダここから\n");
-
-		foreach(httpRecvedHeader, rh_line, rh_index)
-			cout("%s\n", rh_line);
-
-		cout("★受信ヘッダここまで\n");
-
-		releaseDim(httpRecvedHeader, 1);
-		httpRecvedHeader = NULL;
-	}
 	if(retval)
 	{
+		if(httpRecvedHeader)
+		{
+			char *rh_line;
+			uint rh_index;
+
+			cout("★受信ヘッダここから\n");
+
+			foreach(httpRecvedHeader, rh_line, rh_index)
+				cout("%s\n", rh_line);
+
+			cout("★受信ヘッダここまで\n");
+
+			if(hdrOutFile)
+				writeLines(hdrOutFile, httpRecvedHeader);
+
+			releaseDim(httpRecvedHeader, 1);
+			httpRecvedHeader = NULL;
+		}
 		if(outFile)
 		{
 			if(existFile(outFile))
