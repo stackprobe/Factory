@@ -498,7 +498,7 @@ static void FileHistory(char *storeDir, int fromLastRevisionFlag, int lastFileOn
 	forceRemoveDir_x(outStockTestDir);
 	unaddCwd();
 }
-static void RemoveLastRevIfNoMod(char *storeDir)
+static void RemoveLastRevIfNoMod(char *storeDir, int quietFlag)
 {
 	autoList_t *revisions;
 	char *stamp1;
@@ -549,7 +549,7 @@ static void RemoveLastRevIfNoMod(char *storeDir)
 		cout("> %s\n", removeTargetDir);
 		cout("削除？\n");
 
-		if(clearGetKey() != 0x1b)
+		if(quietFlag || clearGetKey() != 0x1b)
 		{
 			cout("削除します。\n");
 			forceRemoveDir(removeTargetDir);
@@ -955,6 +955,8 @@ static int FileHistoryMode;
 static int FileHistoryMode_FromLastRevision;
 static int FileHistoryMode_LastFileOnly;
 static int RemoveLastRevIfNoModMode;
+static int RemoveLastRevIfNoModMode_QuietMode;
+static char *InputDirExt;
 
 static void Rum(char *dir)
 {
@@ -963,6 +965,11 @@ static void Rum(char *dir)
 	dir = makeFullPath(dir);
 	cout("対象: %s\n", dir);
 
+	if(InputDirExt)
+	{
+		dir = changeExt_xc(dir, InputDirExt);
+		cout("対Ⅱ: %s\n", dir);
+	}
 	errorCase(isAbsRootDir(dir));
 	errorCase(!existDir(dir));
 
@@ -982,7 +989,7 @@ static void Rum(char *dir)
 		}
 		else if(RemoveLastRevIfNoModMode)
 		{
-			RemoveLastRevIfNoMod(dir);
+			RemoveLastRevIfNoMod(dir, RemoveLastRevIfNoModMode_QuietMode);
 		}
 		else
 		{
@@ -1031,6 +1038,17 @@ int main(int argc, char **argv)
 	if(argIs("/R")) // Remove last revison if no modifications
 	{
 		RemoveLastRevIfNoModMode = 1;
+	}
+	if(argIs("/RR")) // qrum 用
+	{
+		RemoveLastRevIfNoModMode = 1;
+		InputDirExt = "rum";
+	}
+	if(argIs("/RRR")) // qrum 用
+	{
+		RemoveLastRevIfNoModMode = 1;
+		RemoveLastRevIfNoModMode_QuietMode = 1;
+		InputDirExt = "rum";
 	}
 	if(argIs("/Q")) // Quiet mode
 	{
