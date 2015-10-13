@@ -160,15 +160,25 @@ int eqIntPulseSec(uint span, uint *p_nextSec)
 	}
 	return 0;
 }
+#if 0
 uint getTick(void)
 {
 	return GetTickCount();
 }
+#endif
 uint getUDiff(uint tick1, uint tick2) // ret: tick2 - tick1
 {
 	if(tick2 < tick1)
 	{
 		return 0xffffffffu - ((tick1 - tick2) - 1u);
+	}
+	return tick2 - tick1;
+}
+uint64 getUDiff64(uint64 tick1, uint64 tick2) // ret: tick2 - tick1
+{
+	if(tick2 < tick1)
+	{
+		return 0xffffffffffffffffui64 - ((tick1 - tick2) - 1ui64);
 	}
 	return tick2 - tick1;
 }
@@ -181,6 +191,16 @@ sint getIDiff(uint tick1, uint tick2) // ret: tick2 - tick1
 		return (sint)diff;
 	}
 	return (-0x7fffffff - 1) + (sint)(diff - 0x80000000u);
+}
+sint64 getIDiff64(uint64 tick1, uint64 tick2) // ret: tick2 - tick1
+{
+	uint64 diff = getUDiff64(tick1, tick2);
+
+	if(diff < 0x8000000000000000ui64)
+	{
+		return (sint64)diff;
+	}
+	return (-0x7fffffffffffffffI64 - 1) + (sint64)(diff - 0x8000000000000000ui64);
 }
 int isLittleEndian(void)
 {

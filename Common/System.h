@@ -21,9 +21,11 @@ uint64 nowTick(void);
 uint now(void);
 int pulseSec(uint span, uint *p_nextSec);
 int eqIntPulseSec(uint span, uint *p_nextSec);
-uint getTick(void);
+//uint getTick(void);
 uint getUDiff(uint tick1, uint tick2);
 sint getIDiff(uint tick1, uint tick2);
+uint64 getUDiff64(uint64 tick1, uint64 tick2);
+sint64 getIDiff64(uint64 tick1, uint64 tick2);
 int isLittleEndian(void);
 
 uint64 nextCommonCount(void);

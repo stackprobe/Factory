@@ -134,6 +134,9 @@ void SockCleanup(void)
 	WSACleanup();
 }
 
+/*
+	GetTickCount() の値 <- 起動から 49.7 日後のカンストは考慮しない！！！
+*/
 uint SockWait_T1;
 uint SockWait_T2;
 uint SockWait_T3;
@@ -424,7 +427,7 @@ int SockSendISequ(int sock, autoBlock_t *messageQueue, uint *pIndex, uint waitMi
 */
 int SockSendSequLoop(int sock, autoBlock_t *messageQueue, uint waitMillis)
 {
-	uint startTick = getTick();
+	uint64 startTick = nowTick();
 	uint passedTick = 0;
 	int retval = 0;
 
@@ -438,7 +441,7 @@ int SockSendSequLoop(int sock, autoBlock_t *messageQueue, uint waitMillis)
 			break;
 		}
 		retval += ret;
-		passedTick = getUDiff(startTick, getTick());
+		passedTick = (uint)getUDiff64(startTick, nowTick());
 	}
 	return retval;
 }
@@ -452,7 +455,7 @@ int SockSendSequLoop(int sock, autoBlock_t *messageQueue, uint waitMillis)
 */
 int SockRecvSequLoop(int sock, autoBlock_t *messageQueue, uint waitMillis, uint maxMessageQueueSize)
 {
-	uint startTick = getTick();
+	uint64 startTick = nowTick();
 	uint passedTick = 0;
 	int retval = 0;
 
@@ -466,7 +469,7 @@ int SockRecvSequLoop(int sock, autoBlock_t *messageQueue, uint waitMillis, uint 
 			break;
 		}
 		retval += ret;
-		passedTick = getUDiff(startTick, getTick());
+		passedTick = (uint)getUDiff64(startTick, nowTick());
 	}
 	return retval;
 }
@@ -481,7 +484,7 @@ int SockRecvSequLoop(int sock, autoBlock_t *messageQueue, uint waitMillis, uint 
 int SockRecvSequLoopEnder(int sock, autoBlock_t *messageQueue, uint waitMillis, uint maxMessageQueueSize, char *endPtn)
 {
 	uint endPtnLen = strlen(endPtn);
-	uint startTick = getTick();
+	uint64 startTick = nowTick();
 	uint passedTick = 0;
 	int retval = 0;
 
@@ -513,7 +516,7 @@ int SockRecvSequLoopEnder(int sock, autoBlock_t *messageQueue, uint waitMillis, 
 				}
 			}
 		}
-		passedTick = getUDiff(startTick, getTick());
+		passedTick = (uint)getUDiff64(startTick, nowTick());
 	}
 	return retval;
 }
