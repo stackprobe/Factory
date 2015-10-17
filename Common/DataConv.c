@@ -501,6 +501,7 @@ char *lineToFairRelPath(char *line, uint dirSize)
 	escapeYen(line);
 	tokens = tokenize(line, '/');
 	memFree(line);
+	trimLines(tokens);
 
 	foreach(tokens, token, index)
 		setElement(tokens, index, (uint)lineToFairLocalPath_x(token, 0));
@@ -508,8 +509,8 @@ char *lineToFairRelPath(char *line, uint dirSize)
 	line = untokenize(tokens, "\\");
 	releaseDim(tokens, 1);
 
-	if(PATH_SIZE < dirSize + strlen(line))
-		line = lineToFairLocalPath_x(line, dirSize); // fixme
+	if(!*line || PATH_SIZE < dirSize + strlen(line))
+		line = lineToFairLocalPath_x(line, dirSize);
 
 	return line;
 }
