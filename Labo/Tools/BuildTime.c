@@ -44,7 +44,9 @@ static void ShowBuildTime(char *path)
 		{
 			if(
 				!_stricmp("exe", getExt(file)) ||
-				!_stricmp("exe_", getExt(file))
+				!_stricmp("dll", getExt(file)) ||
+				!_stricmp("exe_", getExt(file)) ||
+				!_stricmp("dll_", getExt(file))
 				)
 			{
 				ShowBuildTime_File(file, getLocal(file));
