@@ -655,7 +655,7 @@ foundPath:
 
 char *LOGPOS_Time(void)
 {
-	static char buff[66]; // Å‘å’l -> "307445734561825:51.615 18446744073709551615 +18446744073709551615"
+	static char buff[66]; // Å‘å’l -> "307445734561825:51.615 18446744073709551615 +18446744073709551615" == 65•¶Žš
 	static uint64 firstMillis;
 	static uint64 lastMillis;
 	uint64 millis = nowTick();
