@@ -19,7 +19,7 @@
 		/OAC ... 出力後、入力ファイルを削除する。入力ディレクトリは空にする。
 		/OAD ... 出力後、入力ファイルを削除する。入力ディレクトリも削除する。
 		/K   ... チェックのみ
-		/E-  ... 自動判定でクラスタファイルを展開したとき、配下に一つもファイルが無かった場合はエクスプローラを開かない。
+		/E-  ... 自動判定で C:\\xxx にクラスタファイルを展開したとき、配下に一つもファイルが無かった場合はエクスプローラを開かず、出力先も削除する。
 
 		/M
 			クラスタファイル生成
@@ -57,9 +57,12 @@
 
 static int IsNoFilesDir(char *dir)
 {
-	autoList_t *paths = lssFiles(dir);
+	autoList_t *paths;
 	int ret;
 
+	findLimiter = 10; // tekitou
+	paths = lssFiles(dir);
+	findLimiter = 0;
 	ret = getCount(paths) == 0;
 	releaseDim(paths, 1);
 	return ret;
@@ -200,7 +203,7 @@ static void CheckCluster(char *file)
 
 static int RestoreSameDirMode;
 static int NoCheckClusterMode;
-static int UnopenEmptyDirMode;
+static int UnopenEmptyClusterMode;
 
 static void AutoActCluster(char *path)
 {
@@ -233,9 +236,15 @@ static void AutoActCluster(char *path)
 
 		if(fdir)
 		{
-			if(!UnopenEmptyDirMode || !IsNoFilesDir(fdir))
+			if(UnopenEmptyClusterMode && IsNoFilesDir(fdir))
+			{
+				LOGPOS();
+				forceRemoveDir(fdir);
+			}
+			else
+			{
 				execute_x(xcout("START %s\n", fdir));
-
+			}
 			memFree(fdir);
 		}
 		memFree(dir);
@@ -284,7 +293,7 @@ readArgs:
 	}
 	if(argIs("/E-"))
 	{
-		UnopenEmptyDirMode = 1;
+		UnopenEmptyClusterMode = 1;
 		goto readArgs;
 	}
 

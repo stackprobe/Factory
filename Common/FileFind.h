@@ -1,5 +1,6 @@
 extern int antiSubversion;
 extern int ignoreUtfPath;
+extern uint findLimiter;
 extern struct _finddata_t lastFindData;
 extern uint lastDirCount;
 

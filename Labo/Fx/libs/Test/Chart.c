@@ -1,6 +1,6 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Random.h"
-#include "..\Chart.h"
+#include "..\all.h"
 
 static double AsmAsk;
 static double AsmBid;

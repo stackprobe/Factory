@@ -16,6 +16,7 @@ static void AddPath(autoList_t *paths, char *path, FILE *extra_fp)
 
 int antiSubversion; // extra-prm
 int ignoreUtfPath; // extra-prm
+uint findLimiter; // extra-prm
 
 /*
 	unsigned attrib;
@@ -45,7 +46,6 @@ autoList_t *ls(char *dir)
 	char *wCard;
 	char *name;
 	char *path;
-	uint64 lsCount = 0ui64;
 
 	errorCase(!existDir(absDir));
 
@@ -93,6 +93,13 @@ autoList_t *ls(char *dir)
 			else // ? file
 			{
 				AddPath(files, path, FilesExtraFp);
+			}
+			if(findLimiter)
+			{
+				if(findLimiter == 1)
+					break;
+
+				findLimiter--;
 			}
 		}
 		while(_findnext(h, &lastFindData) == 0);

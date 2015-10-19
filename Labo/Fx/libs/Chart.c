@@ -1,4 +1,4 @@
-#include "Chart.h"
+#include "all.h"
 
 #define DATA_DIR "C:\\tmp\\Fx"
 #define CURR_PAIR "USDJPY"

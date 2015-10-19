@@ -1,4 +1,4 @@
-#include "MovingAverage.h"
+#include "all.h"
 
 #define IDENOM 1000000
 
@@ -18,8 +18,10 @@ FxMA_t *CreateFxMA(uint64 fxTime, uint64 span)
 {
 	FxMA_t *i = nb(FxMA_t);
 
-	errorCase(fxTime & 1 != 0); // ? äÔêî
-	errorCase(span & 1 != 0); // ? äÔêî
+	errorCase(FXTIME_MAX < fxTime);
+	errorCase(FXTIME_MAX < span);
+	errorCase(fxTime % 2 != 0); // ? odd
+	errorCase(span % 2 != 0); // ? odd
 	errorCase(fxTime < span);
 
 	i->FxTime = fxTime;
@@ -53,7 +55,8 @@ void ReleaseFxMA(FxMA_t *i)
 void FxMA_SetFxTime(FxMA_t *i, uint64 fxTime)
 {
 	errorCase(!i);
-	errorCase(fxTime & 1 != 0); // ? äÔêî
+	errorCase(FXTIME_MAX < fxTime);
+	errorCase(fxTime % 2 != 0); // ? odd
 
 	while(i->FxTime < fxTime)
 	{

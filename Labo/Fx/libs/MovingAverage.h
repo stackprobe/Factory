@@ -1,9 +1,3 @@
-#pragma once
-
-#include "C:\Factory\Common\all.h"
-#include "Chart.h"
-#include "FxTime.h"
-
 typedef struct FxMA_st
 {
 	uint64 FxTime;
