@@ -57,6 +57,7 @@ static autoList_t *CheckAndReadLines(char *file, char *errorMessage)
 #endif
 
 	lines = tokenize(text, '\n');
+	memFree(text);
 
 	errorCase_m(((char *)getLastElement(lines))[0], errorMessage); // 空のファイルか、改行で終わっているはず。
 
@@ -265,6 +266,7 @@ readArgs:
 	if(hasArgs(1))
 	{
 		CheckRum(nextArg());
+termination(0); // test
 		return;
 	}
 

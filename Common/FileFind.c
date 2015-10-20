@@ -84,6 +84,13 @@ autoList_t *ls(char *dir)
 
 				error();
 			}
+			if(findLimiter)
+			{
+				if(findLimiter == 1)
+					continue;
+
+				findLimiter--;
+			}
 			path = combine(absDir, name);
 
 			if(lastFindData.attrib & _A_SUBDIR) // ? dir
@@ -93,13 +100,6 @@ autoList_t *ls(char *dir)
 			else // ? file
 			{
 				AddPath(files, path, FilesExtraFp);
-			}
-			if(findLimiter)
-			{
-				if(findLimiter == 1)
-					break;
-
-				findLimiter--;
 			}
 		}
 		while(_findnext(h, &lastFindData) == 0);
