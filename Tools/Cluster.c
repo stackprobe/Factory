@@ -4,7 +4,7 @@
 
 	----
 
-	Cluster.exe [/C] [/Q] [/T] [/OAC] [/OAD] [/E-] [クラスタファイル | 入力ディレクトリ |
+	Cluster.exe [/C] [/Q] [/T] [/OAC] [/OAD] [/OW] [/E-] [クラスタファイル | 入力ディレクトリ |
 	             /K  クラスタファイル |
 	             /M  出力クラスタファイル 入力DIR |
 	             /MO 出力クラスタファイル 入力DIR |
@@ -18,6 +18,7 @@
 		/T   ... トラストモード
 		/OAC ... 出力後、入力ファイルを削除する。入力ディレクトリは空にする。
 		/OAD ... 出力後、入力ファイルを削除する。入力ディレクトリも削除する。
+		/OW  ... 出力先が存在する場合上書きする。
 		/K   ... チェックのみ
 		/E-  ... 自動判定で C:\\xxx にクラスタファイルを展開したとき、配下に一つもファイルが無かった場合はエクスプローラを開かず、出力先も削除する。
 
@@ -74,6 +75,7 @@ static FILE *Stream;
 static uint64 RWCount;
 static int OutputAndCleanMode;
 static int OutputAndDeleteMode;
+static int OverwriteMode;
 
 static void Writer(uchar *block, uint size)
 {
@@ -129,6 +131,12 @@ static void MakeCluster(char *file, char *dir)
 	cout("> %s\n", file);
 	cout("< %s\n", dir);
 
+	if(OverwriteMode)
+	{
+		cout("OW_DELETE DEST\n");
+		forceRemovePathIfExist(file);
+		cout("OW_DELETE DEST Ok.\n");
+	}
 	errorCase(existPath(file));
 	errorCase(!existDir(dir));
 
@@ -160,6 +168,12 @@ static void RestoreCluster(char *file, char *dir)
 	cout("< %s\n", file);
 	cout("> %s\n", dir);
 
+	if(OverwriteMode)
+	{
+		cout("OW_DELETE DEST\n");
+		forceRemovePathIfExist(dir);
+		cout("OW_DELETE DEST Ok.\n");
+	}
 	errorCase(!existFile(file));
 	errorCase(existPath(dir));
 
@@ -289,6 +303,15 @@ readArgs:
 		cout("***********************\n");
 
 		OutputAndDeleteMode = 1;
+		goto readArgs;
+	}
+	if(argIs("/OW"))
+	{
+		cout("###############\n");
+		cout("## OVERWRITE ##\n");
+		cout("###############\n");
+
+		OverwriteMode = 1;
 		goto readArgs;
 	}
 	if(argIs("/E-"))

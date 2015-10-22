@@ -1,4 +1,5 @@
 #include "C:\Factory\Common\all.h"
+#include "C:\Factory\Common\Options\Collabo.h"
 
 #define REV_MAX 100
 
@@ -97,16 +98,40 @@ endFunc:
 	memFree(revDir);
 	memFree(wFile);
 }
-static void AddRev(char *rDir, char *wDir)
+static void ExtractCluster(char *cluster, char *rootDir)
+{
+	char *lCluster = getLocal(cluster);
+	char *node;
+	char *wDir;
+
+	LOGPOS();
+
+	node = changeExt(lCluster, "");
+	wDir = combine(rootDir, node);
+
+	cout("wDir: %s\n", wDir);
+
+	if(existDir(wDir))
+		coExecute_x(xcout("C:\\Factory\\Tools\\Cluster.exe /OAD /OW /R \"%s\" \"%s\"", cluster, wDir));
+
+	memFree(node);
+	memFree(wDir);
+
+	LOGPOS();
+}
+static void AddRev(char *rDir, char *wDir, char *extCluWDir)
 {
 	rDir = makeFullPath(rDir);
 	wDir = makeFullPath(wDir);
+	extCluWDir = makeFullPath(extCluWDir);
 
 	cout("< %s\n", rDir);
 	cout("> %s\n", wDir);
+	cout("> %s\n", extCluWDir);
 
 	errorCase(!existDir(rDir));
 	errorCase(!existDir(wDir));
+	errorCase(!existDir(extCluWDir));
 
 	{
 		autoList_t *files = lsFiles(rDir);
@@ -116,19 +141,29 @@ static void AddRev(char *rDir, char *wDir)
 		foreach(files, file, index)
 		{
 			AddRev_File(file, wDir);
+
+			if(existFile(file) && !_stricmp("clu", getExt(file)))
+			{
+				ExtractCluster(file, extCluWDir);
+			}
 		}
 		releaseDim(files, 1);
 	}
 
 	memFree(rDir);
 	memFree(wDir);
+	memFree(extCluWDir);
 }
 int main(int argc, char **argv)
 {
-	if(hasArgs(2))
+	if(hasArgs(3))
 	{
-		AddRev(getArg(0), getArg(1));
+		AddRev(getArg(0), getArg(1), getArg(2));
 		return;
 	}
-	AddRev("C:\\pub\\リリース物", "C:\\BlueFish\\BlueFish\\HTT\\stackprobe\\home");
+	AddRev(
+		"C:\\pub\\リリース物",
+		"C:\\BlueFish\\BlueFish\\HTT\\stackprobe\\home",
+		"C:\\BlueFish\\BlueFish\\HTT"
+		);
 }
