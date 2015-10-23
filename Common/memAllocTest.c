@@ -131,12 +131,16 @@ static void Inner_memFree(void *block)
 
 static void DebugOutputBlocks(void) // 標準関数のみで、、
 {
-	FILE *fp = fopen("C:\\temp\\memory.txt", "wt");
+	FILE *fp;
 	char *line;
 	uint index;
 	uint bPos;
 
 	printf("DebugOutputBlocks_Bgn\n");
+
+	system("MD C:\\temp"); // 無きゃ作る。
+
+	fp = fopen("C:\\temp\\memory.txt", "wt");
 
 	if(!fp)
 		return;
