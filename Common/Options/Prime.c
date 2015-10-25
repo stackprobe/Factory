@@ -76,10 +76,8 @@ static int LoadPBits(void)
 	autoBlock_t gab;
 
 	if(!existFile(GetDatFile()))
-	{
-		unmutex();
 		return 0;
-	}
+
 	errorCase(getFileSize(GetDatFile()) != PBIT_LEN * sizeof(uint));
 
 	fp = fileOpen(GetDatFile(), "rb");
