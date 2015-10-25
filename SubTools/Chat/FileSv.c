@@ -235,6 +235,9 @@ static void Perform_FindPtn(ConnInfo_t *i, char *ttlPath, char *findPtn)
 
 	body = strx(body);
 
+	body = replaceLine(body, "__COMPUTER-NAME__", getEnvLine("COMPUTERNAME"), 0);
+	body = replaceLine(body, "__LIST-PATH__", ttlPath, 0);
+
 	{
 		char *title = xcout("[%s] %s", getEnvLine("COMPUTERNAME"), ttlPath);
 
