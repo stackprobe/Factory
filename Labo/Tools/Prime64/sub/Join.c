@@ -4,6 +4,8 @@ static void FileToStream(char *rFile, FILE *wFp)
 {
 	FILE *rFp = fileOpen(rFile, "rb");
 
+	LOGPOS();
+
 	for(; ; )
 	{
 		autoBlock_t *buff = readBinaryStream(rFp, 512000000);
@@ -11,9 +13,12 @@ static void FileToStream(char *rFile, FILE *wFp)
 		if(!buff)
 			break;
 
+		LOGPOS();
 		writeBinaryBlock_x(wFp, buff);
+		LOGPOS();
 	}
 	fileClose(rFp);
+	LOGPOS();
 }
 static void DoJoin(char *rDir, char *outFile)
 {

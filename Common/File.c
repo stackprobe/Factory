@@ -455,7 +455,7 @@ void forceRemovePathIfExist(char *path)
 		ルートディレクトリの場合何もしない。
 
 	mode
-		"DFX" == dir, file, no-create
+		"DFXdf" == dir, file, no-create, dir-if-not-exist, file-if-not-exist
 */
 void createPath(char *path, int mode)
 {
@@ -490,6 +490,14 @@ void createPath(char *path, int mode)
 		break;
 
 	case 'X':
+		break;
+
+	case 'd':
+		createDirIfNotExist(path);
+		break;
+
+	case 'f':
+		createFileIfNotExist(path);
 		break;
 
 	default:

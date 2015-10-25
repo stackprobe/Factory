@@ -328,6 +328,10 @@ char *replaceLineLoop(char *line, char *ptn1, char *ptn2, int ignoreCase, uint l
 	}
 	return line;
 }
+uint replaceLine_getLastReplacedCount(void)
+{
+	return LastReplacedCount;
+}
 
 #define CB_MINSIZE 16
 

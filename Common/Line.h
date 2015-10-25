@@ -66,6 +66,7 @@ char *mbs_strstr(char *line, char *ptn);
 char *mbs_stristr(char *line, char *ptn);
 char *replaceLine(char *line, char *ptn1, char *ptn2, int ignoreCase);
 char *replaceLineLoop(char *line, char *ptn1, char *ptn2, int ignoreCase, uint loopMax);
+uint replaceLine_getLastReplacedCount(void);
 
 void copyBlock(void *dest, void *src, uint size);
 void copyLine(char *dest, char *src);

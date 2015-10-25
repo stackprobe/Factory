@@ -307,9 +307,9 @@ readArgs:
 	}
 	if(argIs("/OW"))
 	{
-		cout("###############\n");
-		cout("## OVERWRITE ##\n");
-		cout("###############\n");
+		cout("***************\n");
+		cout("** OVERWRITE **\n");
+		cout("***************\n");
 
 		OverwriteMode = 1;
 		goto readArgs;

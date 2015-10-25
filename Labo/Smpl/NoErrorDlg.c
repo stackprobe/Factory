@@ -1,6 +1,6 @@
 /*
 	EndProc によってエラーダイアログを表示する前に exit() する。
-	なお、termination() によって Finalizers の続きが実行されるので、Echo6～1 すべて実行される。
+	なお、EndProc 内の termination() によって Finalizers の続きが実行されるので、Echo6～1 すべて実行される。
 */
 
 #include "C:\Factory\Common\all.h"

@@ -132,7 +132,7 @@ readArgs:
 
 int IsTight(void)
 {
-	if(0.9 < sockConnectedRate)
+	if(0.8999 < sockConnectedRate)
 	{
 		cout("TIGHT!\n");
 		return 1;

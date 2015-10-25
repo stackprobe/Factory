@@ -138,8 +138,6 @@ static void DebugOutputBlocks(void) // 標準関数のみで、、
 
 	printf("DebugOutputBlocks_Bgn\n");
 
-	system("MD C:\\temp"); // 無きゃ作る。
-
 	fp = fopen("C:\\temp\\memory.txt", "wt");
 
 	if(!fp)

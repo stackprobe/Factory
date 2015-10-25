@@ -68,31 +68,23 @@ static void SavePBits(void)
 {
 	autoBlock_t gab;
 
-	mutex();
-	{
-		writeBinary(GetDatFile(), gndBlockVar(PBits, PBIT_LEN * sizeof(uint), gab));
-	}
-	unmutex();
+	writeBinary(GetDatFile(), gndBlockVar(PBits, PBIT_LEN * sizeof(uint), gab));
 }
 static int LoadPBits(void)
 {
-	mutex();
+	FILE *fp;
+	autoBlock_t gab;
+
+	if(!existFile(GetDatFile()))
 	{
-		FILE *fp;
-		autoBlock_t gab;
-
-		if(!existFile(GetDatFile()))
-		{
-			unmutex();
-			return 0;
-		}
-		errorCase(getFileSize(GetDatFile()) != PBIT_LEN * sizeof(uint));
-
-		fp = fileOpen(GetDatFile(), "rb");
-		fileRead(fp, gndBlockVar(PBits, PBIT_LEN * sizeof(uint), gab));
-		fileClose(fp);
+		unmutex();
+		return 0;
 	}
-	unmutex();
+	errorCase(getFileSize(GetDatFile()) != PBIT_LEN * sizeof(uint));
+
+	fp = fileOpen(GetDatFile(), "rb");
+	fileRead(fp, gndBlockVar(PBits, PBIT_LEN * sizeof(uint), gab));
+	fileClose(fp);
 
 	return 1;
 }
@@ -143,16 +135,23 @@ static void DoINIT(void)
 {
 	PBits = (uint *)memAlloc(PBIT_LEN * sizeof(uint));
 
-	if(LoadPBits())
-		return;
-
-	LOGPOS();
-	PutPrimeTo13();
-	LOGPOS();
-	PutPrimeFrom17();
 	LOGPOS();
 
-	SavePBits();
+	mutex();
+	{
+		if(!LoadPBits())
+		{
+			LOGPOS();
+			PutPrimeTo13();
+			LOGPOS();
+			PutPrimeFrom17();
+			LOGPOS();
+			SavePBits();
+		}
+	}
+	unmutex();
+
+	LOGPOS();
 }
 static void INIT(void)
 {
