@@ -7,6 +7,7 @@ extern int errorOccurred;
 extern char *errorPosSource;
 extern uint errorPosLineno;
 extern char *errorPosFunction;
+extern char *errorPosMessage;
 
 void error2(char *module, uint lineno, char *section, char *message);
 

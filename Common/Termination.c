@@ -40,6 +40,7 @@ int errorOccurred;
 char *errorPosSource = "?";
 uint errorPosLineno;
 char *errorPosFunction = "?";
+char *errorPosMessage = "";
 
 void error2(char *source, uint lineno, char *function, char *message)
 {
@@ -60,10 +61,13 @@ void error2(char *source, uint lineno, char *function, char *message)
 	cout("%s (%u) %s\n", source, lineno, function);
 
 	if(message)
+	{
 		cout("----\n%s\n----\n", message);
 //		cout("%s\n", message);
 //		cout("error-reason: %s\n", message);
 
+		errorPosMessage = message;
+	}
 	errorOccurred = 1;
 	errorPosSource = source;
 	errorPosLineno = lineno;
