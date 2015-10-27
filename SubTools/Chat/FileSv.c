@@ -277,8 +277,8 @@ static void Perform_FindPtn(ConnInfo_t *i, char *ttlPath, char *findPtn)
 
 				element = strx(element);
 
+				element = replaceLine(element, "__INFO__", info, 0); // 先に, ファイル名にパターンがあると置換されてしまう。
 				element = replaceLine(element, "__NAME__", name, 0);
-				element = replaceLine(element, "__INFO__", info, 0);
 
 				addElement(wLines, (uint)element);
 
