@@ -61,7 +61,7 @@ static char *GetPackExeFile(void)
 	static char *file;
 
 	if(!file)
-		file = GetCollaboFile("C:\\app\\kit\\Compress\\Compress.exe");
+		file = GetCollaboFile("C:\\app\\Kit\\Compress\\Compress.exe");
 
 	return file;
 }

@@ -42,6 +42,7 @@ char *toPrintLine(autoBlock_t *block, int insRet);
 char *lineToPrintLine(char *line, int insRet);
 char *lineToPrintLine_x(char *line, int insRet);
 void line2JLine(char *line, int okJpn, int okRet, int okTab, int okSpc);
+void line2JToken(char *token, int okJpn, int okBlank);
 int isJLine(char *line, int okJpn, int okRet, int okTab, int okSpc);
 char *lineToJDoc(char *line, int okRet);
 char *lineToJDoc_x(char *line, int okRet);

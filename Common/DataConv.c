@@ -383,6 +383,11 @@ char *lineToJDocMax(char *line, int okRet, uint lenmax)
 	line = lineToJDoc_x(line, okRet);
 	return line;
 }
+void line2JToken(char *token, int okJpn, int okBlank)
+{
+	line2JLine(token, okJpn, okBlank, okBlank, okBlank);
+	ucTrim(token);
+}
 static autoList_t *GetWindowsReserveNodeList(void)
 {
 	static autoList_t *nodes;

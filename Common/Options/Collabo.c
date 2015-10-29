@@ -1,5 +1,5 @@
 /*
-	主に C:\\app\\kit\\* との連携を想定する。
+	主に C:\\app\\Kit\\* との連携を想定する。
 */
 
 #include "Collabo.h"
