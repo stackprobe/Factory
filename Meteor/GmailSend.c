@@ -243,7 +243,7 @@ int GS_TrySend(void) // ret: ? 成功
 		連続してアクセスするとブロックされるんじゃないか？
 		-> 成功・不成功に関係なくある程度待つ。
 	*/
-	coSleep(2000);
+	coSleep(3000);
 
 	return retval;
 }
