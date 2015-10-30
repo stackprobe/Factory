@@ -259,6 +259,11 @@ char *lineToPrintLine_x(char *line, int insRet)
 	memFree(line);
 	return retLine;
 }
+void line2JToken(char *token, int okJpn, int okBlank)
+{
+	line2JLine(token, okJpn, okBlank, okBlank, okBlank);
+	ucTrim(token);
+}
 void line2JLine(char *line, int okJpn, int okRet, int okTab, int okSpc)
 {
 	char *p;
@@ -341,14 +346,15 @@ char *lineToJDoc(char *line, int okRet)
 	uint index;
 
 	line = strx(line);
-	line2JLine(line, 1, 1, 0, 1);
+	line2JLine(line, 1, 1, 1, 1);
 	lines = tokenize_x(line, '\n');
 
 	foreach(lines, line, index)
 	{
 //		line = replaceLine(line, "@", " ", 0); // ‘SŠpSPC -> ”¼ŠpSPC // ”p~
-//		replaceChar(line, '\r', ' '); // CR ‚Í line2JLine() ‚ª‰½‚Æ‚©‚µ‚Ä‚­‚ê‚éB
-		replaceChar(line, '\t', ' ');
+//		replaceChar(line, '\r', ' '); // CR ‚Í line2JLine() ‚ª‰½‚Æ‚©‚µ‚Ä‚­‚ê‚½‚Í‚¸B
+//		replaceChar(line, '\t', ' ');
+		line = replaceLine(line, "\t", "@@", 0); // XXX
 
 //		line2JLine(line, 1, 0, 0, 1); // moved
 		trimEdge(line, ' ');
@@ -382,11 +388,6 @@ char *lineToJDocMax(char *line, int okRet, uint lenmax)
 	setStrLenMax(line, lenmax);
 	line = lineToJDoc_x(line, okRet);
 	return line;
-}
-void line2JToken(char *token, int okJpn, int okBlank)
-{
-	line2JLine(token, okJpn, okBlank, okBlank, okBlank);
-	ucTrim(token);
 }
 static autoList_t *GetWindowsReserveNodeList(void)
 {

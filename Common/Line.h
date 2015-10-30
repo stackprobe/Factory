@@ -93,6 +93,8 @@ void toUpperLine(char *line);
 char *repeatChar(int chr, uint num);
 char *charSetChar(char *chrs);
 char *kanjiPunch(char *str, int knjChr);
+char *setStrLenRng(char *str, uint lenmin, uint lenmax, int defchr);
+char *setStrLenMin(char *str, uint lenmin, int defchr);
 void setStrLenMax(char *str, uint lenmax);
 void toAsciiLine(char *str, int okRet, int okTab, int okSpc);
 int isAsciiLine(char *str, int okRet, int okTab, int okSpc);

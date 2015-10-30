@@ -1,6 +1,6 @@
 #include "GmailSend.h"
 
-static char *GetRSAExeFile(void)
+static char *GetGmailSendExeFile(void)
 {
 	static char *file;
 
@@ -9,6 +9,8 @@ static char *GetRSAExeFile(void)
 
 	return file;
 }
+
+// ---- Params ---
 
 static autoList_t *ToList;
 static autoList_t *CCList;
@@ -39,25 +41,230 @@ static void INIT(void)
 	BCCList = newList();
 	Attachments = newList();
 }
-void GS_SetFrom(char *from)
+void GS_Clear(void)
 {
 	INIT();
 
-	if(from)
+	releaseDim(ToList, 1);
+	releaseDim(CCList, 1);
+	releaseDim(BCCList, 1);
+	releaseDim(Attachments, 1);
+	memFree(From);
+	memFree(Subject);
+	memFree(Body);
+	memFree(User);
+	memFree(Password);
+	memFree(Host);
+
+	ToList = newList();
+	CCList = newList();
+	BCCList = newList();
+	Attachments = newList();
+	From = NULL;
+	Subject = NULL;
+	Body = NULL;
+	User = NULL;
+	Password = NULL;
+	Host = NULL;
+	Port = 0;
+	SSLDisabled = 0;
+}
+static char *FltrTokenParam(char *prm)
+{
+	errorCase(m_isEmpty(prm));
+
+	INIT();
+
+	prm = strx(prm);
+	line2JToken(prm, 1, 1);
+	prm = setStrLenMin(prm, 1, 'X');
+	return prm;
+}
+void GS_AddTo(char *addr)
+{
+	addr = FltrTokenParam(addr);
+	addElement(ToList, (uint)addr);
+}
+void GS_AddCC(char *addr)
+{
+	addr = FltrTokenParam(addr);
+	addElement(CCList, (uint)addr);
+}
+void GS_AddBCC(char *addr)
+{
+	addr = FltrTokenParam(addr);
+	addElement(BCCList, (uint)addr);
+}
+void GS_AddAttachment(char *file)
+{
+	errorCase(m_isEmpty(file));
+	errorCase(!existFile(file));
+
+	INIT();
+
+	file = makeFullPath(file);
+	addElement(Attachments, (uint)file);
+}
+void GS_SetFrom(char *addr)
+{
+	addr = FltrTokenParam(addr);
+	strzp_x(&From, addr);
+}
+void GS_SetSubject(char *line)
+{
+	line = FltrTokenParam(line);
+	strzp_x(&Subject, line);
+}
+void GS_SetBody(char *text)
+{
+	errorCase(!text);
+
+	INIT();
+
+	text = lineToJDoc(text, 1);
+	strzp_x(&Body, text);
+}
+void GS_SetBody_x(char *text)
+{
+	GS_SetBody(text);
+	memFree(text);
+}
+void GS_SetUser(char *line)
+{
+	line = FltrTokenParam(line);
+	strzp_x(&User, line);
+}
+void GS_SetPassword(char *line)
+{
+	line = FltrTokenParam(line);
+	strzp_x(&Password, line);
+}
+void GS_SetHost(char *line)
+{
+	line = FltrTokenParam(line);
+	strzp_x(&Host, line);
+}
+void GS_SetPort(uint valPort)
+{
+	errorCase(!m_isRange(valPort, 0, 0xffff));
+	Port = valPort;
+}
+void GS_SetSSLDisabled(int flag)
+{
+	SSLDisabled = flag;
+}
+
+// ----
+
+int GS_TrySend(void) // ret: ? 成功
+{
+	char *cmdLine = xcout("start \"\" /b /wait \"%s\"", GetGmailSendExeFile());
+	char *line;
+	uint index;
+	char *bodyFile = NULL;
+	char *successfulFile = makeTempPath("gsSF.tmp");
+	char *errorLogFile = makeTempPath("gsELF.tmp");
+	int retval;
+
+	INIT();
+
+	foreach(ToList, line, index)
+		cmdLine = addLine_x(cmdLine, xcout(" /To \"%s\"", line));
+
+	foreach(CCList, line, index)
+		cmdLine = addLine_x(cmdLine, xcout(" /CC \"%s\"", line));
+
+	foreach(BCCList, line, index)
+		cmdLine = addLine_x(cmdLine, xcout(" /BCC \"%s\"", line));
+
+	foreach(Attachments, line, index)
+		cmdLine = addLine_x(cmdLine, xcout(" /A \"%s\"", line));
+
+	if(From)
+		cmdLine = addLine_x(cmdLine, xcout(" /F \"%s\"", From));
+
+	if(Subject)
+		cmdLine = addLine_x(cmdLine, xcout(" /S \"%s\"", Subject));
+
+	if(Body)
 	{
-		from = strx(from);
-		toAsciiLine(from, 0, 0, 0);
-		strzp_x(&From, from);
+		bodyFile = makeTempPath("gsBody.tmp");
+		writeOneLineNoRet_b(bodyFile, Body);
+		cmdLine = addLine_x(cmdLine, xcout(" /B \"*%s\"", bodyFile));
 	}
+	if(User && Password)
+		cmdLine = addLine_x(cmdLine, xcout(" /C \"%s\" \"%s\"", User, Password));
+
+	if(Host)
+		cmdLine = addLine_x(cmdLine, xcout(" /Host \"%s\"", Host));
+
+	if(Port)
+		cmdLine = addLine_x(cmdLine, xcout(" /Port %u", Port));
+
+	if(SSLDisabled)
+		cmdLine = addLine(cmdLine, " /-SSL");
+
+	cmdLine = addLine_x(cmdLine, xcout(" /SF \"%s\"", successfulFile));
+	cmdLine = addLine_x(cmdLine, xcout(" /ELF \"%s\"", errorLogFile));
+
+	coExecute(cmdLine);
+
+	if(existFile(successfulFile))
+	{
+		retval = 1;
+		removeFile(successfulFile);
+	}
+	else
+		retval = 0;
+
+	if(existFile(errorLogFile))
+	{
+		char *errorLog = readText_b(errorLogFile);
+
+		line2JLine(errorLog, 1, 1, 1, 1);
+
+		cout("ERROR_LOG=[%s]\n", errorLog);
+
+		memFree(errorLog);
+		removeFile(errorLogFile);
+	}
+	if(bodyFile)
+	{
+		removeFile(bodyFile);
+		memFree(bodyFile);
+	}
+	memFree(cmdLine);
+	memFree(successfulFile);
+	memFree(errorLogFile);
+
+	cout("retval: %d\n", retval);
+
+	/*
+		連続してアクセスするとブロックされるんじゃないか？
+		-> 成功・不成功に関係なくある程度待つ。
+	*/
+	coSleep(2000);
+
+	return retval;
 }
-void GS_SetSubject(char *subject)
+int GS_Send(void) // ret: ? 成功
 {
-	errorCase(m_isEmpty(subject));
+	uint retry;
 
-	INIT();
+	for(retry = 0; retry < 3; retry++)
+	{
+		cout("GS_Send_retry: %d\n", retry);
 
-	line2JToken(subject, 1, 1);
-	strzp_x(&Subject, subject);
+		if(GS_TrySend())
+		{
+			cout("+----------+\n");
+			cout("| 送信成功 |\n");
+			cout("+----------+\n");
+			return 1;
+		}
+	}
+	cout("+------------+\n");
+	cout("| 送信エラー |\n");
+	cout("+------------+\n");
+	return 0;
 }
-
-// TODO

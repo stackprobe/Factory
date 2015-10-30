@@ -611,6 +611,23 @@ char *kanjiPunch(char *str, int knjChr)
 	}
 	return str;
 }
+char *setStrLenRng(char *str, uint lenmin, uint lenmax, int defchr) // ret: strlen(str) < lenmin ? strr(str) : str
+{
+	str = setStrLenMin(str, lenmin, defchr);
+	setStrLenMax(str, lenmax);
+	return str;
+}
+char *setStrLenMin(char *str, uint lenmin, int defchr) // ret: strlen(str) < lenmin ? strr(str) : str
+{
+	int count = strlen(str);
+
+	while(count < lenmin)
+	{
+		str = addChar(str, defchr);
+		count++;
+	}
+	return str;
+}
 void setStrLenMax(char *str, uint lenmax)
 {
 	if(lenmax < strlen(str))
