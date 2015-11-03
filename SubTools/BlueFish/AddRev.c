@@ -100,12 +100,13 @@ endFunc:
 }
 static void ExtractCluster(char *cluster, char *rootDir)
 {
-	char *lCluster = getLocal(cluster);
+	char *lCluster;
 	char *node;
 	char *wDir;
 
 	LOGPOS();
 
+	lCluster = getLocal(cluster);
 	node = changeExt(lCluster, "");
 	wDir = combine(rootDir, node);
 
@@ -164,6 +165,6 @@ int main(int argc, char **argv)
 	AddRev(
 		"C:\\pub\\ÉäÉäÅ[ÉXï®",
 		"C:\\BlueFish\\BlueFish\\HTT\\stackprobe\\home",
-		"C:\\BlueFish\\BlueFish\\HTT"
+		"C:\\BlueFish\\BlueFish\\HTT\\extra"
 		);
 }

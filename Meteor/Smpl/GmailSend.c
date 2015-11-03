@@ -77,5 +77,5 @@ readArgs:
 		goto readArgs;
 	}
 
-	GS_Send();
+	termination(GS_Send() ? 0 : 1);
 }

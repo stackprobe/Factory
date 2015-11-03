@@ -1,5 +1,8 @@
 /*
-	Period.exe ID (/R MIN-SEC MAX-SEC | /T SEC)
+	Period.exe ID (/CTT | /C | /R MIN-SEC MAX-SEC | /RH MIN-HOUR MAX-HOUR | /T SEC | /TH HOUR)
+
+		ID ... 大文字小文字を区別する。
+			/CTT を指定する場合は、使用しない。適当な文字列をセットすること。
 */
 
 #include "C:\Factory\Common\all.h"
@@ -72,6 +75,23 @@ static void SetTime(time_t time)
 	}
 	SaveTimeTable();
 }
+static void ClearTime(void)
+{
+	ReadTimeTable();
+
+	if(TTPos < getCount(TTbl)) // あった。
+	{
+		memFree(getLine(TTbl, TTPos + 0));
+		memFree(getLine(TTbl, TTPos + 1));
+
+		setElement(TTbl, TTPos + 0, 0);
+		setElement(TTbl, TTPos + 1, 0);
+
+		removeZero(TTbl);
+
+		SaveTimeTable();
+	}
+}
 
 // ----
 
@@ -134,6 +154,19 @@ int main(int argc, char **argv)
 	S_Id = nextArg();
 
 	errorCase(m_isEmpty(S_Id));
+
+	if(argIs("/CTT"))
+	{
+		cout("Clear Time Table\n");
+		removeFileIfExist(TIME_TABLE_FILE);
+		return;
+	}
+	if(argIs("/C"))
+	{
+		cout("Clear\n");
+		ClearTime();
+		return;
+	}
 
 	CheckTime();
 

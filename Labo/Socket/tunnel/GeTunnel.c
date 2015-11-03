@@ -20,6 +20,7 @@
 #include "libs\Tunnel.h"
 #include "libs\HTTPParse.h"
 #include "C:\Factory\Common\Options\Random.h"
+#include "C:\Factory\Common\Options\Sequence.h"
 
 #define DUMMY_BODY "<html><body><h1>503 Under Maintenance</h1></body></html>"
 #define BODY_MESSAGE_PTN "{852bc2fd-9c36-402a-8834-39a71581f46e}"
@@ -502,6 +503,7 @@ static void DataFltr(autoBlock_t *buff, uint prm)
 					char *path;
 					char *randColorDark;
 					char *randColorLight;
+					char *beerUma;
 
 					hostname = strx(refLine(HttpDat.H_Values, findLineCase(HttpDat.H_Keys, "host", 1)));
 					domain = strx(hostname);
@@ -533,17 +535,48 @@ static void DataFltr(autoBlock_t *buff, uint prm)
 						mt19937_range(0xa0, 0xff)
 						);
 
+					{
+						autoList_t *parts1 = newList();
+						autoList_t *parts2 = newList();
+						uint index;
+						char *buff;
+
+						addElement(parts1, (uint)"今日");
+						addElement(parts1, (uint)"元気");
+						addElement(parts1, (uint)"ビール");
+
+						addElement(parts2, (uint)"も");
+						addElement(parts2, (uint)"だ");
+						addElement(parts2, (uint)"が");
+
+						shuffle(parts1);
+						shuffle(parts2);
+
+						buff = strx("");
+
+						for(index = 0; index < 3; index++)
+						{
+							buff = addLine(buff, getLine(parts1, index));
+							buff = addLine(buff, getLine(parts2, index));
+						}
+						buff = addLine(buff, "うまい！");
+
+						beerUma = buff;
+					}
+
 					cout("HOSTNAME = [%s]\n", hostname);
 					cout("DOMAIN   = [%s]\n", domain);
 					cout("PATH     = [%s]\n", path);
 					cout("RNDCLR_D = [%s]\n", randColorDark);
 					cout("RNDCLR_L = [%s]\n", randColorLight);
+					cout("BEER_UMA = [%s]\n", beerUma);
 
 					body = replaceLine(body, "$(HOSTNAME)", hostname, 1);
 					body = replaceLine(body, "$(DOMAIN)", domain, 1);
 					body = replaceLine(body, "$(PATH)", path, 1);
 					body = replaceLine(body, "$(RNDCLR_D)", randColorDark, 1);
 					body = replaceLine(body, "$(RNDCLR_L)", randColorLight, 1);
+					body = replaceLine(body, "$(BEER_UMA)", beerUma, 1);
 
 					memFree(hostname);
 					memFree(domain);

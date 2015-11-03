@@ -346,9 +346,9 @@ static void RecvLoop(void)
 			lastHTm = currHTm;
 
 		if(lastHTm + 1.0 < currHTm) // ? ÅŒã‚ÌŽóM‚©‚ç‚©‚È‚èŒo‚Á‚½B
-			waitMax = 30;
+			waitMax = 15; // 45 sec
 		else
-			waitMax = 3;
+			waitMax = 3; // 9 sec
 
 		cout("lastHTm: %f\n", lastHTm);
 		cout("currHTm: %f\n", currHTm);
@@ -360,7 +360,7 @@ static void RecvLoop(void)
 				if(getKey() == 0x1b)
 					goto endLoop;
 
-			sleep(1000);
+			sleep(3000);
 		}
 	}
 endLoop:;
