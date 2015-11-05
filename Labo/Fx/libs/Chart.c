@@ -24,6 +24,68 @@ static DayPrice_t DayPrices[DAY_MAX];
 static uint BasePos;
 static uint64 BaseDay;
 
+// ---- IsLossBegin ----
+
+static uint ILB_Bgn;
+static uint ILB_End;
+
+static int IsLossBegin(DayPrice_t *i, uint pr_index)
+{
+	uint index;
+
+	for(index = pr_index; index < 43200; index++)
+		if(i->Prices[index].LossFlag == 0)
+			break;
+
+	if(pr_index < index)
+	{
+		ILB_Bgn = pr_index;
+		ILB_End = index - 1;
+		return 1;
+	}
+	return 0;
+}
+static void ILB_HotenLossRange(DayPrice_t *i)
+{
+	uint index;
+
+	if(ILB_Bgn == 0) // この日の先頭に接触
+	{
+		if(ILB_End == 43200 - 1) // この日が欠落 -> デフォ値のまま
+			return;
+
+		for(index = 0; index <= ILB_End; index++)
+		{
+			i->Prices[index].Ask = i->Prices[ILB_End + 1].Ask;
+			i->Prices[index].Bid = i->Prices[ILB_End + 1].Bid;
+		}
+		return;
+	}
+	else if(ILB_End == 43200 - 1) // この日の終端に接触
+	{
+		for(index = ILB_Bgn; index < 43200; index++)
+		{
+			i->Prices[index].Ask = i->Prices[ILB_Bgn - 1].Ask;
+			i->Prices[index].Bid = i->Prices[ILB_Bgn - 1].Bid;
+		}
+		return;
+	}
+	else
+	{
+		uint denom = ILB_End - ILB_Bgn + 3;
+
+		for(index = ILB_Bgn; index <= ILB_End; index++)
+		{
+			uint numer = index - ILB_Bgn + 1;
+
+			i->Prices[index].Ask = i->Prices[ILB_Bgn - 1].Ask + (i->Prices[ILB_End + 1].Ask - i->Prices[ILB_Bgn - 1].Ask) * numer / denom;
+			i->Prices[index].Bid = i->Prices[ILB_Bgn - 1].Bid + (i->Prices[ILB_End + 1].Bid - i->Prices[ILB_Bgn - 1].Bid) * numer / denom;
+		}
+	}
+}
+
+// ----
+
 static void LoadDayPrice(DayPrice_t *i, uint64 day)
 {
 	char *file;
@@ -31,7 +93,7 @@ static void LoadDayPrice(DayPrice_t *i, uint64 day)
 
 	LOGPOS();
 
-	for(pr_index = 0; pr_index < 43200; pr_index++) // 初期化 -- この日が欠落していた場合
+	for(pr_index = 0; pr_index < 43200; pr_index++) // 初期化 -- この日が欠落していた場合の値で初期化
 	{
 		i->Prices[pr_index].Ask = DEF_PRICE;
 		i->Prices[pr_index].Bid = DEF_PRICE;
@@ -73,6 +135,16 @@ static void LoadDayPrice(DayPrice_t *i, uint64 day)
 		}
 		releaseDim(csv, 2);
 
+#if 1
+		for(pr_index = 0; pr_index < 43200; pr_index++)
+		{
+			if(IsLossBegin(i, pr_index))
+			{
+				ILB_HotenLossRange(i);
+				pr_index = ILB_End;
+			}
+		}
+#else // old
 		// 欠落を、直前の有効な相場で補完
 		{
 			double lastAsk = DEF_PRICE;
@@ -101,6 +173,7 @@ static void LoadDayPrice(DayPrice_t *i, uint64 day)
 				}
 			}
 		}
+#endif
 	}
 	memFree(file);
 }
