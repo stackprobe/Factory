@@ -1,8 +1,8 @@
 #include "C:\Factory\Common\all.h"
 
 #define PI 3.141592653589793
-#define ANGLEMAX 337325
-#define RETSCALE (SINTMAX + 1u)
+#define ANGLEMAX 1570
+#define RETSCALE 1000
 
 int main(int argc, char **argv)
 {
