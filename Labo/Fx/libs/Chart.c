@@ -135,7 +135,6 @@ static void LoadDayPrice(DayPrice_t *i, uint64 day)
 		}
 		releaseDim(csv, 2);
 
-#if 1
 		for(pr_index = 0; pr_index < 43200; pr_index++)
 		{
 			if(IsLossBegin(i, pr_index))
@@ -144,36 +143,6 @@ static void LoadDayPrice(DayPrice_t *i, uint64 day)
 				pr_index = ILB_End;
 			}
 		}
-#else // old
-		// Œ‡—Ž‚ðA’¼‘O‚Ì—LŒø‚È‘Šê‚Å•âŠ®
-		{
-			double lastAsk = DEF_PRICE;
-			double lastBid = DEF_PRICE;
-
-			for(pr_index = 0; pr_index < 43200; pr_index++)
-			{
-				if(!i->Prices[pr_index].LossFlag)
-				{
-					lastAsk = i->Prices[pr_index].Ask;
-					lastBid = i->Prices[pr_index].Bid;
-					break;
-				}
-			}
-			for(pr_index = 0; pr_index < 43200; pr_index++)
-			{
-				if(i->Prices[pr_index].LossFlag)
-				{
-					i->Prices[pr_index].Ask = lastAsk;
-					i->Prices[pr_index].Bid = lastBid;
-				}
-				else
-				{
-					lastAsk = i->Prices[pr_index].Ask;
-					lastBid = i->Prices[pr_index].Bid;
-				}
-			}
-		}
-#endif
 	}
 	memFree(file);
 }
