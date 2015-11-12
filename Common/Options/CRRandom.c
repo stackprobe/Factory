@@ -2,7 +2,7 @@
 
 void mt19937_initCRnd(void)
 {
-	autoBlock_t *initKey = makeCryptoBlock(624 * 4); // 624 == N
+	autoBlock_t *initKey = makeCryptoRandBlock(624 * 4); // 624 == N
 	mt19937_initByArray(initKey);
 	releaseAutoBlock(initKey);
 }

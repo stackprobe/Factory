@@ -192,7 +192,7 @@ static void PerformTh(int sock, char *strip)
 
 	// Negotiation
 	{
-		dc = makeCryptoBlock(COUNTER_SIZE);
+		dc = makeCryptoRandBlock(COUNTER_SIZE);
 		ec = newBlock();
 		wc = newBlock();
 

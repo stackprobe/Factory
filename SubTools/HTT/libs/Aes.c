@@ -4,7 +4,7 @@
 
 autoBlock_t *MakeEncCounterSeed(void)
 {
-	return makeCryptoBlock(16);
+	return makeCryptoRandBlock(16);
 }
 autoBlock_t *MakeEncCounter(autoBlock_t *clSeed, autoBlock_t *svSeed)
 {

@@ -127,7 +127,7 @@ endBoom:
 static void PerformTh(int sock, char *strip)
 {
 	Comm_t *i = CreateComm(sock);
-	autoBlock_t *credential = makeCryptoBlock(CREDENTIAL_SIZE);
+	autoBlock_t *credential = makeCryptoRandBlock(CREDENTIAL_SIZE);
 	int foregroundFlag = 1;
 	uint waitMillis = 0;
 

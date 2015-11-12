@@ -35,11 +35,19 @@ static void Touch(char *path)
 }
 int main(int argc, char **argv)
 {
+	int waitOneSecFlag = 0;
+
+	if(argIs("/W1"))
+		waitOneSecFlag = 1;
+
 	if(hasArgs(1))
 	{
 		do
 		{
 			Touch(nextArg());
+
+			if(waitOneSecFlag)
+				coSleep(1000);
 		}
 		while(hasArgs(1));
 	}

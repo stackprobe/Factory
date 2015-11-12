@@ -31,7 +31,7 @@ static void Perform(int sock, int fwdSock)
 	}
 	else
 	{
-		autoBlock_t *data = makeCryptoBlock(ECHOPTN_SIZE);
+		autoBlock_t *data = makeCryptoRandBlock(ECHOPTN_SIZE);
 		autoBlock_t *bkData;
 
 		bkData = copyAutoBlock(data);

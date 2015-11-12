@@ -124,14 +124,14 @@ autoList_t *readResourceLines(char *file)
 	{
 		ucTrimEdge(line);
 
-		if(line[0] == COMMENT_LEADER)
+		if(line[0] == COMMENT_LEADER) // COMMENT_LEADER で始まる行を指定したい場合は '"' で始める。
 		{
 			line[0] = '\0';
 		}
 	}
 	trimLines(lines);
 
-	foreach(lines, line, index) // 先頭と終端の '"' を除去する。空文字列指定可能。指定したい場合は '"' を２つ重ねる。
+	foreach(lines, line, index) // 先頭と終端の '"' を除去する。空文字列が指定可能になる。'"' で始まる・終わる行を指定したい場合は '"' を２つ重ねる。
 	{
 		char *p = strchr(line, '\0') - 1; // line == "" は有り得ない。
 

@@ -23,7 +23,7 @@ static void MakeCryptoRand(uint rowcnt, uint colcnt)
 
 	fp = fileOpen(file, "wt");
 
-	block = makeCryptoBlock(rowcnt * colcnt);
+	block = makeCryptoRandBlock(rowcnt * colcnt);
 
 	for(rowidx = 0; rowidx < rowcnt; rowidx++)
 	{

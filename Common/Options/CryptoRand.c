@@ -196,7 +196,7 @@ uint getCryptoRand(void)
 {
 	return getCryptoByte() | getCryptoByte() << 8 | getCryptoByte() << 16 | getCryptoByte() << 24;
 }
-autoBlock_t *makeCryptoBlock(uint count)
+autoBlock_t *makeCryptoRandBlock(uint count)
 {
 	autoBlock_t *block = createBlock(count);
 

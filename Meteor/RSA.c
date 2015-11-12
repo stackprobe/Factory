@@ -293,7 +293,7 @@ static void JamEncrypt(autoBlock_t *data)
 	}
 	// += RandPart
 	{
-		autoBlock_t *randPart = makeCryptoBlock(16);
+		autoBlock_t *randPart = makeCryptoRandBlock(16);
 
 		ab_addBytes(data, randPart);
 		releaseAutoBlock(randPart);

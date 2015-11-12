@@ -66,7 +66,7 @@ static void Pad128(char *file)
 }
 static void AddVerify(char *file)
 {
-	autoBlock_t *text = makeCryptoBlock(64);
+	autoBlock_t *text = makeCryptoRandBlock(64);
 	autoBlock_t gab;
 	FILE *fp;
 

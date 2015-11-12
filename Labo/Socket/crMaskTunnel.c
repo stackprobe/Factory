@@ -52,7 +52,7 @@ static void Perform(int sock, int fwdSock)
 	}
 	else
 	{
-		maskPtn = makeCryptoBlock(MASKPTN_SIZE);
+		maskPtn = makeCryptoRandBlock(MASKPTN_SIZE);
 
 		if(SockSendSequLoop(fwdSock, maskPtn, SENDRECV_TIMEOUT_MILLIS) != MASKPTN_SIZE)
 			goto disconnect;

@@ -171,7 +171,7 @@ static void BoomerangSend(SockStream_t *ss, autoBlock_t *credential, int flag, a
 
 static void MakeCredential(uchar *buff)
 {
-	autoBlock_t *nc = makeCryptoBlock(CREDENTIAL_SIZE);
+	autoBlock_t *nc = makeCryptoRandBlock(CREDENTIAL_SIZE);
 
 	memcpy(buff, directGetBuffer(nc), CREDENTIAL_SIZE);
 	releaseAutoBlock(nc);

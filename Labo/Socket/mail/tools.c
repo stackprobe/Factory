@@ -23,7 +23,7 @@ static char *GetFqdn(char *mailAddr)
 }
 char *MakeMailMessageID(char *senderMailAddr)
 {
-	char *randPart = makeHexLine_x(makeCryptoBlock(16)); // 128bit
+	char *randPart = makeHexLine_x(makeCryptoRandBlock(16)); // 128bit
 	char *fqdn = GetFqdn(senderMailAddr);
 	char *messageID;
 
@@ -83,7 +83,7 @@ char *RefMailHeader(autoList_t *mail, char *key)
 	char *value = GetMailHeader(mail, key);
 
 	if(!value)
-		value = makeHexLine_x(makeCryptoBlock(32)); // dummy
+		value = makeHexLine_x(makeCryptoRandBlock(32)); // dummy
 
 	return value;
 }

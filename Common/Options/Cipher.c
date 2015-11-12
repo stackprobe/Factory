@@ -336,7 +336,7 @@ void cphrEncryptor(autoBlock_t *block, autoList_t *keyTableList, autoBlock_t *iv
 
 void cphrEncryptorBlock(autoBlock_t *block, autoList_t *keyTableList)
 {
-	autoBlock_t *iv = makeCryptoBlock(BLOCK_SIZE);
+	autoBlock_t *iv = makeCryptoRandBlock(BLOCK_SIZE);
 	autoBlock_t *jv;
 
 	jv = copyAutoBlock(iv);
@@ -409,7 +409,7 @@ static uint GetDivBlockSize(void)
 */
 void cphrEncryptorFile(char *srcFile, char *destFile, autoList_t *keyTableList, void (*interlude)(void))
 {
-	autoBlock_t *firstiv = makeCryptoBlock(BLOCK_SIZE);
+	autoBlock_t *firstiv = makeCryptoRandBlock(BLOCK_SIZE);
 	autoBlock_t *iv;
 	FILE *rfp;
 	FILE *wfp;
