@@ -47,7 +47,7 @@ int main(int argc, char **argv)
 			Touch(nextArg());
 
 			if(waitOneSecFlag)
-				coSleep(1000);
+				sleep(1050);
 		}
 		while(hasArgs(1));
 	}

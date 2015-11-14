@@ -3,6 +3,9 @@
 
 #define REV_MAX 100
 
+#define GAME_ORDER_FILE "order.txt"
+#define GAME_TITLE_FILE "title.txt"
+
 static int IsAsciiStr(char *str)
 {
 	char *p;
@@ -98,6 +101,48 @@ endFunc:
 	memFree(revDir);
 	memFree(wFile);
 }
+static void AddGameVer(char *arcFile, char *rootDir)
+{
+	char *lArcFile;
+	char *name;
+	char *wDir;
+	char *wFile;
+
+	LOGPOS();
+
+	lArcFile = getLocal(arcFile);
+	name = strxl(lArcFile, strlen(lArcFile) - 9); // "_v999.zip" を削る。
+	wDir = combine(rootDir, name);
+	wFile = combine(wDir, lArcFile);
+
+	cout("< %s\n", arcFile);
+	cout("> %s\n", rootDir);
+	cout("1.> %s\n", lArcFile);
+	cout("2.> %s\n", name);
+	cout("3.> %s\n", wDir);
+	cout("4.> %s\n", wFile);
+
+	if(!existDir(wDir))
+	{
+		addCwd(rootDir);
+		addLine2File(GAME_ORDER_FILE, name); // 仮追加
+		unaddCwd();
+
+		createDir(wDir);
+
+		addCwd(wDir);
+		writeOneLine(GAME_TITLE_FILE, name); // 仮作成
+		unaddCwd();
+	}
+	if(!existFile(wFile)) // 既に存在したら何もしない。
+		moveFile(arcFile, wFile);
+
+	memFree(name);
+	memFree(wDir);
+	memFree(wFile);
+
+	LOGPOS();
+}
 static void ExtractCluster(char *cluster, char *rootDir)
 {
 	char *lCluster;
@@ -120,7 +165,7 @@ static void ExtractCluster(char *cluster, char *rootDir)
 
 	LOGPOS();
 }
-static void AddRev(char *rDir, char *wDir, char *extCluWDir)
+static void AddRev(char *rDir, char *wDir, char *gameWDir, char *extCluWDir)
 {
 	rDir = makeFullPath(rDir);
 	wDir = makeFullPath(wDir);
@@ -128,10 +173,12 @@ static void AddRev(char *rDir, char *wDir, char *extCluWDir)
 
 	cout("< %s\n", rDir);
 	cout("> %s\n", wDir);
+	cout("> %s\n", gameWDir);
 	cout("> %s\n", extCluWDir);
 
 	errorCase(!existDir(rDir));
 	errorCase(!existDir(wDir));
+	errorCase(!existDir(gameWDir));
 	errorCase(!existDir(extCluWDir));
 
 	{
@@ -143,6 +190,10 @@ static void AddRev(char *rDir, char *wDir, char *extCluWDir)
 		{
 			AddRev_File(file, wDir);
 
+			if(existFile(file) && lineExpICase("<>_v<3,09>.zip", file))
+			{
+				AddGameVer(file, gameWDir);
+			}
 			if(existFile(file) && !_stricmp("clu", getExt(file)))
 			{
 				ExtractCluster(file, extCluWDir);
@@ -159,12 +210,13 @@ int main(int argc, char **argv)
 {
 	if(hasArgs(3))
 	{
-		AddRev(getArg(0), getArg(1), getArg(2));
+		AddRev(getArg(0), getArg(1), getArg(2), getArg(3));
 		return;
 	}
 	AddRev(
 		"C:\\pub\\リリース物",
 		"C:\\BlueFish\\BlueFish\\HTT\\stackprobe\\home",
+		"C:\\BlueFish\\BlueFish\\HTT\\cerulean\\home\\charlotte",
 		"C:\\BlueFish\\BlueFish\\HTT\\extra"
 		);
 }
