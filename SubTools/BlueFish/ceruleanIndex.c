@@ -103,6 +103,10 @@ static void MakeIndex(char *indexDir, char *templateDir)
 
 				LOGPOS();
 
+				errorCase(!m_isdecimal(ver[0])); // 2bs
+				errorCase(!m_isdecimal(ver[1])); // 2bs
+				errorCase(!m_isdecimal(ver[2])); // 2bs
+
 				verLink = changeRoot(strx(file), indexDir, NULL);
 				escapeYen(verLink);
 				verTitle = xcout("%s v%c.%c%c", title, ver[0], ver[1], ver[2]);

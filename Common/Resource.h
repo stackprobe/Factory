@@ -19,3 +19,4 @@ autoList_t *readResourceFilesLines(char *fileListFile);
 autoList_t *readResourceLinesList(char *file);
 autoList_t *discerpHeaders(autoList_t *linesList);
 char *readResourceText(char *file);
+char *readResourceArgsText(char *file);

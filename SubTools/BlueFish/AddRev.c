@@ -124,8 +124,12 @@ static void AddGameVer(char *arcFile, char *rootDir)
 
 	if(!existDir(wDir))
 	{
+		autoList_t *lines;
+
 		addCwd(rootDir);
-		addLine2File(GAME_ORDER_FILE, name); // ‰¼’Ç‰Á
+		lines = readResourceLines(GAME_ORDER_FILE);
+		insertElement(lines, 0, (uint)strx(name)); // ‰¼’Ç‰Á
+		writeLines_cx(GAME_ORDER_FILE, lines);
 		unaddCwd();
 
 		createDir(wDir);

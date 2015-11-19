@@ -224,5 +224,9 @@ autoList_t *discerpHeaders(autoList_t *linesList)
 }
 char *readResourceText(char *file)
 {
+	return untokenize_xc(readResourceLines(file), "\n");
+}
+char *readResourceArgsText(char *file)
+{
 	return untokenize_xc(readResourceLines(file), " ");
 }

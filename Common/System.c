@@ -476,7 +476,7 @@ static void ReadSysArgs(void)
 			desertElement(Args, argi);
 			arg = (char *)desertElement(Args, argi);
 
-			text = readResourceText(innerResPathFltr(arg));
+			text = readResourceArgsText(innerResPathFltr(arg));
 			subArgs = tokenizeArgs(text);
 			memFree(text);
 
