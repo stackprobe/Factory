@@ -411,6 +411,10 @@ static void FileHistory(char *storeDir, int fromLastRevisionFlag, int lastFileOn
 	}
 	allStock = autoDistinctJLinesICase(allStock);
 	selStocks = selectLines(allStock);
+
+	if(!getCount(selStocks))
+		goto noSelStocks;
+
 	restoreRootDir = makeFreeDir();
 
 	foreach(selStocks, selStock, selStockIdx)
@@ -490,11 +494,12 @@ static void FileHistory(char *storeDir, int fromLastRevisionFlag, int lastFileOn
 		unaddCwd();
 	}
 	execute_x(xcout("START \"\" \"%s\"", restoreRootDir));
+	memFree(restoreRootDir);
+noSelStocks:
 	releaseDim(revisions, 1);
 	releaseAutoList(srchRevisions);
 	releaseDim(allStock, 1);
 	releaseDim(selStocks, 1);
-	memFree(restoreRootDir);
 	forceRemoveDir_x(outStockTestDir);
 	unaddCwd();
 }
