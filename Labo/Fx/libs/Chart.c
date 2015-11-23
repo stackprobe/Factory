@@ -135,6 +135,20 @@ static void LoadDayPrice(DayPrice_t *i, uint64 day)
 		}
 		releaseDim(csv, 2);
 
+		/*
+			値の時刻は、値を取りに行く直前の時刻 ->
+			読み取れなかった区間の直前の値は、いつ読み取ったものか分からない。
+		*/
+		for(pr_index = 2; pr_index < 43200; pr_index++)
+		{
+			if(
+				i->Prices[pr_index - 2].LossFlag == 0 &&
+				i->Prices[pr_index - 1].LossFlag == 0 &&
+				i->Prices[pr_index - 0].LossFlag
+				)
+				i->Prices[pr_index - 1].LossFlag = 1;
+		}
+
 		for(pr_index = 0; pr_index < 43200; pr_index++)
 		{
 			if(IsLossBegin(i, pr_index))

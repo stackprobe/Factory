@@ -79,6 +79,7 @@ static void DoWait(uint hdl, void (*interrupt)(void))
 
 	LOGPOS();
 
+	/*
 	if(interrupt == ThrowHTTRequest)
 	{
 		cout("+-----------------------------------------------+\n");
@@ -96,6 +97,7 @@ static void DoWait(uint hdl, void (*interrupt)(void))
 		cout("■いつまでもロックが解除されない理由＝ロックした.batが異常終了した。\n");
 		cout("▲ロックした.batが終了した事を確認の上、エスケープキーを押して続行して下さい。\n");
 	}
+	*/
 	ProgressBegin();
 
 	for(; ; )
