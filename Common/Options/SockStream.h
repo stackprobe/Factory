@@ -24,6 +24,7 @@ typedef struct SockStream_st
 		char *SaveFile;
 		char *ServerName;
 		int M4UServerMode_Operated;
+		uint RecvSizeLimiter;
 	}
 	Extra;
 }

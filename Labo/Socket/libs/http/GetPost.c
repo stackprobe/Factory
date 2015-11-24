@@ -5,6 +5,7 @@
 #include "GetPost.h"
 
 #define HEADERLENMAX (1024 * 64)
+#define HEADERTOTALLENMAX (1024 * 512)
 #define DEF_CONTENTSIZEMAX (1024 * 1024 * 4)
 #define HOSTLENMAX 300
 
@@ -21,7 +22,7 @@ char *httpRecvRequestHostValue;
 
 void httpRecvRequestHeader(SockStream_t *i, char **pHeader, int *pChunked, uint *pContentSize)
 {
-	uint i_tmout = GetSockStreamTimeout(i);
+	uint i_rslmt = i->Extra.RecvSizeLimiter;
 	int chunked = 0;
 	uint cSize = 0;
 	char *reqHost = NULL;
@@ -41,6 +42,7 @@ void httpRecvRequestHeader(SockStream_t *i, char **pHeader, int *pChunked, uint 
 		DestroySockStream(i);
 	}
 
+	i->Extra.RecvSizeLimiter = HEADERTOTALLENMAX;
 	header = SockRecvLine(i, HEADERLENMAX);
 
 	if(httpRecvedHeader)
@@ -144,6 +146,8 @@ void httpRecvRequestHeader(SockStream_t *i, char **pHeader, int *pChunked, uint 
 	*pHeader = header;
 	*pChunked = chunked;
 	*pContentSize = cSize;
+
+	i->Extra.RecvSizeLimiter = i_rslmt;
 }
 void httpRecvRequest(SockStream_t *i, char **pHeader, uchar **pContent, uint *pContentSize)
 {

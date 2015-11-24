@@ -148,6 +148,13 @@ int SockRecvChar(SockStream_t *i)
 			i->R_Buff.Size = retval;
 			i->R_Buff.Index = 1;
 
+			if(i->Extra.RecvSizeLimiter)
+			{
+				if(i->Extra.RecvSizeLimiter < retval)
+					i->Sock = -1;
+				else
+					i->Extra.RecvSizeLimiter -= retval;
+			}
 			return i->R_Buff.Buffer[0];
 		}
 	}
