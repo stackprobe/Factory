@@ -81,6 +81,7 @@ static void DoWait(uint hdl, void (*interrupt)(void))
 
 	if(interrupt == ThrowHTTRequest)
 	{
+		cout("ロックしようとしています...\n");
 		cout("+-----------------------------------------------+\n");
 		cout("| エスケープキーを押すとロックせずに続行します。|\n");
 		cout("+-----------------------------------------------+\n");
@@ -90,6 +91,7 @@ static void DoWait(uint hdl, void (*interrupt)(void))
 	}
 	else // ? interrupt == noop
 	{
+		cout("ロックされています...\n");
 		cout("+---------------------------------------------------+\n");
 		cout("| エスケープキーを押すと強制的にロックを解除します。|\n");
 		cout("+---------------------------------------------------+\n");
@@ -140,15 +142,11 @@ static void DoWait(uint hdl, void (*interrupt)(void))
 	{
 		if(interrupt == ThrowHTTRequest)
 		{
-			cout("+-----------------+\n");
-			cout("| ロックしました。|\n");
-			cout("+-----------------+\n");
+			cout("ロックしました。\n");
 		}
 		else // ? interrupt == noop
 		{
-			cout("+-------------------------+\n");
-			cout("| ロックは解除されました。|\n");
-			cout("+-------------------------+\n");
+			cout("ロックは解除されました。\n");
 		}
 	}
 	LOGPOS();
