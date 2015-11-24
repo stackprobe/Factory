@@ -79,7 +79,6 @@ static void DoWait(uint hdl, void (*interrupt)(void))
 
 	LOGPOS();
 
-	/*
 	if(interrupt == ThrowHTTRequest)
 	{
 		cout("+-----------------------------------------------+\n");
@@ -91,13 +90,12 @@ static void DoWait(uint hdl, void (*interrupt)(void))
 	}
 	else // ? interrupt == noop
 	{
-		cout("+-------------------------------------------+\n");
-		cout("| エスケープキーを押すとロックを解除します。|\n");
-		cout("+-------------------------------------------+\n");
+		cout("+---------------------------------------------------+\n");
+		cout("| エスケープキーを押すと強制的にロックを解除します。|\n");
+		cout("+---------------------------------------------------+\n");
 		cout("■いつまでもロックが解除されない理由＝ロックした.batが異常終了した。\n");
 		cout("▲ロックした.batが終了した事を確認の上、エスケープキーを押して続行して下さい。\n");
 	}
-	*/
 	ProgressBegin();
 
 	for(; ; )
@@ -122,6 +120,37 @@ static void DoWait(uint hdl, void (*interrupt)(void))
 			break;
 	}
 	ProgressEnd(cancelled);
+
+	if(cancelled)
+	{
+		if(interrupt == ThrowHTTRequest)
+		{
+			cout("+-------------------------+\n");
+			cout("| ロックせずに続行します。|\n");
+			cout("+-------------------------+\n");
+		}
+		else // ? interrupt == noop
+		{
+			cout("+-------------------------------+\n");
+			cout("| ロックを強制的に解除しました。|\n");
+			cout("+-------------------------------+\n");
+		}
+	}
+	else // ? 成功
+	{
+		if(interrupt == ThrowHTTRequest)
+		{
+			cout("+-----------------+\n");
+			cout("| ロックしました。|\n");
+			cout("+-----------------+\n");
+		}
+		else // ? interrupt == noop
+		{
+			cout("+-------------------------+\n");
+			cout("| ロックは解除されました。|\n");
+			cout("+-------------------------+\n");
+		}
+	}
 	LOGPOS();
 }
 

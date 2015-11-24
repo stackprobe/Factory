@@ -173,7 +173,7 @@ readArgs:
 	}
 	if(argIs("/L")) // BlueFish 内のバッチ用
 	{
-		cout("**** LITE MODE ****\n");
+		cout("#### LITE MODE ####\n");
 		httpM4UServerMode = 0;
 		timeout = 20;
 		httpBlockTimeout = 20;
