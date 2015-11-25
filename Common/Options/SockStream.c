@@ -150,7 +150,7 @@ int SockRecvChar(SockStream_t *i)
 
 			if(i->Extra.RecvSizeLimiter)
 			{
-				if(i->Extra.RecvSizeLimiter < retval)
+				if(i->Extra.RecvSizeLimiter <= retval) // 0 ‚Å•Â‚¶‚é <- 0 ‚É‚È‚é‚Æ–³Œø‚É‚È‚é‚Ì‚Å..
 					i->Sock = -1;
 				else
 					i->Extra.RecvSizeLimiter -= retval;
