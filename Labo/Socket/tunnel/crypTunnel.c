@@ -1,5 +1,5 @@
 /*
-	crypTunnel.exe RECV-PORT FWD-HOST FWD-PORT [/C CONNECT-MAX] [/R] [/KW KEY-WIDTH] [/0] KEY-BUNDLE-FILE
+	crypTunnel.exe RECV-PORT FWD-HOST FWD-PORT [/C CONNECT-MAX] [/R] [/KW KEY-WIDTH] [/0] [/BSL BLOCK-SIZE-LIMIT] [/T] KEY-BUNDLE-FILE
 
 		RECV-PORT       ... 待ち受けポート番号
 		FWD-DOMAIN      ... 転送先ホスト名
@@ -12,7 +12,9 @@
 		★1 * を指定すると手入力 -> 入力された文字列の SHA-512 を鍵とする。(p1kと同じ)
 			*PASS を指定すると PASS の SHA-512 を鍵とする。(PASSは任意の文字列)
 
-		/0 ... 数秒おきにゼロバイトのブロックを暗号化したデータを送り、送信が途絶する期間を数秒以内に留める。
+		/0               ... 数秒おきにゼロバイトのブロックを暗号化したデータを送り、送信が途絶する期間を数秒以内に留める。
+		BLOCK-SIZE-LIMIT ... 一度に暗号化するブロックサイズの上限を設定します, デフォルト: 無制限
+		/T               ... GeTunnelと併用したとき、長時間の無通信によるタイムアウトが頻発する場合これを指定して下さい。
 */
 
 #include "libs\Tunnel.h"
@@ -29,6 +31,7 @@ static uint KeyWidth = 32;
 static char *KeyBundleFile;
 static autoBlock_t *KeyBundle;
 static autoList_t *KeyTableList;
+static uint BlockSizeLimit;
 
 static uint GetNegotiationTimeoutMillis(void)
 {
@@ -49,7 +52,7 @@ static void IncrementCounter(uchar counter[COUNTER_SIZE])
 	}
 }
 
-static void EncryptFltr(autoBlock_t *buff, uint encCounter)
+static void EncryptFltr_Real(autoBlock_t *buff, uint encCounter)
 {
 	autoBlock_t *nBuff;
 	uint origSize;
@@ -75,6 +78,40 @@ static void EncryptFltr(autoBlock_t *buff, uint encCounter)
 	ab_swap(nBuff, buff);
 
 	releaseAutoBlock(nBuff);
+}
+static void EncryptFltr(autoBlock_t *buff, uint encCounter)
+{
+	if(BlockSizeLimit && BlockSizeLimit < getSize(buff))
+	{
+		autoBlock_t *dest = newBlock();
+		uint rPos;
+		uint buffSize = getSize(buff);
+
+		for(rPos = 0; rPos < buffSize; )
+		{
+			uint size = buffSize - rPos;
+			autoBlock_t *tmp;
+
+			if(BlockSizeLimit < size)
+			{
+				size = (uint)(getCryptoRand64() % BlockSizeLimit);
+				m_maxim(size, 1);
+			}
+			tmp = ab_makeSubBytes(buff, rPos, size);
+
+			cout("DIV %u -> %u %u ", buffSize, rPos, size);
+
+			EncryptFltr_Real(tmp, encCounter);
+
+			ab_addBytes_x(dest, tmp);
+			rPos += size;
+		}
+		ab_swap(dest, buff);
+
+		releaseAutoBlock(dest);
+	}
+	else
+		EncryptFltr_Real(buff, encCounter);
 }
 static void DecryptFltr(autoBlock_t *buff, uint decInfo)
 {
@@ -288,6 +325,16 @@ static int ReadArgs(void)
 	if(argIs("/0"))
 	{
 		SendZeroBytesMode = 1;
+		return 1;
+	}
+	if(argIs("/BSL"))
+	{
+		BlockSizeLimit = toValue(nextArg());
+		return 1;
+	}
+	if(argIs("/T")) // geTunnel combination mode
+	{
+		BlockSizeLimit = 2000;
 		return 1;
 	}
 	KeyBundleFile = nextArg();

@@ -14,4 +14,5 @@ uint getCryptoByte(void);
 uint getCryptoRand16(void);
 uint getCryptoRand24(void);
 uint getCryptoRand(void);
+uint64 getCryptoRand64(void);
 autoBlock_t *makeCryptoRandBlock(uint count);
