@@ -29,6 +29,7 @@ static void Divide(char *file)
 
 	cout("ï™äÑÇµÇ‹Ç∑ÅB\n");
 	cout("file: %s\n", file);
+	cout("divsz: %I64u\n", DivSize);
 
 	for(dividx = 0; ; dividx++)
 	{
@@ -41,9 +42,14 @@ static void Divide(char *file)
 
 		for(szcnt = 0; szcnt < DivSize; )
 		{
-			autoBlock_t *divblock = readBinaryStream(fp, BUFFSIZE);
+			uint readsize = (uint)m_min((uint64)BUFFSIZE, DivSize - szcnt);
+			autoBlock_t *divblock;
 
-			cout("divblock: %08x (%u)\n", divblock, divblock ? getSize(divblock) : 0);
+			cout("readsize: %u\n", readsize);
+
+			divblock = readBinaryStream(fp, readsize);
+
+			cout("divblock: %08x (%u)", divblock, divblock ? getSize(divblock) : 0);
 
 			if(!divblock)
 				break;
