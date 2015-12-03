@@ -89,14 +89,14 @@ typedef unsigned __int64 uint64;
 #define m_01(flag) \
 	((flag) == 0 ? 0 : 1)
 
-typedef struct i2D_st
+typedef struct i2D_st // access free
 {
 	int X;
 	int Y;
 }
 i2D_t;
 
-typedef struct d2D_st
+typedef struct d2D_st // access free
 {
 	double X;
 	double Y;

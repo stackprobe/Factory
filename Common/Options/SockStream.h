@@ -19,7 +19,7 @@ typedef struct SockStream_st
 	uint BlockTimeout;
 	uint CurrBlockTimeout;
 
-	struct
+	struct // access free
 	{
 		char *SaveFile;
 		char *ServerName;
