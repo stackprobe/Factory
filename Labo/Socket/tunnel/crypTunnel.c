@@ -334,7 +334,7 @@ static int ReadArgs(void)
 	}
 	if(argIs("/T")) // geTunnel combination mode
 	{
-		BlockSizeLimit = 2000;
+		BlockSizeLimit = 5000;
 		return 1;
 	}
 	KeyBundleFile = nextArg();
