@@ -116,8 +116,8 @@ static void AddGameVer(char *arcFile, char *rootDir)
 	name = strxl(lArcFile, strlen(lArcFile) - 9); // "_v999.zip" を削る。
 	wDir = combine(rootDir, name);
 	wFile = combine(wDir, lArcFile);
-	md5File = addExt(arcFile, "md5");
-	wMD5File = addExt(wFile, "md5");
+	md5File = addExt(strx(arcFile), "md5");
+	wMD5File = addExt(strx(wFile), "md5");
 
 	cout("< %s\n", arcFile);
 	cout("< %s\n", md5File);
@@ -207,8 +207,10 @@ static void AddRev(char *rDir, char *wDir, char *gameWDir, char *extCluWDir)
 
 		foreach(files, file, index)
 		{
-			AddRev_File(file, wDir);
-
+			if(existFile(file)) // .md5 ファイルなど、消失する場合がある。
+			{
+				AddRev_File(file, wDir);
+			}
 			if(existFile(file) && lineExpICase("<>_v<3,09>.zip", file))
 			{
 				AddGameVer(file, gameWDir);
