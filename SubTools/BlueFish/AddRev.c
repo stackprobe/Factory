@@ -107,6 +107,8 @@ static void AddGameVer(char *arcFile, char *rootDir)
 	char *name;
 	char *wDir;
 	char *wFile;
+	char *md5File;
+	char *wMD5File;
 
 	LOGPOS();
 
@@ -114,13 +116,23 @@ static void AddGameVer(char *arcFile, char *rootDir)
 	name = strxl(lArcFile, strlen(lArcFile) - 9); // "_v999.zip" を削る。
 	wDir = combine(rootDir, name);
 	wFile = combine(wDir, lArcFile);
+	md5File = addExt(arcFile, "md5");
+	wMD5File = addExt(wFile, "md5");
 
 	cout("< %s\n", arcFile);
+	cout("< %s\n", md5File);
 	cout("> %s\n", rootDir);
 	cout("1.> %s\n", lArcFile);
 	cout("2.> %s\n", name);
 	cout("3.> %s\n", wDir);
 	cout("4.> %s\n", wFile);
+	cout("5.> %s\n", wMD5File);
+
+	if(!existFile(md5File)) // ? .md5 ファイルが無い。
+		goto cancel;
+
+	if(existFile(wFile) || existFile(wMD5File)) // ? このバージョンは既に存在する。
+		goto cancel;
 
 	if(!existDir(wDir))
 	{
@@ -138,12 +150,15 @@ static void AddGameVer(char *arcFile, char *rootDir)
 		writeOneLine(GAME_TITLE_FILE, name); // 仮作成
 		unaddCwd();
 	}
-	if(!existFile(wFile)) // 既に存在したら何もしない。
-		moveFile(arcFile, wFile);
+	moveFile(arcFile, wFile);
+	moveFile(md5File, wMD5File);
 
+cancel:
 	memFree(name);
 	memFree(wDir);
 	memFree(wFile);
+	memFree(md5File);
+	memFree(wMD5File);
 
 	LOGPOS();
 }

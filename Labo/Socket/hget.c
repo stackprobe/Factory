@@ -238,6 +238,8 @@ retry:
 		httpRecvedHeader = newList();
 	}
 
+	LOGPOS();
+
 	ProgressBegin();
 	SockSendInterlude = Progress_Wrap;
 	SockRecvInterlude = Progress_Wrap;
@@ -247,6 +249,8 @@ retry:
 	SockSendInterlude = NULL;
 	SockRecvInterlude = NULL;
 	ProgressEnd(retval ? 0 : 1);
+
+	LOGPOS();
 
 	execute("TITLE hget - done");
 
@@ -287,6 +291,8 @@ retry:
 		{
 			FILE *fp = fileOpen(resFile, "rt");
 			char *line;
+
+			cout("■受信データ\n");
 
 			while(line = readLineLenMax(fp, 128 * 1024 * 1024))
 			{

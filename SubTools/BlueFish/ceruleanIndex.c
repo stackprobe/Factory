@@ -10,7 +10,7 @@
 #define TEMPLATE_VER_NEWEST_FILE "tamplate_ver_newest.html.txt"
 
 #define INDEX_FILE "index.html"
-#define ROOT_LDIR "charlotte"
+#define ROOT_LDIR  "charlotte"
 #define ORDER_FILE "order.txt"
 #define TITLE_FILE "title.txt"
 
