@@ -695,3 +695,13 @@ void writeJoinBinary_cx(char *file, autoBlock_t *block)
 	writeJoinBinary(file, block);
 	releaseAutoBlock(block);
 }
+void writeOneLineNoRet_cx(char *file, char *line)
+{
+	writeOneLineNoRet(file, line);
+	memFree(line);
+}
+void writeOneLineNoRet_b_cx(char *file, char *line)
+{
+	writeOneLineNoRet_b(file, line);
+	memFree(line);
+}
