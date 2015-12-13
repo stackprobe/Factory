@@ -14,6 +14,7 @@
 
 	KEY-BUNDLE ... 鍵束ファイル or * or *PASS
 	/C   ... 自動判定モードのリストア時にカレントディレクトリに出力する。
+	/1   ... 自動判定モードのクラスタ作成時にフリーディレクトリに出力する。
 	/-OW ... 自動判定モードで上書き禁止（上書きしようとするとエラー）
 	/OAD ... 出力したら入力を削除する
 	/M   ... クラスタファイル作成
@@ -55,6 +56,7 @@ static void PostOutput(char *rPath)
 // ---- auto action ----
 
 static int RestoreCurrentDirMode;
+static int MakeClusterFreeDirMode;
 static int NoOverwriteMode;
 
 static char *MakeRestorePath(char *path, int rcdm)
@@ -111,9 +113,16 @@ static char *AA_Restore(char *rFile, autoBlock_t *rawKey, int rcdm)
 	}
 	return NULL;
 }
-static void AA_PackAndEncrypt(char *rFile, autoBlock_t *rawKey)
+static void AA_PackAndEncrypt(char *rFile, autoBlock_t *rawKey, int mcfdm)
 {
-	char *wFile = addExt(strx(rFile), EXT_PACKED);
+	char *wFile;
+
+	if(mcfdm)
+		wFile = combine_xc(makeFreeDir(), getLocal(rFile));
+	else
+		wFile = strx(rFile);
+
+	wFile = addExt(wFile, EXT_PACKED);
 
 	if(existPath(wFile))
 	{
@@ -141,6 +150,13 @@ static void AA_PackAndEncrypt(char *rFile, autoBlock_t *rawKey)
 		LOGPOS();
 		ZC_Encrypt(wFile, rawKey);
 		LOGPOS();
+	}
+	if(MakeClusterFreeDirMode)
+	{
+		char *wDir = getParent(wFile);
+
+		execute_x(xcout("START \"\" \"%s\"", wDir));
+		memFree(wDir);
 	}
 	memFree(wFile);
 }
@@ -189,12 +205,17 @@ static void AutoAction(char *rPath, autoBlock_t *rawKey)
 		}
 		else // クラスタ化モード
 		{
-			AA_PackAndEncrypt(rPath, rawKey);
+			AA_PackAndEncrypt(rPath, rawKey, MakeClusterFreeDirMode);
 		}
 	}
 	else // rPath == DIR -> クラスタ化モード
 	{
-		char *midFile = strx(rPath);
+		char *midFile;
+
+		if(MakeClusterFreeDirMode)
+			midFile = combine_xc(makeFreeDir(), getLocal(rPath));
+		else
+			midFile = strx(rPath);
 
 		midFile = addExt(midFile, EXT_CLUSTER);
 
@@ -204,7 +225,7 @@ static void AutoAction(char *rPath, autoBlock_t *rawKey)
 			forceRemovePath(midFile);
 		}
 		ZC_Cluster(rPath, midFile);
-		AA_PackAndEncrypt(midFile, rawKey);
+		AA_PackAndEncrypt(midFile, rawKey, 0);
 		removeFile(midFile);
 		memFree(midFile);
 	}
@@ -353,6 +374,11 @@ readArgs:
 	if(argIs("/C"))
 	{
 		RestoreCurrentDirMode = 1;
+		goto readArgs;
+	}
+	if(argIs("/1"))
+	{
+		MakeClusterFreeDirMode = 1;
 		goto readArgs;
 	}
 	if(argIs("/-OW"))
