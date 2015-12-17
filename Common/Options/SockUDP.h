@@ -2,8 +2,10 @@
 
 #include "SockClient.h"
 
-int sockUDPOpenSend(uchar ip[4], char *domain, uint portno);
+int sockUDPOpenSend(void);
 int sockUDPOpenRecv(uint portno);
-void sockUDPSend(int sock, autoBlock_t *block);
-autoBlock_t *sockUDPRecv(int sock, uint szMax);
+void sockUDPSendBlock(int sock, uchar ip[4], char *domain, uint portno, uchar *data, uint dataSize);
+void sockUDPSend(int sock, uchar ip[4], char *domain, uint portno, autoBlock_t *block);
+uint sockUDPRecvBlock(int sock, uint millis, uchar *buff, uint buffSize);
+autoBlock_t *sockUDPRecv(int sock, uint millis);
 void sockUDPClose(int sock);
