@@ -230,3 +230,11 @@ char *readResourceArgsText(char *file)
 {
 	return untokenize_xc(readResourceLines(file), " ");
 }
+
+// _x
+autoList_t *readResourceLines_x(char *file)
+{
+	autoList_t *ret = readResourceLines(file);
+	memFree(file);
+	return ret;
+}

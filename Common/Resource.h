@@ -20,3 +20,6 @@ autoList_t *readResourceLinesList(char *file);
 autoList_t *discerpHeaders(autoList_t *linesList);
 char *readResourceText(char *file);
 char *readResourceArgsText(char *file);
+
+// _x
+autoList_t *readResourceLines_x(char *file);
