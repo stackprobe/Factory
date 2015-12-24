@@ -29,7 +29,8 @@
 #define LOCKED_EVENT_UUID "{57349467-d90b-4e77-804e-516c4d07c0d6}"
 #define UNLOCK_EVENT_UUID "{715811de-35ff-4d11-928f-e94f1690ab23}"
 
-#define LOCK_FLAG_FILE "C:\\Factory\\tmp\\Bind_Lock.flg"
+#define CLIENT_LOCK_FLAG_FILE "C:\\Factory\\tmp\\Bind_ClientLock.flg"
+#define SERVER_LOCK_FLAG_FILE "C:\\Factory\\tmp\\Bind_ServerLock.flg"
 
 static char *Domain;
 static uint PortNo;
@@ -48,23 +49,23 @@ static void ThrowHTTRequest(void)
 
 	if(sock != -1)
 	{
-		LOGPOS();
+//		LOGPOS();
 		sockDisconnect(sock);
 	}
-	LOGPOS();
+//	LOGPOS();
 	sock = sockConnect(ip, Domain, PortNo);
-	cout("sock: %d\n", sock);
+//	cout("sock: %d\n", sock);
 
 	if(sock == -1)
 	{
 		ConnectErrorCount++;
 		return;
 	}
-	LOGPOS();
+//	LOGPOS();
 	message = GetHTTRequestMessage();
 	SockSendSequLoop(sock, message, 2000);
 	releaseAutoBlock(message);
-	LOGPOS();
+//	LOGPOS();
 }
 
 static void DoWakeup(uint hdl)
@@ -152,6 +153,75 @@ static void DoWait(uint hdl, void (*interrupt)(void))
 	LOGPOS();
 }
 
+static void LockClient(void)
+{
+	int cancelled = 0;
+
+	LOGPOS();
+
+	cout("他のクライアントをロックしようとしています...\n");
+	cout("■いつまでもロック出来ない理由＝ロックした.batが異常終了した。\n");
+	cout("▲ロックした.batが終了した事を確認の上、エスケープキーを押して続行して下さい。\n");
+
+	ProgressBegin();
+
+	for(; ; )
+	{
+		Progress();
+
+		mutex();
+		{
+			if(!existFile(CLIENT_LOCK_FLAG_FILE))
+			{
+				createFile(CLIENT_LOCK_FLAG_FILE);
+				unmutex();
+				break;
+			}
+		}
+		unmutex();
+
+		sleep(2000); // 滅多に無さそうだから、スリープでいいや..
+
+		while(hasKey())
+			if(getKey() == 0x1b)
+				cancelled = 1;
+
+		if(cancelled)
+			break;
+	}
+	ProgressEnd(cancelled);
+
+	if(cancelled)
+		cout("他のクライアントをロックせずに続行します。\n"); // イレギュラー
+	else
+		cout("他のクライアントをロックしました。\n"); // 正規
+
+	LOGPOS();
+}
+static void UnlockClient(void)
+{
+	int unlocked = 0;
+
+	LOGPOS();
+
+	mutex();
+	{
+		if(existFile(CLIENT_LOCK_FLAG_FILE))
+		{
+			removeFile(CLIENT_LOCK_FLAG_FILE);
+			unlocked = 1;
+		}
+	}
+	unmutex();
+
+	if(unlocked)
+		cout("他のクライアントのロックを解除しました。\n"); // 正規
+	else
+		cout("他のクライアントはロックされていません。\n"); // イレギュラー
+
+	LOGPOS();
+}
+
 int main(int argc, char **argv)
 {
 	int hdlMtx = mutexOpen(MUTEX_UUID);
@@ -163,13 +233,13 @@ int main(int argc, char **argv)
 //		LOGPOS();
 		handleWaitForever(hdlMtx);
 		{
-			if(!existFile(LOCK_FLAG_FILE))
+			if(!existFile(SERVER_LOCK_FLAG_FILE))
 			{
 				mutexRelease(hdlMtx);
 //				LOGPOS();
 				goto endProc;
 			}
-			removeFile(LOCK_FLAG_FILE);
+			removeFile(SERVER_LOCK_FLAG_FILE);
 		}
 		mutexRelease(hdlMtx);
 		LOGPOS();
@@ -191,10 +261,12 @@ int main(int argc, char **argv)
 		errorCase(m_isEmpty(Domain));
 		errorCase(!PortNo || 0xffff < PortNo);
 
+		LockClient();
+
 		LOGPOS();
 		handleWaitForever(hdlMtx);
 		{
-			createFile(LOCK_FLAG_FILE);
+			createFile(SERVER_LOCK_FLAG_FILE);
 		}
 		mutexRelease(hdlMtx);
 		LOGPOS();
@@ -206,6 +278,7 @@ int main(int argc, char **argv)
 	else if(argIs("/U")) // Unlock
 	{
 		DoWakeup(hdlUnlock);
+		UnlockClient();
 	}
 
 endProc:
