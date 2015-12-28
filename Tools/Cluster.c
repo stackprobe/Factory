@@ -13,7 +13,8 @@
 	             /KR 入力クラスタファイル 出力DIR |
 	             /MR 入力DIR 出力DIR]
 
-		/C   ... 常に入力ファイルと同じディレクトリに出力する。
+		/C   ... 自動判定のとき常に入力ファイルと同じディレクトリに出力する。
+		/1   ... 自動判定のとき常にフリーディレクトリに出力する。
 		/Q   ... リストア時に破損をチェックしない。
 		/T   ... トラストモード
 		/OAC ... 出力後、入力ファイルを削除する。入力ディレクトリは空にする。
@@ -216,6 +217,7 @@ static void CheckCluster(char *file)
 }
 
 static int RestoreSameDirMode;
+static int RestoreFreeDirMode;
 static int NoCheckClusterMode;
 static int UnopenEmptyClusterMode;
 
@@ -223,9 +225,24 @@ static void AutoActCluster(char *path)
 {
 	if(existDir(path))
 	{
-		char *file = addExt(strx(path), EXT_CLUSTER);
+		char *fdir = NULL;
+		char *file;
+
+		if(RestoreFreeDirMode)
+		{
+			fdir = makeFreeDir();
+			file = combine_cx(fdir, addExt(strx(getLocal(path)), EXT_CLUSTER));
+		}
+		else
+			file = addExt(strx(path), EXT_CLUSTER);
 
 		MakeCluster(file, path);
+
+		if(fdir)
+		{
+			execute_x(xcout("START %s\n", fdir));
+			memFree(fdir);
+		}
 		memFree(file);
 	}
 	else
@@ -271,6 +288,11 @@ readArgs:
 	if(argIs("/C")) // out to same dir (Current dir?) mode
 	{
 		RestoreSameDirMode = 1;
+		goto readArgs;
+	}
+	if(argIs("/1")) // out to free dir mode
+	{
+		RestoreFreeDirMode = 1;
 		goto readArgs;
 	}
 	if(argIs("/Q")) // Quick mode
