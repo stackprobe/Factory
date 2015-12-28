@@ -9,6 +9,9 @@ void ab_addFollowBytes_x(autoBlock_t *i, autoBlock_t *block, uint start);
 void ab_addLine(autoBlock_t *i, char *line);
 void ab_addLine_x(autoBlock_t *i, char *line);
 
+#define ab_addChar(i, chr) \
+	(addByte((i), (chr)))
+
 void ab_addValue(autoBlock_t *i, uint value);
 uint ab_unaddValue(autoBlock_t *i);
 void ab_insertValue(autoBlock_t *i, uint index, uint value);
