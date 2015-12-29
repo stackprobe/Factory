@@ -175,7 +175,7 @@ readArgs:
 	{
 		cout("#### LITE MODE ####\n");
 		httpM4UServerMode = 0;
-		timeout = 20;
+		timeout = 30;
 		httpBlockTimeout = 20;
 		retrycnt = 0;
 		httpMultiPartContentLenMax = 2000000; // 2mb

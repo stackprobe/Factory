@@ -8,6 +8,7 @@
 
 #include "C:\Factory\Common\Options\SockServer.h"
 #include "C:\Factory\Common\Options\PadFile.h"
+#include "C:\Factory\SubTools\BlueFish\libs\Lock.h"
 
 #define REQIDHISTORY_MAX 1000
 
@@ -62,11 +63,19 @@ static int Perform(char *prmFile, char *ansFile)
 
 	if(existFile(batFile))
 	{
-		coExecute_x(xcout("START \"\" /B /WAIT CMD /C \"%s\"", batFile));
+		BlueFish_Lock();
+		{
+			coExecute_x(xcout("START \"\" /B /WAIT CMD /C \"%s\"", batFile));
+		}
+		BlueFish_Unlock();
 	}
 	else if(existFile(exeFile))
 	{
-		coExecute_x(xcout("START \"\" /B /WAIT \"%s\"", exeFile));
+		BlueFish_Lock();
+		{
+			coExecute_x(xcout("START \"\" /B /WAIT \"%s\"", exeFile));
+		}
+		BlueFish_Unlock();
 	}
 	else
 	{

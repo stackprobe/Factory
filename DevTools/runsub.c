@@ -1,4 +1,5 @@
 #include "C:\Factory\Common\all.h"
+#include "C:\Factory\SubTools\BlueFish\libs\Lock.h"
 
 static uint NonBlockingMode;
 static uint TimeWaitSec;
@@ -10,10 +11,14 @@ static void Run(char *file)
 	cout("runsub: %s\n", absPath);
 	execute_x(xcout("TITLE runsub - %s", absPath));
 
-	if(NonBlockingMode)
-		execute_x(xcout("START CMD /C \"%s\"", file));
-	else
-		execute(file);
+	BlueFish_Lock();
+	{
+		if(NonBlockingMode)
+			execute_x(xcout("START CMD /C \"%s\"", file));
+		else
+			execute(file);
+	}
+	BlueFish_Unlock();
 
 	execute("TITLE runsub");
 	cout("runsub: %s done\n", absPath);

@@ -705,3 +705,8 @@ void writeOneLineNoRet_b_cx(char *file, char *line)
 	writeOneLineNoRet_b(file, line);
 	memFree(line);
 }
+void writeOneLineNoRet_b_xx(char *file, char *line)
+{
+	writeOneLineNoRet_b_cx(file, line);
+	memFree(file);
+}

@@ -1118,3 +1118,13 @@ void mkAddCwd_x(char *dir)
 	mkAddCwd(dir);
 	memFree(dir);
 }
+void createFile_x(char *file)
+{
+	createFile(file);
+	memFree(file);
+}
+void createPath_x(char *path, int mode)
+{
+	createPath(path, mode);
+	memFree(path);
+}

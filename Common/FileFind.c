@@ -1,5 +1,7 @@
 #include "all.h"
 
+#define WILDCARD "*"
+
 static FILE *DirsExtraFp;
 static FILE *FilesExtraFp;
 
@@ -49,7 +51,7 @@ autoList_t *ls(char *dir)
 
 	errorCase(!existDir(absDir));
 
-	wCard = combine(absDir, "*");
+	wCard = combine(absDir, WILDCARD);
 	h = _findfirst(wCard, &lastFindData);
 	memFree(wCard);
 
@@ -316,6 +318,7 @@ uint fileSearchCount(char *wCard)
 	fileSearch(wCard, FSC_Action);
 	return FSC_Count;
 }
+
 static int FSX_Flag;
 
 static int FSX_Action(struct _finddata_t *i)
@@ -328,4 +331,35 @@ int fileSearchExist(char *wCard)
 	FSX_Flag = 0;
 	fileSearch(wCard, FSX_Action);
 	return FSX_Flag;
+}
+
+uint lsCount(char *dir)
+{
+	uint count = 0;
+
+	dir = makeFullPath(dir);
+
+	if(existDir(dir))
+	{
+		char *wCard = combine(dir, WILDCARD);
+		intptr_t h;
+		struct _finddata_t findData;
+
+		h = _findfirst(wCard, &findData);
+
+		if(h != -1)
+		{
+			do
+			{
+				count++;
+			}
+			while(_findnext(h, &findData) == 0);
+
+			_findclose(h);
+		}
+		memFree(wCard);
+	}
+	memFree(dir);
+
+	return count;
 }
