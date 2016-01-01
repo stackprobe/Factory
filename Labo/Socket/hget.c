@@ -15,6 +15,8 @@
 #include "C:\Factory\Common\Options\Progress.h"
 #include "C:\Factory\Common\Options\UTF.h"
 
+#define MUTEX_ID "{c2a09038-995b-492b-ae74-f45d04823852}"
+
 static void TextFltr(char *file, uint lineLenMax)
 {
 	char *midFile = makeTempPath(NULL);
@@ -73,6 +75,8 @@ int main(int argc, char **argv)
 	uint lastStartTime;
 	int outputAndOpenOutDir = 0;
 	char *hdrOutFile = NULL;
+	int mtxFlag = 0;
+	uint mtx;
 
 	httpM4UServerMode = 1;
 	timeout = 86400;
@@ -171,6 +175,11 @@ readArgs:
 		hdrOutFile = nextArg();
 		goto readArgs;
 	}
+	if(argIs("/M")) // 排他的に実行する。
+	{
+		mtxFlag = 1;
+		goto readArgs;
+	}
 	if(argIs("/L")) // BlueFish 内のバッチ用
 	{
 		cout("#### LITE MODE ####\n");
@@ -238,6 +247,13 @@ retry:
 		httpRecvedHeader = newList();
 	}
 
+	if(mtxFlag)
+	{
+		LOGPOS();
+		mtx = mutexLock(MUTEX_ID);
+		LOGPOS();
+	}
+
 	LOGPOS();
 
 	ProgressBegin();
@@ -251,6 +267,13 @@ retry:
 	ProgressEnd(retval ? 0 : 1);
 
 	LOGPOS();
+
+	if(mtxFlag)
+	{
+		LOGPOS();
+		mutexUnlock(mtx);
+		LOGPOS();
+	}
 
 	execute("TITLE hget - done");
 

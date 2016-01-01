@@ -564,6 +564,14 @@ char *nextArg(void)
 	ArgIndex++;
 	return arg;
 }
+char *nnNextArg(void)
+{
+	if(!hasArgs(1))
+		return NULL;
+
+	return nextArg();
+}
+
 void skipArg(uint count)
 {
 	for(; count; count--) nextArg();

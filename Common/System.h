@@ -48,6 +48,7 @@ int hasArgs(uint count);
 int argIs(char *spell);
 char *getArg(uint index);
 char *nextArg(void);
+char *nnNextArg(void);
 void skipArg(uint count);
 autoList_t *getFollowArgs(uint index);
 autoList_t *allArgs(void);

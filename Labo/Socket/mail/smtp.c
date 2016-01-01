@@ -51,6 +51,7 @@ static void SendLineDisp_x(SockStream_t *ss, char *line)
 	SendLineDisp(ss, line);
 	memFree(line);
 }
+
 static char *MailFrom;
 static char *MailTo;
 static autoList_t *MailData; // ヘッダを含むメールデータ、終端の "." は含まないこと。
