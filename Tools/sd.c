@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 	errorCase(m_isEmpty(name));
 
 	dir = makeFullPath(dir);
-	errorCase(!existDir(dir));
+//	errorCase(!existDir(dir));
 
 	createFileIfNotExist(SAVE_FILE);
 
