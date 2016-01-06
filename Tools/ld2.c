@@ -38,6 +38,12 @@ int main(int argc, char **argv)
 	createFileIfNotExist(SAVE_FILE);
 	removeFileIfExist(BATCH_FILE);
 
+	if(argIs("/C")) // Clear
+	{
+		removeFile(SAVE_FILE);
+		return;
+	}
+
 	if(hasArgs(1))
 	{
 		LoadDir(nextArg());
