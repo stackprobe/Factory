@@ -491,7 +491,7 @@ readArgs:
 		char *file = nextArg();
 
 		ZC_Encrypt(file, rawKey);
-		PostOutput(file);
+//		PostOutput(file); // 入出力ファイルなので..
 		return;
 	}
 	if(argIs("/D+"))
@@ -505,7 +505,7 @@ readArgs:
 			cout("+---------------------+\n");
 			termination(1);
 		}
-		PostOutput(file);
+//		PostOutput(file); // 入出力ファイルなので..
 		termination(0);
 	}
 	if(hasArgs(1))
