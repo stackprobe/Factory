@@ -1,3 +1,21 @@
+/*
+	> ld
+
+		保存されているディレクトリ一覧を表示する。
+
+	> ld NAME
+
+		保存されているディレクトリへ移動する。
+
+	> ld /c
+
+		保存されているディレクトリをクリアする。
+
+	----
+
+	ディレクトリは sd [NAME] [DIR] で保存する。
+*/
+
 #include "C:\Factory\Common\all.h"
 #include "libs\SaveDir.h"
 

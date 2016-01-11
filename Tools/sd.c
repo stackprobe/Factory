@@ -1,3 +1,21 @@
+/*
+	> sd
+
+		カレントディレクトリを適当な名前（番号）で保存する。
+
+	> sd NAME
+
+		カレントディレクトリを NAME で保存する。
+
+	> sd NAME DIR
+
+		DIR を NAME で保存する。
+
+	----
+
+	保存したディレクトリは ld NAME で移動する。
+*/
+
 #include "C:\Factory\Common\all.h"
 #include "libs\SaveDir.h"
 
