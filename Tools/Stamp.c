@@ -12,7 +12,7 @@
 		スタンプリストを反映
 
 		FILE ... 入力ファイル
-		DIR  ... 適用先DIR, 省略時は FILE - ".ext"
+		DIR  ... 適用先DIR, 省略時は FILE - .ext
 */
 
 #include "C:\Factory\Common\all.h"
