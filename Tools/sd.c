@@ -23,6 +23,8 @@ static char *GetAutoName(void)
 {
 	char *sno = strx("0");
 
+	createFileIfNotExist(SAVE_FILE);
+
 	{
 		autoList_t *lines = readLines(SAVE_FILE);
 		char *line;

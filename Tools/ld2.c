@@ -11,6 +11,10 @@
 
 		保存されているディレクトリをクリアする。
 
+	> ld /c NAME
+
+		保存されている NAME をクリアする。
+
 	----
 
 	ディレクトリは sd [NAME] [DIR] で保存する。
@@ -51,6 +55,26 @@ static void LoadDir(char *name)
 	}
 	releaseDim(lines, 1);
 }
+static void ForgetDir(char *name)
+{
+	autoList_t *lines = readLines(SAVE_FILE);
+	uint index;
+
+	for(index = 0; index < getCount(lines); index += 2)
+		if(!_stricmp(name, getLine(lines, index)))
+			break;
+
+	if(index < getCount(lines))
+	{
+		memFree((char *)desertElement(lines, index)); // NAME
+		memFree((char *)desertElement(lines, index)); // ディレクトリ
+
+		writeLines(SAVE_FILE, lines);
+
+		cout("削除しました。\n");
+	}
+	releaseDim(lines, 1);
+}
 int main(int argc, char **argv)
 {
 	createFileIfNotExist(SAVE_FILE);
@@ -58,6 +82,11 @@ int main(int argc, char **argv)
 
 	if(argIs("/C")) // Clear
 	{
+		if(hasArgs(1))
+		{
+			ForgetDir(nextArg());
+			return;
+		}
 		removeFile(SAVE_FILE);
 		return;
 	}
