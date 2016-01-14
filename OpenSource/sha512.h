@@ -18,6 +18,7 @@ sha512_t *sha512_copy(sha512_t *i);
 void sha512_update(sha512_t *i, autoBlock_t *text);
 void sha512_makeHash(sha512_t *i);
 void sha512_makeHexHash(void);
+void sha512_128_makeHexHash(void);
 
 void sha512_makeHashBlock(autoBlock_t *text);
 void sha512_makeHashLine(char *line);
@@ -25,3 +26,7 @@ void sha512_makeHashFile(char *file);
 
 void sha512_evacuate(void);
 void sha512_unevacuate(void);
+
+char *sha512_128Block(autoBlock_t *block);
+char *sha512_128Bytes(void *bytes, uint size);
+char *sha512_128Line(char *line);

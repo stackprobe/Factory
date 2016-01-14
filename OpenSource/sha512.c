@@ -38,10 +38,19 @@ void sha512_makeHash(sha512_t *i)
 }
 void sha512_makeHexHash(void)
 {
-	autoBlock_t tmpBlock;
+	autoBlock_t gab;
 	char *line;
 
-	line = makeHexLine(gndBlockVar(sha512_hash, 64, tmpBlock));
+	line = makeHexLine(gndBlockVar(sha512_hash, 64, gab));
+	strcpy(sha512_hexHash, line);
+	memFree(line);
+}
+void sha512_128_makeHexHash(void)
+{
+	autoBlock_t gab;
+	char *line;
+
+	line = makeHexLine(gndBlockVar(sha512_hash, 16, gab));
 	strcpy(sha512_hexHash, line);
 	memFree(line);
 }
@@ -91,4 +100,23 @@ void sha512_unevacuate(void)
 
 	unaddBytesToBlock(EvacuateBuffer, sha512_hexHash, 129);
 	unaddBytesToBlock(EvacuateBuffer, sha512_hash, 64);
+}
+
+char *sha512_128Block(autoBlock_t *block)
+{
+	sha512_makeHashBlock(block);
+	sha512_128_makeHexHash();
+	return sha512_hexHash;
+}
+char *sha512_128Bytes(void *bytes, uint size)
+{
+	autoBlock_t gab;
+
+	return sha512_128Block(gndBlockVar(bytes, size, gab));
+}
+char *sha512_128Line(char *line)
+{
+	autoBlock_t gab;
+
+	return sha512_128Block(gndBlockLineVar(line, gab));
 }

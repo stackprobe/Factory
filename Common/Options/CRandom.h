@@ -6,4 +6,5 @@
 char *MakeUUID(int bracket);
 int GetRandIDChar(void);
 char *MakeRandID(void);
+char *MakeRandHexID(void);
 autoBlock_t *GetConcreteRawKey(void);

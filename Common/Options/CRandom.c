@@ -64,6 +64,16 @@ char *MakeRandID(void)
 
 	return buff;
 }
+char *MakeRandHexID(void)
+{
+	char *buff = strx("");
+	uint index;
+
+	for(index = 0; index < 16; index++)
+		buff = addLine_x(buff, xcout("%02x", getCryptoByte()));
+
+	return buff;
+}
 autoBlock_t *GetConcreteRawKey(void)
 {
 	static autoBlock_t *rawKey;
