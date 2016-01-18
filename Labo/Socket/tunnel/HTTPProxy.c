@@ -53,6 +53,10 @@
 		実行時のカレントに HTTPParse_HttpDat.tmp というファイルにヘッダとボディが書き出されているので、
 		これを変更すると、送受信データに反映される。
 
+		コマンド引数がある場合は "" で囲ってね。
+
+			例：  /f- "HTTPPBodyFilter.exe image/ image/png sample\0005\Face.png"
+
 	----
 
 	2017.1.7 SEGV -> PfmConnect, buffTmp1 が複製されていなかったため ReallocSessionBuffs の再配置で変になったのかも？
