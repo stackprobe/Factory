@@ -40,6 +40,7 @@ void createFileIfNotExist(char *file);
 void removeDir(char *dir);
 void removeFile(char *file);
 void removeDirIfExist(char *dir);
+void removeDirIfEmpty(char *dir);
 void removeFileIfExist(char *file);
 void removePath(char *path);
 void removePathIfExist(char *path);

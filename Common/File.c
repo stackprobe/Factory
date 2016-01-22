@@ -397,6 +397,13 @@ void removeDirIfExist(char *dir)
 		removeDir(dir);
 	}
 }
+void removeDirIfEmpty(char *dir)
+{
+	if(!lsCount(dir))
+	{
+		removeDir(dir);
+	}
+}
 void removeFileIfExist(char *file)
 {
 	if(existFile(file))

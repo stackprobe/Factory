@@ -1,12 +1,40 @@
 #pragma once
 
 #include "C:\Factory\Common\all.h"
-#include "C:\Factory\Common\Options\CRandom.h" // <- sha512
+#include "C:\Factory\Common\Options\CRandom.h"
 
-uint FC_GetCount(char *table);
-autoList_t *FC_GetAllId(char *table);
-char *FC_GetId(char *table, char *column, char *value);
-char *FC_GetValue(char *table, char *id, char *column);
-void FC_SetValue(char *table, char *id, char *column, char *value);
-void FC_Delete(char *table, char *id);
-void FC_Truncate(char *table);
+char *FC_GetNewId(void);
+
+// ---- table ----
+
+autoList_t *FC_GetAllTableId(void);
+void FC_SwapTable(char *tableNameOrId1, char *tableNameOrId2);
+void FC_DeleteTable(char *tableNameOrId);
+
+// ---- column ----
+
+autoList_t *FC_GetAllColumnId(char *tableNameOrId);
+void FC_SwapColumn(char *tableNameOrId, char *columnNameOrId1, char *columnNameOrId2);
+void FC_DeleteColumn(char *tableNameOrId, char *columnNameOrId);
+
+// ---- row ----
+
+autoList_t *FC_GetAllRowId(char *tableNameOrId, char *columnNameOrId);
+uint FC_GetRowCount(char *tableNameOrId, char *columnNameOrId);
+
+// ---- value ----
+
+autoBlock_t *FC_GetValue(char *tableNameOrId, char *rowNameOrId, char *columnNameOrId);
+void FC_SetValue(char *tableNameOrId, char *rowNameOrId, char *columnNameOrId, autoBlock_t *value);
+char *FC_GetRowId(char *tableNameOrId, char *columnNameOrId, autoBlock_t *value);
+
+// ---- str_value ----
+
+char *FC_GetStrValue(char *tableNameOrId, char *rowNameOrId, char *columnNameOrId);
+void FC_SetStrValue(char *tableNameOrId, char *rowNameOrId, char *columnNameOrId, char *value);
+char *FC_GetStrRowId(char *tableNameOrId, char *columnNameOrId, char *value);
+
+// ----
+
+void FC_SwapRow(char *tableNameOrId, char *rowNameOrId1, char *rowNameOrId2);
+void FC_DeleteRow(char *tableNameOrId, char *rowNameOrId);
