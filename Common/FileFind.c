@@ -79,7 +79,9 @@ autoList_t *ls(char *dir)
 			}
 			if(strchr(name, '?')) // ? •Ï‚È•¶Žš‚ðŠÜ‚Þ
 			{
-				cout("UTF-PATH: %s\\%s\n", dir, name);
+				cout("<UTF-PATH>\n");
+				cout("%s\n", absDir);
+				cout("%s\n", name);
 
 				if(ignoreUtfPath)
 					continue;

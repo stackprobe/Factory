@@ -115,7 +115,7 @@ void FC_DeleteTable(char *tableNameOrId)
 
 	DoLock();
 	{
-		forceRemovedir(dir);
+		forceRemoveDir(dir);
 	}
 	DoUnlock();
 
