@@ -1,29 +1,5 @@
 #include "C:\Factory\Common\all.h"
 
-static void ShootStar(autoList_t *lines, uint lenmin)
-{
-	char *line;
-	uint index;
-
-	foreach(lines, line, index)
-	{
-		char *p = strchr(line, '*');
-		uint insidx;
-
-		errorCase(!p);
-		insidx = (uint)p - (uint)line;
-
-		*p = ' ';
-
-		while(strlen(line) < lenmin)
-		{
-			line = insertChar(line, insidx, ' ');
-		}
-		errorCase(strlen(line) < lenmin);
-
-		setElement(lines, index, (uint)line);
-	}
-}
 static void DirSize(char *dir)
 {
 	autoList_t *paths = ls(dir);
@@ -68,7 +44,7 @@ static void DirSize(char *dir)
 		memFree(lsize);
 		memFree(lfile);
 	}
-	ShootStar(lines, 79);
+	spacingStarLines(lines, 79);
 
 	foreach(lines, line, index)
 		cout("%s\n", line);

@@ -222,6 +222,36 @@ void shootingStarLines(autoList_t *lines)
 {
 	shootingStarLines_CSP(lines, 0, '*', ' ');
 }
+void spacingStarLines_SP(autoList_t *lines, uint lenmin, int starChr, int padChr)
+{
+	char *line;
+	uint index;
+
+	foreach(lines, line, index)
+	{
+		char *p = strchr(line, starChr);
+
+		if(p)
+		{
+			uint i = (uint)p - (uint)line;
+
+			line[i] = padChr;
+
+			if(strlen(line) < lenmin)
+			{
+				uint n = lenmin - strlen(line);
+
+				insertLine_x(line, i, repeatChar(padChr, n));
+
+				setElement(lines, index, (uint)line);
+			}
+		}
+	}
+}
+void spacingStarLines(autoList_t *lines, uint lenmin)
+{
+	spacingStarLines_SP(lines, lenmin, '*', ' ');
+}
 
 // _x
 void addLines_x(autoList_t *lines, autoList_t *subLines)

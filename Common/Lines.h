@@ -25,6 +25,8 @@ void rmtrimFollowLines(autoList_t *lines, uint start);
 
 void shootingStarLines_CSP(autoList_t *lines, uint count, int starChr, int padChr);
 void shootingStarLines(autoList_t *lines);
+void spacingStarLines_SP(autoList_t *lines, uint lenmin, int starChr, int padChr);
+void spacingStarLines(autoList_t *lines, uint lenmin);
 
 // _x
 void addLines_x(autoList_t *lines, autoList_t *subLines);
