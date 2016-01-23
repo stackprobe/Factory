@@ -241,7 +241,7 @@ void spacingStarLines_SP(autoList_t *lines, uint lenmin, int starChr, int padChr
 			{
 				uint n = lenmin - strlen(line);
 
-				insertLine_x(line, i, repeatChar(padChr, n));
+				line = insertLine_x(line, i, repeatChar(padChr, n));
 
 				setElement(lines, index, (uint)line);
 			}
