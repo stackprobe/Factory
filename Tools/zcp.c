@@ -86,7 +86,7 @@ readArgs:
 
 			cout("íœ‚µ‚Ü‚·B\n");
 		}
-		forceRemovePath(destPath);
+		recurRemovePath(destPath);
 	}
 
 	if(existFile(srcPath))

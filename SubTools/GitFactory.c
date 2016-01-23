@@ -23,7 +23,7 @@ static void CleanupGitDir(char *dir)
 
 		errorCase(path[0] == '.'); // ? 新しい git のファイルかしら？
 
-		forceRemovePath(path);
+		recurRemovePath(path);
 	}
 	releaseDim(paths, 1);
 	unaddCwd();

@@ -427,7 +427,7 @@ void removePathIfExist(char *path)
 	removeDirIfExist(path);
 	removeFileIfExist(path);
 }
-void forceClearDir(char *dir)
+void recurClearDir(char *dir)
 {
 	autoList_t *paths = lss(dir);
 	char *path;
@@ -441,25 +441,25 @@ void forceClearDir(char *dir)
 	}
 	releaseDim(paths, 1);
 }
-void forceRemoveDir(char *dir)
+void recurRemoveDir(char *dir)
 {
-	forceClearDir(dir);
+	recurClearDir(dir);
 	removeDir(dir);
 }
-void forceRemoveDirIfExist(char *dir)
+void recurRemoveDirIfExist(char *dir)
 {
 	if(existDir(dir))
 	{
-		forceRemoveDir(dir);
+		recurRemoveDir(dir);
 	}
 }
-void forceRemovePath(char *path)
+void recurRemovePath(char *path)
 {
-	(existFile(path) ? removeFile : forceRemoveDir)(path);
+	(existFile(path) ? removeFile : recurRemoveDir)(path);
 }
-void forceRemovePathIfExist(char *path)
+void recurRemovePathIfExist(char *path)
 {
-	forceRemoveDirIfExist(path);
+	recurRemoveDirIfExist(path);
 	removeFileIfExist(path);
 }
 
@@ -793,7 +793,7 @@ void copyPath(char *rPath, char *wPath)
 	if(existDir(rPath))
 	{
 		createDirIfNotExist(wPath);
-		forceClearDir(wPath);
+		recurClearDir(wPath);
 		copyDir(rPath, wPath);
 	}
 	else
@@ -1053,29 +1053,29 @@ void removePathIfExist_x(char *path)
 	removePathIfExist(path);
 	memFree(path);
 }
-void forceClearDir_x(char *dir)
+void recurClearDir_x(char *dir)
 {
-	forceClearDir(dir);
+	recurClearDir(dir);
 	memFree(dir);
 }
-void forceRemoveDirIfExist_x(char *dir)
+void recurRemoveDirIfExist_x(char *dir)
 {
-	forceRemoveDirIfExist(dir);
+	recurRemoveDirIfExist(dir);
 	memFree(dir);
 }
-void forceRemovePath_x(char *path)
+void recurRemovePath_x(char *path)
 {
-	forceRemovePath(path);
+	recurRemovePath(path);
 	memFree(path);
 }
-void forceRemovePathIfExist_x(char *path)
+void recurRemovePathIfExist_x(char *path)
 {
-	forceRemovePathIfExist(path);
+	recurRemovePathIfExist(path);
 	memFree(path);
 }
-void forceRemoveDir_x(char *dir)
+void recurRemoveDir_x(char *dir)
 {
-	forceRemoveDir(dir);
+	recurRemoveDir(dir);
 	memFree(dir);
 }
 void copyFile_cx(char *srcFile, char *destFile)

@@ -124,7 +124,7 @@ int main(int argc, char **argv)
 	cout("TEST END\n");
 
 	if(existDir(outDir))
-		forceRemoveDir(outDir);
+		recurRemoveDir(outDir);
 
 	memFree(outDir);
 }

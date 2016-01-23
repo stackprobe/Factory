@@ -213,7 +213,7 @@ int main(int argc, char **argv)
 		HdlWaitForMillisEx(deadEvent, INFINITE);
 
 		handleWaitForever(mtx);
-		forceRemovePathIfExist(targetPath);
+		recurRemovePathIfExist(targetPath);
 		mutexRelease(mtx);
 
 		handleClose(beganEvent);

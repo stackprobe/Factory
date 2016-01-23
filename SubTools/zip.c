@@ -268,7 +268,7 @@ static void PackZipFileEx(char *zipFile, char *srcDir, int srcDirRmFlag, char *b
 
 	PackZipFile(zipFile, workDir);
 
-	forceRemoveDir(workDir);
+	recurRemoveDir(workDir);
 
 	memFree(srcDir);
 	memFree(workDir);

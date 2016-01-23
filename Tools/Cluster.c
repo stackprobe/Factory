@@ -135,7 +135,7 @@ static void MakeCluster(char *file, char *dir)
 	if(OverwriteMode)
 	{
 		cout("OW_DELETE DEST\n");
-		forceRemovePathIfExist(file);
+		recurRemovePathIfExist(file);
 		cout("OW_DELETE DEST Ok.\n");
 	}
 	errorCase(existPath(file));
@@ -151,13 +151,13 @@ static void MakeCluster(char *file, char *dir)
 	if(OutputAndCleanMode)
 	{
 		cout("CLEAN DIR\n");
-		forceClearDir(dir); // fixme: 超ファイル数に対応する？
+		recurClearDir(dir); // fixme: 超ファイル数に対応する？
 		cout("CLEAN DIR Ok.\n");
 	}
 	else if(OutputAndDeleteMode)
 	{
 		cout("DELETE DIR\n");
-		forceRemoveDir(dir); // fixme: 超ファイル数に対応する？
+		recurRemoveDir(dir); // fixme: 超ファイル数に対応する？
 		cout("DELETE DIR Ok.\n");
 	}
 }
@@ -172,7 +172,7 @@ static void RestoreCluster(char *file, char *dir)
 	if(OverwriteMode)
 	{
 		cout("OW_DELETE DEST\n");
-		forceRemovePathIfExist(dir);
+		recurRemovePathIfExist(dir);
 		cout("OW_DELETE DEST Ok.\n");
 	}
 	errorCase(!existFile(file));
@@ -270,7 +270,7 @@ static void AutoActCluster(char *path)
 			if(UnopenEmptyClusterMode && IsNoFilesDir(fdir))
 			{
 				LOGPOS();
-				forceRemoveDir(fdir);
+				recurRemoveDir(fdir);
 			}
 			else
 			{

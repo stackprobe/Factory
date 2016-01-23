@@ -45,7 +45,7 @@ static void TrimRev(char *appDir)
 
 		errorCase(!lineExp("<4,09>.<3,09>.<5,09>", getLocal(revDir))); // 2bs
 
-		forceRemoveDir(revDir);
+		recurRemoveDir(revDir);
 		memFree(revDir);
 	}
 	releaseDim(revDirs, 1);

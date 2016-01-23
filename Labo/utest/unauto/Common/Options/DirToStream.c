@@ -31,7 +31,7 @@ static void Test_DirToStream(char *dir)
 	errorCase(getSize(Cluster)); // ? ì«Ç›èIÇÌÇ¡ÇƒÇ¢Ç»Ç¢ÅB
 	errorCase(!isSameDir(dir, outDir, 0));
 
-	forceRemoveDir(outDir);
+	recurRemoveDir(outDir);
 	memFree(outDir);
 	releaseAutoBlock(Cluster);
 

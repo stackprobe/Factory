@@ -146,7 +146,7 @@ void FC_DeleteTable(char *tableNameOrId)
 
 	DoLock();
 	{
-		forceRemoveDirIfExist(dir);
+		recurRemoveDirIfExist(dir);
 	}
 	DoUnlock();
 
@@ -255,7 +255,7 @@ void FC_DeleteColumn(char *tableNameOrId, char *columnNameOrId)
 
 	DoLock();
 	{
-		forceRemoveDirIfExist(dir);
+		recurRemoveDirIfExist(dir);
 		removeDirIfExistEmpty(tDir);
 	}
 	DoUnlock();

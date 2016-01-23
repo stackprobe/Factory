@@ -118,7 +118,7 @@ static int Pre_Upload(char *path) // ret: ? UP‰Â
 		cout("FORCE REMOVE!\n");
 
 		if(existDir(path))
-			forceRemoveDir(path);
+			recurRemoveDir(path);
 		else
 			removeFile(path);
 	}
@@ -302,7 +302,7 @@ static int Perform(char *prmFile, char *ansFile)
 
 		if(existDir(path))
 		{
-			forceRemoveDir(path);
+			recurRemoveDir(path);
 		}
 		else if(existFile(path))
 		{
@@ -401,7 +401,7 @@ readArgs:
 	unaddCwd();
 
 	if(useFreeDir) {
-		forceRemoveDir(rootDir);
+		recurRemoveDir(rootDir);
 		memFree(rootDir);
 	}
 }

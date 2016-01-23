@@ -49,7 +49,7 @@ static void PostOutput(char *rPath)
 	{
 		cout("[DELETE]\n");
 
-		forceRemovePath(rPath);
+		recurRemovePath(rPath);
 	}
 }
 
@@ -67,7 +67,7 @@ static char *MakeRestorePath(char *path, int rcdm)
 	path = changeExt(path, "");
 
 	if(!NoOverwriteMode)
-		forceRemovePathIfExist(path);
+		recurRemovePathIfExist(path);
 
 	return path;
 }
@@ -127,7 +127,7 @@ static void AA_PackAndEncrypt(char *rFile, autoBlock_t *rawKey, int mcfdm)
 	if(existPath(wFile))
 	{
 		errorCase_m(NoOverwriteMode, "è„èëÇ´ÇµÇÊÇ§Ç∆ÇµÇ‹ÇµÇΩÅB@ ZC_P_AA_PAE");
-		forceRemovePath(wFile);
+		recurRemovePath(wFile);
 	}
 	LOGPOS();
 	ZC_Pack(rFile, wFile);
@@ -142,7 +142,7 @@ static void AA_PackAndEncrypt(char *rFile, autoBlock_t *rawKey, int mcfdm)
 		if(existPath(wFile))
 		{
 			errorCase_m(NoOverwriteMode, "è„èëÇ´ÇµÇÊÇ§Ç∆ÇµÇ‹ÇµÇΩÅB@ ZC_E_AA_PAE");
-			forceRemovePath(wFile);
+			recurRemovePath(wFile);
 		}
 		moveFile(tmp, wFile);
 		memFree(tmp);
@@ -222,7 +222,7 @@ static void AutoAction(char *rPath, autoBlock_t *rawKey)
 		if(existPath(midFile))
 		{
 			errorCase_m(NoOverwriteMode, "è„èëÇ´ÇµÇÊÇ§Ç∆ÇµÇ‹ÇµÇΩÅB@ ZC_C_AA");
-			forceRemovePath(midFile);
+			recurRemovePath(midFile);
 		}
 		ZC_Cluster(rPath, midFile);
 		AA_PackAndEncrypt(midFile, rawKey, 0);
@@ -414,7 +414,7 @@ readArgs:
 		rPath = nextArg();
 		wFile = nextArg();
 
-		forceRemovePathIfExist(wFile);
+		recurRemovePathIfExist(wFile);
 		MakeCluster(rPath, wFile, rawKey);
 		return;
 	}

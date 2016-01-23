@@ -31,7 +31,7 @@ static void DelDirs(char *rootDir, autoList_t *dirs)
 		dir = combine(rootDir, dir);
 		cout("DD: %s\n", dir);
 
-		forceRemoveDir(dir);
+		recurRemoveDir(dir);
 
 		memFree(dir);
 	}

@@ -500,7 +500,7 @@ noSelStocks:
 	releaseAutoList(srchRevisions);
 	releaseDim(allStock, 1);
 	releaseDim(selStocks, 1);
-	forceRemoveDir_x(outStockTestDir);
+	recurRemoveDir_x(outStockTestDir);
 	unaddCwd();
 }
 static void RemoveLastRevIfNoMod(char *storeDir, int quietFlag)
@@ -557,7 +557,7 @@ static void RemoveLastRevIfNoMod(char *storeDir, int quietFlag)
 		if(quietFlag || clearGetKey() != 0x1b)
 		{
 			cout("çÌèúÇµÇ‹Ç∑ÅB\n");
-			forceRemoveDir(removeTargetDir);
+			recurRemoveDir(removeTargetDir);
 			cout("çÌèúÇµÇ‹ÇµÇΩÅB\n");
 		}
 		memFree(removeTargetDir);

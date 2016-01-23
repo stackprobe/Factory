@@ -55,7 +55,7 @@ void Frtwv_Clear(Frtwv_t *i)
 
 	handleWaitForever(i->Mutex);
 	{
-		forceRemoveDirIfExist(i->MessageDir);
+		recurRemoveDirIfExist(i->MessageDir);
 	}
 	mutexRelease(i->Mutex);
 }

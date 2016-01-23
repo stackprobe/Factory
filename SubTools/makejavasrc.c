@@ -180,7 +180,7 @@ static void ExtractJar(char *jarFile, char *wDir)
 	ExtractAllJava(dir, wDir);
 	ExtractAllClass(dir, wDir);
 
-//	forceRemoveDir(dir); // utf–¢‘Î‰I
+//	recurRemoveDir(dir); // utf–¢‘Î‰I
 	coExecute_x(xcout("RD /S /Q \"%s\"", dir));
 
 	memFree(dir);

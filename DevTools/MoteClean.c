@@ -55,7 +55,7 @@ static void MoteClean(char *dir)
 	foreach(killPaths, path, index)
 	{
 		cout("! %s\n", path);
-		forceRemovePathIfExist(path);
+		recurRemovePathIfExist(path);
 	}
 	releaseDim(killPaths, 1);
 }

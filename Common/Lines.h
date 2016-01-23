@@ -23,6 +23,9 @@ void emptizeFollowLines(autoList_t *lines, uint start);
 void rmtrimSubLines(autoList_t *lines, uint start, uint count);
 void rmtrimFollowLines(autoList_t *lines, uint start);
 
+void shootingStarLines_CSP(autoList_t *lines, uint count, int starChr, int padChr);
+void shootingStarLines(autoList_t *lines);
+
 // _x
 void addLines_x(autoList_t *lines, autoList_t *subLines);
 autoList_t *tokenize_x(char *line, int delimiter);

@@ -176,6 +176,53 @@ void rmtrimFollowLines(autoList_t *lines, uint start)
 	rmtrimSubLines(lines, start, getCount(lines) - start);
 }
 
+void shootingStarLines_CSP(autoList_t *lines, uint count, int starChr, int padChr) // count: 0 == UINTMAX
+{
+	if(!count)
+		count = UINTMAX;
+
+	for(; count; count--)
+	{
+		char *line;
+		uint index;
+		sint farthest = -1;
+
+		foreach(lines, line, index)
+		{
+			char *p = strchr(line, starChr);
+
+			if(p)
+			{
+				uint i = (uint)p - (uint)line;
+
+				m_maxim(farthest, (sint)i);
+			}
+		}
+		if(farthest == -1)
+			break;
+
+		foreach(lines, line, index)
+		{
+			char *p = strchr(line, starChr);
+
+			if(p)
+			{
+				uint i = (uint)p - (uint)line;
+				uint n = (uint)farthest - i;
+
+				line[i] = padChr;
+				line = insertLine_x(line, i, repeatChar(padChr, n));
+
+				setElement(lines, index, (uint)line);
+			}
+		}
+	}
+}
+void shootingStarLines(autoList_t *lines)
+{
+	shootingStarLines_CSP(lines, 0, '*', ' ');
+}
+
 // _x
 void addLines_x(autoList_t *lines, autoList_t *subLines)
 {
