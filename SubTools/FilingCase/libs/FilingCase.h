@@ -26,6 +26,7 @@ uint FC_GetRowCount(char *tableNameOrId, char *columnNameOrId);
 
 autoBlock_t *FC_GetValue(char *tableNameOrId, char *rowNameOrId, char *columnNameOrId);
 void FC_SetValue(char *tableNameOrId, char *rowNameOrId, char *columnNameOrId, autoBlock_t *value);
+autoList_t *FC_GetRowIds(char *tableNameOrId, char *columnNameOrId, autoBlock_t *value);
 char *FC_GetRowId(char *tableNameOrId, char *columnNameOrId, autoBlock_t *value);
 
 // ---- str_value ----
@@ -36,5 +37,6 @@ char *FC_GetStrRowId(char *tableNameOrId, char *columnNameOrId, char *value);
 
 // ----
 
+autoList_t *FC_GetTableAllRowId(char *tableNameOrId);
 void FC_SwapRow(char *tableNameOrId, char *rowNameOrId1, char *rowNameOrId2);
 void FC_DeleteRow(char *tableNameOrId, char *rowNameOrId);
