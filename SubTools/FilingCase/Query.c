@@ -44,8 +44,8 @@ static void ExecuteQuery(char *query)
 
 	releaseDim(lines, 1);
 
-noData:
-	releaseDim(rows, 2);
+noData:;
+//	releaseDim(rows, 2); // dont!
 }
 int main(int argc, char **argv)
 {

@@ -63,6 +63,26 @@ static void DoUnlock(void)
 	Mtx = 0;
 }
 
+static uint LockedCount;
+
+void FC_Lock(void)
+{
+	errorCase(IMAX < LockedCount); // fixme: “K“–‚ÈãŒÀ
+
+	if(!LockedCount)
+		DoLock();
+
+	LockedCount++;
+}
+void FC_Unlock(void)
+{
+	errorCase(!LockedCount);
+	LockedCount--;
+
+	if(!LockedCount)
+		DoUnlock();
+}
+
 // ---- table ----
 
 #define ROOT_DIR "C:\\appdata\\FilingCase"
@@ -75,14 +95,14 @@ autoList_t *FC_GetAllTableId(void)
 {
 	autoList_t *ret;
 
-	DoLock();
+	FC_Lock();
 	{
 		if(existDir(ROOT_DIR))
 			ret = lsDirs(ROOT_DIR);
 		else
 			ret = newList();
 	}
-	DoUnlock();
+	FC_Unlock();
 
 	eraseParents(ret);
 	errorCase(!IsIds(ret));
@@ -111,7 +131,7 @@ void FC_SwapTable(char *tableNameOrId1, char *tableNameOrId2)
 	if(!strcmp(tableId1, tableId2))
 		goto endFunc;
 
-	DoLock();
+	FC_Lock();
 	{
 		createPath(dir1, 'd');
 		createPath(dir2, 'd');
@@ -123,7 +143,7 @@ void FC_SwapTable(char *tableNameOrId1, char *tableNameOrId2)
 		removeDirIfEmpty(dir1);
 		removeDirIfEmpty(dir2);
 	}
-	DoUnlock();
+	FC_Unlock();
 
 endFunc:
 	memFree(tableId1);
@@ -144,11 +164,11 @@ void FC_DeleteTable(char *tableNameOrId)
 
 	dir = GetTableDir(tableId);
 
-	DoLock();
+	FC_Lock();
 	{
 		recurRemoveDirIfExist(dir);
 	}
-	DoUnlock();
+	FC_Unlock();
 
 	memFree(tableId);
 	memFree(dir);
@@ -172,14 +192,14 @@ autoList_t *FC_GetAllColumnId(char *tableNameOrId)
 
 	dir = GetTableDir(tableId);
 
-	DoLock();
+	FC_Lock();
 	{
 		if(existDir(dir))
 			ret = lsDirs(dir);
 		else
 			ret = newList();
 	}
-	DoUnlock();
+	FC_Unlock();
 
 	memFree(tableId);
 	memFree(dir);
@@ -214,7 +234,7 @@ void FC_SwapColumn(char *tableNameOrId, char *columnNameOrId1, char *columnNameO
 	if(!strcmp(columnId1, columnId2))
 		goto endFunc;
 
-	DoLock();
+	FC_Lock();
 	{
 		createPath(dir1, 'd');
 		createPath(dir2, 'd');
@@ -226,7 +246,7 @@ void FC_SwapColumn(char *tableNameOrId, char *columnNameOrId1, char *columnNameO
 		removeDirIfEmpty(dir1);
 		removeDirIfEmpty(dir2);
 	}
-	DoUnlock();
+	FC_Unlock();
 
 endFunc:
 	memFree(tableId);
@@ -253,12 +273,12 @@ void FC_DeleteColumn(char *tableNameOrId, char *columnNameOrId)
 	tDir = GetTableDir(tableId);
 	dir = GetColumnDir(tableId, columnId);
 
-	DoLock();
+	FC_Lock();
 	{
 		recurRemoveDirIfExist(dir);
 		removeDirIfExistEmpty(tDir);
 	}
-	DoUnlock();
+	FC_Unlock();
 
 	memFree(tableId);
 	memFree(columnId);
@@ -283,14 +303,14 @@ autoList_t *FC_GetAllRowId(char *tableNameOrId, char *columnNameOrId)
 
 	dir = GetColumnDir(tableId, columnId);
 
-	DoLock();
+	FC_Lock();
 	{
 		if(existDir(dir))
 			ret = lsFiles(dir);
 		else
 			ret = newList();
 	}
-	DoUnlock();
+	FC_Unlock();
 
 	memFree(tableId);
 	memFree(columnId);
@@ -315,11 +335,11 @@ uint FC_GetRowCount(char *tableNameOrId, char *columnNameOrId)
 
 	dir = GetColumnDir(tableId, columnId);
 
-	DoLock();
+	FC_Lock();
 	{
 		ret = lsCount(dir);
 	}
-	DoUnlock();
+	FC_Unlock();
 
 	memFree(tableId);
 	memFree(columnId);
@@ -386,14 +406,14 @@ autoBlock_t *FC_GetValue(char *tableNameOrId, char *rowNameOrId, char *columnNam
 
 	file = GetValueFile(tableId, rowId, columnId);
 
-	DoLock();
+	FC_Lock();
 	{
 		if(existFile(file))
 			ret = readBinary(file);
 		else
 			ret = newBlock();
 	}
-	DoUnlock();
+	FC_Unlock();
 
 	memFree(tableId);
 	memFree(rowId);
@@ -420,7 +440,7 @@ void FC_SetValue(char *tableNameOrId, char *rowNameOrId, char *columnNameOrId, a
 
 	file = GetValueFile(tableId, rowId, columnId);
 
-	DoLock();
+	FC_Lock();
 	{
 		if(existFile(file))
 		{
@@ -482,7 +502,7 @@ void FC_SetValue(char *tableNameOrId, char *rowNameOrId, char *columnNameOrId, a
 			}
 		}
 	}
-	DoUnlock();
+	FC_Unlock();
 
 	memFree(tableId);
 	memFree(rowId);
@@ -519,11 +539,11 @@ autoList_t *FC_GetRowIds(char *tableNameOrId, char *columnNameOrId, autoBlock_t 
 	columnId = NameOrIdToId(columnNameOrId);
 	valueId = ValueToId(value);
 
-	DoLock();
+	FC_Lock();
 	{
 		ret = GetVTRs(tableId, columnId, valueId);
 	}
-	DoUnlock();
+	FC_Unlock();
 
 	memFree(tableId);
 	memFree(columnId);

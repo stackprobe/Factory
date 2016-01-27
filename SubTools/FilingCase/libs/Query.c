@@ -1,6 +1,458 @@
+/*
+	SQLっぽいやつ
+
+		SELECT [R-COLUMN] [R-COLUMN] [R-COLUMN] ... FROM [TABLE] WHERE [C-COLUMN] = [C-VALUE]
+
+		INSERT INTO [TABLE] [W-COLUMN] [W-COLUMN] [W-COLUMN] ... VALUES [W-VALUE] [W-VALUE] [W-VALUE] ...
+
+		UPDATE [TABLE] SET [W-COLUMN] = [W-VALUE] ... WHERE [C-COLUMN] = [C-VALUE]
+
+		DELETE FROM [TABLE] WHERE [C-COLUMN] = [C-VALUE]
+
+	１件だけ処理
+
+		LGET [TABLE] [C-COLUMN] [C-VALUE] [R-COLUMN]
+
+		LSET [TABLE] [C-COLUMN] [C-VALUE] [W-COLUMN] [W-VALUE]
+
+		RGET [TABLE] [ROW] [R-COLUMN]
+
+		RSET [TABLE] [ROW] [W-COLUMN] [W-VALUE]
+
+	新しいID
+
+		MKID
+
+	構造を返す。
+
+		TBLS
+
+		COLS [TABLE]
+
+		COLS [TABLE] [ROW]
+
+		ROWS [TABLE]
+
+		ROWS [TABLE] [COLUMN]
+
+	----
+
+	不正なクエリ -> error();
+*/
+
 #include "Query.h"
 
-autoList_t *FC_ExecuteQuery(char *query)
+static char *QryRdr;
+static int Quoted;
+
+static char *TryNextQryToken(void)
 {
-	return newList(); // TODO
+	autoBlock_t *buff;
+
+	Quoted = 0;
+
+	for(; *QryRdr <= ' '; QryRdr++)
+		if(*QryRdr == '\0')
+			return NULL;
+
+	buff = newBlock();
+
+	if(*QryRdr == '\'')
+	{
+		Quoted = 1;
+
+		for(; ; )
+		{
+			int chr = *++QryRdr;
+
+			errorCase(chr == '\0');
+
+			if(chr == '\'')
+			{
+				QryRdr++;
+				break;
+			}
+			if(chr == '\\')
+			{
+				chr = *++QryRdr;
+
+				switch(chr)
+				{
+				case '\0':
+					error();
+
+				case 't': chr = '\t'; break;
+				case 'n': chr = '\n'; break;
+				case 'r': chr = '\r'; break;
+				case 's': chr = ' '; break;
+
+				default:
+					break;
+				}
+			}
+			else if(isMbc(QryRdr))
+			{
+				addByte(buff, chr);
+				chr = *++QryRdr;
+			}
+			addByte(buff, chr);
+		}
+	}
+	else
+	{
+		for(; ' ' < *QryRdr; QryRdr++)
+			addByte(buff, *QryRdr);
+	}
+	return unbindBlock2Line(buff);
+}
+static char *NextQryToken(void)
+{
+	char *ret = TryNextQryToken();
+	errorCase(!ret);
+	return ret;
+}
+static int NextQryTokenIs(char *spell)
+{
+	char *token = NextQryToken();
+	int ret;
+
+	if(token)
+	{
+		ret = !_stricmp(token, spell);
+		memFree(token);
+	}
+	else
+		ret = 0;
+
+	return ret;
+}
+
+static autoList_t *Ret;
+
+static void ExecuteSelect(void)
+{
+	autoList_t *retColumns = newList();
+	char *table;
+	char *whereColumn;
+	char *whereValue;
+	autoList_t *rowIds;
+	char *rowId;
+	uint rowidx;
+
+	for(; ; )
+	{
+		char *column = NextQryToken();
+
+		if(!Quoted && !_stricmp(column, "FROM"))
+		{
+			memFree(column);
+			break;
+		}
+		addElement(retColumns, (uint)column);
+	}
+	table = NextQryToken();
+	errorCase(!NextQryTokenIs("WHERE"));
+	whereColumn = NextQryToken();
+	errorCase(!NextQryTokenIs("="));
+	whereValue = NextQryToken();
+	errorCase(TryNextQryToken());
+
+	rowIds = FC_GetStrRowIds(table, whereColumn, whereValue);
+
+	foreach(rowIds, rowId, rowidx)
+	{
+		autoList_t *row = newList();
+		char *column;
+		uint colidx;
+
+		foreach(retColumns, column, colidx)
+		{
+			addElement(row, (uint)FC_GetStrValue(table, rowId, column));
+		}
+		addElement(Ret, (uint)row);
+	}
+	releaseDim(retColumns, 1);
+	memFree(table);
+	memFree(whereColumn);
+	memFree(whereValue);
+}
+static void ExecuteInsert(void)
+{
+	char *table;
+	autoList_t *insColumns = newList();
+	autoList_t *insValues  = newList();
+	char *rowId;
+	char *column;
+	uint colidx;
+
+	errorCase(!NextQryTokenIs("INTO"));
+	table = NextQryToken();
+
+	for(; ; )
+	{
+		column = NextQryToken();
+
+		if(!Quoted && !_stricmp(column, "VALUES"))
+		{
+			memFree(column);
+			break;
+		}
+		addElement(insColumns, (uint)column);
+	}
+	for(colidx = 0; colidx < getCount(insColumns); colidx++)
+	{
+		char *value = NextQryToken();
+
+		addElement(insValues, (uint)value);
+	}
+	errorCase(TryNextQryToken());
+
+	rowId = FC_GetNewId();
+
+	foreach(insColumns, column, colidx)
+	{
+		FC_SetStrValue(table, rowId, column, getLine(insValues, colidx));
+	}
+	memFree(table);
+	releaseDim(insColumns, 1);
+	releaseDim(insValues, 1);
+	memFree(rowId);
+}
+static void ExecuteUpdate(void)
+{
+	char *table;
+	autoList_t *updColumns = newList();
+	autoList_t *updValues  = newList();
+	char *whereColumn;
+	char *whereValue;
+	autoList_t *rowIds;
+	char *rowId;
+	uint rowidx;
+	char *column;
+	uint colidx;
+
+	table = NextQryToken();
+	errorCase(!NextQryTokenIs("SET"));
+
+	for(; ; )
+	{
+		char *column = NextQryToken();
+
+		if(!Quoted && !_stricmp(column, "WHERE"))
+		{
+			memFree(column);
+			break;
+		}
+		addElement(updColumns, (uint)column);
+		errorCase(!NextQryTokenIs("="));
+		addElement(updValues, (uint)NextQryToken());
+	}
+	whereColumn = NextQryToken();
+	errorCase(!NextQryTokenIs("="));
+	whereValue = NextQryToken();
+	errorCase(TryNextQryToken());
+
+	rowIds = FC_GetStrRowIds(table, whereColumn, whereValue);
+
+	foreach(rowIds, rowId, rowidx)
+	foreach(updColumns, column, colidx)
+	{
+		FC_SetStrValue(table, rowId, column, getLine(updValues, colidx));
+	}
+	memFree(table);
+	releaseDim(updColumns, 1);
+	releaseDim(updValues, 1);
+	memFree(whereColumn);
+	memFree(whereValue);
+	releaseDim(rowIds, 1);
+}
+static void ExecuteDelete(void)
+{
+	char *table;
+	char *whereColumn;
+	char *whereValue;
+	autoList_t *rowIds;
+	char *rowId;
+	uint rowidx;
+
+	errorCase(!NextQryTokenIs("FROM"));
+	table = NextQryToken();
+	errorCase(!NextQryTokenIs("WHERE"));
+	whereColumn = NextQryToken();
+	errorCase(!NextQryTokenIs("="));
+	whereValue = NextQryToken();
+	errorCase(TryNextQryToken());
+
+	rowIds = FC_GetStrRowIds(table, whereColumn, whereValue);
+
+	foreach(rowIds, rowId, rowidx)
+	{
+		FC_DeleteRow(table, rowId);
+	}
+	memFree(table);
+	memFree(whereColumn);
+	memFree(whereValue);
+	releaseDim(rowIds, 1);
+}
+static void ExecuteLGet(void)
+{
+	char *table;
+	char *whereColumn;
+	char *whereValue;
+	char *retColumn;
+	char *rowId;
+	autoList_t *row = newList();
+	char *value;
+
+	table       = NextQryToken();
+	whereColumn = NextQryToken();
+	whereValue  = NextQryToken();
+	retColumn   = NextQryToken();
+
+	errorCase(TryNextQryToken());
+
+	rowId = FC_GetStrRowId(table, whereColumn, whereValue);
+	value = FC_GetStrValue(table, rowId, retColumn);
+
+	addElement(row, (uint)value);
+	addElement(Ret, (uint)row);
+
+	memFree(table);
+	memFree(whereColumn);
+	memFree(whereValue);
+	memFree(retColumn);
+	memFree(rowId);
+}
+static void ExecuteLSet(void)
+{
+	char *table;
+	char *whereColumn;
+	char *whereValue;
+	char *updColumn;
+	char *updValue;
+	char *rowId;
+
+	table       = NextQryToken();
+	whereColumn = NextQryToken();
+	whereValue  = NextQryToken();
+	updColumn   = NextQryToken();
+	updValue    = NextQryToken();
+
+	errorCase(TryNextQryToken());
+
+	rowId = FC_GetStrRowId(table, whereColumn, whereValue);
+	FC_SetStrValue(table, rowId, updColumn, updValue);
+
+	memFree(table);
+	memFree(whereColumn);
+	memFree(whereValue);
+	memFree(updColumn);
+	memFree(updValue);
+	memFree(rowId);
+}
+static void ExecuteRGet(void)
+{
+	char *table;
+	char *rowNameOrId;
+	char *retColumn;
+	autoList_t *row = newList();
+	char *value;
+
+	table       = NextQryToken();
+	rowNameOrId = NextQryToken();
+	retColumn   = NextQryToken();
+
+	errorCase(TryNextQryToken());
+
+	value = FC_GetStrValue(table, rowNameOrId, retColumn);
+
+	addElement(row, (uint)value);
+	addElement(Ret, (uint)row);
+
+	memFree(table);
+	memFree(rowNameOrId);
+	memFree(retColumn);
+}
+static void ExecuteRSet(void)
+{
+	char *table;
+	char *rowNameOrId;
+	char *updColumn;
+	char *updValue;
+
+	table       = NextQryToken();
+	rowNameOrId = NextQryToken();
+	updColumn   = NextQryToken();
+	updValue    = NextQryToken();
+
+	errorCase(TryNextQryToken());
+
+	FC_SetStrValue(table, rowNameOrId, updColumn, updValue);
+
+	memFree(table);
+	memFree(rowNameOrId);
+	memFree(updColumn);
+	memFree(updValue);
+}
+autoList_t *FC_ExecuteQuery(char *query) // ret: bind
+{
+	char *method;
+
+	errorCase(!query);
+
+	QryRdr = query;
+	method = NextQryToken();
+	releaseDim(Ret, 2);
+	Ret = newList();
+
+	if(!_stricmp(method, "SELECT"))
+	{
+		ExecuteSelect();
+	}
+	else if(!_stricmp(method, "INSERT"))
+	{
+		ExecuteInsert();
+	}
+	else if(!_stricmp(method, "INSERT"))
+	{
+		ExecuteInsert();
+	}
+	else if(!_stricmp(method, "DELETE"))
+	{
+		ExecuteDelete();
+	}
+	else if(!_stricmp(method, "LGET"))
+	{
+		ExecuteLGet();
+	}
+	else if(!_stricmp(method, "LSET"))
+	{
+		ExecuteLSet();
+	}
+	else if(!_stricmp(method, "RGET"))
+	{
+		ExecuteRGet();
+	}
+	else if(!_stricmp(method, "RSET"))
+	{
+		ExecuteRSet();
+	}
+	else if(!_stricmp(method, "MKID"))
+	{
+		error(); // TODO
+	}
+	else if(!_stricmp(method, "TBLS"))
+	{
+		error(); // TODO
+	}
+	else if(!_stricmp(method, "COLS"))
+	{
+		error(); // TODO
+	}
+	else if(!_stricmp(method, "ROWS"))
+	{
+		error(); // TODO
+	}
+	memFree(method);
+	return Ret;
 }

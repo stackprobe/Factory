@@ -5,6 +5,11 @@
 
 char *FC_GetNewId(void);
 
+// ---- lock ----
+
+void FC_Lock(void);
+void FC_Unlock(void);
+
 // ---- table ----
 
 autoList_t *FC_GetAllTableId(void);
@@ -33,6 +38,7 @@ char *FC_GetRowId(char *tableNameOrId, char *columnNameOrId, autoBlock_t *value)
 
 char *FC_GetStrValue(char *tableNameOrId, char *rowNameOrId, char *columnNameOrId);
 void FC_SetStrValue(char *tableNameOrId, char *rowNameOrId, char *columnNameOrId, char *value);
+autoList_t *FC_GetStrRowIds(char *tableNameOrId, char *columnNameOrId, char *value);
 char *FC_GetStrRowId(char *tableNameOrId, char *columnNameOrId, char *value);
 
 // ----
