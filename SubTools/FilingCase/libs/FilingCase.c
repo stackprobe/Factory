@@ -53,12 +53,12 @@ static uint Mtx;
 
 static void DoLock(void)
 {
-	errorCase(!Mtx);
+	errorCase(Mtx);
 	Mtx = mutexLock(COMMON_MTX);
 }
 static void DoUnlock(void)
 {
-	errorCase(Mtx);
+	errorCase(!Mtx);
 	mutexUnlock(Mtx);
 	Mtx = 0;
 }
@@ -284,68 +284,6 @@ void FC_DeleteColumn(char *tableNameOrId, char *columnNameOrId)
 	memFree(columnId);
 	memFree(tDir);
 	memFree(dir);
-}
-
-// ---- row ----
-
-autoList_t *FC_GetAllRowId(char *tableNameOrId, char *columnNameOrId)
-{
-	char *tableId;
-	char *columnId;
-	char *dir;
-	autoList_t *ret;
-
-	errorCase(!tableNameOrId);
-	errorCase(!columnNameOrId);
-
-	tableId  = NameOrIdToId(tableNameOrId);
-	columnId = NameOrIdToId(columnNameOrId);
-
-	dir = GetColumnDir(tableId, columnId);
-
-	FC_Lock();
-	{
-		if(existDir(dir))
-			ret = lsFiles(dir);
-		else
-			ret = newList();
-	}
-	FC_Unlock();
-
-	memFree(tableId);
-	memFree(columnId);
-	memFree(dir);
-
-	eraseParents(ret);
-	errorCase(!IsIds(ret));
-	return ret;
-}
-uint FC_GetRowCount(char *tableNameOrId, char *columnNameOrId)
-{
-	char *tableId;
-	char *columnId;
-	char *dir;
-	uint ret;
-
-	errorCase(!tableNameOrId);
-	errorCase(!columnNameOrId);
-
-	tableId  = NameOrIdToId(tableNameOrId);
-	columnId = NameOrIdToId(columnNameOrId);
-
-	dir = GetColumnDir(tableId, columnId);
-
-	FC_Lock();
-	{
-		ret = lsCount(dir);
-	}
-	FC_Unlock();
-
-	memFree(tableId);
-	memFree(columnId);
-	memFree(dir);
-
-	return ret;
 }
 
 // ---- valueToRow ----
@@ -613,6 +551,68 @@ char *FC_GetStrRowId(char *tableNameOrId, char *columnNameOrId, char *value)
 	return FC_GetRowId(tableNameOrId, columnNameOrId, gndBlockLineVar(value, gab));
 }
 
+// ---- row ----
+
+autoList_t *FC_GetAllRowId(char *tableNameOrId, char *columnNameOrId)
+{
+	char *tableId;
+	char *columnId;
+	char *dir;
+	autoList_t *ret;
+
+	errorCase(!tableNameOrId);
+	errorCase(!columnNameOrId);
+
+	tableId  = NameOrIdToId(tableNameOrId);
+	columnId = NameOrIdToId(columnNameOrId);
+
+	dir = GetValueDir(tableId, columnId);
+
+	FC_Lock();
+	{
+		if(existDir(dir))
+			ret = lsFiles(dir);
+		else
+			ret = newList();
+	}
+	FC_Unlock();
+
+	memFree(tableId);
+	memFree(columnId);
+	memFree(dir);
+
+	eraseParents(ret);
+	errorCase(!IsIds(ret));
+	return ret;
+}
+uint FC_GetRowCount(char *tableNameOrId, char *columnNameOrId)
+{
+	char *tableId;
+	char *columnId;
+	char *dir;
+	uint ret;
+
+	errorCase(!tableNameOrId);
+	errorCase(!columnNameOrId);
+
+	tableId  = NameOrIdToId(tableNameOrId);
+	columnId = NameOrIdToId(columnNameOrId);
+
+	dir = GetValueDir(tableId, columnId);
+
+	FC_Lock();
+	{
+		ret = lsCount(dir);
+	}
+	FC_Unlock();
+
+	memFree(tableId);
+	memFree(columnId);
+	memFree(dir);
+
+	return ret;
+}
+
 // ----
 
 autoList_t *FC_GetTableAllRowId(char *tableNameOrId)
@@ -632,9 +632,10 @@ autoList_t *FC_GetTableAllRowId(char *tableNameOrId)
 		autoList_t *mIds;
 
 		mIds = mergeLines(ret, rowIds);
+		addElements(ret, rowIds);
 		addElements(ret, mIds);
 
-		releaseDim(rowIds, 1);
+		releaseAutoList(rowIds);
 		releaseAutoList(mIds);
 	}
 	releaseDim(columnIds, 1);

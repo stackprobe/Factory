@@ -29,11 +29,7 @@
 
 		COLS [TABLE]
 
-		COLS [TABLE] [ROW]
-
 		ROWS [TABLE]
-
-		ROWS [TABLE] [COLUMN]
 
 	----
 
@@ -45,13 +41,17 @@
 static char *QryRdr;
 static int Quoted;
 
+static int IsBlank(int chr)
+{
+	return chr <= ' ' || chr == ',';
+}
 static char *TryNextQryToken(void)
 {
 	autoBlock_t *buff;
 
 	Quoted = 0;
 
-	for(; *QryRdr <= ' '; QryRdr++)
+	for(; IsBlank(*QryRdr); QryRdr++)
 		if(*QryRdr == '\0')
 			return NULL;
 
@@ -100,7 +100,7 @@ static char *TryNextQryToken(void)
 	}
 	else
 	{
-		for(; ' ' < *QryRdr; QryRdr++)
+		for(; !IsBlank(*QryRdr); QryRdr++)
 			addByte(buff, *QryRdr);
 	}
 	return unbindBlock2Line(buff);
@@ -301,8 +301,8 @@ static void ExecuteLGet(void)
 	char *whereValue;
 	char *retColumn;
 	char *rowId;
-	autoList_t *row = newList();
 	char *value;
+	autoList_t *row = newList();
 
 	table       = NextQryToken();
 	whereColumn = NextQryToken();
@@ -355,8 +355,8 @@ static void ExecuteRGet(void)
 	char *table;
 	char *rowNameOrId;
 	char *retColumn;
-	autoList_t *row = newList();
 	char *value;
+	autoList_t *row = newList();
 
 	table       = NextQryToken();
 	rowNameOrId = NextQryToken();
@@ -394,6 +394,79 @@ static void ExecuteRSet(void)
 	memFree(updColumn);
 	memFree(updValue);
 }
+static void ExecuteMkId(void)
+{
+	char *rowId = FC_GetNewId();
+	autoList_t *row = newList();
+
+	addElement(row, (uint)rowId);
+	addElement(Ret, (uint)row);
+}
+static void ExecuteTbls(void)
+{
+	autoList_t *tableIds;
+	char *tableId;
+	uint index;
+
+	errorCase(TryNextQryToken());
+
+	tableIds = FC_GetAllTableId();
+
+	foreach(tableIds, tableId, index)
+	{
+		autoList_t *row = newList();
+
+		addElement(row, (uint)tableId);
+		addElement(Ret, (uint)row);
+	}
+	releaseAutoList(tableIds);
+}
+static void ExecuteCols(void)
+{
+	char *table;
+	autoList_t *columnIds;
+	char *columnId;
+	uint index;
+
+	table = NextQryToken();
+
+	errorCase(TryNextQryToken());
+
+	columnIds = FC_GetAllColumnId(table);
+
+	foreach(columnIds, columnId, index)
+	{
+		autoList_t *row = newList();
+
+		addElement(row, (uint)columnId);
+		addElement(Ret, (uint)row);
+	}
+	memFree(table);
+	releaseAutoList(columnIds);
+}
+static void ExecuteRows(void)
+{
+	char *table;
+	autoList_t *rowIds;
+	char *rowId;
+	uint index;
+
+	table = NextQryToken();
+
+	errorCase(TryNextQryToken());
+
+	rowIds = FC_GetTableAllRowId(table);
+
+	foreach(rowIds, rowId, index)
+	{
+		autoList_t *row = newList();
+
+		addElement(row, (uint)rowId);
+		addElement(Ret, (uint)row);
+	}
+	memFree(table);
+	releaseAutoList(rowIds);
+}
 autoList_t *FC_ExecuteQuery(char *query) // ret: bind
 {
 	char *method;
@@ -402,7 +475,10 @@ autoList_t *FC_ExecuteQuery(char *query) // ret: bind
 
 	QryRdr = query;
 	method = NextQryToken();
-	releaseDim(Ret, 2);
+
+	if(Ret)
+		releaseDim(Ret, 2);
+
 	Ret = newList();
 
 	if(!_stricmp(method, "SELECT"))
@@ -439,20 +515,25 @@ autoList_t *FC_ExecuteQuery(char *query) // ret: bind
 	}
 	else if(!_stricmp(method, "MKID"))
 	{
-		error(); // TODO
+		ExecuteMkId();
 	}
 	else if(!_stricmp(method, "TBLS"))
 	{
-		error(); // TODO
+		ExecuteTbls();
 	}
 	else if(!_stricmp(method, "COLS"))
 	{
-		error(); // TODO
+		ExecuteCols();
 	}
 	else if(!_stricmp(method, "ROWS"))
 	{
-		error(); // TODO
+		ExecuteRows();
+	}
+	else
+	{
+		error();
 	}
 	memFree(method);
+	QryRdr = NULL;
 	return Ret;
 }

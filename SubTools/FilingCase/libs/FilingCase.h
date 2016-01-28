@@ -22,11 +22,6 @@ autoList_t *FC_GetAllColumnId(char *tableNameOrId);
 void FC_SwapColumn(char *tableNameOrId, char *columnNameOrId1, char *columnNameOrId2);
 void FC_DeleteColumn(char *tableNameOrId, char *columnNameOrId);
 
-// ---- row ----
-
-autoList_t *FC_GetAllRowId(char *tableNameOrId, char *columnNameOrId);
-uint FC_GetRowCount(char *tableNameOrId, char *columnNameOrId);
-
 // ---- value ----
 
 autoBlock_t *FC_GetValue(char *tableNameOrId, char *rowNameOrId, char *columnNameOrId);
@@ -40,6 +35,11 @@ char *FC_GetStrValue(char *tableNameOrId, char *rowNameOrId, char *columnNameOrI
 void FC_SetStrValue(char *tableNameOrId, char *rowNameOrId, char *columnNameOrId, char *value);
 autoList_t *FC_GetStrRowIds(char *tableNameOrId, char *columnNameOrId, char *value);
 char *FC_GetStrRowId(char *tableNameOrId, char *columnNameOrId, char *value);
+
+// ---- row ----
+
+autoList_t *FC_GetAllRowId(char *tableNameOrId, char *columnNameOrId);
+uint FC_GetRowCount(char *tableNameOrId, char *columnNameOrId);
 
 // ----
 
