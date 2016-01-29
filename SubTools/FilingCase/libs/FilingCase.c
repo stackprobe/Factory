@@ -24,6 +24,19 @@ static int IsIds(autoList_t *lines)
 
 	return 1;
 }
+static void Paths2Ids(autoList_t *lines)
+{
+	char *line;
+	uint index;
+
+	eraseParents(lines);
+	errorCase(!IsIds(lines));
+
+	foreach(lines, line, index)
+		toLowerLine(line);
+
+	rapidSortLines(lines);
+}
 static char *NameOrIdToId(char *nameOrId)
 {
 	char *id;
@@ -67,7 +80,7 @@ static uint LockedCount;
 
 void FC_Lock(void)
 {
-	errorCase(IMAX < LockedCount); // fixme: “K“–‚ÈãŒÀ
+	errorCase(IMAX < LockedCount);
 
 	if(!LockedCount)
 		DoLock();
@@ -104,8 +117,7 @@ autoList_t *FC_GetAllTableId(void)
 	}
 	FC_Unlock();
 
-	eraseParents(ret);
-	errorCase(!IsIds(ret));
+	Paths2Ids(ret);
 	return ret;
 }
 void FC_SwapTable(char *tableNameOrId1, char *tableNameOrId2)
@@ -204,8 +216,7 @@ autoList_t *FC_GetAllColumnId(char *tableNameOrId)
 	memFree(tableId);
 	memFree(dir);
 
-	eraseParents(ret);
-	errorCase(!IsIds(ret));
+	Paths2Ids(ret);
 	return ret;
 }
 void FC_SwapColumn(char *tableNameOrId, char *columnNameOrId1, char *columnNameOrId2)
@@ -307,8 +318,7 @@ static autoList_t *GetVTRs(char *tableId, char *columnId, char *valueId)
 		ret = newList();
 
 	memFree(dir);
-	eraseParents(ret);
-	errorCase(!IsIds(ret));
+	Paths2Ids(ret);
 	return ret;
 }
 static char *GetVTRFile(char *tableId, char *rowId, char *columnId, char *valueId)
@@ -581,8 +591,7 @@ autoList_t *FC_GetAllRowId(char *tableNameOrId, char *columnNameOrId)
 	memFree(columnId);
 	memFree(dir);
 
-	eraseParents(ret);
-	errorCase(!IsIds(ret));
+	Paths2Ids(ret);
 	return ret;
 }
 uint FC_GetRowCount(char *tableNameOrId, char *columnNameOrId)

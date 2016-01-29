@@ -3,6 +3,8 @@
 
 		SELECT [R-COLUMN] [R-COLUMN] [R-COLUMN] ... FROM [TABLE] WHERE [C-COLUMN] = [C-VALUE]
 
+		SELECT * FROM [TABLE] WHERE [C-COLUMN] = [C-VALUE]
+
 		INSERT INTO [TABLE] [W-COLUMN] [W-COLUMN] [W-COLUMN] ... VALUES [W-VALUE] [W-VALUE] [W-VALUE] ...
 
 		UPDATE [TABLE] SET [W-COLUMN] = [W-VALUE] ... WHERE [C-COLUMN] = [C-VALUE]
@@ -132,6 +134,7 @@ static autoList_t *Ret;
 static void ExecuteSelect(void)
 {
 	autoList_t *retColumns = newList();
+	int starColumn = 0;
 	char *table;
 	char *whereColumn;
 	char *whereValue;
@@ -143,10 +146,19 @@ static void ExecuteSelect(void)
 	{
 		char *column = NextQryToken();
 
-		if(!Quoted && !_stricmp(column, "FROM"))
+		if(!Quoted)
 		{
-			memFree(column);
-			break;
+			if(!strcmp(column, "*"))
+			{
+				starColumn = 1;
+				memFree(column);
+				continue;
+			}
+			if(!_stricmp(column, "FROM"))
+			{
+				memFree(column);
+				break;
+			}
 		}
 		addElement(retColumns, (uint)column);
 	}
@@ -157,6 +169,10 @@ static void ExecuteSelect(void)
 	whereValue = NextQryToken();
 	errorCase(TryNextQryToken());
 
+	if(starColumn)
+	{
+		addElements_x(retColumns, FC_GetAllColumnId(table));
+	}
 	rowIds = FC_GetStrRowIds(table, whereColumn, whereValue);
 
 	foreach(rowIds, rowId, rowidx)
