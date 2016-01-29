@@ -1,9 +1,9 @@
 /*
 	SQL‚Á‚Û‚¢‚â‚Â
 
-		SELECT [R-COLUMN] [R-COLUMN] [R-COLUMN] ... FROM [TABLE] WHERE [C-COLUMN] = [C-VALUE]
-
 		SELECT * FROM [TABLE] WHERE [C-COLUMN] = [C-VALUE]
+
+		SELECT [R-COLUMN] [R-COLUMN] [R-COLUMN] ... FROM [TABLE] WHERE [C-COLUMN] = [C-VALUE]
 
 		INSERT INTO [TABLE] [W-COLUMN] [W-COLUMN] [W-COLUMN] ... VALUES [W-VALUE] [W-VALUE] [W-VALUE] ...
 
@@ -505,9 +505,9 @@ autoList_t *FC_ExecuteQuery(char *query) // ret: bind
 	{
 		ExecuteInsert();
 	}
-	else if(!_stricmp(method, "INSERT"))
+	else if(!_stricmp(method, "UPDATE"))
 	{
-		ExecuteInsert();
+		ExecuteUpdate();
 	}
 	else if(!_stricmp(method, "DELETE"))
 	{
