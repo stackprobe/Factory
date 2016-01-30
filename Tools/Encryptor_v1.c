@@ -1,6 +1,11 @@
 /*
-	Encryptor.exe { /P PASS-PHRASE | /B KEY-BUNDLE | /F KEY-FILE }*1 { TARGET-FILE }*
+	.clu.gz.enc, ZC_Encrypt() とは異なる暗号！
 
+	----
+
+	Encryptor.exe { /W KEY-WIDTH }*1 { /P PASS-PHRASE | /B KEY-BUNDLE | /F KEY-FILE }*1 { TARGET-FILE }*
+
+		KEY-WIDTH   == 鍵の幅をバイト数で指定する。指定できるのは 16, 24, 32 のどれかで、デフォルトは 32
 		PASS-PHRASE == パスフレーズを指定する。
 		KEY-BUNDLE  == 鍵を16進数表記で指定する。
 		KEY-FILE    == 鍵ファイル (* でパス入力, *PASS でパス指定, *PASS[x30] でパス拡張)
@@ -16,18 +21,37 @@
 */
 
 #include "C:\Factory\Common\all.h"
-#include "C:\Factory\Common\Options\RingCipher2.h"
+#include "C:\Factory\Common\Options\Cipher.h"
 #include "C:\Factory\Common\Options\Progress.h"
 #include "C:\Factory\OpenSource\sha512.h"
 
 #define EXT_CIPHER "enc"
 
+static void Interlude(void)
+{
+	Progress();
+
+	while(hasKey())
+	{
+		if(getKey() == 0x1b)
+		{
+			ProgressEnd(1);
+			cout("Cancelled.\n");
+			termination(0);
+		}
+	}
+}
 int main(int argc, char **argv)
 {
+	uint kw = 32;
 	char *kbfile;
 	autoBlock_t *kb;
 	autoList_t *ktlst;
 
+	if(argIs("/W")) // key Width
+	{
+		kw = toValue(nextArg());
+	}
 	if(argIs("/P")) // Passphrase
 	{
 		sha512_makeHashLine(nextArg());
@@ -41,7 +65,7 @@ int main(int argc, char **argv)
 		kb = makeBlockHexLine(nextArg());
 		goto initktlst;
 	}
-	if(argIs("/F") || argIs("/KB")) // key-bundle File
+	if(argIs("/F")) // key-bundle File
 	{
 		kbfile = strx(nextArg());
 		goto initkb;
@@ -58,9 +82,10 @@ int main(int argc, char **argv)
 	initkb:
 		kb = cphrLoadKeyBundleFileEx(kbfile);
 	initktlst:
-		ktlst = rngcphrCreateKeyTableList(kb);
+		ktlst = cphrCreateKeyTableList(kb, kw);
 
 		cout("Key Bundle Size: %u\n", getSize(kb));
+		cout("Key Width: %u\n", kw);
 		cout("Key Table Length: %u\n", getCount(ktlst));
 		cout("\n");
 
@@ -106,21 +131,18 @@ int main(int argc, char **argv)
 			cout("Mode: %s\n", doEncrypt ? "Encrypt" : "Decrypt");
 			cout("\n");
 
-			cout("Copying...\n");
-
-			copyFile(infile, outfile);
-
-			cout("Done!\n");
 			cout("Processing...\n");
+			ProgressBegin();
 
 			if(doEncrypt)
 			{
-				rngcphrEncryptFile(outfile, ktlst);
+				cphrEncryptorFile(infile, outfile, ktlst, Interlude);
 				retval = 1;
 			}
 			else
-				retval = rngcphrDecryptFile(outfile, ktlst);
+				retval = cphrDecryptorFile(infile, outfile, ktlst, Interlude);
 
+			ProgressEnd(0);
 			cout("Done!\n");
 			cout("\n");
 

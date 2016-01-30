@@ -124,3 +124,5 @@ int ZC_Decrypt(char *file, autoBlock_t *rawKey) // ret: ? ê¨å˜
 {
 	return DoEncrypt(file, rawKey, 'D');
 }
+
+// ----
