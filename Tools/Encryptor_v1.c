@@ -1,5 +1,5 @@
 /*
-	.clu.gz.enc, ZC_Encrypt() Ç∆ÇÕàŸÇ»ÇÈà√çÜÅI
+	.clu.gz.enc, ZC_Encrypt() Ç∆ÇÕàŸÇ»ÇÈà√çÜâªï˚éÆÅI
 
 	----
 
@@ -25,7 +25,8 @@
 #include "C:\Factory\Common\Options\Progress.h"
 #include "C:\Factory\OpenSource\sha512.h"
 
-#define EXT_CIPHER "enc"
+#define EXT_CIPHER "enc01"
+#define EXT_CIPHER_SUB "enc"
 
 static void Interlude(void)
 {
@@ -117,7 +118,10 @@ int main(int argc, char **argv)
 			}
 			errorCase(!existFile(infile));
 
-			if(!_stricmp(EXT_CIPHER, getExt(infile)))
+			if(
+				!_stricmp(getExt(infile), EXT_CIPHER) ||
+				!_stricmp(getExt(infile), EXT_CIPHER_SUB)
+				)
 			{
 				outfile = changeExt(infile, "");
 				doEncrypt = 0;

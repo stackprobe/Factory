@@ -5,7 +5,7 @@
 
 		SELECT [R-COLUMN] [R-COLUMN] [R-COLUMN] ... FROM [TABLE] WHERE [C-COLUMN] = [C-VALUE]
 
-		INSERT INTO [TABLE] [W-COLUMN] [W-COLUMN] [W-COLUMN] ... VALUES [W-VALUE] [W-VALUE] [W-VALUE] ...
+		INSERT INTO [TABLE] ( [W-COLUMN] [W-COLUMN] [W-COLUMN] ... ) VALUES ( [W-VALUE] [W-VALUE] [W-VALUE] ... )
 
 		UPDATE [TABLE] SET [W-COLUMN] = [W-VALUE] ... WHERE [C-COLUMN] = [C-VALUE]
 
@@ -21,9 +21,13 @@
 
 		RSET [TABLE] [ROW] [W-COLUMN] [W-VALUE]
 
-	êVÇµÇ¢ID
+	ÇªÇÃëº
 
 		MKID
+
+		DELTBL [TABLE]
+
+		DELCOL [TABLE] [COLUMN]
 
 	ç\ë¢Çï‘Ç∑ÅB
 
@@ -412,11 +416,42 @@ static void ExecuteRSet(void)
 }
 static void ExecuteMkId(void)
 {
-	char *rowId = FC_GetNewId();
+	char *rowId;
 	autoList_t *row = newList();
+
+	errorCase(TryNextQryToken());
+
+	rowId = FC_GetNewId();
 
 	addElement(row, (uint)rowId);
 	addElement(Ret, (uint)row);
+}
+static void ExecuteDelTbl(void)
+{
+	char *table;
+
+	table = NextQryToken();
+
+	errorCase(TryNextQryToken());
+
+	FC_DeleteTable(table);
+
+	memFree(table);
+}
+static void ExecuteDelCol(void)
+{
+	char *table;
+	char *column;
+
+	table  = NextQryToken();
+	column = NextQryToken();
+
+	errorCase(TryNextQryToken());
+
+	FC_DeleteColumn(table, column);
+
+	memFree(table);
+	memFree(column);
 }
 static void ExecuteTbls(void)
 {
@@ -532,6 +567,14 @@ autoList_t *FC_ExecuteQuery(char *query) // ret: bind
 	else if(!_stricmp(method, "MKID"))
 	{
 		ExecuteMkId();
+	}
+	else if(!_stricmp(method, "DELTBL"))
+	{
+		ExecuteDelTbl();
+	}
+	else if(!_stricmp(method, "DELCOL"))
+	{
+		ExecuteDelCol();
 	}
 	else if(!_stricmp(method, "TBLS"))
 	{

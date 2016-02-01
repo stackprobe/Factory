@@ -353,6 +353,14 @@ uint lsCount(char *dir)
 		{
 			do
 			{
+				// œŠO
+				{
+					const char *name = findData.name;
+
+					if(name[0] == '.' && (name[1] == '\0' || name[1] == '.' && name[2] == '\0')) // ".", ".." ‚ğœŠO
+						continue;
+				}
+
 				count++;
 			}
 			while(_findnext(h, &findData) == 0);
