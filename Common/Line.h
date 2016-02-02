@@ -21,6 +21,10 @@ int isEmptyJTkn(char *token);
 #define m_isupper(c) ('A' <= (c) && (c) <= 'Z')
 #define m_islower(c) ('a' <= (c) && (c) <= 'z')
 
+#define m_isascii(c) ('\x20' <= (c) && (c) <= '\x7e')
+#define m_iskana(c)  ('\xa1' <= (c) && (c) <= '\xdf')
+#define m_isasciikana(c) (m_isascii(c) || m_iskana(c))
+
 #define m_nctoupper(c) ((c) - 0x20)
 #define m_nctolower(c) ((c) + 0x20)
 #define m_toupper(c) (m_islower((c)) ? m_nctoupper(c) : (c))

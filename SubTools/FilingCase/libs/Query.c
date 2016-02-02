@@ -49,7 +49,7 @@ static int Quoted;
 
 static int IsBlank(int chr)
 {
-	return chr <= ' ' || chr == ',';
+	return chr <= ' ' || chr == '(' || chr == ')' || chr == ',';
 }
 static char *TryNextQryToken(void)
 {
@@ -134,16 +134,27 @@ char *FC_Retoken(char *token) // ret: strx()
 	{
 		if(isJCharP(p))
 		{
-			p++;
+			addByte(buff, *p++);
+			addByte(buff, *p);
 		}
-//		else if(m_isascii(*p))
+		else if(*p == '\\')
 		{
+			addByte(buff, '\\');
+			addByte(buff, '\\');
+		}
+		else if(m_isasciikana(*p))
+		{
+			addByte(buff, *p);
+		}
+		else
+		{
+			addByte(buff, '\\');
+			addByte(buff, 'x');
+			addByte(buff, hexadecimal[(uint)*p / 16]);
+			addByte(buff, hexadecimal[(uint)*p % 16]);
 		}
 	}
-
-	// TODO
-
-	return NULL;
+	return unbindBlock2Line(buff);
 }
 static char *NextQryToken(void)
 {
