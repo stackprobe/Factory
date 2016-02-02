@@ -91,6 +91,20 @@ static char *TryNextQryToken(void)
 				case 'n': chr = '\n'; break;
 				case 'r': chr = '\r'; break;
 				case 's': chr = ' '; break;
+				case 'x':
+					{
+						int chr1 = *++QryRdr;
+						int chr2;
+
+						errorCase(!m_ishexadecimal(chr1));
+						chr2 = *++QryRdr;
+						errorCase(!m_ishexadecimal(chr2));
+
+						chr = c2i(chr1) * 16 + c2i(chr2);
+
+						errorCase(chr == '\0');
+					}
+					break;
 
 				default:
 					break;
@@ -110,6 +124,26 @@ static char *TryNextQryToken(void)
 			addByte(buff, *QryRdr);
 	}
 	return unbindBlock2Line(buff);
+}
+char *FC_Retoken(char *token) // ret: strx()
+{
+	autoBlock_t *buff = newBlock();
+	char *p;
+
+	for(p = token; *p; p++)
+	{
+		if(isJCharP(p))
+		{
+			p++;
+		}
+//		else if(m_isascii(*p))
+		{
+		}
+	}
+
+	// TODO
+
+	return NULL;
 }
 static char *NextQryToken(void)
 {
@@ -595,4 +629,18 @@ autoList_t *FC_ExecuteQuery(char *query) // ret: bind
 	memFree(method);
 	QryRdr = NULL;
 	return Ret;
+}
+
+// _x
+char *FC_Retoken_x(char *token)
+{
+	char *ret = FC_Retoken(token);
+	memFree(token);
+	return ret;
+}
+autoList_t *FC_ExecuteQuery_x(char *query)
+{
+	autoList_t *ret = FC_ExecuteQuery(query);
+	memFree(query);
+	return ret;
 }

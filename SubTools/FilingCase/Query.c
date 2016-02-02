@@ -36,7 +36,14 @@ static void ExecuteQuery(char *query)
 				uint cell_index;
 
 				foreach(row, cell, cell_index)
+				{
+#if 1
+					cell = FC_Retoken_x(cell);
+					setElement(row, cell_index, (uint)cell);
+#else // old
 					line2JLine(cell, 1, 0, 0, 1);
+#endif
+				}
 			}
 
 			addElement(lines, (uint)untokenize(row, "\1"));

@@ -209,7 +209,10 @@ int isJChar(int mbchr)
 {
 	return IsExistChar(0, mbchr) || isNECSpecialChar(mbchr) || isNECSelectIBMExtendChar(mbchr) || isIBMExtendChar(mbchr);
 }
-
+int isJCharP(char *p)
+{
+	return *p && p[1] && isJChar(*p << 8 | p[1]);
+}
 static int Conv932216(int mbchr, uint cset1, uint cset2)
 {
 	static autoList_t *dict[2];

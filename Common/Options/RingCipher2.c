@@ -152,6 +152,7 @@ void rngcphrEncrypt(autoBlock_t *block, autoList_t *keyTableList)
 	AddPadding(block);
 	AddRandPart(block);
 	AddHash(block);
+	AddRandPart(block);
 
 	rngcphrEncryptBlock(block, keyTableList);
 }
@@ -172,6 +173,7 @@ int rngcphrDecrypt(autoBlock_t *block, autoList_t *keyTableList)
 	rngcphrDecryptBlock(block, keyTableList);
 
 	if(
+		!UnaddRandPart(block) ||
 		!UnaddHash(block) ||
 		!UnaddRandPart(block) ||
 		!UnaddPadding(block)
@@ -457,6 +459,7 @@ void rngcphrEncryptFile(char *file, autoList_t *keyTableList)
 	F_AddPadding(file);
 	F_AddRandPart(file);
 	F_AddHash(file);
+	F_AddRandPart(file);
 	F_Encrypt(file, keyTableList);
 }
 int rngcphrDecryptFile(char *file, autoList_t *keyTableList)
@@ -470,6 +473,7 @@ int rngcphrDecryptFile(char *file, autoList_t *keyTableList)
 
 	if(
 		F_Decrypt(file, keyTableList) &&
+		F_UnaddRandPart(file) &&
 		F_UnaddHash(file) &&
 		F_UnaddRandPart(file) &&
 		F_UnaddPadding(file)

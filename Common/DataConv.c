@@ -185,7 +185,7 @@ void line2csym_ext(char *line, char *extra)
 		for(chr = 'A'; chr <= 'Z'; chr++) { altchrs = addChar(altchrs, chr); if(chr == 'U') altchrs = addLine(altchrs, "__"); }
 		for(chr = 'a'; chr <= 'z'; chr++) { altchrs = addChar(altchrs, chr); }
 
-		errorCase(strlen(altchrs) != 64);
+		errorCase(strlen(altchrs) != 64); // 2bs
 	}
 
 	for(p = line; *p; p++)
@@ -446,16 +446,14 @@ char *lineToFairLocalPath(char *line, uint dirSize)
 	nodes = tokenize(line, '.');
 	memFree(line);
 
-	node = getLine(nodes, 0);
-
-	if(findLineCase(winResNodes, node, 1) < getCount(winResNodes))
-	{
-		*node = L2FLP_DEFCHR;
-	}
 	foreach(nodes, node, index)
 	{
 		trimEdge(node, ' ');
 
+		if(!index && findLineCase(winResNodes, node, 1) < getCount(winResNodes))
+		{
+			*node = L2FLP_DEFCHR;
+		}
 		for(p = node; *p; p = mbsNext(p))
 		{
 			if(strchr(L2FLP_NGCHRS, *p))
