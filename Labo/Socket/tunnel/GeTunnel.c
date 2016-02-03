@@ -34,6 +34,8 @@ static char *ErrorBodyFmt;
 static char *H_FwdHost;
 static uint H_FwdPortNo;
 
+static autoList_t *ExtraReqHeaderLines;
+
 static int ProxyEnabled;
 
 static char *c_GetHostFieldValue(void)
@@ -330,6 +332,20 @@ static char *HE_ToBody_x(char *text)
 	return unbindBlock2Line(buff);
 }
 
+static void AddExtraReqHeaderLines(autoBlock_t *wBuff)
+{
+	if(ExtraReqHeaderLines)
+	{
+		char *line;
+		uint index;
+
+		foreach(ExtraReqHeaderLines, line, index)
+		{
+			ab_addLine(wBuff, line);
+			ab_addLine(wBuff, "\r\n");
+		}
+	}
+}
 static void HTTPEncode(autoBlock_t *buff)
 {
 	autoBlock_t *wBuff = newBlock();
@@ -380,12 +396,14 @@ static void HTTPEncode(autoBlock_t *buff)
 		{
 			ab_addLine_x(wBuff, xcout("GET %s/index.html?blueSteel=%s HTTP/1.1\r\n", urlBeforePath, resText));
 			ab_addLine_x(wBuff, xcout("Host: %s\r\n", c_GetHostFieldValue()));
+			AddExtraReqHeaderLines(wBuff);
 			ab_addLine(wBuff, "\r\n");
 		}
 		else // ? Cookie, X-Field
 		{
 			ab_addLine_x(wBuff, xcout("GET %s/index.html HTTP/1.1\r\n", urlBeforePath));
 			ab_addLine_x(wBuff, xcout("Host: %s\r\n", c_GetHostFieldValue()));
+			AddExtraReqHeaderLines(wBuff);
 
 			if(*CurrInfo->P_EmbedMode == EMBED_COOKIE)
 			{
@@ -659,6 +677,11 @@ static int ReadArgs(void)
 	if(argIs("/EF"))
 	{
 		ErrorBodyFmt = readText(nextArg());
+		return 1;
+	}
+	if(argIs("/XRH"))
+	{
+		ExtraReqHeaderLines = readLines(nextArg());
 		return 1;
 	}
 

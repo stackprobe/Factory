@@ -29,7 +29,11 @@
 
 uint mutexOpen(char *mutexName)
 {
-	HANDLE hdl = CreateMutexA(NULL, FALSE, mutexName);
+	HANDLE hdl;
+
+//	mutexName = xcout("Global\\%s", mutexName);
+	hdl = CreateMutexA(NULL, FALSE, mutexName);
+//	memFree(mutexName);
 
 	if(hdl == NULL)
 	{
