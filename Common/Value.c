@@ -198,6 +198,23 @@ sint d2i(double value)
 	return (sint)d2i64(value);
 }
 
+sint divRndOff(sint numer, sint denom)
+{
+	return divRndOffRate(numer, denom, 1, 2);
+}
+sint divRndOffRate(sint numer, sint denom, sint rndOffRateNumer, sint rndOffRateDenom)
+{
+	return (sint)divRndOff64Rate((sint64)numer, (sint64)denom, rndOffRateNumer, rndOffRateDenom);
+}
+sint64 divRndOff64(sint64 numer, sint64 denom)
+{
+	return divRndOff64Rate(numer, denom, 1, 2);
+}
+sint64 divRndOff64Rate(sint64 numer, sint64 denom, sint rndOffRateNumer, sint rndOffRateDenom)
+{
+	return numer / denom + (((numer % denom) * rndOffRateDenom) / rndOffRateNumer) / denom;
+}
+
 // _x
 uint64 toValue64Digits_xc(char *line, char *digits)
 {

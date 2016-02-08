@@ -2,7 +2,7 @@
 	wavCut4Game.exe [/F FADEOUT-TIME] [/FL FADEOUT-MILLIS] [/E END-SILEND-MILLIS] [/B BGN-SILEND-MILLIS] [WAV-FILE]
 
 		/F  ... 省略時、フェードアウトしない。
-		FADEOUT-TIME ... S or M:S or M.S
+		FADEOUT-TIME ... 秒 or 分:秒 or 分.秒
 		/FL ... 省略時、900[ms]
 		/E  ... 省略時、100[ms]
 		/B  ... 省略時、100[ms]

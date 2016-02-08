@@ -39,6 +39,11 @@ uint64 blockToValue64(void *block);
 sint64 d2i64(double value);
 sint d2i(double value);
 
+sint divRndOff(sint numer, sint denom);
+sint divRndOffRate(sint numer, sint denom, sint rndOffRateNumer, sint rndOffRateDenom);
+sint64 divRndOff64(sint64 numer, sint64 denom);
+sint64 divRndOff64Rate(sint64 numer, sint64 denom, sint rndOffRateNumer, sint rndOffRateDenom);
+
 // _x
 uint64 toValue64Digits_xc(char *line, char *digits);
 uint toValueDigits_xc(char *line, char *digits);
