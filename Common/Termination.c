@@ -45,12 +45,14 @@ char *errorPosMessage = "";
 void error2(char *source, uint lineno, char *function, char *message)
 {
 	static int busy;
-	uint mtxhdl;
+	uint mtx;
 
 	// 再帰防止
 	if(busy)
 	{
-		system("START ?_Error_In_Error"); // せめて何か出す。
+		if(!noErrorDlgMode)
+			system("START ?_Error_In_Error"); // せめて何か出す。
+
 		exit(2);
 	}
 	busy = 1;
@@ -78,29 +80,15 @@ void error2(char *source, uint lineno, char *function, char *message)
 #define SRC_MUTEX "Mutex.c"
 #define NM_MUTEX "ccstackprobe Factory error mutex object"
 
+	if(noErrorDlgMode)
+		goto endproc;
+
 	if(!_stricmp(source, SRC_MUTEX)) // Mutex のエラーなら Mutex は使えないだろう。
 	{
 		system("START ?_Mutex_Error"); // せめて何か出す。
 		goto endproc;
 	}
-	mtxhdl = mutexLock(NM_MUTEX);
-
-#if 0
-#define ERROR_LOG_FILE "C:\\Factory\\tmp\\Error.txt"
-	{
-		FILE *fp = rfopen(ERROR_LOG_FILE, "at");
-		char *strw;
-		char *strw2;
-
-		if(fp)
-		{
-			writeLine(fp, strw = xcout("%s %s %s (%u) %s", strw2 = makeJStamp(NULL, 0), getSelfFile(), source, lineno, function));
-			memFree(strw);
-			memFree(strw2);
-			fileClose(fp);
-		}
-	}
-#endif
+	mtx = mutexLock(NM_MUTEX);
 
 	{
 		char *vbsfile = makeTempPath("vbs");
@@ -130,7 +118,7 @@ void error2(char *source, uint lineno, char *function, char *message)
 		removeFile(vbsfile);
 		memFree(vbsfile);
 	}
-	mutexUnlock(mtxhdl);
+	mutexUnlock(mtx);
 
 endproc:
 	termination(1);

@@ -3,6 +3,7 @@
 // ---- flags ----
 
 int sockServerMode;
+int noErrorDlgMode;
 
 // ----
 
@@ -512,6 +513,11 @@ static void ReadSysArgs(void)
 			arg = (char *)desertElement(Args, argi);
 
 			setCoutWrFile(arg, 1);
+		}
+		else if(!_stricmp(arg, "//-E"))
+		{
+			noErrorDlgMode = 1;
+			argi++;
 		}
 		else
 			argi++;

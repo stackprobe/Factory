@@ -1,6 +1,7 @@
 // ---- flags ----
 
 extern int sockServerMode;
+extern int noErrorDlgMode;
 
 // ----
 

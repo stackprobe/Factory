@@ -5,6 +5,7 @@
 
 	GeTunnel.exe RECV-PORT FWD-HOST FWD-PORT [/C CONNECT-MAX] [/P PROXY-HOST PROXY-PORT] [/R]
 	                                         [/E EMBED-MODE] [/BS BUFF-FULL] [/EF ERROR-PAGE-FILE]
+	                                         [/XRH EXTRA-REQ-RES-HEADER-LINES-FILE]
 
 		CONNECT-MAX ... 最大接続数, 省略時は 50
 		PROXY-HOST  ... プロキシサーバー
@@ -13,6 +14,7 @@
 		EMBED-MODE  ... メッセージをどこに埋め込むか。整数を指定する。値は EMBED_ を参照
 		BUFF-FULL   ... 送受信バッファの最大サイズ。リクエスト・レスポンスの最大サイズより少し大きめにすること。
 		ERROR-PAGE-FILE ... エラー応答ファイル
+		EXTRA-REQ-RES-HEADER-LINES-FILE ... 拡張ヘッダー行リストファイル
 
 		★タイムアウトは無い -> boomClient, boomServer の SOCK-TIMEOUT に依存する。
 */
@@ -34,8 +36,7 @@ static char *ErrorBodyFmt;
 static char *H_FwdHost;
 static uint H_FwdPortNo;
 
-static autoList_t *ExtraReqHeaderLines;
-
+static autoList_t *ExtraHeaderLines;
 static int ProxyEnabled;
 
 static char *c_GetHostFieldValue(void)
@@ -332,17 +333,20 @@ static char *HE_ToBody_x(char *text)
 	return unbindBlock2Line(buff);
 }
 
-static void AddExtraReqHeaderLines(autoBlock_t *wBuff)
+static void AddExtraHeaderLines(autoBlock_t *wBuff)
 {
-	if(ExtraReqHeaderLines)
+	if(ExtraHeaderLines)
 	{
 		char *line;
 		uint index;
 
-		foreach(ExtraReqHeaderLines, line, index)
+		foreach(ExtraHeaderLines, line, index)
 		{
-			ab_addLine(wBuff, line);
-			ab_addLine(wBuff, "\r\n");
+			if(*line)
+			{
+				ab_addLine(wBuff, line);
+				ab_addLine(wBuff, "\r\n");
+			}
 		}
 	}
 }
@@ -364,6 +368,7 @@ static void HTTPEncode(autoBlock_t *buff)
 
 			ab_addLine_x(wBuff, xcout("Content-Length: %u\r\n", strlen(resText)));
 			ab_addLine(wBuff, "Content-Type: text/html; charset=Shift_JIS\r\n");
+			AddExtraHeaderLines(wBuff);
 			ab_addLine(wBuff, "\r\n");
 			ab_addLine(wBuff, resText);
 		}
@@ -381,6 +386,7 @@ static void HTTPEncode(autoBlock_t *buff)
 			}
 			ab_addLine_x(wBuff, xcout("Content-Length: %u\r\n", strlen(DUMMY_BODY)));
 			ab_addLine(wBuff, "Content-Type: text/html; charset=Shift_JIS\r\n");
+			AddExtraHeaderLines(wBuff);
 			ab_addLine(wBuff, "\r\n");
 			ab_addLine(wBuff, DUMMY_BODY);
 		}
@@ -396,14 +402,14 @@ static void HTTPEncode(autoBlock_t *buff)
 		{
 			ab_addLine_x(wBuff, xcout("GET %s/index.html?blueSteel=%s HTTP/1.1\r\n", urlBeforePath, resText));
 			ab_addLine_x(wBuff, xcout("Host: %s\r\n", c_GetHostFieldValue()));
-			AddExtraReqHeaderLines(wBuff);
+			AddExtraHeaderLines(wBuff);
 			ab_addLine(wBuff, "\r\n");
 		}
 		else // ? Cookie, X-Field
 		{
 			ab_addLine_x(wBuff, xcout("GET %s/index.html HTTP/1.1\r\n", urlBeforePath));
 			ab_addLine_x(wBuff, xcout("Host: %s\r\n", c_GetHostFieldValue()));
-			AddExtraReqHeaderLines(wBuff);
+			AddExtraHeaderLines(wBuff);
 
 			if(*CurrInfo->P_EmbedMode == EMBED_COOKIE)
 			{
@@ -679,9 +685,9 @@ static int ReadArgs(void)
 		ErrorBodyFmt = readText(nextArg());
 		return 1;
 	}
-	if(argIs("/XRH"))
+	if(argIs("/XRH")) // eXtra Req-Res Header lines file
 	{
-		ExtraReqHeaderLines = readLines(nextArg());
+		ExtraHeaderLines = readLines(nextArg());
 		return 1;
 	}
 
