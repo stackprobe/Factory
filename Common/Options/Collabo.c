@@ -13,18 +13,21 @@ static char *S_GetCollaboPath(char *innerPath, int (*existFunc)(char *), int mod
 
 	if(isAbsPath(innerPath))
 	{
-		path = combine(getSelfDir(), getLocal(innerPath));
+		if(isFactoryDirDisabled())
+		{
+			path = combine(getSelfDir(), getLocal(innerPath));
 
-		if(!_stricmp(path, getSelfFile()))
-		{
-			LOGPOS();
+			if(!_stricmp(path, getSelfFile()))
+			{
+				LOGPOS();
+			}
+			else
+			{
+				if(existFunc(path))
+					goto foundPath;
+			}
+			memFree(path);
 		}
-		else
-		{
-			if(existFunc(path))
-				goto foundPath;
-		}
-		memFree(path);
 		path = makeFullPath(innerPath);
 	}
 	else
