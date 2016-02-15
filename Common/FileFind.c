@@ -5,8 +5,14 @@
 static FILE *DirsExtraFp;
 static FILE *FilesExtraFp;
 
-static void AddPath(autoList_t *paths, char *path, FILE *extra_fp)
+void (*lsDirAction)(char *dir); // extra-prm
+void (*lsFileAction)(char *file); // extra-prm
+
+static void AddPath(autoList_t *paths, char *path, FILE *extra_fp, void (*lsAction)(char *))
 {
+	if(lsAction)
+		lsAction(path);
+
 	if(extra_fp)
 	{
 		writeLine(extra_fp, path);
@@ -99,11 +105,11 @@ autoList_t *ls(char *dir)
 
 			if(lastFindData.attrib & _A_SUBDIR) // ? dir
 			{
-				AddPath(paths, path, DirsExtraFp);
+				AddPath(paths, path, DirsExtraFp, lsDirAction);
 			}
 			else // ? file
 			{
-				AddPath(files, path, FilesExtraFp);
+				AddPath(files, path, FilesExtraFp, lsFileAction);
 			}
 		}
 		while(_findnext(h, &lastFindData) == 0);

@@ -1,3 +1,5 @@
+extern void (*lsDirAction)(char *dir);
+extern void (*lsFileAction)(char *file);
 extern int antiSubversion;
 extern int ignoreUtfPath;
 extern uint findLimiter;

@@ -222,6 +222,34 @@ autoBlock_t *readBinaryToEnd(FILE *fp, autoBlock_t *buff) // buff: NULL == êVÇµÇ
 	}
 	return buff;
 }
+
+#define RWB_BUFF_SIZE (1024 * 1024 * 16)
+
+void readWriteBinary(FILE *rfp, FILE *wfp, uint64 size)
+{
+	uchar *buff = memAlloc(RWB_BUFF_SIZE);
+	uint64 count;
+
+	for(count = 0; count < size; )
+	{
+		uint rwSize = m_min(RWB_BUFF_SIZE, size - count);
+		uint readSize;
+		uint wroteSize;
+
+		readSize = fread(buff, 1, rwSize, rfp);
+
+		errorCase(readSize != rwSize);
+		errorCase(ferror(rfp));
+
+		wroteSize = fwrite(buff, 1, rwSize, wfp);
+
+		errorCase(wroteSize != rwSize);
+		errorCase(ferror(wfp));
+
+		count += rwSize;
+	}
+	memFree(buff);
+}
 void writeBinaryBlock(FILE *fp, autoBlock_t *block) // getSize(block) == 0 Ç≈Ç‡â¬
 {
 	if(fwrite(directGetBuffer(block), 1, getSize(block), fp) != getSize(block)) // fwrite(, 1, 0, ) ÇÃÇ∆Ç´ 0 Çï‘Ç∑ÅB

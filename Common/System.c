@@ -517,7 +517,7 @@ static void ReadSysArgs(void)
 		else if(!_stricmp(arg, "//-E"))
 		{
 			noErrorDlgMode = 1;
-			argi++;
+			desertElement(Args, argi);
 		}
 		else
 			argi++;

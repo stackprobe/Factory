@@ -247,6 +247,13 @@ void mergeLines2(autoList_t *lines1, autoList_t *lines2, autoList_t *onlyExist1,
 {
 	merge2(lines1, lines2, (sint (*)(uint, uint))strcmp, onlyExist1, bothExist, onlyExist2);
 }
+/*
+	(lines1, lines2): sorted by rapidSortJLinesICase(), sortJLinesICase()
+*/
+void mergeLines2ICase(autoList_t *lines1, autoList_t *lines2, autoList_t *onlyExist1, autoList_t *bothExist, autoList_t *onlyExist2)
+{
+	merge2(lines1, lines2, (sint (*)(uint, uint))mbs_stricmp, onlyExist1, bothExist, onlyExist2);
+}
 
 /*
 	list: sorted

@@ -122,7 +122,7 @@ char *untokenize(autoList_t *tokens, char *separator)
 	return unbindBlock2Line(buffLine);
 }
 
-void sortJLinesICase(autoList_t *lines)
+void sortJLinesICase(autoList_t *lines) // ls系の戻り値のソート
 {
 	rapidSort(lines, (sint (*)(uint, uint))mbs_stricmp);
 }

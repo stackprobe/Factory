@@ -20,6 +20,7 @@ autoBlock_t *readBinaryBlock(FILE *fp, uint size);
 autoBlock_t *neReadBinaryBlock(FILE *fp, uint size);
 autoBlock_t *readBinary(char *file);
 autoBlock_t *readBinaryToEnd(FILE *fp, autoBlock_t *buff);
+void readWriteBinary(FILE *rfp, FILE *wfp, uint64 size);
 void writeBinaryBlock(FILE *fp, autoBlock_t *block);
 void writeBinary(char *file, autoBlock_t *block);
 void writeJoinBinary(char *file, autoBlock_t *block);

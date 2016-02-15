@@ -157,3 +157,81 @@ char *Date2JWeekday(uint y, uint m, uint d)
 	return weekdays[Date2Day(y, m, d) % 7];
 #endif
 }
+
+#define FILE_STAMP_Y_MAX 1844674
+
+uint64 FileStampToMillis(uint64 stamp)
+{
+	uint y;
+	uint m;
+	uint d;
+	uint h;
+	uint i;
+	uint s;
+	uint l;
+	uint64 ret;
+
+	l = stamp % 1000; stamp /= 1000;
+	s = stamp % 100; stamp /= 100;
+	i = stamp % 100; stamp /= 100;
+	h = stamp % 100; stamp /= 100;
+	d = stamp % 100; stamp /= 100;
+	m = stamp % 100; stamp /= 100;
+	y = stamp;
+
+	m_range(y, 1, FILE_STAMP_Y_MAX);
+	m_range(m, 1, 12);
+	m_range(d, 1, 31);
+	m_range(h, 0, 23);
+	m_range(i, 0, 59);
+	m_range(s, 0, 59);
+	m_range(l, 0, 999);
+
+	ret = Date2Day(y, m, d);
+	ret *= 24;
+	ret += h;
+	ret *= 60;
+	ret += i;
+	ret *= 60;
+	ret += s;
+	ret *= 1000;
+	ret += l;
+
+	return ret;
+}
+uint64 MillisToFileStamp(uint64 millis)
+{
+	uint y;
+	uint m;
+	uint d;
+	uint h;
+	uint i;
+	uint s;
+	uint l;
+	uint64 ret;
+
+	l = millis % 1000; millis /= 1000;
+	s = millis % 60; millis /= 60;
+	i = millis % 60; millis /= 60;
+	h = millis % 24; millis /= 24;
+
+	Day2Date(millis, &y, &m, &d);
+
+	m_range(y, 1, FILE_STAMP_Y_MAX);
+//	m_range(m, 1, 12);
+//	m_range(d, 1, 31);
+//	m_range(h, 0, 23);
+//	m_range(i, 0, 59);
+//	m_range(s, 0, 59);
+//	m_range(l, 0, 999);
+
+	ret = y;
+	ret *=  100; ret += m;
+	ret *=  100; ret += d;
+	ret *=  100; ret += h;
+	ret *=  100; ret += i;
+	ret *=  100; ret += s;
+	ret *= 1000; ret += l;
+
+	return ret;
+}
