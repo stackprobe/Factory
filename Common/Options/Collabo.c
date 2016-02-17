@@ -17,15 +17,11 @@ static char *S_GetCollaboPath(char *innerPath, int (*existFunc)(char *), int mod
 		{
 			path = combine(getSelfDir(), getLocal(innerPath));
 
-			if(!_stricmp(path, getSelfFile()))
-			{
-				LOGPOS();
-			}
-			else
-			{
-				if(existFunc(path))
-					goto foundPath;
-			}
+			errorCase(!_stricmp(path, getSelfFile()));
+
+			if(existFunc(path))
+				goto foundPath;
+
 			memFree(path);
 		}
 		path = makeFullPath(innerPath);

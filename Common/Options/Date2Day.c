@@ -235,3 +235,7 @@ uint64 MillisToFileStamp(uint64 millis)
 
 	return ret;
 }
+int IsFairFileStamp(uint64 stamp)
+{
+	return stamp == MillisToFileStamp(FileStampToMillis(stamp));
+}
