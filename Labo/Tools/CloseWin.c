@@ -77,7 +77,8 @@ static BOOL CALLBACK EnumFindWinTitle(HWND hWnd, LPARAM lp)
 
 		cout("winTitle: [%s]\n", winTitle);
 
-		if(mbs_stristr(winTitle, P_WinTitle)) // ? 部分一致した。
+		if(mbs_stricmp(winTitle, P_WinTitle)) // ? 大文字小文字不問・完全一致した。
+//		if(mbs_stristr(winTitle, P_WinTitle)) // ? 大文字小文字不問・部分一致した。
 		{
 			LOGPOS();
 			FoundFlag = 1;
@@ -190,7 +191,13 @@ int main(int argc, char **argv)
 			if(FoundFlag)
 				break;
 
-			cout("loopCnt: %u\n", loopCnt);
+			cout("ループ回数 [ %u ], F を押すと強制的に続行するよ。\n", loopCnt);
+
+			if(waitKey(0) == 'F')
+			{
+				LOGPOS();
+				break;
+			}
 			errorCase(90 <= loopCnt); // 90 * 2000 ms == ３分
 			coSleep(2000);
 		}
@@ -209,25 +216,39 @@ int main(int argc, char **argv)
 			if(FoundFlag)
 				break;
 
-			cout("loopCnt: %u\n", loopCnt);
+			cout("ループ回数 [ %u ], F を押すと強制的に続行するよ。\n", loopCnt);
+
+			if(waitKey(0) == 'F')
+			{
+				LOGPOS();
+				break;
+			}
 			errorCase(90 <= loopCnt); // 90 * 2000 ms == ３分
 			coSleep(2000);
 		}
 		return;
 	}
 
-	for(loopCnt = 1; ; loopCnt++)
 	{
-		WinClosedFlag = 0;
-		SearchProcByExeName(exeName, DoCloseWin);
+		for(loopCnt = 1; ; loopCnt++)
+		{
+			WinClosedFlag = 0;
+			SearchProcByExeName(exeName, DoCloseWin);
 
-		cout("WinClosedFlag: %d\n", WinClosedFlag);
+			cout("WinClosedFlag: %d\n", WinClosedFlag);
 
-		if(!WinClosedFlag)
-			break;
+			if(!WinClosedFlag)
+				break;
 
-		cout("loopCnt: %u\n", loopCnt);
-		errorCase(20 <= loopCnt); // 20回もやれば全部閉じるだろう...
-		coSleep(2000);
+			cout("ループ回数 [ %u ], F を押すと強制的に続行するよ。\n", loopCnt);
+
+			if(waitKey(0) == 'F')
+			{
+				LOGPOS();
+				break;
+			}
+			errorCase(90 <= loopCnt); // 90 * 2000 ms == ３分
+			coSleep(2000);
+		}
 	}
 }
