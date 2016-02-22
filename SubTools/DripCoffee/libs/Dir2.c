@@ -138,15 +138,25 @@ void DC_ToFairCatalog(autoList_t *catalog)
 }
 autoList_t *DC_GetCatalog(char *dir) // ret: NULL == é∏îs
 {
+	char *prmFile = makeTempPath(NULL);
 	char *outFile = makeTempPath(NULL);
 	char *successfulFile = makeTempPath(NULL);
 	autoList_t *catalog;
 
 	errorCase(!dir);
 
+	writeOneLine_cx(prmFile, xcout(
+		"%s\n"
+		"%s\n"
+		"%s"
+		,lineFltr(dir)
+		,lineFltr(outFile)
+		,lineFltr(successfulFile)
+		));
+
 	DoLock();
 	{
-		coExecute_x(xcout("START \"\" /B /WAIT \"%s\" \"%s\" \"%s\" \"%s\"", GetDir2File(), dir, outFile, successfulFile));
+		coExecute_x(xcout("START \"\" /B /WAIT \"%s\" //R \"%s\"", GetDir2File(), prmFile));
 	}
 	DoUnlock();
 
@@ -158,28 +168,43 @@ autoList_t *DC_GetCatalog(char *dir) // ret: NULL == é∏îs
 	else
 		catalog = NULL;
 
+	removeFileIfExist(prmFile);
 	removeFileIfExist(outFile);
 	removeFileIfExist(successfulFile);
+	memFree(prmFile);
 	memFree(outFile);
 	memFree(successfulFile);
 	return catalog;
 }
 static int DoDir2Tools(char *command, char *path) // ret: ? ê¨å˜
 {
+	char *prmFile = makeTempPath(NULL);
 	char *successfulFile = makeTempPath(NULL);
 	int ret;
 
+	errorCase(!command); // 2bs
 	errorCase(!path);
+
+	writeOneLine_cx(prmFile, xcout(
+		"%s\n"
+		"%s\n"
+		"%s"
+		,lineFltr(command)
+		,lineFltr(path)
+		,lineFltr(successfulFile)
+		));
 
 	DoLock();
 	{
-		coExecute_x(xcout("START \"\" /B /WAIT \"%s\" %s \"%s\" \"%s\"", GetDir2ToolsFile(), command, path, successfulFile));
+		coExecute_x(xcout("START \"\" /B /WAIT \"%s\" //R \"%s\"", GetDir2ToolsFile(), prmFile));
 	}
 	DoUnlock();
 
 	ret = existFile(successfulFile);
 
+	removeFileIfExist(prmFile);
 	removeFileIfExist(successfulFile);
+	memFree(prmFile);
 	memFree(successfulFile);
 	return ret;
 }
@@ -195,33 +220,10 @@ int DC_RemoveFile(char *file)
 {
 	return DoDir2Tools("/DEL", file);
 }
-static int DoDir2Tools2(char *command, char *rFile, char *wFile) // ret: ? ê¨å˜
-{
-	char *successfulFile = makeTempPath(NULL);
-	int ret;
-
-	errorCase(!rFile);
-	errorCase(!wFile);
-
-	DoLock();
-	{
-		coExecute_x(xcout("START \"\" /B /WAIT \"%s\" %s \"%s\" \"%s\" \"%s\"", GetDir2ToolsFile(), command, rFile, wFile, successfulFile));
-	}
-	DoUnlock();
-
-	ret = existFile(successfulFile);
-
-	removeFileIfExist(successfulFile);
-	memFree(successfulFile);
-	return ret;
-}
-int DC_MoveFile(char *rFile, char *wFile)
-{
-	return DoDir2Tools2("/MOVE", rFile, wFile);
-}
 int DC_AddFilePart(char *wFile, uint64 startPos, autoBlock_t *rData) // ret: ? ê¨å˜
 {
 	char *rFile = makeTempPath(NULL);
+	char *prmFile = makeTempPath(NULL);
 	char *successfulFile = makeTempPath(NULL);
 	int ret;
 
@@ -230,24 +232,37 @@ int DC_AddFilePart(char *wFile, uint64 startPos, autoBlock_t *rData) // ret: ? ê
 	errorCase(!rData);
 
 	writeBinary(rFile, rData);
+	writeOneLine_cx(prmFile, xcout(
+		"%s\n"
+		"%s\n"
+		"I64u\n"
+		"%s"
+		,lineFltr(rFile)
+		,lineFltr(wFile)
+		,startPos
+		,lineFltr(successfulFile)
+		));
 
 	DoLock();
 	{
-		coExecute_x(xcout("START \"\" /B /WAIT \"%s\" \"%s\" \"%s\" %I64u \"%s\"", GetAddFilePartFile(), rFile, wFile, startPos, successfulFile));
+		coExecute_x(xcout("START \"\" /B /WAIT \"%s\" //R \"%s\"", GetAddFilePartFile(), prmFile));
 	}
 	DoUnlock();
 
 	ret = existFile(successfulFile);
 
 	removeFileIfExist(rFile);
+	removeFileIfExist(prmFile);
 	removeFileIfExist(successfulFile);
 	memFree(rFile);
+	memFree(prmFile);
 	memFree(successfulFile);
 	return ret;
 }
 autoBlock_t *DC_GetFilePart(char *rFile, uint64 startPos, uint readSize) // ret: NULL == (é∏îs || éwíËóÃàÊÇ™ÉtÉ@ÉCÉãÉfÅ[É^ÇÃîÕàÕäO)
 {
 	char *wFile = makeTempPath(NULL);
+	char *prmFile = makeTempPath(NULL);
 	char *successfulFile = makeTempPath(NULL);
 	autoBlock_t *ret;
 
@@ -255,9 +270,22 @@ autoBlock_t *DC_GetFilePart(char *rFile, uint64 startPos, uint readSize) // ret:
 	errorCase(IMAX_64 < startPos);
 	errorCase(IMAX < readSize);
 
+	writeOneLine_cx(prmFile, xcout(
+		"%s\n"
+		"%s\n"
+		"%I64u\n"
+		"%I64u\n"
+		"%s"
+		,lineFltr(rFile)
+		,lineFltr(wFile)
+		,startPos
+		,readSize
+		,lineFltr(successfulFile)
+		));
+
 	DoLock();
 	{
-		coExecute_x(xcout("START \"\" /B /WAIT \"%s\" \"%s\" \"%s\" %I64u %u \"%s\"", GetGetFilePartFile(), rFile, wFile, startPos, readSize, successfulFile));
+		coExecute_x(xcout("START \"\" /B /WAIT \"%s\" //R \"%s\"", GetGetFilePartFile(), prmFile));
 	}
 	DoUnlock();
 
@@ -267,27 +295,41 @@ autoBlock_t *DC_GetFilePart(char *rFile, uint64 startPos, uint readSize) // ret:
 		ret = NULL;
 
 	removeFileIfExist(wFile);
+	removeFileIfExist(prmFile);
 	removeFileIfExist(successfulFile);
 	memFree(wFile);
+	memFree(prmFile);
 	memFree(successfulFile);
 	return ret;
 }
 int DC_SetFileTime(char *wFile, uint64 stamp) // ret: ? ê¨å˜
 {
+	char *prmFile = makeTempPath(NULL);
 	char *successfulFile = makeTempPath(NULL);
 	int ret;
 
 	errorCase(!wFile);
 
+	writeOneLine_cx(prmFile, xcout(
+		"%s\n"
+		"%I64u\n"
+		"%s"
+		,lineFltr(wFile)
+		,stamp
+		,lineFltr(successfulFile)
+		));
+
 	DoLock();
 	{
-		coExecute_x(xcout("START \"\" /B /WAIT \"%s\" \"%s\" %I64u \"%s\"", GetSetFileTimeFile(), wFile, stamp, successfulFile));
+		coExecute_x(xcout("START \"\" /B /WAIT \"%s\" //R \"%s\"", GetSetFileTimeFile(), prmFile));
 	}
 	DoUnlock();
 
 	ret = existFile(successfulFile);
 
+	removeFileIfExist(prmFile);
 	removeFileIfExist(successfulFile);
+	memFree(prmFile);
 	memFree(successfulFile);
 	return ret;
 }
