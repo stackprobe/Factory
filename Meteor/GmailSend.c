@@ -158,7 +158,7 @@ void GS_SetSSLDisabled(int flag)
 
 int GS_TrySend(void) // ret: ? ê¨å˜
 {
-	char *cmdLine = xcout("start \"\" /b /wait \"%s\"", GetGmailSendExeFile());
+	char *cmdLine = xcout("START \"\" /B /WAIT \"%s\"", GetGmailSendExeFile());
 	char *line;
 	uint index;
 	char *bodyFile = NULL;
