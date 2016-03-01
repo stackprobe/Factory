@@ -52,7 +52,7 @@ static void SortTest_MMMC(void (*funcSort)(autoList_t *, sint (*)(uint, uint)), 
 	{
 		uint start = mt19937_range(0, startMax);
 		uint count = mt19937_range(0, countMax);
-		uint step = mt19937_range(0, stepMax);
+		uint step  = mt19937_range(0, stepMax);
 
 		cout("testCount: %u\n", testCount);
 		cout("start: %u\n", start);
@@ -65,11 +65,77 @@ static void SortTest_MMMC(void (*funcSort)(autoList_t *, sint (*)(uint, uint)), 
 	}
 	cout("OK\n");
 }
+static autoList_t *ST2_GetSource(uint grp, uint grpSz)
+{
+	autoList_t *src = newList();
+	uint no;
+	uint c;
+
+	for(no = 1; no <= grp; no++)
+	for(c = mt19937_range(0, grpSz); c; c--)
+		addElement(src, no);
+
+	return src;
+}
+static void ST2_DoTest(void (*funcSort)(autoList_t *, sint (*)(uint, uint)), uint grp, uint grpSz)
+{
+	autoList_t *src = ST2_GetSource(grp, grpSz);
+	autoList_t *list;
+	uint index;
+	uint count;
+
+	count = getCount(src);
+	list = copyAutoList(src);
+	shuffle(list);
+
+	cout("sort start...\n");
+//ST_DispList(list);
+	funcSort(list, simpleComp);
+//ST_DispList(list);
+	cout("sort end\n");
+
+	errorCase(getCount(list) != count);
+
+	for(index = 0; index < count; index++)
+	{
+		errorCase(getElement(src, index) != getElement(list, index));
+	}
+}
+static void SortTest_GGC(void (*funcSort)(autoList_t *, sint (*)(uint, uint)), uint grpMax, uint grpSzMax, uint testCount)
+{
+	cout("grpMax: %u\n", grpMax);
+	cout("grpSzMax: %u\n", grpSzMax);
+
+	while(testCount)
+	{
+		uint grp   = mt19937_range(0, grpMax);
+		uint grpSz = mt19937_range(0, grpSzMax);
+
+		cout("testCount: %u\n", testCount);
+		cout("grp: %u\n", grp);
+		cout("grpSz: %u\n", grpSz);
+
+		ST2_DoTest(funcSort, grp, grpSz);
+
+		testCount--;
+	}
+	cout("OK\n");
+}
 static void SortTest(void (*funcSort)(autoList_t *, sint (*)(uint, uint)))
 {
 	SortTest_MMMC(funcSort, 4000000000, 100, 100, 10000);
 	SortTest_MMMC(funcSort, 2000000000, 20000, 100000, 100);
 //	SortTest_MMMC(funcSort, 2000000000, 200000, 10000, 100);
+
+	SortTest_GGC(funcSort, 3000,  3, 300);
+	SortTest_GGC(funcSort, 1000, 10, 300);
+	SortTest_GGC(funcSort, 500,  20, 300);
+	SortTest_GGC(funcSort, 300,  30, 300);
+	SortTest_GGC(funcSort, 100, 100, 300);
+	SortTest_GGC(funcSort, 30,  300, 300);
+	SortTest_GGC(funcSort, 20,  500, 300);
+	SortTest_GGC(funcSort, 10, 1000, 300);
+	SortTest_GGC(funcSort, 3,  3000, 300);
 }
 static void Test_gnomeSort(void)
 {

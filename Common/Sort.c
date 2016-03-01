@@ -1,9 +1,9 @@
 /*
-	                       order                                 用途
-	-----------------------------------------------------------------
-	rapidSortLines                        strcmp -> simpleComp
-	rapidSortJLinesICase   mbs_stricmp -> strcmp -> simpleComp
-	sortJLinesICase        mbs_stricmp                           ls系の戻り値
+	                       order                                   用途
+	-------------------------------------------------------------------
+	rapidSortLines                        strcmp (-> simpleComp)
+	rapidSortJLinesICase   mbs_stricmp -> strcmp (-> simpleComp)
+	sortJLinesICase        mbs_stricmp                             ls系の戻り値
 */
 
 #include "all.h"
@@ -15,14 +15,12 @@ void gnomeSort(autoList_t *list, sint (*funcComp)(uint, uint)) // 安定ソート
 
 	for(faridx = 1; faridx < getCount(list); faridx++)
 	{
-		for(nearidx = faridx; nearidx; )
+		for(nearidx = faridx; nearidx; nearidx--)
 		{
-			nearidx--;
-
-			if(funcComp(getElement(list, nearidx), getElement(list, nearidx + 1)) <= 0)
+			if(funcComp(getElement(list, nearidx - 1), getElement(list, nearidx)) <= 0)
 				break;
 
-			swapElement(list, nearidx, nearidx + 1);
+			swapElement(list, nearidx - 1, nearidx);
 		}
 	}
 }
@@ -57,22 +55,22 @@ void insertSort(autoList_t *list, sint (*funcComp)(uint, uint)) // 安定ソート
 {
 	uint nearidx;
 	uint faridx;
-	uint maxidx;
+	uint minidx;
 
-	for(nearidx = 0; nearidx < getCount(list); nearidx++)
+	for(nearidx = 0; nearidx + 1 < getCount(list); nearidx++)
 	{
-		maxidx = nearidx;
+		minidx = nearidx;
 
 		for(faridx = nearidx + 1; faridx < getCount(list); faridx++)
 		{
-			if(0 < funcComp(getElement(list, maxidx), getElement(list, faridx)))
+			if(funcComp(getElement(list, faridx), getElement(list, minidx)) < 0)
 			{
-				maxidx = faridx;
+				minidx = faridx;
 			}
 		}
-		if(maxidx != nearidx)
+		if(minidx != nearidx)
 		{
-			swapElement(list, nearidx, maxidx);
+			swapElement(list, nearidx, minidx);
 		}
 	}
 }
@@ -82,7 +80,7 @@ void insertSort(autoList_t *list, sint (*funcComp)(uint, uint)) // 安定ソート
 
 /*
 	クイックソートもどき
-	同値が多いと遅くなることに注意
+	同値が多いと遅くなることに注意 <- ならないっぽい。@ 2016.3.1
 */
 void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint))
 {
@@ -131,6 +129,16 @@ void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint))
 		{
 			pivot = getElement(list, pivotidx);
 
+#if 0 // 同値が多いと遅くなる。@ 2016.3.1
+			while(nearidx < pivotidx && funcComp(getElement(list, nearidx), pivot) <= 0)
+			{
+				nearidx++;
+			}
+			while(pivotidx < faridx && funcComp(pivot, getElement(list, faridx)) <= 0)
+			{
+				faridx--;
+			}
+#else
 			while(funcComp(getElement(list, nearidx), pivot) < 0)
 			{
 				nearidx++;
@@ -139,6 +147,7 @@ void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint))
 			{
 				faridx--;
 			}
+#endif
 
 			if(nearidx == faridx)
 			{
@@ -200,12 +209,16 @@ sint strcmp3(char *line1, char *line2) // mbs_
 }
 sint strcmp2(char *line1, char *line2)
 {
+#if 1 // @ 2016.3.1
+	return strcmp(line1, line2);
+#else
 	sint retval = strcmp(line1, line2);
 
 	if(retval)
 		return retval;
 
 	return m_simpleComp(line1, line2);
+#endif
 }
 sint simpleComp(uint v1, uint v2)
 {
