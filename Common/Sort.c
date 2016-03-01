@@ -75,12 +75,16 @@ void insertSort(autoList_t *list, sint (*funcComp)(uint, uint)) // 安定ソート
 	}
 }
 
-#define ABANDON 1022 // 2 * n
 #define CUTOVER 16
 
 /*
+	２分割時の大きい方の大きさの期待値は 0.75 (たぶん..
+	0.75 ^ 100 = 0.00000000000032
+*/
+#define ABANDON 100 // 2 * n
+
+/*
 	クイックソートもどき
-	同値が多いと遅くなることに注意 <- ならないっぽい。@ 2016.3.1
 */
 void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint))
 {
@@ -113,12 +117,17 @@ void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint))
 			continue;
 		}
 		*/
-		if(endnextidx < startidx + CUTOVER)
+		if(endnextidx - startidx < CUTOVER)
 		{
 			autoList_t sublist = gndSubElements(list, startidx, endnextidx - startidx);
 
 			insertSort(&sublist, funcComp);
 			continue;
+		}
+		if(ABANDON <= getCount(rangeStack))
+		{
+			combSort(list, funcComp);
+			goto endsort;
 		}
 
 		nearidx = startidx;
@@ -129,7 +138,7 @@ void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint))
 		{
 			pivot = getElement(list, pivotidx);
 
-#if 0 // 同値が多いと遅くなる。@ 2016.3.1
+#if 0 // 同値が多いと遅くなる。全て同値のとき下より多少速い。@ 2016.3.1
 			while(nearidx < pivotidx && funcComp(getElement(list, nearidx), pivot) <= 0)
 			{
 				nearidx++;
@@ -178,12 +187,6 @@ void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint))
 
 		addElement(rangeStack, pivotidx + 1);
 		addElement(rangeStack, endnextidx);
-
-		if(ABANDON < getCount(rangeStack))
-		{
-			combSort(list, funcComp);
-			goto endsort;
-		}
 	}
 
 endsort:
