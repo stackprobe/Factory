@@ -92,7 +92,7 @@ static int ToFairCatalogLine(char *line) // ret: ? ! ïsê≥Ç»çs
 		PrintCatalogLineError(line, "ïsê≥Ç»çsÉtÉHÅ[É}ÉbÉg");
 		return 0;
 	}
-	if(!isFairLocalPath(line + 40, PUB_DIR_LENMAX))
+	if(!isFairLocalPath(line + 40, 0))
 	{
 		PrintCatalogLineError(line, "ïsê≥Ç»ÉçÅ[ÉJÉãÉtÉ@ÉCÉãñº");
 		return 0;
@@ -235,7 +235,7 @@ int DC_AddFilePart(char *wFile, uint64 startPos, autoBlock_t *rData) // ret: ? ê
 	writeOneLine_cx(prmFile, xcout(
 		"%s\n"
 		"%s\n"
-		"I64u\n"
+		"%I64u\n"
 		"%s"
 		,lineFltr(rFile)
 		,lineFltr(wFile)

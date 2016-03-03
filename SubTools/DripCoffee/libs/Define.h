@@ -9,5 +9,3 @@
 	NTFS -> FAT の切り上げ 00:00:00.001 -> 00:00:02.000
 */
 #define WTIME_UNIT 2000
-
-#define PUB_DIR_LENMAX 100 // 公開ディレクトリ名の長さの上限
