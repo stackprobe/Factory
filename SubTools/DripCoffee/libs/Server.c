@@ -5,30 +5,14 @@
 		ans
 			"DRIP-COFFEE_OK"
 
-	LOCK
-		prm
-			LOCKER-INFO              line2JToken 1 1
-		ans
-			"SUCCESSFUL" / "FAILED"
-			LOCKER-INFO              line2JToken 1 1
-			STMAP                    0 ～ IMAX_64         # stamp
-
-	UNLOCK
-		prm
-			LOCKER-INFO              line2JToken 1 1
-		ans
-			なし
-
 	GET-CATALOG
 		prm
-			REPOSITRY-NAME           line2JToken 1 1
 			TARGET-REL-DIR           isFairRelPath / ""
 		ans
 			CATALOG                  DC_ToFairCatalog
 
 	CREATE-DIR
 		prm
-			REPOSITRY-NAME           line2JToken 1 1
 			PARENT-REL-DIR           isFairRelPath / ""
 			TARGET-LCL-DIR           isFairLocalPath
 		ans
@@ -36,7 +20,6 @@
 
 	DELETE-DIR
 		prm
-			REPOSITRY-NAME           line2JToken 1 1
 			PARENT-REL-DIR           isFairRelPath / ""
 			TARGET-LCL-DIR           isFairLocalPath
 		ans
@@ -44,7 +27,6 @@
 
 	DELETE-FILE
 		prm
-			REPOSITRY-NAME           line2JToken 1 1
 			PARENT-REL-DIR           isFairRelPath / ""
 			TARGET-LCL-FILE          isFairLocalPath
 		ans
@@ -52,18 +34,16 @@
 
 	UPLOAD
 		prm
-			REPOSITRY-NAME           line2JToken 1 1
 			PARENT-REL-DIR           isFairRelPath / ""
 			TARGET-LCL-FILE          isFairLocalPath
 			START-POS                0 ～ IMAX_64         # ファイル終端より先 -> エラー @ dir2.exe
-			STAMP                    0 ～ IMAX_64         # stamp
+			STAMP                    0 ～ IMAX_64         # YYYYMMDDhhmmssLLL
 			DATA                     bin
 		ans
 			"SUCCESSFUL" / 切断
 
 	DOWNLOAD
 		prm
-			REPOSITRY-NAME           line2JToken 1 1
 			PARENT-REL-DIR           isFairRelPath / ""
 			TARGET-LCL-FILE          isFairLocalPath
 			START-POS                0 ～ IMAX_64         # ファイル終端より先 -> エラー @ dir2.exe
@@ -89,14 +69,6 @@ static int Perform(char *prmFile, char *ansFile)
 	{
 		writeLine(wfp, "DRIP-COFFEE_OK");
 		ret = 1;
-	}
-	else if(!strcmp(command, "LOCK"))
-	{
-		error(); // TODO
-	}
-	else if(!strcmp(command, "UNLOCK"))
-	{
-		error(); // TODO
 	}
 	else if(!strcmp(command, "GET-CATALOG"))
 	{
