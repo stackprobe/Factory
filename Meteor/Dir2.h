@@ -1,3 +1,9 @@
+#pragma once
+
+#include "C:\Factory\Common\all.h"
+#include "C:\Factory\Common\Options\Collabo.h"
+#include "C:\Factory\Common\Options\Date2Day.h"
+
 void DC_ToFairCatalog(autoList_t *catalog);
 autoList_t *DC_GetCatalog(char *dir);
 int DC_CreateDir(char *dir);

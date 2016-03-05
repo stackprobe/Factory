@@ -1,4 +1,4 @@
-#include "all.h"
+#include "Dir2.h"
 
 // ---- mutex ----
 
@@ -79,6 +79,19 @@ static void PrintCatalogLineError(char *line, char *reason)
 
 	memFree(line);
 }
+static uint64 AdjustStamp(uint64 stamp, uint64 minStamp, uint64 maxStamp, uint64 unitMillis)
+{
+	uint64 millis;
+
+	millis = FileStampToMillis(stamp);
+	millis += unitMillis - 1;
+	millis /= unitMillis;
+	millis *= unitMillis;
+	stamp = MillisToFileStamp(millis);
+	m_range(stamp, minStamp, maxStamp);
+
+	return stamp;
+}
 static int ToFairCatalogLine(char *line) // ret: ? ! 不正な行
 {
 	uint64 size;
@@ -111,12 +124,22 @@ static int ToFairCatalogLine(char *line) // ret: ? ! 不正な行
 		PrintCatalogLineError(line, "不正なファイル日時");
 		return 0;
 	}
-	millis = FileStampToMillis(stamp);
-	millis += WTIME_UNIT - 1;
-	millis /= WTIME_UNIT;
-	millis *= WTIME_UNIT;
-	stamp = MillisToFileStamp(millis);
-	m_range(stamp, WTIME_MIN, WTIME_MAX);
+
+#if 0 // ntfs
+	stamp = AdjustStamp(
+		stamp,
+		16010101000000000,
+		99991231235959999,
+		1
+		);
+#else // fat
+	stamp = AdjustStamp(
+		stamp,
+		19800101000000000,
+		21071231235958000,
+		2000
+		);
+#endif
 
 	_snprintf(line + 20, 17, "%017I64u", stamp);
 

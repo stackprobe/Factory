@@ -13,8 +13,13 @@
 
 int main(int argc, char **argv)
 {
-	char *outDir = nextArg();
+	char *outDir;
 	char *outFile;
+
+	if(hasArgs(1))
+		outDir = nextArg();
+	else
+		outDir = "C:\\temp";
 
 	outFile = combine(outDir, xcout("%s" MARGIN_PTN ".txt", makeCompactStamp(NULL)));
 	outFile = toCreatablePath(outFile, IMAX);

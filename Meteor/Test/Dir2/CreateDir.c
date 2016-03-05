@@ -1,4 +1,4 @@
-#include "..\..\all.h"
+#include "..\..\Dir2.h"
 
 int main(int argc, char **argv)
 {
