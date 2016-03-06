@@ -67,6 +67,8 @@ static char *DoCheck(char *p)
 }
 static int IsUUIDPoi(char *line)
 {
+	if(lineExp("<>// not_uuid", line)) return 0;
+
 	if(lineExp("<>{<>}<>shared_uuid<>", line)) return 1;
 
 	if(lineExp("<>\"<>{<>}<>\"<>", line))
