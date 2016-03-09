@@ -333,6 +333,7 @@ char *makeFreeDir(void)
 	mutex();
 	path = toCreatablePath(strx("C:\\1"), 999 - 1);
 	createDir(path);
+//	coExecute_x(xcout("ATTRIB.EXE +H %s", path));
 	unmutex();
 
 	return path;

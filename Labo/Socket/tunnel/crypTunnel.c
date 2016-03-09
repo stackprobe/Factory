@@ -32,6 +32,7 @@ static char *KeyBundleFile;
 static autoBlock_t *KeyBundle;
 static autoList_t *KeyTableList;
 static uint BlockSizeLimit;
+static uint BlockSizeMin = 1;
 
 static uint GetNegotiationTimeoutMillis(void)
 {
@@ -95,7 +96,7 @@ static void EncryptFltr(autoBlock_t *buff, uint encCounter)
 			if(BlockSizeLimit < size)
 			{
 				size = (uint)(getCryptoRand64() % BlockSizeLimit);
-				m_maxim(size, 1);
+				m_maxim(size, BlockSizeMin);
 			}
 			tmp = ab_makeSubBytes(buff, rPos, size);
 
@@ -335,6 +336,12 @@ static int ReadArgs(void)
 	if(argIs("/T")) // geTunnel combination mode
 	{
 		BlockSizeLimit = 5000;
+		return 1;
+	}
+	if(argIs("/T2")) // for BlueFish
+	{
+		BlockSizeLimit = 60000;
+		BlockSizeMin   = 50000;
 		return 1;
 	}
 	KeyBundleFile = nextArg();
