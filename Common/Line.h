@@ -57,6 +57,8 @@ char *mbs_strchr(char *line, int findChr);
 char *mbs_strrchr(char *line, int findChr);
 char *strchrEnd(char *line, int findChr);
 char *strchrNext(char *line, int findChr);
+char *ne_strchr(char *line, int findChr);
+char *ne_strstr(char *line, char *findPtn);
 
 int mbsStartsWithICase(char *line1, char *line2);
 int startsWithICase(char *line1, char *line2);

@@ -215,6 +215,20 @@ char *strchrNext(char *line, int findChr)
 
 	return p;
 }
+char *ne_strchr(char *line, int findChr)
+{
+	char *ret = strchr(line, findChr);
+
+	errorCase(!ret);
+	return ret;
+}
+char *ne_strstr(char *line, char *findPtn)
+{
+	char *ret = strstr(line, findPtn);
+
+	errorCase(!ret);
+	return ret;
+}
 
 /*
 	ret: line1 ‚Í line2 ‚Ån‚Ü‚é‚©”»’è‚·‚éB
