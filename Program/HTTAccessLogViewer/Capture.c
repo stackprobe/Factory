@@ -5,6 +5,7 @@
 
 static char *HTTDir;
 static char *WFile;
+static int OutputAndDelete;
 
 static void AddLogFile(autoList_t *lines, char *logFile)
 {
@@ -43,6 +44,19 @@ static void ClearLogLine(void)
 static void WriteLogLine(FILE *fp)
 {
 	autoList_t *row = newList();
+
+	// 2bs
+	{
+		line2JLine(Stamp,      1, 0, 0, 1);
+		line2JLine(ClientIP,   1, 0, 0, 1);
+		line2JLine(Method,     1, 0, 0, 1);
+		line2JLine(Path,       1, 0, 0, 1);
+		line2JLine(Host,       1, 0, 0, 1);
+		line2JLine(UserAgent,  1, 0, 0, 1);
+		line2JLine(Domain,     1, 0, 0, 1);
+		line2JLine(TargetPath, 1, 0, 0, 1);
+		line2JLine(Status,     1, 0, 0, 1);
+	}
 
 	addElement(row, (uint)Stamp);
 	addElement(row, (uint)ClientIP);
@@ -187,12 +201,22 @@ static void CaptureMain(void)
 	releaseDim(lines, 1);
 	fileClose(fp);
 
-	RemoveLogFile("AccessLog0.dat");
-	RemoveLogFile("AccessLog.dat");
+	if(OutputAndDelete)
+	{
+		RemoveLogFile("AccessLog0.dat");
+		RemoveLogFile("AccessLog.dat");
+	}
 }
 int main(int argc, char **argv)
 {
 	uint mtx;
+
+readArgs:
+	if(argIs("/OAD"))
+	{
+		OutputAndDelete = 1;
+		goto readArgs;
+	}
 
 	HTTDir = nextArg();
 	WFile  = nextArg();
