@@ -30,7 +30,7 @@ void Frct_Release(Fraction_t *i)
 static uint64 N;
 static uint64 D;
 
-static void Normalize(void)
+static void Reduction(void)
 {
 	uint64 n_dest[64];
 	uint64 d_dest[64];
@@ -85,30 +85,32 @@ static void Normalize(void)
 	for(di = 1; d_dest[di]; di++)
 		D *= d_dest[di];
 
+	errorCase(N == 0); // 2bs
+	errorCase(D == 0); // 2bs
+}
+static void Normalize(void)
+{
+	Reduction();
+
 	while(SINTMAX < N || SINTMAX < D) // 丸め！
 	{
-		if(N & 1 == 0 && D & 1 == 0)
-		{
-			N >>= 1;
-			D >>= 1;
-			continue;
-		}
-		cout("Warning: FRACTION_MARUME_1: %I64u / %I64u\n", N, D);
+		cout("Warning: 丸め前: %I64u / %I64u\n", N, D);
 
 		N >>= 1;
 		D >>= 1;
 
 		if(D == 0)
 		{
-			cout("Warning: FRACTION_OVERFLOW\n");
+			cout("Warning: 分母がゼロになりました！正規化を中止します。\n");
 
 			N = SINTMAX;
 			D = 1;
+			break;
 		}
-		cout("Warning: FRACTION_MARUME_2: %I64u / %I64u\n", N, D);
+		cout("Warning: 丸め後: %I64u / %I64u\n", N, D);
+
+		Reduction();
 	}
-	errorCase(N == 0); // 2bs
-	errorCase(D == 0); // 2bs
 }
 
 Fraction_t *Frct_Add(Fraction_t *a, Fraction_t *b)
@@ -160,7 +162,7 @@ Fraction_t *Frct_Sub(Fraction_t *a, Fraction_t *b)
 
 		return ans;
 	}
-	if(b->Sign = -1)
+	if(b->Sign == -1)
 	{
 		b->Sign = 1;
 		ans = Frct_Add(a, b);
@@ -252,10 +254,54 @@ Fraction_t *Frct_Calc_cx(Fraction_t *a, int operator, Fraction_t *b)
 	Frct_Release(b);
 	return ans;
 }
+
+static int GV_Sign;
+
+static uint64 GetValue(char *line)
+{
+	uint64 value = 0;
+	char *p;
+
+	GV_Sign = 1;
+
+	for(p = line; *p; p++)
+	{
+		if(*p == '-')
+		{
+			GV_Sign = -1;
+		}
+		else if(*p == '.')
+		{
+			cout("Warning: 分子又は分母の小数点は無視します！\n");
+		}
+		else if(m_isdecimal(*p))
+		{
+			uint n_val = *p - '0';
+
+			if((UINT64MAX - n_val) / 10 < value)
+			{
+				cout("Warning: 分子又は分母が最大値を超えました！パースを中止します。\n");
+				break;
+			}
+			value *= 10;
+			value += n_val;
+		}
+	}
+	return value;
+}
 static Fraction_t *Frct_FromFractionLine(char *line)
 {
-	error(); // TODO
-	return NULL; // dummy
+	autoList_t *tokens = tokenize(line, '/');
+	int sign;
+
+	N = GetValue(getLine(tokens, 0));
+	sign = GV_Sign;
+	D = GetValue(getLine(tokens, 1));
+	sign *= GV_Sign;
+
+	Normalize();
+
+	return Frct_Create(N, D, sign);
 }
 Fraction_t *Frct_FromLine(char *line)
 {
@@ -283,20 +329,22 @@ Fraction_t *Frct_FromLine(char *line)
 		}
 		else if(m_isdecimal(*p))
 		{
-			N *= 10;
-			N += *p - '0';
-			D *= d_mul;
+			uint n_val = *p - '0';
+			uint c;
 
-			if(SINTMAX < N || SINTMAX < D) // overflow
+			if((UINT64MAX - n_val) / 10 < N || UINT64MAX / d_mul < D)
 			{
-				Normalize();
+				Reduction();
 
-				if(SINTMAX < N || SINTMAX < D) // overflow
+				if((UINT64MAX - n_val) / 10 < N || UINT64MAX / d_mul < D)
 				{
-					cout("Warning: FRACTION_N_D_OVERFLOW: %I64 / %I64\n", N, D);
+					cout("Warning: 分子又は分母が最大値を超えました！パースを中止します。\n");
 					break;
 				}
 			}
+			N *= 10;
+			N += n_val;
+			D *= d_mul;
 		}
 	}
 
@@ -333,7 +381,7 @@ char *Frct_ToLine(Fraction_t *i, uint basement)
 		if(!rank)
 			ans = addChar(ans, '.');
 
-		if(rank + 5 <= basement) // 高速 - 5 桁
+		if(rank + 5 <= basement) // 高速, 5 桁
 		{
 			N *= 100000;
 			v = N / D;
@@ -383,8 +431,9 @@ char *Frct_ToLine(Fraction_t *i, uint basement)
 }
 char *Frct_ToFractionLine(Fraction_t *i)
 {
-	error(); // TODO
-	return NULL; // dummy
+	CheckFraction(i);
+
+	return xcout("%s%u/%u", i->Sign == -1 ? "-" : "", i->Numer, i->Denom);
 }
 Fraction_t *Frct_FromLine_x(char *line)
 {
