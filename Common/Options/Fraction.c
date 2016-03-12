@@ -94,20 +94,19 @@ static void Normalize(void)
 
 	while(SINTMAX < N || SINTMAX < D) // 丸め！
 	{
-		cout("Warning: 丸め前: %I64u / %I64u\n", N, D);
+		cout("< %I64u / %I64u\n", N, D);
 
 		N >>= 1;
 		D >>= 1;
 
 		if(D == 0)
 		{
-			cout("Warning: 分母がゼロになりました！正規化を中止します。\n");
+			cout("Warning: 分母がゼロになりました。正規化を中止します。\n");
 
 			N = SINTMAX;
 			D = 1;
-			break;
 		}
-		cout("Warning: 丸め後: %I64u / %I64u\n", N, D);
+		cout("> %I64u / %I64u\n", N, D);
 
 		Reduction();
 	}
@@ -262,6 +261,9 @@ static uint64 GetValue(char *line)
 	uint64 value = 0;
 	char *p;
 
+	if(!*line)
+		cout("Warning: 空文字列です。\n");
+
 	GV_Sign = 1;
 
 	for(p = line; *p; p++)
@@ -272,7 +274,7 @@ static uint64 GetValue(char *line)
 		}
 		else if(*p == '.')
 		{
-			cout("Warning: 分子又は分母の小数点は無視します！\n");
+			cout("Warning: 分子又は分母の小数点は無視します。\n");
 		}
 		else if(m_isdecimal(*p))
 		{
@@ -280,7 +282,7 @@ static uint64 GetValue(char *line)
 
 			if((UINT64MAX - n_val) / 10 < value)
 			{
-				cout("Warning: 分子又は分母が最大値を超えました！パースを中止します。\n");
+				cout("Warning: 分子又は分母が最大値を超えました。パースを中止します。[GV]\n");
 				break;
 			}
 			value *= 10;
@@ -294,9 +296,9 @@ static Fraction_t *Frct_FromFractionLine(char *line)
 	autoList_t *tokens = tokenize(line, '/');
 	int sign;
 
-	N = GetValue(getLine(tokens, 0));
+	N = GetValue(refLine(tokens, 0));
 	sign = GV_Sign;
-	D = GetValue(getLine(tokens, 1));
+	D = GetValue(refLine(tokens, 1));
 	sign *= GV_Sign;
 
 	Normalize();
@@ -338,7 +340,7 @@ Fraction_t *Frct_FromLine(char *line)
 
 				if((UINT64MAX - n_val) / 10 < N || UINT64MAX / d_mul < D)
 				{
-					cout("Warning: 分子又は分母が最大値を超えました！パースを中止します。\n");
+					cout("Warning: 分子又は分母が最大値を超えました。パースを中止します。[FL]\n");
 					break;
 				}
 			}
