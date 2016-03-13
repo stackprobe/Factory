@@ -1,1 +1,1 @@
-Lookup.exe
+Lookup.exe %*
