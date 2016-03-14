@@ -203,8 +203,12 @@ static void CaptureMain(void)
 
 	if(OutputAndDelete)
 	{
-		RemoveLogFile("AccessLog0.dat");
-		RemoveLogFile("AccessLog.dat");
+		addCwd(HTTDir);
+		{
+			RemoveLogFile("AccessLog0.dat");
+			RemoveLogFile("AccessLog.dat");
+		}
+		unaddCwd();
 	}
 }
 int main(int argc, char **argv)
@@ -214,6 +218,7 @@ int main(int argc, char **argv)
 readArgs:
 	if(argIs("/OAD"))
 	{
+		LOGPOS();
 		OutputAndDelete = 1;
 		goto readArgs;
 	}
