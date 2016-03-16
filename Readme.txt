@@ -52,3 +52,9 @@ Visual C++ 2008 Express Edition
 5. 以下のコマンドを実行する。（一時ファイルを削除する）
 
 	> zz
+
+
+補足
+----
+
+本リポジトリ内では /J コンパイラオプションにより char は unsigned char になります。

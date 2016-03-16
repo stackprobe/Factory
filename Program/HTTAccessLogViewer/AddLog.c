@@ -14,49 +14,52 @@ static char *GetCaptureFile(void)
 
 	return file;
 }
-static char *GetWFileByRow(autoList_t *row)
+static uint GetDateByStamp(char *stamp)
 {
-	char *stamp = getLine(row, 0);
-	char *file;
+	uint date;
 
-	cout("< %s\n", stamp);
-	stamp = strx(stamp);
-
-	errorCase(!lineExp("<4,09>//<2,09>//<2,09><>", stamp));
-
-	stamp[10] = '\0';
+	stamp = strxl(stamp, 10);
 	eraseChar(stamp + 7);
 	eraseChar(stamp + 4);
 
-	file = combine(LogDir, stamp);
-	file = addExt(file, "log");
+	date = toValue(stamp);
 
 	memFree(stamp);
-	cout("> %s\n", file);
-	return file;
+	return date;
+}
+static char *GetWFileByDate(uint date)
+{
+	return combine_cx(LogDir, xcout("%08u.log", date));
 }
 static void DistributeToLog(char *rFile)
 {
 	FILE *rfp = fileOpen(rFile, "rb");
+	FILE *wfp = NULL;
+	uint wDate = UINTMAX;
 
 	for(; ; )
 	{
 		autoList_t *row = readCSVRow(rfp);
-		char *wFile;
-		FILE *wfp;
+		uint date;
 
 		if(!row)
 			break;
 
-		wFile = GetWFileByRow(row);
-		wfp = fileOpen(wFile, "ab");
+		date = GetDateByStamp(getLine(row, 0));
 
+		if(wDate != date)
+		{
+			if(wfp)
+				fileClose(wfp);
+
+			wfp = fileOpen_xc(GetWFileByDate(date), "ab");
+		}
 		writeCSVRow_x(wfp, row);
-
-		fileClose(wfp);
-		memFree(wFile);
 	}
 	fileClose(rfp);
+
+	if(wfp)
+		fileClose(wfp);
 }
 static void AddLog(void)
 {
