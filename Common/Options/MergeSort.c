@@ -162,7 +162,10 @@ static void MergePart(
 		メモリに一度期に読み込める「レコードの合計バイト数」の最大値の目安
 		srcFile のシーク位置の変化をバイトに換算しているだけ。
 		0 のときは常に１レコードずつになる。
-		各パートのレコード数が partSize / 100 を超えないようにする。
+
+	recordConstWeightSize
+		100 くらいを指定してね。
+
 */
 void MergeSort(
 	char *srcFile,
@@ -171,7 +174,8 @@ void MergeSort(
 	uint (*readElement)(FILE *fp),
 	void (*writeElement_x)(FILE *fp, uint element),
 	sint (*compElement)(uint element1, uint element2),
-	uint partSize
+	uint partSize,
+	uint recordConstWeightSize
 	)
 {
 	char *rMode;
@@ -199,19 +203,22 @@ void MergeSort(
 	{
 		uint element = readElement(fp);
 		uint64 currPos;
+		uint64 readSize;
 
 		if(!element)
 			break;
 
 		if(!elements)
-			elements = createAutoList(partSize / 100);
+			elements = createAutoList(partSize / 1024); // XXX
 
 		addElement(elements, element);
 
 		currPos = _ftelli64(fp);
 		errorCase(currPos < 0);
+		readSize = currPos - startPos;
+		readSize += (uint64)getCount(elements) * recordConstWeightSize;
 
-		if(startPos + partSize <= currPos || partSize / 100 <= getCount(elements))
+		if(partSize < readSize)
 		{
 			CommitPart(partsDir, partCount, wMode, writeElement_x, compElement, elements);
 			partCount++;
@@ -247,7 +254,8 @@ void MergeSort(
 
 void MergeSortTextComp(char *srcFile, char *destFile, sint (*funcComp)(char *, char *), uint partSize)
 {
-	MergeSort(srcFile, destFile, 1, (uint (*)(FILE *))readLine, (void (*)(FILE *, uint))writeLine_x, (sint (*)(uint, uint))funcComp, partSize);
+	MergeSort(srcFile, destFile, 1, (uint (*)(FILE *))readLine, (void (*)(FILE *, uint))writeLine_x, (sint (*)(uint, uint))funcComp, partSize, 100);
+	// 10 にしたら 1.8 GB くらい食った。@ 2016.3.18
 }
 void MergeSortText(char *srcFile, char *destFile, uint partSize)
 {
