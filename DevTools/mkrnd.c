@@ -1,9 +1,14 @@
 /*
-	mkrnd.exe [/S <SEED>]? [/B <OUTPUT-FILE> <SIZE>,
-	                       [/CB, /CO, /CD, /CH, /CS, /CC <CHAR-SET>, /CR <CHAR-MIN> <CHAR-MAX>]?
-	                        /T <OUTPUT-FILE> <ROW-NUM> [<COL-NUM>, <COL-MIN> <COL-MAX>]]
+	mkrnd.exe [/S SEED] ...
+
+	mkrnd.exe ... /B OUTPUT-FILE SIZE
+
+	mkrnd.exe ... [/CB | /CO | /CD | /CH | /CS | /CC CHAR-SET | /CR CHAR-MIN CHAR-MAX] /T OUTPUT-FILE ROW-NUM (COL-NUM | COL-MIN COL-MAX)
+
+	- - -
 
 	mkrnd.exe /ch /t 1.txt 32 64
+
 		mkcrÇ∆ìØÇ∂èëéÆÇÃ 1.txt ÇèoóÕÇ∑ÇÈÅBCSPRNG Ç≈ÇÕÇ»Ç¢ÇÃÇ≈íçà”ÅI
 */
 
