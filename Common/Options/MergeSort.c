@@ -1,6 +1,6 @@
 #include "MergeSort.h"
 
-#define READER_MAX (FOPEN_MAX - 1)
+#define READER_MAX 16
 
 typedef struct Reader_st
 {
