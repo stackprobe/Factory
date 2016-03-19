@@ -255,7 +255,7 @@ void MergeSort(
 void MergeSortTextComp(char *srcFile, char *destFile, sint (*funcComp)(char *, char *), uint partSize)
 {
 	MergeSort(srcFile, destFile, 1, (uint (*)(FILE *))readLine, (void (*)(FILE *, uint))writeLine_x, (sint (*)(uint, uint))funcComp, partSize, 100);
-	// 10 にしたら 1.8 GB くらい食った。@ 2016.3.18
+	// 10 にしたら 1.8 GB くらい食った。100 で 180 MB くらい。100 が安全っぽい。@ 2016.3.18
 }
 void MergeSortText(char *srcFile, char *destFile, uint partSize)
 {
