@@ -1,8 +1,19 @@
+/*
+	> runsub.exe [/-B] [/-S | /-R] [/R ROOT-DIR] [/T TIMEWAIT-SEC] [/TM TIMEWAIT-MILLIS]
+
+		/-B             ... 実行するプログラムの終了を待たずに次へ進む。
+		/-S             ... サブディレクトリを無視する。
+		/-R             ... 検索のルートディレクトリを無視する。
+		ROOT-DIR        ... 検索のルートディレクトリを指定する。デフォ = 実行時のカレント
+		TIMEWAIT-SEC    ... プログラムを実行する度に待つ秒数。
+		TIMEWAIT-MILLIS ... プログラムを実行する度に待つミリ秒数。
+*/
+
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\SubTools\BlueFish\libs\Lock.h"
 
 static uint NonBlockingMode;
-static uint TimeWaitSec;
+static uint TimeWaitMillis;
 
 static void Run(char *file)
 {
@@ -23,8 +34,8 @@ static void Run(char *file)
 	execute("TITLE runsub");
 	cout("runsub: %s done\n", absPath);
 
-	if(TimeWaitSec)
-		coSleep(TimeWaitSec * 1000);
+	if(TimeWaitMillis)
+		coSleep(TimeWaitMillis);
 }
 int main(int argc, char **argv)
 {
@@ -61,7 +72,12 @@ readArgs:
 	}
 	if(argIs("/T"))
 	{
-		TimeWaitSec = toValue(nextArg());
+		TimeWaitMillis = toValue(nextArg()) * 1000;
+		goto readArgs;
+	}
+	if(argIs("/TM"))
+	{
+		TimeWaitMillis = toValue(nextArg());
 		goto readArgs;
 	}
 	target = nextArg();
