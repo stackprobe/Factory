@@ -143,6 +143,141 @@ static void BackupDirs(autoList_t *targetDirs)
 	execute("TITLE Backup - done");
 }
 
+// ---- huge dir ----
+
+static autoList_t *GetCatalog(char *dir)
+{
+	autoList_t *files =lssFiles(dir);
+	char *file;
+	uint index;
+	autoList_t *catalog = newList();
+
+	foreach(files, file, index)
+	{
+		uint64 wTime;
+
+		getFileStamp(file, NULL, NULL, &wTime);
+		wTime &= ~1ui64; // for FAT
+		addElement(catalog, (uint)xcout("%020I64u*%020I64u*%s", wTime, getFileSize(file), eraseRoot(file, dir)));
+	}
+	releaseDim(files, 1);
+	sortJLinesICase(catalog);
+	return catalog;
+}
+static char *GetFileByCatalogLine(char *line, char *rootDir)
+{
+	char *p = line;
+
+	p = ne_strchr(p, '*') + 1;
+	p = ne_strchr(p, '*') + 1;
+	return combine(rootDir, p);
+}
+static uint64 GetWTimeByCatalogLine(char *line)
+{
+	uint64 wTime;
+
+	line = strx(line);
+	ne_strchr(line, '*')[0] = '\0';
+	wTime = toValue64(line);
+	memFree(line);
+	return wTime;
+}
+static void DeleteEmptyDirs(char *rootDir)
+{
+	autoList_t *dirs = lssDirs(rootDir);
+	char *dir;
+	uint index;
+
+	reverseElements(dirs);
+
+	foreach(dirs, dir, index)
+	{
+		uint count = lsCount(dir);
+
+		if(!count)
+		{
+			cout("# %s\n", dir);
+
+			removeDir(dir);
+		}
+	}
+	releaseDim(dirs, 1);
+}
+
+#define HUGE_DIR "C:\\huge"
+
+static void BackupHugeDir(char *destDir)
+{
+	autoList_t *rCatalog;
+	autoList_t *wCatalog;
+	autoList_t *addCatalog;
+	autoList_t *removeCatalog;
+	char *line;
+	uint index;
+
+	LOGPOS();
+
+	if(!existDir(HUGE_DIR))
+		return;
+
+	destDir = xcout("%s_huge", destDir);
+	createDirIfNotExist(destDir);
+
+	coExecute_x(xcout("Compact.exe /C \"%s\"", destDir));
+//	coExecute_x(xcout("Compact.exe /C /S:\"%s\"", destDir));
+
+	LOGPOS();
+
+	rCatalog = GetCatalog(HUGE_DIR);
+	wCatalog = GetCatalog(destDir);
+	addCatalog = newList();
+	removeCatalog = newList();
+
+	mergeLines2(rCatalog, wCatalog, addCatalog, NULL, removeCatalog);
+
+	foreach(removeCatalog, line, index)
+	{
+		char *file = GetFileByCatalogLine(line, destDir);
+
+		cout("! %s\n", file);
+
+		errorCase(!existFile(file)); // 2bs?
+
+		removeFile(file);
+		memFree(file);
+	}
+	DeleteEmptyDirs(destDir);
+
+	foreach(addCatalog, line, index)
+	{
+		char *rFile = GetFileByCatalogLine(line, HUGE_DIR);
+		char *wFile = GetFileByCatalogLine(line, destDir);
+		uint64 wTime = GetWTimeByCatalogLine(line);
+
+		cout("< %s\n", rFile);
+		cout("> %s\n", wFile);
+		cout("T %I64u\n", wTime);
+
+		errorCase(!existFile(rFile)); // 2bs?
+		errorCase( existFile(wFile)); // 2bs?
+
+		createPath(wFile, 'X');
+		copyFile(rFile, wFile);
+		setFileStamp(wFile, 0ui64, 0ui64, wTime);
+		memFree(rFile);
+		memFree(wFile);
+	}
+	memFree(destDir);
+	releaseDim(rCatalog, 1);
+	releaseDim(wCatalog, 1);
+	releaseAutoList(addCatalog);
+	releaseAutoList(removeCatalog);
+
+	LOGPOS();
+}
+
+// ----
+
 int main(int argc, char **argv)
 {
 	char *strDestDrv;
@@ -195,7 +330,7 @@ int main(int argc, char **argv)
 
 	if(existDir(destBackDir))
 	{
-		cout("バックアップを削除しています...\n");
+		cout("前々回のバックアップを削除しています...\n");
 
 		cmdln = xcout("RD /S /Q %s", destBackDir);
 		execute(cmdln);
@@ -208,7 +343,7 @@ int main(int argc, char **argv)
 
 	if(existDir(destDir))
 	{
-		cout("前回のデータをバックアップしています...\n");
+		cout("前回のバックアップをバックアップしています...\n");
 
 		cmdln = xcout("REN %s %s", destDir, getLocal(destBackDir));
 		execute(cmdln);
@@ -225,6 +360,7 @@ int main(int argc, char **argv)
 	addCwd(destDir);
 	BackupDirs(targetDirs);
 	unaddCwd();
+	BackupHugeDir(destDir);
 
 	memFree(strDestDrv);
 	memFree(destDir);
