@@ -301,17 +301,20 @@ int main(int argc, char **argv)
 		char *dir;
 		uint millis;
 		uint recvLimit;
+		uint recvLimitSize;
 
 		identHash = nextArg();
 		dir = nextArg();
 		millis = toValue(nextArg());
 		recvLimit = toValue(nextArg());
+		recvLimitSize = toValue(nextArg());
 
 		{
 			Frtwv_t *i = Frtwv_CreateIH(identHash);
 			uint index;
+			uint totalSize = 0;
 
-			for(index = 0; index < recvLimit; index++)
+			for(index = 0; index < recvLimit && totalSize < recvLimitSize; index++)
 			{
 				autoBlock_t *recvData = Frtwv_Recv(i, index ? 0 : millis);
 				char *file;
@@ -321,6 +324,7 @@ int main(int argc, char **argv)
 
 				file = combine_cx(dir, xcout("%04u", index));
 				writeBinary(file, recvData);
+				totalSize += getSize(recvData);
 				releaseAutoBlock(recvData);
 				memFree(file);
 			}
