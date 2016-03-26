@@ -23,4 +23,5 @@ void eventSleep(uint hdl);
 int collectEvents(uint hdl, uint millis);
 
 // _x
+uint mutexOpen_x(char *mutexName);
 uint eventOpen_x(char *eventName);

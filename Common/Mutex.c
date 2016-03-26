@@ -237,6 +237,12 @@ int collectEvents(uint hdl, uint millis) // ts_
 }
 
 // _x
+uint mutexOpen_x(char *mutexName)
+{
+	uint out = mutexOpen(mutexName);
+	memFree(mutexName);
+	return out;
+}
 uint eventOpen_x(char *eventName)
 {
 	uint out = eventOpen(eventName);

@@ -1,5 +1,5 @@
 #include "C:\Factory\Common\all.h"
-#include "Define.h"
+#include "Common.h"
 
 static void CharRecved(int chr)
 {
@@ -50,47 +50,65 @@ static void BitRecved(uint bit)
 		bIndex = 0;
 	}
 }
+static void TryRecv(uint m0, uint m1, uint m2)
+{
+	M_Set(M_MUTEX_0 + m1, 1);
+
+	// idling
+	{
+		static uint millis;
+
+		if(!M_Get(M_MUTEX_0 + m2)) // ? 全てロック可能 == 送信中ではない。-> ウェイトを入れる。
+		{
+			if(millis < 200)
+				millis++;
+
+			sleep(millis);
+		}
+		else
+			millis = 0;
+
+		if(pulseSec(1, NULL))
+			execute_x(xcout("TITLE Recv - %u", millis));
+	}
+
+	M_Set(M_MUTEX_0 + m0, 0);
+
+	if(M_Get(M_BIT_0_0 + m1))
+	{
+		BitRecved(0);
+	}
+	if(M_Get(M_BIT_1_0 + m1))
+	{
+		BitRecved(1);
+	}
+}
 static void DoRecv(void)
 {
-	uint evReady = eventOpen(EV_READY);
-	uint evBit_0 = eventOpen(EV_BIT_0);
-	uint evBit_1 = eventOpen(EV_BIT_1);
-	autoList_t *evBits = newList();
 	int death = 0;
-
-	addElement(evBits, evBit_0);
-	addElement(evBits, evBit_1);
 
 	cout("+-----------------------------------+\n");
 	cout("| エスケープキーを押すと中止します。|\n");
 	cout("+-----------------------------------+\n");
 	LOGPOS();
 
-	collectEvents(evBit_0, 0); // clear
-	collectEvents(evBit_1, 0); // clear
-	eventSet(evReady);
-
 	while(!death)
 	{
-		uint bit;
+		TryRecv(0, 1, 2);
+		TryRecv(1, 2, 0);
+		TryRecv(2, 0, 1);
 
-		if(mltHandleWaitForMillis(evBits, 2000, &bit))
-		{
-			BitRecved(bit);
-			eventSet(evReady);
-		}
 		while(hasKey())
 			if(getKey() == 0x1b)
 				death = 1;
 	}
-	handleClose(evReady);
-	handleClose(evBit_0);
-	handleClose(evBit_1);
-	releaseAutoList(evBits);
-
 	LOGPOS();
 }
 int main(int argc, char **argv)
 {
+	M_Init();
 	DoRecv();
+	M_Fnlz();
+
+	execute("TITLE Recv");
 }
