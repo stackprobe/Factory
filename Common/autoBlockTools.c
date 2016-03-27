@@ -122,6 +122,14 @@ uint ab_refValue(autoBlock_t *i, uint index)
 	return value;
 }
 
+/*
+	Big Endian
+*/
+uint ab_getValueBE(autoBlock_t *i, uint index)
+{
+	return revEndian(ab_getValue(i, index));
+}
+
 void *ab_makeBlock(autoBlock_t *i)
 {
 	return unbindBlock(copyAutoBlock(i));

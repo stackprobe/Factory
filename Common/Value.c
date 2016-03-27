@@ -215,6 +215,27 @@ sint64 divRndOff64Rate(sint64 numer, sint64 denom, sint rndOffRateNumer, sint rn
 	return numer / denom + (((numer % denom) * rndOffRateDenom) / rndOffRateNumer) / denom;
 }
 
+uint revEndian(uint value)
+{
+	return
+		value >> 24 & 0x000000ff |
+		value >>  8 & 0x0000ff00 |
+		value <<  8 & 0x00ff0000 |
+		value << 24 & 0xff000000;
+}
+uint64 revEndian64(uint64 value)
+{
+	return
+		value >> 56 & 0x00000000000000ffui64 |
+		value >> 40 & 0x000000000000ff00ui64 |
+		value >> 24 & 0x0000000000ff0000ui64 |
+		value >>  8 & 0x00000000ff000000ui64 |
+		value <<  8 & 0x000000ff00000000ui64 |
+		value << 24 & 0x0000ff0000000000ui64 |
+		value << 40 & 0x00ff000000000000ui64 |
+		value << 56 & 0xff00000000000000ui64;
+}
+
 // _x
 uint64 toValue64Digits_xc(char *line, char *digits)
 {

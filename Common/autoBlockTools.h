@@ -21,6 +21,8 @@ uint ab_getValue(autoBlock_t *i, uint index);
 void ab_putValue(autoBlock_t *i, uint index, uint value);
 uint ab_refValue(autoBlock_t *i, uint index);
 
+uint ab_getValueBE(autoBlock_t *i, uint index);
+
 void *ab_makeBlock(autoBlock_t *i);
 void *ab_makeBlock_x(autoBlock_t *i);
 autoBlock_t *ab_makeSubBytes(autoBlock_t *i, uint start, uint size);

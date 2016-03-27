@@ -56,6 +56,8 @@ uint M_Get(uint index)
 	errorCase(!Mtxs[0]); // ? not inited
 	errorCase(M_NUM <= index);
 
+	errorCase(Statuses[index]); // 2bs, Ž©•ª‚Å Set ‚µ‚Ä‚¢‚é‚â‚Â‚Í Get ‚µ‚È‚¢‚Í‚¸I
+
 	if(handleWaitForMillis(Mtxs[index], 0))
 	{
 		mutexRelease(Mtxs[index]);
