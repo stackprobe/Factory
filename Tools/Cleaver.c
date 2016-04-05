@@ -139,7 +139,7 @@ readArgs:
 		errorCase(!DivSize);
 		goto readArgs;
 	}
-	if(argIs("/D")) // read-end and Delete
+	if(argIs("/D") || argIs("/OAD")) // read-end and Delete
 	{
 		DeleteMode = 1;
 		goto readArgs;
