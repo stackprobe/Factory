@@ -59,11 +59,12 @@ static void WavVolume(char *rFile, char *wFile)
 {
 	WavData = readWAVFile(rFile);
 
-	errorCase(lastWAV_Hz != HZ);
+//	errorCase(lastWAV_Hz != HZ);
 
 	WavVolume_D();
 
-	writeWAVFile(wFile, WavData, HZ);
+	writeWAVFile(wFile, WavData, lastWAV_Hz);
+//	writeWAVFile(wFile, WavData, HZ);
 
 	releaseAutoList(WavData);
 	WavData = NULL;
