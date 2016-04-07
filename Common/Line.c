@@ -467,32 +467,34 @@ void trimTrail(char *line, int delimChr)
 }
 void trimSequ(char *line, int delimChr)
 {
+	/*
+		debug segv @ 2016.4.7
+	*/
+
 	char *n = line;
+
+	errorCase(delimChr == '\0');
 
 	while(n = strchr(n, delimChr))
 	{
-		errorCase(!*n); // ? delimChr == '\0'
 		n++;
 
 		if(*n == delimChr)
 		{
 			char *f = n;
 
-			goto seekForSqDelimAfter;
+			do
+			{
+				f++;
+			}
+			while(*f == delimChr);
 
 			while(*f)
 			{
 				if(*f == delimChr)
-				{
-					*n++ = delimChr;
-
-					do
-					{
-					seekForSqDelimAfter:
+					while(f[1] == delimChr)
 						f++;
-					}
-					while(*f == delimChr);
-				}
+
 				*n++ = *f++;
 			}
 			*n = '\0';

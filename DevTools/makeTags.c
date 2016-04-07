@@ -64,7 +64,6 @@ static void RemoveComments(autoList_t *lines)
 			if(onComment)
 			{
 				copyLine(p, q + 2);
-				p = q + 2;
 			}
 			else
 			{
@@ -244,13 +243,13 @@ static void FindTags(char *rootDir)
 		if(
 			!_stricmp(ext, "c") ||
 			!_stricmp(ext, "h") &&
-//				!existFile(c_changeExt(file, "cpp")) // .h ÇÃÇ›Ç∆Ç©Ç†ÇÈÅB
-				/*
-				!existFile(c_changeLocal(file, "Main.cpp")) &&
-				!existFile(c_changeLocal(file, "_Main.cpp")) &&
-				!existFile(c_changeLocal(file, "AAMain.cpp"))
-				*/
-				!fileSearchExist(c_changeLocal(file, "*.cpp"))
+//			!existFile(c_changeExt(file, "cpp")) // .h ÇÃÇ›Ç∆Ç©Ç†ÇÈÅB
+			/*
+			!existFile(c_changeLocal(file, "Main.cpp")) &&
+			!existFile(c_changeLocal(file, "_Main.cpp")) &&
+			!existFile(c_changeLocal(file, "AAMain.cpp"))
+			*/
+			!fileSearchExist(c_changeLocal(file, "*.cpp"))
 			)
 			FindTagsByFile(file);
 	}
