@@ -161,6 +161,7 @@ static void MergePart(
 	partSize
 		メモリに一度期に読み込める「レコードの合計バイト数」の最大値の目安
 		srcFile のシーク位置の変化をバイトに換算しているだけ。
+		１レコード毎に recordConstWeightSize を加える。
 		0 のときは常に１レコードずつになる。
 
 	recordConstWeightSize
@@ -254,8 +255,13 @@ void MergeSort(
 
 void MergeSortTextComp(char *srcFile, char *destFile, sint (*funcComp)(char *, char *), uint partSize)
 {
-	MergeSort(srcFile, destFile, 1, (uint (*)(FILE *))readLine, (void (*)(FILE *, uint))writeLine_x, (sint (*)(uint, uint))funcComp, partSize, 100);
-	// 10 にしたら 1.8 GB くらい食った。100 で 180 MB くらい。100 が安全っぽい。@ 2016.3.18
+	MergeSort(srcFile, destFile, 1, (uint (*)(FILE *))readLine_strr, (void (*)(FILE *, uint))writeLine_x, (sint (*)(uint, uint))funcComp, partSize, 10);
+	// 各行 0～2 バイトのとき、10 にしたら 1.8 GB くらい食った。100 で 180 MB くらい。100 が安全っぽい。@ 2016.3.18
+	// <- readLine の中で createBlock(128); してるせいだろ。readLine -> readLine_strr にした。100 -> 10 にした。@ 2016.4.8
+	// 数ギガの巨大ファイルについて、
+	// 全行 0 バイトでピーク時 220 MB くらい。
+	// 全行 0～2 バイト（平均 1 バイト）でピーク時 210 MB くらい。
+	// 全行 0～1000 バイト（平均 500 バイト）でピーク時 140 MB くらい。
 }
 void MergeSortText(char *srcFile, char *destFile, uint partSize)
 {

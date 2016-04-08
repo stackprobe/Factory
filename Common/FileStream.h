@@ -30,6 +30,7 @@ char *readLine(FILE *fp);
 char *readLineLenMax(FILE *fp, uint lenmax);
 char *nnReadLine(FILE *fp);
 char *neReadLine(FILE *fp);
+char *readLine_strr(FILE *fp);
 autoList_t *readLines(char *file);
 char *readText(char *file);
 char *readText_b(char *file);

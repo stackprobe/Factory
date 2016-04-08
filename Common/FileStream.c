@@ -330,6 +330,15 @@ char *readLine(FILE *fp)
 {
 	return readLineLenMax(fp, UINTMAX);
 }
+char *readLine_strr(FILE *fp)
+{
+	char *line = readLine(fp);
+
+	if(line)
+		line = strr(line);
+
+	return line;
+}
 char *nnReadLine(FILE *fp)
 {
 	char *line = readLine(fp);
