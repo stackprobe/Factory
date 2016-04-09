@@ -80,6 +80,7 @@ void movePath(char *rPath, char *wPath);
 void setFileSize(char *file, uint64 size);
 uint64 getFileSizeFP(FILE *fp);
 uint64 getFileSize(char *file);
+uint64 getSeekPos(FILE *fp);
 uint64 getDirSize(char *dir);
 
 void editTextFile(char *file);

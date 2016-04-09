@@ -850,6 +850,13 @@ uint64 getFileSizeFP(FILE *fp)
 	}
 	return size;
 }
+uint64 getSeekPos(FILE *fp)
+{
+	sint64 pos = _ftelli64(fp);
+
+	errorCase(pos < 0I64);
+	return (uint64)pos;
+}
 uint64 getFileSize(char *file)
 {
 	FILE *fp = fileOpen(file, "rb");

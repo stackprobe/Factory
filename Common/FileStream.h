@@ -26,6 +26,7 @@ void writeBinary(char *file, autoBlock_t *block);
 void writeJoinBinary(char *file, autoBlock_t *block);
 
 int readChar(FILE *fp);
+int neReadChar(FILE *fp);
 char *readLine(FILE *fp);
 char *readLineLenMax(FILE *fp, uint lenmax);
 char *nnReadLine(FILE *fp);

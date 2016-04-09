@@ -283,6 +283,13 @@ int readChar(FILE *fp)
 	}
 	return chr;
 }
+int neReadChar(FILE *fp)
+{
+	int chr = readChar(fp);
+
+	errorCase(chr == EOF);
+	return chr;
+}
 char *readLineLenMax(FILE *fp, uint lenmax)
 {
 	autoBlock_t *lineBuff = createBlock(128);

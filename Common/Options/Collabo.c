@@ -4,12 +4,11 @@
 
 #include "Collabo.h"
 
-static char *S_GetCollaboPath(char *innerPath, int (*existFunc)(char *), int mode) // mode: "FD"
+static char *S_GetCollaboPath(char *innerPath, int (*existFunc)(char *))
 {
 	char *path;
 
 	errorCase(m_isEmpty(innerPath));
-	errorCase(!existFunc);
 
 	if(isAbsPath(innerPath))
 	{
@@ -25,17 +24,28 @@ static char *S_GetCollaboPath(char *innerPath, int (*existFunc)(char *), int mod
 			memFree(path);
 		}
 		path = makeFullPath(innerPath);
+
+		if(existFunc(path))
+			goto foundPath;
 	}
 	else
+	{
 		path = combine(getSelfDir(), innerPath);
 
-	if(existFunc(path))
-		goto foundPath;
+		if(existFunc(path))
+			goto foundPath;
 
-	if(mode == 'D')
-	{
-		createPath(path, 'D');
-		goto foundPath;
+		if(isFactoryDirDisabled())
+		{
+			path = combine(getSelfDir(), getLocal(innerPath));
+
+			errorCase(!_stricmp(path, getSelfFile()));
+
+			if(existFunc(path))
+				goto foundPath;
+
+			memFree(path);
+		}
 	}
 	error_m(xcout("[%s]Ç™å©Ç¬Ç©ÇËÇ‹ÇπÇÒÅB", innerPath));
 
@@ -45,9 +55,9 @@ foundPath:
 }
 char *GetCollaboFile(char *innerPath)
 {
-	return S_GetCollaboPath(innerPath, existFile, 'F');
+	return S_GetCollaboPath(innerPath, existFile);
 }
 char *GetCollaboDir(char *innerPath)
 {
-	return S_GetCollaboPath(innerPath, existDir, 'D');
+	return S_GetCollaboPath(innerPath, existDir);
 }
