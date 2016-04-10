@@ -10,7 +10,7 @@
 		/E+ 入出力ファイル |
 		/D+ 入出力ファイル)   ★コマンドモード
 
-	ZCluster.exe [/KB KEY-BUNDLE] [/C] [/-OW] [/OAD] [入出力パス]   ★自動判定モード
+	ZCluster.exe [/KB KEY-BUNDLE] [/C] [/1] [/-OW] [/OAD] [入出力パス]   ★自動判定モード
 
 	KEY-BUNDLE ... 鍵束ファイル or * or *PASS
 	/C   ... 自動判定モードのリストア時にカレントディレクトリに出力する。

@@ -9,12 +9,6 @@
 
 #include "all.h"
 
-void trimPathWithEdge(char *path)
-{
-	escapeYen(path);
-	trim(path, '/');
-	restoreYen(path);
-}
 void trimPath(char *path)
 {
 	escapeYen(path);
@@ -579,8 +573,8 @@ char *eraseRoot(char *path, char *root)
 
 	// "x:\\abc" -> "x:\\abc\\", "x:\\" -> "x:\\"
 	root = strx(root);
-	trimPathWithEdge(root);
 	root = addChar(root, '\\');
+	trimPath(root);
 
 	rootlen = strlen(root);
 

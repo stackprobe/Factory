@@ -1,4 +1,3 @@
-void trimPathWithEdge(char *path);
 void trimPath(char *path);
 char *combine(char *dir, char *file);
 
