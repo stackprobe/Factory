@@ -14,8 +14,10 @@
 #define LV_START 2 // 0 Å`
 #define BORDER_RATE 0.999
 #define DEST_RATE 0.5 // 0.0 Å` 1.0
+#define MARGIN_RATE 0.02
 
 static double Lvs[LV_RANGE + 1];
+static int OutputCancelled = 0;
 
 static void PutLv(uint low, uint hi)
 {
@@ -54,9 +56,10 @@ static void DoConv(char *rFile, char *wFile, char *reportFile)
 	uint borderIndex;
 	double borderRate;
 	double changeRate;
-	uint sampleCount;
+	uint sampleCount = 0;
 	uint otowareCount = 0;
-	double otowareRate;
+	double otowareRate = 0.0;
+	char *message = "(ì¡Ç…ñ≥Çµ)";
 
 	LOGPOS();
 
@@ -152,6 +155,12 @@ static void DoConv(char *rFile, char *wFile, char *reportFile)
 	cout("borderRate: %f\n", borderRate);
 	cout("changeRate: %f\n", changeRate);
 
+	if(1.0 - MARGIN_RATE < changeRate && changeRate < 1.0 + MARGIN_RATE)
+	{
+		message = "ÉåÅ[ÉgÇÃêUÇËïùÇ™è¨Ç≥Ç¢ÇΩÇﬂïœä∑ÇçsÇ¢Ç‹ÇπÇÒÅB(WAVÇèoóÕÇµÇ‹ÇπÇÒ)";
+		OutputCancelled= 1;
+		goto outputReport;
+	}
 	LOGPOS();
 	ProgressBegin();
 
@@ -213,8 +222,11 @@ static void DoConv(char *rFile, char *wFile, char *reportFile)
 	cout("otowareCount: %u\n", otowareCount);
 	cout("otowareRate: %f\n", otowareRate);
 
-	fileClose(rfp);
 	fileClose(wfp);
+
+outputReport:
+	cout("message: %s\n", message);
+	cout("OutputCancelled: %d\n", OutputCancelled);
 
 	wfp = fileOpen(reportFile, "wt");
 
@@ -226,10 +238,13 @@ static void DoConv(char *rFile, char *wFile, char *reportFile)
 	writeLine_x(wfp, xcout("sampleCount,%u", sampleCount));
 	writeLine_x(wfp, xcout("otowareCount,%u", otowareCount));
 	writeLine_x(wfp, xcout("otowareRate,%f", otowareRate));
+	writeLine_x(wfp, xcout("message,%s", message));
+	writeLine_x(wfp, xcout("OutputCancelled,%d", OutputCancelled));
 
 	for(index = 0; index < LV_RANGE; index++)
 		writeLine_x(wfp, xcout("Lvs,%u,%f", index, Lvs[index]));
 
+	fileClose(rfp);
 	fileClose(wfp);
 
 	LOGPOS();
@@ -270,7 +285,8 @@ int main(int argc, char **argv)
 
 	LOGPOS();
 
-	writeWAVFileFromCSVFile(csvFile2, wFile, lastWAV_Hz);
+	if(!OutputCancelled)
+		writeWAVFileFromCSVFile(csvFile2, wFile, lastWAV_Hz);
 
 	LOGPOS();
 

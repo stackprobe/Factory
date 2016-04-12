@@ -2,6 +2,11 @@
 	TIME_WAIT を数える。
 
 		netstat -n | Grape /c TIME_WAIT
+
+	配下の .txt の AAA を含む行を表示する。
+
+		lss .txt*
+		TypeAll /LSS | Grape AAA
 */
 
 #include "C:\Factory\Common\all.h"
