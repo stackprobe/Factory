@@ -14,7 +14,7 @@
 #define LV_START 2 // 0 Å`
 #define BORDER_RATE 0.999
 #define DEST_RATE 0.5 // 0.0 Å` 1.0
-#define MARGIN_RATE 0.02
+#define MARGIN_RATE 0.07
 
 static double Lvs[LV_RANGE + 1];
 static int OutputCancelled = 0;
