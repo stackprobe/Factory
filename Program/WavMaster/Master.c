@@ -4,6 +4,10 @@
 	- - -
 
 	Master.exe INPUT-WAV-FILE OUTPUT-WAV-FILE REPORT-CSV-FILE
+
+	- - -
+
+	ÇQâÒñ⁄ÇÕ changeRate == 1.04 Å` 1.05 Ç≠ÇÁÇ¢Ç…Ç»ÇÈÅH
 */
 
 #include "C:\Factory\Common\all.h"
@@ -14,7 +18,8 @@
 #define LV_START 2 // 0 Å`
 #define BORDER_RATE 0.999
 #define DEST_RATE 0.5 // 0.0 Å` 1.0
-#define MARGIN_RATE 0.07
+#define NOOP_RATE_HI 1.07
+#define NOOP_RATE_LOW 0.93
 
 static double Lvs[LV_RANGE + 1];
 static int OutputCancelled = 0;
@@ -155,9 +160,9 @@ static void DoConv(char *rFile, char *wFile, char *reportFile)
 	cout("borderRate: %f\n", borderRate);
 	cout("changeRate: %f\n", changeRate);
 
-	if(1.0 - MARGIN_RATE < changeRate && changeRate < 1.0 + MARGIN_RATE)
+	if(m_isRange(changeRate, NOOP_RATE_LOW, NOOP_RATE_HI))
 	{
-		message = "ÉåÅ[ÉgÇÃêUÇËïùÇ™è¨Ç≥Ç¢ÇΩÇﬂïœä∑ÇçsÇ¢Ç‹ÇπÇÒÅB(WAVÇèoóÕÇµÇ‹ÇπÇÒ)";
+		message = "ÉåÅ[ÉgÇÃêUÇËïùÇ™ä˘íËÇÃîÕàÕì‡Ç»ÇÃÇ≈ÉLÉÉÉìÉZÉãÇµÇ‹Ç∑ÅB";
 		OutputCancelled= 1;
 		goto outputReport;
 	}
@@ -230,6 +235,7 @@ outputReport:
 
 	wfp = fileOpen(reportFile, "wt");
 
+	writeLine_x(wfp, xcout("rowCount,%u", rowCount));
 	writeLine_x(wfp, xcout("totalLv,%f", totalLv));
 	writeLine_x(wfp, xcout("borderLv,%f", borderLv));
 	writeLine_x(wfp, xcout("borderIndex,%u", borderIndex));
