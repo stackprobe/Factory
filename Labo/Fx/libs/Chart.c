@@ -1,6 +1,6 @@
 #include "all.h"
 
-#define DATA_DIR "C:\\tmp\\Fx"
+#define DATA_DIR "C:\\var\\Fx"
 #define CURR_PAIR "USDJPY"
 #define DEF_PRICE 120.0
 #define DAY_MAX 50

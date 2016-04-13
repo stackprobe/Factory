@@ -114,8 +114,8 @@ static void DoConv(char *rFile, char *wFile, char *reportFile)
 		i1 = d2i(lval * LV_RANGE);
 		i2 = d2i(rval * LV_RANGE);
 
-		errorCase(!m_isRange(i1, 0, LV_RANGE));
-		errorCase(!m_isRange(i2, 0, LV_RANGE));
+		errorCase(!m_isRange(i1, 0, LV_RANGE)); // 2bs
+		errorCase(!m_isRange(i2, 0, LV_RANGE)); // 2bs
 
 		PutLv(lasti1, i1);
 		PutLv(lasti2, i2);
@@ -261,6 +261,8 @@ int main(int argc, char **argv)
 	char *reportFile;
 	char *csvFile1;
 	char *csvFile2;
+
+	LOGPOS();
 
 	addFinalizer(Fnlz); // エラーダイアログ抑止！
 

@@ -23,7 +23,7 @@ static void GetAssumePrice(uint64 sec)
 	AsmBid = 999.9;
 	AsmLossFlag = 1;
 
-	file = xcout("C:\\tmp\\Fx\\%04u%02u%02u_USDJPY.csv", td.Y, td.M, td.D);
+	file = xcout("C:\\var\\Fx\\%04u%02u%02u_USDJPY.csv", td.Y, td.M, td.D);
 
 	if(existFile(file))
 	{
