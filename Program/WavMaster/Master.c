@@ -58,6 +58,7 @@ static void DoConv(char *rFile, char *wFile, char *reportFile)
 	uint index;
 	double totalLv = 0.0;
 	double borderLv;
+	double countLv = 0.0;
 	uint borderIndex;
 	double borderRate;
 	double changeRate;
@@ -138,24 +139,23 @@ static void DoConv(char *rFile, char *wFile, char *reportFile)
 	for(index = 0; index <= LV_RANGE; index++)
 		totalLv += Lvs[index];
 
-	borderLv = totalLv *= BORDER_RATE;
+	borderLv = totalLv * BORDER_RATE;
 
 	cout("totalLv: %f\n", totalLv);
 	cout("borderLv: %f\n", borderLv);
 
-	totalLv = 0.0;
-
 	for(index = 0; index < LV_RANGE; index++)
 	{
-		totalLv += Lvs[index];
+		countLv += Lvs[index];
 
-		if(borderLv < totalLv)
+		if(borderLv < countLv)
 			break;
 	}
 	borderIndex = index; // 0 ` LV_RANGE
 	borderRate = (double)borderIndex / LV_RANGE; // 0.0 ` 1.0
 	changeRate = DEST_RATE / borderRate;
 
+	cout("countLv: %f\n", countLv);
 	cout("borderIndex: %u\n", borderIndex);
 	cout("borderRate: %f\n", borderRate);
 	cout("changeRate: %f\n", changeRate);
@@ -238,6 +238,7 @@ outputReport:
 	writeLine_x(wfp, xcout("rowCount,%u", rowCount));
 	writeLine_x(wfp, xcout("totalLv,%f", totalLv));
 	writeLine_x(wfp, xcout("borderLv,%f", borderLv));
+	writeLine_x(wfp, xcout("countLv,%f", countLv));
 	writeLine_x(wfp, xcout("borderIndex,%u", borderIndex));
 	writeLine_x(wfp, xcout("borderRate,%f", borderRate));
 	writeLine_x(wfp, xcout("changeRate,%f", changeRate));
