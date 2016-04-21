@@ -28,15 +28,19 @@ RawData;
 
 static int AV_Return;
 
+/*
+	各行 11 バイト (改行を含むと 12 バイト) になるように 0 補填する。
+	NNNNN,NNNNN<改行>
+*/
 static void AddValue(FILE *wfp, uint value)
 {
 	if(Fmt.ChannelNum == 1) // monoral
 	{
-		writeLine_x(wfp, xcout("%u,%u", value, value));
+		writeLine_x(wfp, xcout("%05u,%05u", value, value));
 	}
 	else // stereo
 	{
-		writeToken_x(wfp, xcout("%u", value));
+		writeToken_x(wfp, xcout("%05u", value));
 		writeChar(wfp, AV_Return);
 
 		AV_Return ^= ',' ^ '\n';
@@ -149,6 +153,9 @@ void readWAVFileToCSVFile(char *rFile, char *wFile)
 	fileClose(wfp);
 
 	lastWAV_Hz = Fmt.Hz;
+
+	errorCase(AV_Return != ','); // ? ステレオ左音で終わってる。
+	errorCase(getFileSize(wFile) % 12 != 0); // 2bs
 }
 void writeWAVFileFromCSVFile(char *rFile, char *wFile, uint hz)
 {
