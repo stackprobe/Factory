@@ -28,11 +28,11 @@
 
 	zip.exe /O OUT-DIR PROJ-NAME
 
-		... OUT-DIR -> OUT-DIR \\ { PROJ-NAME } .zip
+		... OUT-DIR -> OUT-DIR \ { PROJ-NAME } .zip
 
 	zip.exe /G OUT-DIR PROJ-NAME
 
-		... OUT-DIR -> OUT-DIR \\ { PROJ-NAME } _v123.zip
+		... OUT-DIR -> OUT-DIR \ { PROJ-NAME } _v123.zip
 
 	zip.exe /X ZIP-FILE OUT-DIR
 
@@ -43,6 +43,13 @@
 			OUT-DIR に既存のファイルがあったら上書きする。
 			OUT-DIR の既存のファイルに対してディレクトリの上書きは失敗する。error(); にならない。
 			OUT-DIR の既存のディレクトリに対してファイルの上書きは失敗する。error(); にならない。
+
+	zip.exe /U ZIP-FILE OUT-DIR
+
+		... /X と同じだが、こちらは...
+			不要な最上位階層を除去する！
+			OUT-DIR の既存のファイルに対してディレクトリの上書きは成功する。
+			OUT-DIR の既存のディレクトリに対してファイルの上書きは成功する。
 */
 
 #include "C:\Factory\Common\all.h"
@@ -388,7 +395,7 @@ int main(int argc, char **argv)
 		memFree(rootDir);
 		return;
 	}
-	if(argIs("/O")) // C:\\Dev のリリース向け
+	if(argIs("/O")) // C:\Dev のリリース向け
 	{
 		char *outDir;
 		char *projName;
@@ -418,7 +425,7 @@ int main(int argc, char **argv)
 		memFree(midZipFile);
 		return;
 	}
-	if(argIs("/G")) // C:\\Dev のゲーム（バージョン番号付きアプリ）のリリース向け
+	if(argIs("/G")) // C:\Dev のゲーム（バージョン番号付きアプリ）のリリース向け
 	{
 		char *outDir;
 		char *projName;
@@ -472,6 +479,35 @@ int main(int argc, char **argv)
 
 		memFree(zipFile);
 		memFree(outDir);
+		return;
+	}
+	if(argIs("/U"))
+	{
+		char *zipFile;
+		char *outDir;
+		char *midDir;
+		char *midDirBk;
+
+		zipFile = makeFullPath(nextArg());
+		outDir  = makeFullPath(nextArg());
+
+		errorCase(!existFile(zipFile));
+
+		if(!existDir(outDir))
+			createPath(outDir, 'D');
+
+		midDir = makeFreeDir();
+		midDirBk = strx(midDir);
+
+		ExtractZipFile(zipFile, midDir);
+		midDir = IntoIfOneDir(midDir);
+		moveDir(midDir, outDir);
+		recurRemoveDir(midDirBk);
+
+		memFree(zipFile);
+		memFree(outDir);
+		memFree(midDir);
+		memFree(midDirBk);
 		return;
 	}
 }
