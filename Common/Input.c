@@ -338,7 +338,7 @@ char *coInputLinePrn(void (*printFunc)(char *jbuffer))
 				}
 				buffer[0] = '\0';
 			}
-			else if(chr == 0x08 || chr == 0x1f53) // BS || DELETE
+			else if(chr == 0x08) // BS
 			{
 				char *mp = buffer;
 				char *p;
