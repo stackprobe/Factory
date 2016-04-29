@@ -1,5 +1,7 @@
 #include "all.h"
 
+static int TextInputMode;
+
 /*
 	シフトキーを押しながら何かキーを押したとき _kbhit() が 0 を返し続けることがある。
 	キーバッファに追加される前で詰まっているように見える。
@@ -27,7 +29,7 @@ static int TrueGetKey(void)
 {
 	int key = _getch();
 
-	if((key == 0x00 || key == 0xe0) && TrueHasKey())
+	if(!TextInputMode && (key == 0x00 || key == 0xe0) && TrueHasKey())
 	{
 		key ^= 0xff; // to 0xff?? or 0x1f??
 		key <<= 8;
@@ -299,6 +301,7 @@ char *coInputLinePrn(void (*printFunc)(char *jbuffer))
 	int inputEnded = 0;
 
 	coil_esc = 0;
+	TextInputMode = 1;
 
 	for(; ; )
 	{
@@ -350,6 +353,7 @@ char *coInputLinePrn(void (*printFunc)(char *jbuffer))
 				buffer = addChar(buffer, chr);
 		}
 	}
+	TextInputMode = 0;
 	cout("\n");
 	memFree(buffer);
 	return jbuffer;
@@ -362,11 +366,13 @@ char *dropPath(void)
 	clearKey();
 	cout("<D>");
 	ungetKey(getKey());
+	TextInputMode = 1;
 
 	while(hasKey())
 	{
 		path = addChar(path, getKey());
 	}
+	TextInputMode = 0;
 	trimEdge(path, '"');
 
 	if(path[0] && !path[1]) // ? 打鍵した。
@@ -374,6 +380,7 @@ char *dropPath(void)
 		cout("</D>\n");
 		goto cancelled;
 	}
+	cout("%s</D>\n", path);
 
 	// フルパスかどうか
 	if(!m_isalpha(path[0]) ||
@@ -384,7 +391,6 @@ char *dropPath(void)
 	if(!existPath(path))
 		error();
 
-	cout("%s</D>\n", path);
 	return path;
 
 cancelled:
