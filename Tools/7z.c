@@ -3,7 +3,7 @@
 
 	- - -
 
-	7z.exe [7z-FILE]
+	7z.exe [7z-FILE | ZIP-FILE]
 */
 
 #include "C:\Factory\Common\all.h"
