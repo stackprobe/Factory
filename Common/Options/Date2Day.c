@@ -239,3 +239,42 @@ int IsFairFileStamp(uint64 stamp)
 {
 	return stamp == MillisToFileStamp(FileStampToMillis(stamp));
 }
+/*
+	DateToDay.java
+*/
+uint IDate2Day(uint date)
+{
+	uint y;
+	uint m;
+	uint d;
+
+	d = date % 100;
+	date /= 100;
+	m = date % 100;
+	date /= 100;
+	y = date;
+
+	if(y < 1000 || 9999 < y ||
+		m < 1 || 12 < m ||
+		d < 1 || 31 < d
+		)
+		return 0; // dummy day
+
+	return Date2Day(y, m, d);
+}
+uint Day2IDate(uint day)
+{
+	uint y;
+	uint m;
+	uint d;
+
+	Day2Date(day, &y, &m, &d);
+
+	if(y < 1000 || 9999 < y ||
+		m < 1 || 12 < m ||
+		d < 1 || 31 < d
+		)
+		return 10000101; // dummy date
+
+	return y * 10000 + m * 100 + d;
+}

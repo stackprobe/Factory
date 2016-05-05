@@ -472,8 +472,13 @@ void createPath(char *path, int mode)
 
 	path = makeFullPath(path);
 	cout("CREATE_PATH_%c: [%s]\n", mode, path);
+
+	if(isAbsRootDir(path))
+		goto endFunc;
+
 	escapeYen(path);
 	ptkns = tokenize(path, '/');
+	errorCase(getCount(ptkns) < 2); // 2bs?
 	memFree(path);
 	path = strx(getLine(ptkns, 0));
 
@@ -511,8 +516,9 @@ void createPath(char *path, int mode)
 	default:
 		error();
 	}
-	memFree(path);
 	releaseDim(ptkns, 1);
+endFunc:
+	memFree(path);
 }
 
 char *getCwd(void)

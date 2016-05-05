@@ -438,19 +438,19 @@ static void AllNodeFltr(XNode_t *node)
 
 // ---- Write_Main ----
 
-static FILE *FP;
+static FILE *Fp;
 
 static void WrIndent(uint count)
 {
 	for(; count; count--)
-		writeChar(FP, '\t');
+		writeChar(Fp, '\t');
 }
 static void WriteNode(XNode_t *node, uint indent)
 {
 	if(getCount(node->Children))
 	{
 		WrIndent(indent);
-		writeLine_x(FP, xcout("<%s>", node->Name));
+		writeLine_x(Fp, xcout("<%s>", node->Name));
 
 		// éqóvëfÇèoóÕ
 		{
@@ -468,21 +468,21 @@ static void WriteNode(XNode_t *node, uint indent)
 			TrimSpace(text);
 
 			WrIndent(indent + 1);
-			writeLine_x(FP, xcout("%s", text));
+			writeLine_x(Fp, xcout("%s", text));
 
 			memFree(text);
 		}
 		WrIndent(indent);
-		writeLine_x(FP, xcout("</%s>", node->Name));
+		writeLine_x(Fp, xcout("</%s>", node->Name));
 	}
 	else
 	{
 		WrIndent(indent);
 
 		if(*node->Text)
-			writeLine_x(FP, xcout("<%s>%s</%s>", node->Name, c_EncEntity(node->Text), node->Name));
+			writeLine_x(Fp, xcout("<%s>%s</%s>", node->Name, c_EncEntity(node->Text), node->Name));
 		else
-			writeLine_x(FP, xcout("<%s/>", node->Name));
+			writeLine_x(Fp, xcout("<%s/>", node->Name));
 	}
 }
 
@@ -515,10 +515,10 @@ cout("Encoding_UTF8: %d\n", Encoding_UTF8); // test
 }
 void writeXMLFile(char *file, XNode_t *root)
 {
-	FP = fileOpen(file, "wt");
-	writeLine_x(FP, xcout("<?xml version=\"1.0\" encoding=\"Shift_JIS\"?>"));
+	Fp = fileOpen(file, "wt");
+	writeLine_x(Fp, xcout("<?xml version=\"1.0\" encoding=\"Shift_JIS\"?>"));
 	WriteNode(root, 0);
-	fileClose(FP);
+	fileClose(Fp);
 }
 
 // _x
