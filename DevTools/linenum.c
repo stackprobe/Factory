@@ -1,3 +1,26 @@
+/*
+	linenum 開始行番号 終了行番号 ファイル名
+
+		開始行番号 ... 1 ～ ファイルの行数
+		終了行番号 ... 1 ～ ファイルの行数
+
+		開始行から終了行までを表示する。
+
+		ex. linenum 100 200 a.txt   ... a.txt の 100 行目 ～ 200 行目を表示する。
+
+	linenum ファイル名
+
+		指定されたファイルの行数を表示する。
+
+		ex. linenum a.txt   ... a.txt の 行数を表示する。
+
+	linenum
+
+		標準入力の行数を表示する。
+
+		ex. dir /b | linenum   ... カレントディレクトリのファイルとディレクトリの数を表示する。
+*/
+
 #include "C:\Factory\Common\all.h"
 
 static int SkipLine(FILE *fp)
