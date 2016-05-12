@@ -121,8 +121,21 @@ static void BackupFile(char *file)
 	cout("< %s\n", file);
 	cout("> %s\n", oldFile);
 
+#if 1 // 別のプロセスが使用中です。対策 @ 2016.5.11
+	for(; ; ) {
+		coExecute_x(xcout("DEL \"%s\"", oldFile));
+		if(!existFile(oldFile)) break;
+		coSleep(2000);
+	}
+	for(; ; ) {
+		coExecute_x(xcout("REN \"%s\" \"%s\"", file, getLocal(oldFile)));
+		if(!existFile(file) && existFile(oldFile)) break;
+		coSleep(2000);
+	}
+#else
 	coExecute_x(xcout("DEL \"%s\"", oldFile));
 	coExecute_x(xcout("REN \"%s\" \"%s\"", file, getLocal(oldFile)));
+#endif
 
 	memFree(oldFile);
 }
