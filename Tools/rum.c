@@ -1,12 +1,13 @@
 /*
 	シンプル・バージョン管理プログラム
 
-	rum.exe [/F | /Q] [対象ディレクトリ]
+	rum.exe [/F] [/Q] [/-COLL] [対象ディレクトリ]
 
 		/F ... バイナリ除外モード(Factoryモード) == .obj .exe C:\\Factory\\tmp を無視
 		/Q ... 問い合わせを抑止する。
+		/-COLL ... コリジョン検査を行わない。多少速くなるかも。
 
-	rum.exe [/E | /T | /HA | /H | /1A | /1 | /R | /D] [.rum_ディレクトリ]
+	rum.exe [/E | /T | /HA | /H | /1A | /1 | /R] [/D] [.rum_ディレクトリ]
 
 		/E  ... コメント編集
 		/T  ... ごみファイル削除
@@ -719,6 +720,7 @@ endFunc:
 
 static int WithoutExeObjMode;
 static int QuietMode;
+static int NoCheckCollision;
 
 static void Commit(char *dir) // dir: バックアップ元、存在するルートディレクトリではないディレクトリの絶対パス
 {
@@ -893,7 +895,7 @@ static void Commit(char *dir) // dir: バックアップ元、存在するルートディレクトリ
 			if(existFile(stockFile))
 			{
 				cout("* %s\n", file);
-				errorCase(!isSameFile(file, stockFile)); // ? コリジョン発生
+				errorCase(!NoCheckCollision && !isSameFile(file, stockFile)); // ? コリジョン発生
 			}
 			else
 			{
@@ -1008,60 +1010,78 @@ static void Rum(char *dir)
 }
 int main(int argc, char **argv)
 {
+readArgs:
 	if(argIs("/E")) // Edit comment
 	{
 		EditCommentMode = 1;
+		goto readArgs;
 	}
 	if(argIs("/F")) // without .exe and .obj (Factory mode)
 	{
 		WithoutExeObjMode = 1;
+		goto readArgs;
 	}
 	if(argIs("/T")) // Trim store-dir
 	{
 		TrimStoreDirMode = 1;
+		goto readArgs;
 	}
 	if(argIs("/HA")) // file History from All revision
 	{
 		FileHistoryMode = 1;
+		goto readArgs;
 	}
 	if(argIs("/H")) // file History from last revision
 	{
 		FileHistoryMode = 1;
 		FileHistoryMode_FromLastRevision = 1;
+		goto readArgs;
 	}
 	if(argIs("/1A")) // last file from All revision
 	{
 		FileHistoryMode = 1;
 		FileHistoryMode_LastFileOnly = 1;
+		goto readArgs;
 	}
 	if(argIs("/1")) // last file from last revision
 	{
 		FileHistoryMode = 1;
 		FileHistoryMode_FromLastRevision = 1;
 		FileHistoryMode_LastFileOnly = 1;
+		goto readArgs;
 	}
 	if(argIs("/R")) // Remove last revison if no modifications
 	{
 		RemoveLastRevIfNoModMode = 1;
+		goto readArgs;
 	}
 	if(argIs("/RR")) // qrum 用
 	{
 		RemoveLastRevIfNoModMode = 1;
 		InputDirExt = "rum";
+		goto readArgs;
 	}
 	if(argIs("/RRR")) // qrum 用
 	{
 		RemoveLastRevIfNoModMode = 1;
 		RemoveLastRevIfNoModMode_QuietMode = 1;
 		InputDirExt = "rum";
+		goto readArgs;
 	}
 	if(argIs("/Q")) // Quiet mode
 	{
 		QuietMode = 1;
+		goto readArgs;
 	}
 	if(argIs("/D")) // restore free Dir mode
 	{
 		RestoreFreeDirMode = 1;
+		goto readArgs;
+	}
+	if(argIs("/-COLL"))
+	{
+		NoCheckCollision = 1;
+		goto readArgs;
 	}
 	Rum(hasArgs(1) ? nextArg() : c_dropDir());
 
