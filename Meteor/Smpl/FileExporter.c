@@ -1,3 +1,8 @@
+/*
+	FileExporter.exe /E 入力ディレクトリ [出力ディレクトリ]
+	FileExporter.exe /I 入力ディレクトリ
+*/
+
 #include "C:\Factory\Common\all.h"
 #include "..\FileExporter.h"
 
@@ -8,8 +13,11 @@ int main(int argc, char **argv)
 		char *rDir;
 		char *wDir;
 
-		rDir = makeFullPath(nextArg());
-		wDir = makeFullPath(nextArg());
+		rDir = nextArg();
+		wDir = hasArgs(1) ? nextArg() : makeFreeDir();
+
+		rDir = makeFullPath(rDir);
+		wDir = makeFullPath(wDir);
 
 		cout("< %s\n", rDir);
 		cout("> %s\n", wDir);
