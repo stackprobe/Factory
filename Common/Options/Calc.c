@@ -12,7 +12,7 @@
 		除算     -> 1 / (radix ^ basement) 端数切り捨て, 0 への丸め
 		基数変換 -> 1 / (radix ^ basement) 端数切り捨て, 0 への丸め
 		べき乗   -> 丸め無し
-		べき乗根 -> 1 / (radix ^ basement) 端数切り捨て, 0 への丸め
+		べき根   -> 1 / (radix ^ basement) 端数切り捨て, 0 への丸め
 		対数     -> 1 / 1                  端数切り捨て, 0 への丸め
 
 	特殊な解
@@ -31,7 +31,7 @@ uint calcRadix = 10; // RADIX_MIN ～ RADIX_MAX
 uint calcBasement;
 uint calcBracketedDecimalMin = 36; // 0 ～ 36
 
-int calcLastMarume; // ? 最後の「除算｜基数変換｜べき乗根｜対数」で丸めを行った。
+int calcLastMarume; // ? 最後の「除算｜基数変換｜べき根｜対数」で丸めを行った。
 
 /*
 	特に根拠の無い上限
