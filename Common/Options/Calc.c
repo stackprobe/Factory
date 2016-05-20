@@ -522,6 +522,7 @@ char *changeRadixCalcLine(char *line, uint radix, uint newRadix, uint basement) 
 	sint newSign;
 	uint index;
 	uint shiftCnt;
+	int marumeBk;
 
 	errorCase(!line);
 	errorCase(radix < RADIX_MIN || RADIX_MAX < radix);
@@ -551,6 +552,7 @@ char *changeRadixCalcLine(char *line, uint radix, uint newRadix, uint basement) 
 		calcOperand_t *tmpOp;
 
 		op = divCalc(tmpOp = op, one);
+		marumeBk = calcLastMarume;
 
 		releaseCalcOperand(one);
 		releaseCalcOperand(tmpOp);
@@ -599,7 +601,7 @@ char *changeRadixCalcLine(char *line, uint radix, uint newRadix, uint basement) 
 	line = makeLineCalcOperand(newOp);
 
 //	calcRadix = newRadix;
-	calcLastMarume = getSize(op->Figures);
+	calcLastMarume = marumeBk;
 
 	releaseCalcOperand(newRdxOp);
 	releaseCalcOperand(newOp);
