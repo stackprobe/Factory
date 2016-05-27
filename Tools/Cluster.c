@@ -22,6 +22,7 @@
 		/OW  ... 出力先が存在する場合上書きする。
 		/K   ... チェックのみ
 		/E-  ... 自動判定で C:\\xxx にクラスタファイルを展開したとき、配下に一つもファイルが無かった場合はエクスプローラを開かず、出力先も削除する。
+		/E-+ ... /E- の後、FSqDiv /T DIR 10 もする。
 
 		/M
 			クラスタファイル生成
@@ -233,6 +234,7 @@ static int RestoreSameDirMode;
 static int RestoreFreeDirMode;
 static int NoCheckClusterMode;
 static int UnopenEmptyClusterMode;
+static int FSqDivMode;
 
 static void AutoActCluster(char *path)
 {
@@ -284,6 +286,10 @@ static void AutoActCluster(char *path)
 			{
 				LOGPOS();
 				recurRemoveDir(fdir);
+			}
+			else if(FSqDivMode)
+			{
+				coExecute_x(xcout("C:\\Factory\\Tools\\FSqDiv.exe /T \"%s\" 5", dir));
 			}
 			else
 			{
@@ -352,6 +358,12 @@ readArgs:
 	if(argIs("/E-"))
 	{
 		UnopenEmptyClusterMode = 1;
+		goto readArgs;
+	}
+	if(argIs("/E-+"))
+	{
+		UnopenEmptyClusterMode = 1;
+		FSqDivMode = 1;
 		goto readArgs;
 	}
 

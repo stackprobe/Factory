@@ -1,10 +1,39 @@
 /*
-	FSqDiv.exe ディレクトリ 分割数
+	FSqDiv.exe [/T] ディレクトリ 分割数
+
+		/T ... タイムスタンプを名前順に設定する。
 */
 
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Progress.h"
 
+static int T_Mode;
+
+static void Do_T(char *dir)
+{
+	autoList_t *files;
+	char *file;
+	uint index;
+	time_t tCount = time(NULL);
+
+	LOGPOS();
+	files = lssFiles(dir);
+	LOGPOS();
+	reverseElements(files);
+
+	foreach(files, file, index)
+	{
+		uint64 fTime = toValue64(c_makeCompactStamp(getStampDataTime(tCount))) * 1000;
+
+		cout("< %I64u\n", fTime);
+		cout("> %s\n", file);
+
+		setFileStamp(file, fTime, fTime, fTime);
+		tCount--;
+	}
+	LOGPOS();
+	releaseDim(files, 1);
+}
 static void FSqDiv(char *srcdir, uint divnum)
 {
 	char *destRootDir = makeFreeDir();
@@ -40,6 +69,9 @@ static void FSqDiv(char *srcdir, uint divnum)
 	}
 	ProgressEnd(0);
 
+	if(T_Mode)
+		Do_T(destRootDir);
+
 	coExecute_x(xcout("START %s", destRootDir));
 
 	memFree(destRootDir);
@@ -50,6 +82,13 @@ int main(int argc, char **argv)
 {
 	char *dir;
 	uint divnum;
+
+readArgs:
+	if(argIs("/T"))
+	{
+		T_Mode = 1;
+		goto readArgs;
+	}
 
 	dir = makeFullPath(nextArg());
 	divnum = toValue(nextArg());
