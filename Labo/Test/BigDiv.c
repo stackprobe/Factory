@@ -1,28 +1,124 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Random.h"
 
-#define NUMB_MAX 1000
+#define NUMB_SCALE 100
 
-static uchar Numer[NUMB_MAX];
-static uint NumerSize;
-static uchar Denom[NUMB_MAX];
-static uint DenomSize;
-static uchar Ans[NUMB_MAX];
-static uint AnsSize;
+static void Print(autoBlock_t *a, char *title)
+{
+	uint index;
+
+	cout("%s=", title);
+
+	for(index = getSize(a); index; index--)
+		cout("%02x", getByte(a, index - 1));
+
+	cout("\n");
+}
+static void Norm(autoBlock_t *a)
+{
+	while(getSize(a) && getByte(a, getSize(a) - 1) == 0)
+		unaddByte(a);
+}
+static void Copy(autoBlock_t *src, autoBlock_t *dest)
+{
+	setSize(dest, getSize(src));
+	memcpy(directGetBuffer(dest), directGetBuffer(src), getSize(src));
+}
+static int Comp(autoBlock_t *a, autoBlock_t *b)
+{
+	uint index;
+
+	Norm(a); // 2bs?
+	Norm(b); // 2bs?
+
+	if(getSize(a) < getSize(b))
+		return -1;
+
+	if(getSize(b) < getSize(a))
+		return 1;
+
+	for(index = getSize(a); index; index--)
+	{
+		if(getByte(a, index - 1) < getByte(b, index - 1))
+			return -1;
+
+		if(getByte(b, index - 1) < getByte(a, index - 1))
+			return 1;
+	}
+	return 0;
+}
+
+static autoBlock_t *Numer;
+static autoBlock_t *Denom;
+static autoBlock_t *Ans;
+static autoBlock_t *Rem;
 
 // ---- div ----
 
-static void DD_Add(uint64 b, uint aPos)
+static autoBlock_t *Dml;
+
+static void DD_Add(uint64 val, uint index)
 {
-	error(); // TODO, AnsSize 更新忘れずに！
+	while(val != 0)
+	{
+		val += refByte(Ans, index);
+		putByte(Ans, index, val & 0xffui64);
+		val >>= 8;
+		index++;
+	}
 }
-static void DD_Red(uint64 b, uint aPos)
+static void DD_Mul(uint64 b)
 {
-	error(); // TODO, NumerSize 更新忘れずに！
+	uint index;
+
+	errorCase((b & 0xff00000000000000ui64) != 0);
+
+	setSize(Dml, 0);
+
+	for(index = 0; index < getSize(Denom); index++)
+	{
+		uint64 val = getByte(Denom, index) * b;
+		uint c = index;
+
+		while(val != 0)
+		{
+			val += refByte(Dml, c);
+			putByte(Dml, c, val & 0xffui64);
+			val >>= 8;
+			c++;
+		}
+	}
 }
-static void DD_RedTry(void)
+static void DD_Red(uint aPos)
 {
-	error(); // TODO
+	uint index;
+	uint val = 1;
+
+	errorCase(Comp(Rem, Dml) < 0);
+
+	for(index = 0; index < getSize(Dml); index++)
+	{
+		val += getByte(Rem, index + aPos);
+		val += 0xff - getByte(Dml, index);
+		setByte(Rem, index + aPos, val & 0xff);
+		val >>= 8;
+	}
+	if(!val)
+	{
+		index += aPos;
+
+		while(!val)
+		{
+			val += getByte(Rem, index);
+			val += 0xff;
+			setByte(Rem, index, val & 0xff);
+			val >>= 8;
+			index++;
+		}
+	}
+	errorCase(val != 1);
+
+	Norm(Rem);
 }
 static void DoDiv(void)
 {
@@ -32,112 +128,147 @@ static void DoDiv(void)
 	uint64 d;
 	uint64 a;
 
-	errorCase(!m_isRange(NumerSize, 8, NUMB_MAX));
-	errorCase(!m_isRange(DenomSize, 4, NUMB_MAX));
-	errorCase(NumerSize < DenomSize); // 0 余り Numer になることが分かっているので除外
-	errorCase(!Numer[NumerSize - 1]);
-	errorCase(!Denom[DenomSize - 1]);
+	Norm(Numer);
+	Norm(Denom);
 
-	AnsSize = NumerSize - DenomSize + 1;
-	memset(Ans, 0x00, AnsSize);
+	errorCase(getSize(Numer) <= 8);
+	errorCase(getSize(Denom) <= 4);
 
-	di = DenomSize - 2;
-	d = (uint64)Denom[di + 0] << 0 |
-		(uint64)Denom[di + 1] << 8;
+	Copy(Numer, Rem);
 
-	for(; ; )
+	di = getSize(Denom) - 2;
+	d = (uint64)getByte(Denom, di + 0) << 0 |
+		(uint64)getByte(Denom, di + 1) << 8;
+	d++;
+
+	while(getSize(Denom) + 6 <= getSize(Rem))
 	{
-		ni = NumerSize;
-		n = 0;
-
-		while(di < ni && (n & 0xff00000000000000ui64) == 0)
-		{
-			ni--;
-			n <<= 8;
-			n |= Numer[ni];
-		}
+		ni = getSize(Rem) - 8;
+		n = (uint64)getByte(Rem, ni + 0) <<  0 |
+			(uint64)getByte(Rem, ni + 1) <<  8 |
+			(uint64)getByte(Rem, ni + 2) << 16 |
+			(uint64)getByte(Rem, ni + 3) << 24 |
+			(uint64)getByte(Rem, ni + 4) << 32 |
+			(uint64)getByte(Rem, ni + 5) << 40 |
+			(uint64)getByte(Rem, ni + 6) << 48 |
+			(uint64)getByte(Rem, ni + 7) << 56;
 
 		a = n / d;
 
-		if(a == 0)
+		DD_Add(a, ni - di);
+		DD_Mul(a);
+		DD_Red(ni - di);
+	}
+	while(getSize(Denom) <= getSize(Rem))
+	{
+		ni = di;
+		n = (uint64)refByte(Rem, ni + 0) <<  0 |
+			(uint64)refByte(Rem, ni + 1) <<  8 |
+			(uint64)refByte(Rem, ni + 2) << 16 |
+			(uint64)refByte(Rem, ni + 3) << 24 |
+			(uint64)refByte(Rem, ni + 4) << 32 |
+			(uint64)refByte(Rem, ni + 5) << 40 |
+			(uint64)refByte(Rem, ni + 6) << 48 |
+			(uint64)refByte(Rem, ni + 7) << 56;
+
+		a = n / d;
+
+		if(a == 0ui64)
 			break;
 
-		DD_Add(a, ni - di);
-		DD_Red(a, ni - di);
+		DD_Add(a, 0);
+		DD_Mul(a);
+		DD_Red(0);
 	}
-
-	DD_RedTry();
+	if(Comp(Denom, Rem) < 0)
+	{
+		DD_Add(1, 0);
+		Copy(Denom, Dml);
+		DD_Red(0);
+	}
 }
 
 // ---- test ----
 
-static uchar Op1[NUMB_MAX];
-static uint Op1Size;
-static uchar Op2[NUMB_MAX];
-static uint Op2Size;
-static uchar Wk1[NUMB_MAX];
-static uint Wk1Size;
+static autoBlock_t *Tml;
 
-static void DT_Print(uchar *data, uint size, char *title)
+static void DT_Init(autoBlock_t *dest, uint scale)
 {
-	uint index;
+	uint c;
 
-	cout("%s=", title);
+	setSize(dest, 0);
 
-	for(index = size; index; index--)
-		cout("%02x", data[index - 1]);
+	for(c = 0; c < scale; c++)
+		addByte(dest, mt19937_rnd(256));
 
-	cout("\n");
+	addByte(dest, mt19937_rnd(255) + 1);
 }
 static void DT_Mul(void)
 {
-	error(); // TODO, Wk1 = Op2 * Ans
+	uint ai;
+	uint bi;
+
+	setSize(Tml, 0);
+
+	for(ai = 0; ai < getSize(Ans); ai++)
+	for(bi = 0; bi < getSize(Denom); bi++)
+	{
+		uint val = getByte(Ans, ai) * getByte(Denom, bi);
+		uint index = ai + bi;
+
+		while(val)
+		{
+			val += refByte(Tml, index);
+			putByte(Tml, index, val & 0xff);
+			val >>= 8;
+			index++;
+		}
+	}
 }
 static void DT_Add(void)
 {
-	error(); // TODO, Wk1 += Numer
-}
-static void DT_Check(void)
-{
-	error(); // TODO, Wk1 != Op1 -> error
+	uint index;
+
+	for(index = 0; index < getSize(Rem); index++)
+	{
+		uint val = getByte(Rem, index);
+		uint c = index;
+
+		while(val)
+		{
+			val += refByte(Tml, c);
+			putByte(Tml, c, val & 0xff);
+			val >>= 8;
+			c++;
+		}
+	}
 }
 static void DoTest(void)
 {
-	uint index;
+	uint ns = mt19937_range(8, NUMB_SCALE);
+	uint ds = mt19937_range(4, NUMB_SCALE);
 
-	LOGPOS();
+	DT_Init(Numer, ns);
+	DT_Init(Denom, ds);
+	setSize(Ans, 0);
+	setSize(Rem, 0);
 
-	for(index = 0; index < NUMB_MAX; index++)
-	{
-		Op1[index] = mt19937_rnd(256);
-		Op2[index] = mt19937_rnd(256);
-	}
-	do
-	{
-		Op1Size = mt19937_range(8, NUMB_MAX);
-		Op2Size = mt19937_range(4, NUMB_MAX);
-	}
-	while(Op1Size < Op2Size);
-
-	while(!Op1[Op1Size - 1]) Op1[Op1Size - 1] = mt19937_rnd(256);
-	while(!Op2[Op2Size - 1]) Op2[Op2Size - 1] = mt19937_rnd(256);
-
-	memcpy(Numer, Op1, NUMB_MAX);
-	NumerSize = Op1Size;
-	memcpy(Denom, Op2, NUMB_MAX);
-	DenomSize = Op2Size;
-
-	DT_Print(Numer, NumerSize, "N");
-	DT_Print(Denom, DenomSize, "D");
+	Print(Numer, "N");
+	Print(Denom, "D");
 
 	DoDiv();
 
-	DT_Print(Ans, AnsSize, "A");
-	DT_Print(Numer, NumerSize, "R");
+	Print(Ans, "A");
+	Print(Rem, "R");
+
+	errorCase(Comp(Denom, Rem) <= 0); // ★★★現状では、これに引っかかる気がする！
 
 	DT_Mul();
+	Print(Tml, "t");
 	DT_Add();
-	DT_Check();
+	Print(Tml, "T");
+
+	errorCase(Comp(Numer, Tml) != 0);
 
 	cout("OK!\n");
 }
@@ -146,7 +277,18 @@ static void DoTest(void)
 
 int main(int argc, char **argv)
 {
-	while(waitKey(0) != 0x1b)
+	mt19937_init();
+
+	Numer = newBlock();
+	Denom = newBlock();
+	Ans = newBlock();
+	Rem = newBlock();
+
+	Dml = newBlock();
+
+	Tml = newBlock();
+
+	while(!waitKey(0))
 	{
 		DoTest();
 	}
