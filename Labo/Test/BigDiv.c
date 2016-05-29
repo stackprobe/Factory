@@ -1,8 +1,6 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Random.h"
 
-#define NUMB_SCALE 100
-
 static void Print(autoBlock_t *a, char *title)
 {
 	uint index;
@@ -180,8 +178,10 @@ static void DoDiv(void)
 		DD_Mul(a);
 		DD_Red(0);
 	}
-	if(Comp(Denom, Rem) < 0)
+	while(Comp(Denom, Rem) < 0)
 	{
+		LOGPOS(); // ここに入るか？１回は入ることがありそう。２回以上は無い？
+
 		DD_Add(1, 0);
 		Copy(Denom, Dml);
 		DD_Red(0);
@@ -243,10 +243,10 @@ static void DT_Add(void)
 		}
 	}
 }
-static void DoTest(void)
+static void DoTest(uint scale)
 {
-	uint ns = mt19937_range(8, NUMB_SCALE);
-	uint ds = mt19937_range(4, NUMB_SCALE);
+	uint ns = mt19937_range(8, scale);
+	uint ds = mt19937_range(4, scale);
 
 	DT_Init(Numer, ns);
 	DT_Init(Denom, ds);
@@ -261,7 +261,7 @@ static void DoTest(void)
 	Print(Ans, "A");
 	Print(Rem, "R");
 
-	errorCase(Comp(Denom, Rem) <= 0); // ★★★現状では、これに引っかかる気がする！
+	errorCase(Comp(Denom, Rem) <= 0);
 
 	DT_Mul();
 	Print(Tml, "t");
@@ -290,6 +290,12 @@ int main(int argc, char **argv)
 
 	while(!waitKey(0))
 	{
-		DoTest();
+		DoTest(10);
+		DoTest(30);
+		DoTest(100);
+		DoTest(300);
+		DoTest(1000);
+		DoTest(3000);
+		DoTest(10000);
 	}
 }
