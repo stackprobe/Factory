@@ -178,7 +178,7 @@ static void DoDiv(void)
 		DD_Mul(a);
 		DD_Red(0);
 	}
-	while(Comp(Denom, Rem) < 0)
+	while(Comp(Denom, Rem) <= 0)
 	{
 		LOGPOS(); // ‚±‚±‚É“ü‚é‚©H‚P‰ñ‚Í“ü‚é‚±‚Æ‚ª‚ ‚è‚»‚¤B‚Q‰ñˆÈã‚Í–³‚¢H
 
