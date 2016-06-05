@@ -157,10 +157,20 @@ static void EditComment(char *storeDir)
 
 	revisions = editLines_x(revisions);
 
-	cout("続行？\n");
+	for(; ; )
+	{
+		int key;
 
-	if(clearGetKey() == 0x1b)
-		goto cancelled;
+		cout("続行？[Enter/Esc]\n");
+
+		key = clearGetKey();
+
+		if(key == 0x1b)
+			goto cancelled;
+
+		if(key == 0x0d)
+			break;
+	}
 
 	foreach(revisions, line, index)
 	{
