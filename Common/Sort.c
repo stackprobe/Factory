@@ -1,9 +1,9 @@
 /*
-	                       order                                   —p“r
-	-------------------------------------------------------------------
-	rapidSortLines                        strcmp (-> simpleComp)
-	rapidSortJLinesICase   mbs_stricmp -> strcmp (-> simpleComp)
-	sortJLinesICase        mbs_stricmp                             lsŒn‚Ì–ß‚è’l
+	                       order                                        —p“r
+	------------------------------------------------------------------------
+	rapidSortLines                        strcmp (-> simpleComp ”pŽ~)
+	rapidSortJLinesICase   mbs_stricmp -> strcmp (-> simpleComp ”pŽ~)
+	sortJLinesICase        mbs_stricmp                                  lsŒn‚Ì–ß‚è’l
 */
 
 #include "all.h"

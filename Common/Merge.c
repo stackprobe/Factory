@@ -287,7 +287,7 @@ void distinctJLinesICase(autoList_t *lines, autoList_t *result, autoList_t *othe
 
 autoList_t *autoDistinctLines(autoList_t *lines) // lines: äJï˙Ç∑ÇÈÅB
 {
-	rapidSortLines(lines); // strcmp -> simpleComp
+	rapidSortLines(lines); // strcmp2 == strcmp (-> simpleComp îpé~)
 
 	{
 	autoList_t *result = newList();
@@ -303,7 +303,7 @@ autoList_t *autoDistinctLines(autoList_t *lines) // lines: äJï˙Ç∑ÇÈÅB
 }
 autoList_t *autoDistinctJLinesICase(autoList_t *lines) // lines: äJï˙Ç∑ÇÈÅB
 {
-	rapidSortJLinesICase(lines); // strcmp3 == mbs_stricmp -> strcmp -> simpleComp
+	rapidSortJLinesICase(lines); // strcmp3 == mbs_stricmp -> strcmp (-> simpleComp îpé~)
 
 	{
 	autoList_t *result = newList();

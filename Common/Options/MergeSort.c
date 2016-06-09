@@ -269,5 +269,6 @@ void MergeSortText(char *srcFile, char *destFile, uint partSize)
 }
 void MergeSortTextICase(char *srcFile, char *destFile, uint partSize)
 {
-	MergeSortTextComp(srcFile, destFile, strcmp3, partSize); // strcmp3 <- rapidSort() に渡すので mbs_stricmp じゃマズい。
+//	MergeSortTextComp(srcFile, destFile, strcmp3, partSize); // strcmp3 <- rapidSort() に渡すので mbs_stricmp じゃマズい。<- マズくない。@ 2016.6.8
+	MergeSortTextComp(srcFile, destFile, mbs_stricmp, partSize);
 }
