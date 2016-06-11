@@ -30,6 +30,8 @@ Bfi;
 
 /*
 	フォーマットエラー -> error();
+
+	ret: 解放するには、releaseDim_BR(bmp, 2, NULL);
 */
 autoList_t *readBMPFile(char *file)
 {
