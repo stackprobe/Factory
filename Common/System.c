@@ -226,8 +226,12 @@ uint64 nextCommonCount(void)
 	}
 	else // カウンタ初期化
 	{
+#if 1
+		counter = (uint64)time(NULL) * 1000;
+#else //old
 		counter = toValue64Digits_xc(makeCompactStamp(NULL), hexadecimal) << 8;
 		// ex. 1980/01/02 02:03:55 -> 0x1980010202035500
+#endif
 	}
 	errorCase(counter == UINT64MAX); // カンスト..有り得ないだろうけど..
 
@@ -273,7 +277,7 @@ static char *c_GetTempSuffix(void)
 		counter++;
 	}
 	else
-		ret = xcout("%I64x", nextCommonCount());
+		ret = xcout("%I64u", nextCommonCount());
 
 	return ret;
 }
