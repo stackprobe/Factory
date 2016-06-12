@@ -227,6 +227,10 @@ static char *Table[][2] =
 
 	"swf",  "application/x-shockwave-flash",
 	"webm", "video/webm",
+
+	// 2016.6.13 ’Ç‰Á
+
+	"mp4", "video/mp4",
 };
 
 #define DEF_CONTENTTYPE "application/octet-stream"
