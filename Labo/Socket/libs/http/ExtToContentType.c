@@ -230,7 +230,10 @@ static char *Table[][2] =
 
 	// 2016.6.13 ’Ç‰Á
 
+	"m4a", "audio/aac",
+	"m4v", "video/mp4",
 	"mp4", "video/mp4",
+	"ogv", "video/ogg",
 };
 
 #define DEF_CONTENTTYPE "application/octet-stream"
