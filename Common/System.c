@@ -11,6 +11,14 @@ int lastSystemRet; // ? ! コマンドが正常に実行出来て 0 を返した。
 
 void execute(char *commandLine)
 {
+	if(startsWithICase(commandLine, "TITLE ") && strchr(commandLine + 6, '&')) // zantei, パス名に '&' が使えることを忘れてた対策
+	{
+		commandLine = strx(commandLine);
+		replaceChar(commandLine + 6, '&', '?');
+		lastSystemRet = system(commandLine);
+		memFree(commandLine);
+		return;
+	}
 	lastSystemRet = system(commandLine);
 }
 void execute_x(char *commandLine)
