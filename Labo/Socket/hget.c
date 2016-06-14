@@ -51,7 +51,7 @@ static void Progress_Wrap(void)
 
 	if(eqIntPulseSec(1, NULL))
 	{
-		execute_x(xcout("TITLE hget - %u", callcnt));
+		cmdTitle_x(xcout("hget - %u", callcnt));
 		Progress();
 	}
 }
@@ -275,7 +275,7 @@ retry:
 		LOGPOS();
 	}
 
-	execute("TITLE hget - done");
+	cmdTitle("hget - done");
 
 	if(retval)
 	{

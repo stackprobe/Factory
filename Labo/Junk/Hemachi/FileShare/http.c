@@ -354,7 +354,7 @@ int main(int argc, char **argv)
 		portno = toValue(nextArg());
 	}
 
-	execute("TITLE Hemachi FileShare http Server");
+	cmdTitle("Hemachi FileShare http Server");
 
 	HFS_StoreDir = nextArg();
 	HFS_StoreDir = makeFullPath(HFS_StoreDir);

@@ -18,11 +18,11 @@ static autoList_t *ReqIdHistory;
 
 static void SetTitle(void)
 {
-	execute_x(xcout("TITLE nrunServer - P:%u %s", P_PortNo, RootDir));
+	cmdTitle_x(xcout("nrunServer - P:%u %s", P_PortNo, RootDir));
 }
 static void UnsetTitle(void)
 {
-	execute("TITLE nrunServer");
+	cmdTitle("nrunServer");
 }
 
 static int Perform(char *prmFile, char *ansFile)

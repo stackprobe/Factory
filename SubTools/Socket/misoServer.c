@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 {
 	uint portno = hasArgs(1) ? toValue(nextArg()) : 58946;
 
-	execute_x(xcout("TITLE misoServer - %u", portno));
+	cmdTitle_x(xcout("misoServer - %u", portno));
 	sockServer(Perform, portno, 3, 0, Idle);
-	execute("TITLE misoServer");
+	cmdTitle("misoServer");
 }

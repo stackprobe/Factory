@@ -211,7 +211,7 @@ readArgs:
 
 	FromPatternsList = discerpHeaders(ForwardTable);
 
-	execute("TITLE mailDivide");
+	cmdTitle("mailDivide");
 
 	SockStartup();
 	RecvLoop();

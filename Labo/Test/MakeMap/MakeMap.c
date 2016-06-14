@@ -205,7 +205,7 @@ static void MM_FindMaximum(void)
 		{
 			uint count;
 
-			execute_x(xcout("TITLE MakeMap - %u %u", x, y));
+			cmdTitle_x(xcout("MakeMap - %u %u", x, y));
 
 			PaintMap(szMap, x, y, 1, nuttaCell);
 			count = MapGetCount(szMap, nuttaCell);

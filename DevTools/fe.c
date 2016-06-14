@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 			}
 			cout("中止するにはエスケープキーを押す。\n");
 		}
-		execute_x(xcout("TITLE fe - %u (%u)", index, getCount(selfiles) - index));
+		cmdTitle_x(xcout("fe - %u (%u)", index, getCount(selfiles) - index));
 		cout("%s\n", file);
 		editTextFile(file);
 	}

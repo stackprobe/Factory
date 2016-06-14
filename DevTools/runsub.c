@@ -20,7 +20,7 @@ static void Run(char *file)
 	char *absPath = c_makeFullPath(file);
 
 	cout("runsub: %s\n", absPath);
-	execute_x(xcout("TITLE runsub - %s", absPath));
+	cmdTitle_x(xcout("runsub - %s", absPath));
 
 	BlueFish_Lock();
 	{
@@ -31,7 +31,7 @@ static void Run(char *file)
 	}
 	BlueFish_Unlock();
 
-	execute("TITLE runsub");
+	cmdTitle("runsub");
 	cout("runsub: %s done\n", absPath);
 
 	if(TimeWaitMillis)

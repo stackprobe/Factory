@@ -69,7 +69,7 @@ static void TryRecv(uint m0, uint m1, uint m2)
 			millis = 0;
 
 		if(pulseSec(1, NULL))
-			execute_x(xcout("TITLE Recv - %u", millis));
+			cmdTitle_x(xcout("Recv - %u", millis));
 	}
 
 	M_Set(M_MUTEX_0 + m0, 0);
@@ -110,5 +110,5 @@ int main(int argc, char **argv)
 	DoRecv();
 	M_Fnlz();
 
-	execute("TITLE Recv");
+	cmdTitle("Recv");
 }

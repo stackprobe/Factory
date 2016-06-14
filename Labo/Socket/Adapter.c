@@ -225,9 +225,9 @@ readArgs:
 			mutexRelease(MutexHandle);
 		}
 
-		execute_x(xcout("TITLE Adapter - %u", portno));
+		cmdTitle_x(xcout("Adapter - %u", portno));
 		sockServer(Perform, portno, connectmax, uploadmax, Idle);
-		execute("TITLE Adapter");
+		cmdTitle("Adapter");
 
 		if(handleWaitForMillis(MutexHandle, 2000))
 		{

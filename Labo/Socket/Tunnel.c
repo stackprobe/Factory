@@ -145,7 +145,7 @@ readArgs:
 		goto readArgs;
 	}
 
-	execute_x(xcout("TITLE Tunnel - %u to %s:%u (connectmax:%u)", portno, FwdDomain, FwdPort, connectmax));
+	cmdTitle_x(xcout("Tunnel - %u to %s:%u (connectmax:%u)", portno, FwdDomain, FwdPort, connectmax));
 
 	cout("ŠJŽn\n");
 	SockStartup();

@@ -35,7 +35,7 @@ static uint MD5Counter;
 static void MD5Interrupt(void)
 {
 	MD5Counter++;
-	execute_x(xcout("TITLE ncp - MD5 %u", MD5Counter));
+	cmdTitle_x(xcout("ncp - MD5 %u", MD5Counter));
 }
 
 static char *ServerDomain = "localhost";
@@ -63,7 +63,7 @@ static int Idle(void)
 		uint64 anscnt = GetSockFileCounter(sockClientStatus.AnsFile);
 		uint64 ansmax = GetSockFileCntrMax(sockClientStatus.AnsFile);
 
-		execute_x(xcout("TITLE ncp - %I64u / %I64u (%u) %I64u / %I64u (%u)"
+		cmdTitle_x(xcout("ncp - %I64u / %I64u (%u) %I64u / %I64u (%u)"
 			,prmcnt
 			,prmmax
 			,(uint)((prmcnt * 100ui64) / prmmax)
@@ -131,7 +131,7 @@ static void CR_Fnlz(void)
 	if(PrmFile) removeFile(PrmFile);
 	if(AnsFile) removeFile(AnsFile);
 
-	execute("TITLE ncp");
+	cmdTitle("ncp");
 
 	if(RequestAborted)
 	{
@@ -151,7 +151,7 @@ static void WriteToPrmFp(uchar *buffer, uint size)
 
 	if(2 <= size)
 	{
-		execute_x(xcout("TITLE ncp - %I64u bytes wrote", IOCounter));
+		cmdTitle_x(xcout("ncp - %I64u bytes wrote", IOCounter));
 	}
 	writeBinaryBlock(PrmFp, gndBlockVar(buffer, size, gab));
 }
@@ -165,7 +165,7 @@ static void ReadFromAnsFp(uchar *buffer, uint size)
 
 		if(2 <= size)
 		{
-			execute_x(xcout("TITLE ncp - %I64u bytes read", IOCounter));
+			cmdTitle_x(xcout("ncp - %I64u bytes read", IOCounter));
 		}
 		memcpy(buffer, directGetBuffer(block), size);
 	}
@@ -181,7 +181,7 @@ static void ReadEndToStream(FILE *rfp, FILE *wfp)
 	while(buffer = readBinaryStream(rfp, 128 * 1024 * 1024))
 	{
 		IOCounter += (uint64)getSize(buffer);
-		execute_x(xcout("TITLE ncp - %I64u bytes copied", IOCounter));
+		cmdTitle_x(xcout("ncp - %I64u bytes copied", IOCounter));
 		writeBinaryBlock_x(wfp, buffer);
 	}
 }

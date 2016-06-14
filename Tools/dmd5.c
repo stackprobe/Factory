@@ -74,10 +74,10 @@ static autoList_t *GetHashes(char *targetDir)
 	}
 	foreach(&files, file, index)
 	{
-		execute_x(xcout("TITLE dmd5 - %u / %u", index, getCount(&files)));
+		cmdTitle_x(xcout("dmd5 - %u / %u", index, getCount(&files)));
 		addElement(hashes, (uint)xcout("%s %s", c_md5_makeHexHashFile(file), file));
 	}
-	execute("TITLE dmd5");
+	cmdTitle("dmd5");
 	unaddCwd();
 	memFree(targetDir);
 

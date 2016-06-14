@@ -462,7 +462,7 @@ readArgs:
 
 	GetCounter("test"); // カウンタ取得テスト
 
-	execute("TITLE mailForward");
+	cmdTitle("mailForward");
 
 	SockStartup();
 	RecvLoop();

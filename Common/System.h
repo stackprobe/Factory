@@ -11,6 +11,8 @@ void execute(char *commandLine);
 void execute_x(char *commandLine);
 void coExecute(char *commandLine);
 void coExecute_x(char *commandLine);
+void cmdTitle(char *title);
+void cmdTitle_x(char *title);
 void sleep(uint millis);
 void coSleep(uint millis);
 void noop(void);

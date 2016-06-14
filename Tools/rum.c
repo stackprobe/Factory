@@ -267,7 +267,7 @@ static void EraseLostEntries(char *storeDir)
 			}
 
 			if(pulseSec(2, NULL))
-				execute_x(xcout("TITLE rum - E / %u(%u)_%u(%u)", entryIndex, getCount(entries), index, getCount(revisions)));
+				cmdTitle_x(xcout("rum - E / %u(%u)_%u(%u)", entryIndex, getCount(entries), index, getCount(revisions)));
 		}
 		if(entriesModified)
 		{
@@ -278,7 +278,7 @@ static void EraseLostEntries(char *storeDir)
 		releaseDim(entries, 1);
 		unaddCwd();
 	}
-	execute("TITLE rum");
+	cmdTitle("rum");
 
 	unaddCwd();
 	unaddCwd();
@@ -332,12 +332,12 @@ static void TrimStoreDir(char *storeDir)
 			}
 
 			if(pulseSec(2, NULL))
-				execute_x(xcout("TITLE rum - %u / %u(%u)_%u(%u)", getCount(stockFiles), lineIndex, getCount(stocks), index, getCount(revisions)));
+				cmdTitle_x(xcout("rum - %u / %u(%u)_%u(%u)", getCount(stockFiles), lineIndex, getCount(stocks), index, getCount(revisions)));
 		}
 		memFree(filesFile);
 		releaseDim(stocks, 1);
 	}
-	execute("TITLE rum");
+	cmdTitle("rum");
 
 	addCwd(DIR_FILES);
 
@@ -977,7 +977,7 @@ static char *InputDirExt;
 
 static void Rum(char *dir)
 {
-	execute("TITLE rum");
+	cmdTitle("rum");
 
 	dir = makeFullPath(dir);
 	cout("ëŒè€: %s\n", dir);

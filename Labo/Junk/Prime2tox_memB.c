@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 	for(count = 3; count <= rootCntMax; count += 2)
 	{
 		if(pulseSec(1, NULL))
-			execute_x(xcout("TITLE Prime2tox_memB - %I64u ‚ ‚½‚è‚Ü‚ÅŒvŽZÏ‚Ý...", count * count));
+			cmdTitle_x(xcout("Prime2tox_memB - %I64u ‚ ‚½‚è‚Ü‚ÅŒvŽZÏ‚Ý...", count * count));
 
 		if(!refBit(SosuMap, count / 2))
 		{
@@ -82,7 +82,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	execute("TITLE Prime2tox_memB - ŒvŽZŠ®—¹ o—Í’†...");
+	cmdTitle("Prime2tox_memB - ŒvŽZŠ®—¹ o—Í’†...");
 	DispSosu();
 
 	releaseBitList(SosuMap);

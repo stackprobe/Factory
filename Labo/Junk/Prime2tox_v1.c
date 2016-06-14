@@ -67,7 +67,7 @@ int main(int argc, char **argv)
 	for(value = 11; value <= max; value += 2)
 	{
 		if((value & 0x3ffe) == 0)
-			execute_x(xcout("TITLE Prime2tox - %I64u", value));
+			cmdTitle_x(xcout("Prime2tox - %I64u", value));
 
 		if(
 			value % 3 != 0 &&
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 			)
 			AddSosu(value);
 	}
-	execute("TITLE Prime2tox - Completed");
+	cmdTitle("Prime2tox - Completed");
 	DispSosu();
 
 	fileClose(SosuFp);

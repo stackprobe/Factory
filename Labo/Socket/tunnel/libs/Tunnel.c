@@ -119,7 +119,7 @@ readArgs:
 	errorCase(!ConnectMax); // Ç«ÇÃÇ›Çø sockServerTh() Ç≈ÉGÉâÅ[Ç…Ç»ÇÈÇØÇ«..
 	errorCase(IMAX < DOSTimeoutSec);
 
-	execute_x(xcout("TITLE %s from localhost:%u to %s:%u C:%u %s", title, PortNo, FwdHost, FwdPortNo, ConnectMax, cb_getTitleSuffix ? cb_getTitleSuffix() : ""));
+	cmdTitle_x(xcout("%s from localhost:%u to %s:%u C:%u %s", title, PortNo, FwdHost, FwdPortNo, ConnectMax, cb_getTitleSuffix ? cb_getTitleSuffix() : ""));
 
 	UserPerform = userPerform;
 	sockServerTh(TunnelPerformTh, PortNo, ConnectMax, IdleTh);

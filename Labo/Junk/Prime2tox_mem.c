@@ -122,7 +122,7 @@ int main(int argc, char **argv)
 	{
 		if(count < 100 || count % 100 == 0)
 			if(pulseSec(1, NULL))
-				execute_x(xcout("TITLE Prime2tox - %u ‚ ‚½‚è‚Ü‚ÅŒvŽZÏ‚Ý...", count * count));
+				cmdTitle_x(xcout("Prime2tox - %u ‚ ‚½‚è‚Ü‚ÅŒvŽZÏ‚Ý...", count * count));
 
 		if(SosuMap[count])
 		{
@@ -132,7 +132,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	execute("TITLE Prime2tox - ŒvŽZŠ®—¹ o—Í’†...");
+	cmdTitle("Prime2tox - ŒvŽZŠ®—¹ o—Í’†...");
 	DispSosu();
 
 	memFree(SosuMap);

@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 		uint i;
 		uint d;
 
-		execute_x(xcout("TITLE hashToHash - %u", r));
+		cmdTitle_x(xcout("hashToHash - %u", r));
 		t = m;
 
 		for(c = W; c; c--)
@@ -47,6 +47,6 @@ int main(int argc, char **argv)
 		}
 		cout("\n");
 	}
-	execute("TITLE hashToHash");
+	cmdTitle("hashToHash");
 	memFree(map);
 }

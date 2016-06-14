@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 		upFileSize = toValue(nextArg());
 	}
 
-	execute_x(xcout("TITLE %s (%u) %u", domain, portno, upFileSize));
+	cmdTitle_x(xcout("%s (%u) %u", domain, portno, upFileSize));
 
 	mt19937_init32(upFileSize);
 	MakeRandBinaryFile(upFile, upFileSize);

@@ -486,7 +486,7 @@ readArgs:
 	KeyTableList = cphrCreateKeyTableList(KeyBundle, KeyWidth);
 	StopServerEventHandle = eventOpen(ssen);
 
-	execute_x(xcout("TITLE crypTunnel - %u to %s:%u (connectmax:%u)", portno, FwdDomain, FwdPort, connectmax));
+	cmdTitle_x(xcout("crypTunnel - %u to %s:%u (connectmax:%u)", portno, FwdDomain, FwdPort, connectmax));
 
 	cout("ŠJŽn\n");
 	SockStartup();

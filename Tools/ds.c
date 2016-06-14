@@ -17,14 +17,14 @@ static void DirSize(char *dir)
 
 	foreach(paths, path, index)
 	{
-		execute_x(xcout("TITLE ds - %s (%u / %u)", path, index, getCount(paths)));
+		cmdTitle_x(xcout("ds - %s (%u / %u)", path, index, getCount(paths)));
 
 		size = ( index < dircnt ? getDirSize : getFileSize )(path);
 		totalSize += size;
 
 		addElement(lines, (uint)xcout("%020I64u%s", size, getLocal(path)));
 	}
-	execute("TITLE ds");
+	cmdTitle("ds");
 	rapidSortLines(lines);
 
 	foreach(lines, line, index)

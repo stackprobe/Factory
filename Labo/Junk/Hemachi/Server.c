@@ -574,7 +574,7 @@ int main(int argc, char **argv)
 		0
 		));
 
-	execute("TITLE Hemachi Server");
+	cmdTitle("Hemachi Server");
 	cout("Hemachi Server Start\n");
 
 #if 1

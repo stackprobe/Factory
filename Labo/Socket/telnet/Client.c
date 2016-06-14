@@ -52,17 +52,17 @@ static void Perform(int sock)
 //		if(sock_hasKey())
 		{
 			int chr;
-			
-			execute("TITLE Client - stdin");
+
+			cmdTitle("Client - stdin");
 			chr = getKey();
-			execute("TITLE Client");
+			cmdTitle("Client");
 
 			if(chr == 0x1b)
 				break;
 
 			if(chr == 'I')
 			{
-				execute("TITLE Client - Input");
+				cmdTitle("Client - Input");
 
 				ab_addLine_x(sq, coInputLine());
 
@@ -70,15 +70,15 @@ static void Perform(int sock)
 				addByte(sq, '\r');
 				addByte(sq, '\n');
 
-				execute("TITLE Client");
+				cmdTitle("Client");
 			}
 			if(chr == 'i')
 			{
-				execute("TITLE Client - Input (no cr-lf)");
+				cmdTitle("Client - Input (no cr-lf)");
 
 				ab_addLine_x(sq, coInputLine());
 
-				execute("TITLE Client");
+				cmdTitle("Client");
 			}
 		}
 	}

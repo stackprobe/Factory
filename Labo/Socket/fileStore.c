@@ -585,7 +585,7 @@ readArgs:
 		goto readArgs;
 	}
 
-	execute_x(xcout("TITLE fileStore %u (%s)", portno, httpRecvRequestHostValue ? httpRecvRequestHostValue : "*"));
+	cmdTitle_x(xcout("fileStore %u (%s)", portno, httpRecvRequestHostValue ? httpRecvRequestHostValue : "*"));
 
 	if(FileLock)
 		httpMultiPartContentLenMax = 0;

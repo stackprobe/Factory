@@ -81,7 +81,7 @@ static void Expand(uint prn_accur)
 	{
 		if(eqIntPulseSec(2, NULL))
 		{
-			execute_x(xcout("TITLE Trigon - %u %u", prn_accur, index));
+			cmdTitle_x(xcout("Trigon - %u %u", prn_accur, index));
 		}
 		ExpandOnce(index);
 	}
@@ -163,7 +163,7 @@ static void Trigon(uint accur)
 		Expand(accur);
 		accur--;
 	}
-	execute("TITLE Trigon");
+	cmdTitle("Trigon");
 	DispAngles();
 
 	releaseDim(RateList, 1);

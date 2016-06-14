@@ -158,7 +158,7 @@ int main(int argc, char **argv)
 		ConnectMax = toValue(nextArg());
 	}
 
-	execute_x(xcout("TITLE Tunnel from localhost:%u to %s:%u C:%u", PortNo, FwdHost, FwdPortNo, ConnectMax));
+	cmdTitle_x(xcout("Tunnel from localhost:%u to %s:%u C:%u", PortNo, FwdHost, FwdPortNo, ConnectMax));
 
 	sockServerTh(PerformTh, PortNo, ConnectMax, IdleTh);
 

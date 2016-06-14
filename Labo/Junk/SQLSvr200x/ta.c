@@ -136,10 +136,10 @@ readArgs:
 
 			foreach(tblnms, tblnm, tblnmidx)
 			{
-				execute_x(xcout("TITLE ta - BACKUP %u / %u", tblnmidx, getCount(tblnms)));
+				cmdTitle_x(xcout("ta - BACKUP %u / %u", tblnmidx, getCount(tblnms)));
 				BackupTable(dir, tblnm);
 			}
-			execute("TITLE ta");
+			cmdTitle("ta");
 			releaseDim(tblnms, 1);
 
 			removeFile(midFile);
@@ -157,7 +157,7 @@ readArgs:
 
 		foreach(files, file, index)
 		{
-			execute_x(xcout("TITLE ta - RESTORE %u / %u", index, getCount(files)));
+			cmdTitle_x(xcout("ta - RESTORE %u / %u", index, getCount(files)));
 
 			if(!_stricmp("CSV", getExt(file)))
 			{
@@ -172,7 +172,7 @@ readArgs:
 				memFree(tblnm);
 			}
 		}
-		execute("TITLE ta");
+		cmdTitle("ta");
 		releaseDim(files, 1);
 		return;
 	}
@@ -204,7 +204,7 @@ readArgs:
 
 		foreach(tblnms, tblnm, tblnmidx)
 		{
-			execute_x(xcout("TITLE ta - SCHEMA %u / %u", tblnmidx, getCount(tblnms)));
+			cmdTitle_x(xcout("ta - SCHEMA %u / %u", tblnmidx, getCount(tblnms)));
 
 			TA_GetTableSchema(tblnm, midFile);
 			colcnt = (uint)TR_SelectWhereAnd_cxxxc(midFile, tokenize("$", '\1'), tokenize("", '\1'), tokenize("TYPE_NAME LENGTH COLUMN_NAME", ' '), schFile);

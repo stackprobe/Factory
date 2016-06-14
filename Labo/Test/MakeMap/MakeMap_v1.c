@@ -299,7 +299,7 @@ LOGPOS();
 	for(fromIsland = 0; fromIsland < IslandCount; fromIsland++)
 	for(destIsland = 0; destIsland < IslandCount; destIsland++)
 	{
-		execute_x(xcout("TITLE MakeMap - %u %u", fromIsland, destIsland));
+		cmdTitle_x(xcout("MakeMap - %u %u", fromIsland, destIsland));
 
 		if(fromIsland != destIsland)
 		{

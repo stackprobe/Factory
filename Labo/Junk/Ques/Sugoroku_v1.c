@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 		for(c = 0; c < testcnt; c++)
 		{
 			if(c % 1000 == 0)
-				execute_x(xcout("TITLE Sugoroku - %d", c));
+				cmdTitle_x(xcout("Sugoroku - %d", c));
 
 			if(TestOnce_VeryFar())
 				enactcnt++;
@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 		for(c = 0; c < testcnt; c++)
 		{
 			if(c % 1000 == 0)
-				execute_x(xcout("TITLE Sugoroku - %d", c));
+				cmdTitle_x(xcout("Sugoroku - %d", c));
 
 			if(TestOnce(d))
 				enactcnt++;

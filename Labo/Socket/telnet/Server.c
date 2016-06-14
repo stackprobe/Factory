@@ -35,7 +35,7 @@ static void *CreateInfo(void)
 	cout("%08x Ú‘±\n", i);
 
 	ConnectCount++;
-	execute_x(xcout("TITLE Server - Connect %u", ConnectCount));
+	cmdTitle_x(xcout("Server - Connect %u", ConnectCount));
 
 	i->RecvQueue = newBlock();
 	i->SendQueue = newBlock();
@@ -50,7 +50,7 @@ static void ReleaseInfo(void *vi)
 	cout("%08x Ø’f\n", i);
 
 	ConnectCount--;
-	execute_x(xcout("TITLE Server - Connect %u", ConnectCount));
+	cmdTitle_x(xcout("Server - Connect %u", ConnectCount));
 
 	DispRecvData(i);
 
@@ -91,7 +91,7 @@ static int Perform(int sock, void *vi)
 
 		if(chr == 'I')
 		{
-			execute("TITLE Server - Input");
+			cmdTitle("Server - Input");
 
 			ab_addLine_x(i->SendQueue, coInputLine());
 
@@ -99,7 +99,7 @@ static int Perform(int sock, void *vi)
 			addByte(i->SendQueue, '\r');
 			addByte(i->SendQueue, '\n');
 
-			execute("TITLE Server");
+			cmdTitle("Server");
 		}
 	}
 	return !i->Timeout || now() <= i->Timeout;

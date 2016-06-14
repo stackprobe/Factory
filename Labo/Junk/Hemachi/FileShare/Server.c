@@ -61,7 +61,7 @@ readArgs:
 		goto readArgs;
 	}
 
-	execute("TITLE Hemachi FileShare Server");
+	cmdTitle("Hemachi FileShare Server");
 
 	HFS_StoreDir = nextArg();
 	HFS_StoreDir = makeFullPath(HFS_StoreDir);

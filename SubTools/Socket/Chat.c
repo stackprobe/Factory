@@ -178,7 +178,7 @@ static void ChatMain(void)
 	{
 		uint c;
 
-		execute_x(xcout("TITLE Chat - ユーザー名=[%s] %u / %u", UserName, GetTLCount, GetTLPeriod));
+		cmdTitle_x(xcout("Chat - ユーザー名=[%s] %u / %u", UserName, GetTLCount, GetTLPeriod));
 		GetTLCount++;
 
 		if(GetTLPeriod < GetTLCount)
@@ -252,7 +252,7 @@ static void ChatMain(void)
 	}
 endLoop:
 	cout("終了\n");
-	execute("TITLE Chat");
+	cmdTitle("Chat");
 }
 
 // ----

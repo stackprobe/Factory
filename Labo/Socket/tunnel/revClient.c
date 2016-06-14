@@ -212,7 +212,7 @@ readArgs:
 	}
 	errorCase(hasArgs(1)); // 不明なオプション
 
-	execute_x(xcout("TITLE revClient from %s:%u to %s:%u C:%u P:%u", RevHost, RevPortNo, FwdHost, FwdPortNo, ConnectMax, PollingMillis));
+	cmdTitle_x(xcout("revClient from %s:%u to %s:%u C:%u P:%u", RevHost, RevPortNo, FwdHost, FwdPortNo, ConnectMax, PollingMillis));
 
 	SockStartup();
 	PollingMain();

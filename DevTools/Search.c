@@ -1,3 +1,13 @@
+/*
+	検索対象 == カレントの配下
+
+	Search.exe [/E SPEC-EXTS] [/I] [/T] [/SVN] FIND-PATTERN
+
+		SPEC-EXTS ... 検索対象の拡張子を '.' 区切りで記述する。
+
+			例) c.h.txt
+*/
+
 #include "C:\Factory\Common\all.h"
 
 static void FSeek(FILE *fp, uint64 index)

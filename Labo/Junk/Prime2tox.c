@@ -107,7 +107,7 @@ int main(int argc, char **argv)
 	for(count = 29; count <= rootCntMax; count++)
 	{
 		if(count < 100 || count % 100 == 0)
-			execute_x(xcout("TITLE Prime2tox - %I64u ‚È‚¤...", (uint64)count * count));
+			cmdTitle_x(xcout("Prime2tox - %I64u ‚È‚¤...", (uint64)count * count));
 
 		fileSeek(SosuFp, SEEK_SET, (uint64)count);
 
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	execute("TITLE Prime2tox - ŒvŽZ‚¨‚í‚è");
+	cmdTitle("Prime2tox - ŒvŽZ‚¨‚í‚è");
 	DispSosu();
 
 	memFree(SosuMap);

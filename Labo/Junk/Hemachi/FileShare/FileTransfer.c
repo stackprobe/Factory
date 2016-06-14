@@ -51,8 +51,8 @@ static int Idle(void)
 {
 	if(eqIntPulseSec(2, NULL))
 	{
-		execute_x(xcout(
-			"TITLE %s %u %I64u %.2f %.2f"
+		cmdTitle_x(xcout(
+			"%s %u %I64u %.2f %.2f"
 			,ProcCommand
 			,ScriptCounter
 			,TransferCounter

@@ -123,7 +123,7 @@ static void BackupDirs(autoList_t *targetDirs)
 		FILE *fp;
 		char *line;
 
-		execute_x(xcout("TITLE Backup - %u / %u (%u) -S=%d", index, getCount(targetDirs), getCount(targetDirs) - index, NoShutdownFlag));
+		cmdTitle_x(xcout("Backup - %u / %u (%u) -S=%d", index, getCount(targetDirs), getCount(targetDirs) - index, NoShutdownFlag));
 
 		fp = fileOpen(BATCH_BACKUP, "wt");
 
@@ -140,7 +140,7 @@ static void BackupDirs(autoList_t *targetDirs)
 		cout("コピーしました。\n");
 		cout("\n");
 	}
-	execute("TITLE Backup - done");
+	cmdTitle("Backup - done");
 }
 
 // ---- huge dir ----
