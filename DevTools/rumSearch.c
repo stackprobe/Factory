@@ -15,15 +15,65 @@
 #define DIR_REVISIONS "revisions"
 #define FILE_FILES "files.txt"
 
-static char *FindPattern;
+static char *FindPattern; // "" 不可
 static autoList_t *RumDirs;
 static autoList_t *SpecExts;
 static int IgnoreCase;
 static int TokenOnlyMode;
 
+// ---- read stream ---
+
+static FILE *RFp;
+static uint64 RIndex;
+
+static int ReadChar(uint64 index)
+{
+	int chr;
+
+	if(index != RIndex)
+	{
+		fileSeek(RFp, SEEK_SET, index);
+		RIndex = index;
+	}
+	chr = readChar(RFp);
+	RIndex++;
+	return chr;
+}
+
+// ----
+
+static void DispRange(sint64 start, sint64 end, sint64 fileSize)
+{
+	sint64 index;
+	int chr;
+
+	for(index = start; index <= end; index++)
+	{
+		if(0 <= index && index < fileSize)
+		{
+			chr = ReadChar((uint64)index);
+
+			if(0x20 <= chr && chr <= 0x7e || 0xa1 <= chr && chr <= 0xdf)
+			{} else
+			{
+				chr = 0xc0 | chr & 0x1f;
+			}
+		}
+		else
+			chr = '?'; // ファイルの先頭より前 || ファイルの終端より後
+
+		cout("%c", chr);
+	}
+}
 static void SearchEntFile(char *entFile, char *file, char *revision, char *rumDir)
 {
-	FILE *fp;
+	uint fndPtnSize;
+	uint64 fileSize;
+	uint64 linecnt;
+	uint64 fndcnt;
+	uint64 index;
+	uint matchcnt;
+	int chr;
 
 	if(SpecExts)
 	{
@@ -38,11 +88,87 @@ static void SearchEntFile(char *entFile, char *file, char *revision, char *rumDi
 		if(!ext) // ? SpecExts に一致する拡張子が無い -> 検索対象外
 			return;
 	}
-	fp = fileOpen(entFile, "rb");
+	fndPtnSize = strlen(FindPattern);
+	fileSize = getFileSize(entFile);
+	linecnt = 0;
+	fndcnt = 0;
+	RFp = fileOpen(entFile, "rb");
+	RIndex = 0;
 
-	// TODO
+	for(index = 0; index + fndPtnSize <= index; )
+	{
+		for(matchcnt = 0; matchcnt < fndPtnSize; matchcnt++)
+		{
+			int chr = ReadChar(index + matchcnt);
 
-	fileClose(fp);
+			if(!matchcnt && chr == '\n')
+				linecnt++;
+
+			if(IgnoreCase)
+				chr = m_tolower(chr);
+
+			if(chr != FindPattern[matchcnt])
+				break;
+		}
+		if(matchcnt == fndPtnSize) // ? 一致した。
+		{
+			if(TokenOnlyMode)
+			{
+				if(0 < index) // ? 一致した場所がファイルの先頭ではない。
+				{
+					chr = ReadChar(index - 1);
+
+					if('\x20' < chr)
+						goto notMatch;
+				}
+				if(index + fndPtnSize < fileSize) // ? 一致した場所がファイルの終端ではない。
+				{
+					chr = ReadChar(index + fndPtnSize);
+
+					if('\x20' < chr)
+						goto notMatch;
+				}
+			}
+
+			// Found
+
+			if(!fndcnt)
+			{
+				cout("%s\n", rumDir);
+				cout("[%s]\n", revision);
+				cout("%s\n", file);
+			}
+			fndcnt++;
+			index += fndPtnSize;
+
+			cout("%9I64u %9I64u ", fndcnt, linecnt);
+
+			{
+			sint64 ndx1b;
+			sint64 ndx1e;
+			sint64 ndx2b;
+			sint64 ndx2e;
+
+			ndx2b = index;
+			ndx2e = ndx2b + 28;
+			ndx1e = ndx2b - fndPtnSize - 1;
+			ndx1b = ndx1e - 28;
+
+			DispRange(ndx1b, ndx1e, (sint64)fileSize);
+			cout(" ");
+			DispRange(ndx2b, ndx2e, (sint64)fileSize);
+			cout("\n");
+			}
+		}
+		else
+		{
+		notMatch:
+			index++;
+		}
+	}
+	fileClose(RFp);
+	RFp = NULL;
+	RIndex = 0;
 }
 static void SearchRumDir(char *rumDir)
 {
@@ -125,6 +251,9 @@ readArgs:
 
 	FindPattern = nextArg();
 	errorCase(!*FindPattern);
+
+	if(IgnoreCase)
+		toLowerLine(FindPattern);
 
 	if(!RumDirs)
 	{
