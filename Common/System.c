@@ -34,7 +34,7 @@ void cmdTitle(char *title)
 }
 void cmdTitle_x(char *title)
 {
-	replaceChar(title, '&', '?');
+	unizChar(title, "%&<>^", '?');
 	execute_x(xcout("TITLE %s", title));
 	memFree(title);
 }
