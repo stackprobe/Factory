@@ -1,5 +1,5 @@
 /*
-	デフォルトの検索対象 == カレントの配下
+	デフォルトの検索対象 == カレントの配下にある全ての .rum ディレクトリ
 
 	Search.exe [/E SPEC-EXTS] [/I] [/T] [/R RUM-DIR]... FIND-PATTERN
 
@@ -20,6 +20,9 @@ static autoList_t *RumDirs;
 static autoList_t *SpecExts;
 static int IgnoreCase;
 static int TokenOnlyMode;
+
+static uint64 TotalCount;
+static uint64 TotalFileCount;
 
 // ---- read stream ---
 
@@ -97,12 +100,14 @@ static void SearchEntFile(char *entFile, char *file, char *revision, char *rumDi
 
 	for(index = 0; index + fndPtnSize <= fileSize; )
 	{
+		int newLineFlag = 0;
+
 		for(matchcnt = 0; matchcnt < fndPtnSize; matchcnt++)
 		{
 			int chr = ReadChar(index + matchcnt);
 
 			if(!matchcnt && chr == '\n')
-				linecnt++;
+				newLineFlag = 1;
 
 			if(IgnoreCase)
 				chr = m_tolower(chr);
@@ -134,10 +139,13 @@ static void SearchEntFile(char *entFile, char *file, char *revision, char *rumDi
 
 			if(!fndcnt)
 			{
+				TotalFileCount++;
+
 				cout("%s\n", rumDir);
 				cout("[%s]\n", revision);
 				cout("%s\n", file);
 			}
+			TotalCount++;
 			fndcnt++;
 			index += fndPtnSize;
 
@@ -165,6 +173,8 @@ static void SearchEntFile(char *entFile, char *file, char *revision, char *rumDi
 		notMatch:
 			index++;
 		}
+		if(newLineFlag)
+			linecnt++;
 	}
 	fileClose(RFp);
 	RFp = NULL;
@@ -172,25 +182,24 @@ static void SearchEntFile(char *entFile, char *file, char *revision, char *rumDi
 }
 static void SearchRumDir(char *rumDir)
 {
+	char *filesDir = combine(rumDir, DIR_FILES);
+	char *revisionsDir = combine(rumDir, DIR_REVISIONS);
 	autoList_t *dirs;
 	char *dir;
 	uint index;
 
-	addCwd(rumDir);
-
-	dirs = lsDirs(DIR_REVISIONS);
+	dirs = lsDirs(revisionsDir);
 	rapidSortLines(dirs);
 
 	foreach(dirs, dir, index)
 	{
+		char *filesFile = combine(dir, FILE_FILES);
 		char *revision = getLocal(dir);
 		autoList_t *lines;
 		char *line;
 		uint line_index;
 
-		addCwd(dir);
-		lines = readLines(FILE_FILES);
-		unaddCwd();
+		lines = readLines(filesFile);
 
 		foreach(lines, line, line_index)
 		{
@@ -203,17 +212,18 @@ static void SearchRumDir(char *rumDir)
 			line[32] = '\0';
 			hash = line;
 			file = line + 33;
-			entFile = combine(DIR_FILES, hash);
+			entFile = combine(filesDir, hash);
 
 			SearchEntFile(entFile, file, revision, rumDir);
 
 			memFree(entFile);
 		}
 		releaseDim(lines, 1);
+		memFree(filesFile);
 	}
 	releaseDim(dirs, 1);
-
-	unaddCwd();
+	memFree(revisionsDir);
+	memFree(filesDir);
 }
 int main(int argc, char **argv)
 {
@@ -265,7 +275,7 @@ readArgs:
 
 		foreach(dirs, dir, index)
 			if(!_stricmp(RUM_DIR_EXT, getExt(dir)))
-				addElement(dirs, (uint)strx(dir));
+				addElement(RumDirs, (uint)strx(dir));
 
 		releaseDim(dirs, 1);
 	}
@@ -279,4 +289,6 @@ readArgs:
 		foreach(RumDirs, dir, index)
 			SearchRumDir(dir);
 	}
+
+	cout("%9I64u %9I64u\n", TotalCount, TotalFileCount);
 }
