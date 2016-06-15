@@ -95,7 +95,7 @@ static void SearchEntFile(char *entFile, char *file, char *revision, char *rumDi
 	RFp = fileOpen(entFile, "rb");
 	RIndex = 0;
 
-	for(index = 0; index + fndPtnSize <= index; )
+	for(index = 0; index + fndPtnSize <= fileSize; )
 	{
 		for(matchcnt = 0; matchcnt < fndPtnSize; matchcnt++)
 		{
