@@ -23,6 +23,7 @@ static int TokenOnlyMode;
 
 static uint64 TotalCount;
 static uint64 TotalFileCount;
+static autoList_t *FoundRumDirs;
 
 // ---- read stream ---
 
@@ -140,6 +141,9 @@ static void SearchEntFile(char *entFile, char *file, char *revision, char *rumDi
 			if(!fndcnt)
 			{
 				TotalFileCount++;
+
+				if(findElement(FoundRumDirs, (uint)rumDir, simpleComp) == getCount(FoundRumDirs))
+					addElement(FoundRumDirs, (uint)rumDir);
 
 				cout("%s\n", rumDir);
 				cout("[%s]\n", revision);
@@ -282,6 +286,8 @@ readArgs:
 
 	sortJLinesICase(RumDirs);
 
+	FoundRumDirs = newList();
+
 	{
 		char *dir;
 		uint index;
@@ -291,4 +297,6 @@ readArgs:
 	}
 
 	cout("%9I64u %9I64u\n", TotalCount, TotalFileCount);
+
+	writeLines(FOUNDLISTFILE, FoundRumDirs);
 }
