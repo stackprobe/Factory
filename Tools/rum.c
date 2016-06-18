@@ -486,17 +486,14 @@ static void FileHistory(char *storeDir, int fromLastRevisionFlag, int lastFileOn
 
 		foreach(histRevs, stamp, index)
 		{
-			char *restoreDir = combine(restoreRootDir, stamp);
 			char *restoreFile;
 
-#if 1 // 直にファイル
-			restoreFile = xcout("%s_%s", restoreDir, outStock);
-#else // ディレクトリの下にファイル
-			restoreFile = combine(restoreDir, outStock);
-			createDir(restoreDir);
-#endif
+			if(lastFileOnly)
+				restoreFile = combine(restoreRootDir, outStock);
+			else
+				restoreFile = combine_cx(restoreRootDir, xcout("%s_%s", stamp, outStock));
+
 			copyFile(getLine(histHashes, index), restoreFile);
-			memFree(restoreDir);
 			memFree(restoreFile);
 		}
 		memFree(outStock);
