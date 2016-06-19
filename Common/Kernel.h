@@ -9,6 +9,7 @@ extern uint64 lastExVirtualFree;
 
 void updateMemory(void);
 
+extern uint64 lastDiskFree_User;
 extern uint64 lastDiskFree;
 extern uint64 lastDiskSize;
 

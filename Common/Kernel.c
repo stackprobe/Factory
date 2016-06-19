@@ -31,6 +31,7 @@ void updateMemory(void)
 	lastExVirtualFree = (uint64)ms.ullAvailExtendedVirtual;
 }
 
+uint64 lastDiskFree_User; // このプロセスが使用出来る空き領域サイズ
 uint64 lastDiskFree;
 uint64 lastDiskSize;
 
@@ -55,6 +56,7 @@ void updateDiskSpace(int drive)
 	{
 		error();
 	}
+	lastDiskFree_User = (uint64)a.LowPart | (uint64)a.HighPart << 32;
 	lastDiskFree = (uint64)f.LowPart | (uint64)f.HighPart << 32;
 	lastDiskSize = (uint64)t.LowPart | (uint64)t.HighPart << 32;
 }
