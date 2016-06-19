@@ -2,8 +2,6 @@
 	使用例
 
 		HTTPProxy 80 a 1 /f- "HTTPPSimpleSaver.exe C:\temp"
-		SmplProxy /f- "HTTPPSimpleSaver.exe /C image/ /C audio/ /C video/"
-		SmplProxy /f- "HTTPPSimpleSaver.exe /C image/"
 		SmplProxy /f- HTTPPSimpleSaver.exe
 */
 
@@ -14,8 +12,6 @@
 #define MARGIN_PTN "000"
 //#define MARGIN_PTN "0000"
 //#define MARGIN_PTN "00000"
-
-static autoList_t *OutContentPtns;
 
 static char *GetContentType(void)
 {
@@ -30,49 +26,26 @@ static char *GetContentType(void)
 
 	return ""; // not found
 }
-static int IsCorrectContentType(char *contentType)
+static char *GetOutExt(void)
 {
-	char *line;
-	uint index;
-
-	if(!OutContentPtns) // ? 未指定時 -> 何でもアリ
-		return 1;
-
-	foreach(OutContentPtns, line, index)
-		if(mbs_stristr(contentType, line))
-			return 1;
-
-	return 0;
+	return httpContentTypeToExt(GetContentType());
 }
 int main(int argc, char **argv)
 {
 	char *outDir;
 	char *outFile;
-	char *contentType;
 
-readArgs:
-	if(argIs("/C"))
-	{
-		if(!OutContentPtns)
-			OutContentPtns = newList();
-
-		addElement(OutContentPtns, (uint)nextArg());
-		goto readArgs;
-	}
 	if(hasArgs(1))
 		outDir = nextArg();
 	else
 		outDir = "C:\\temp";
 
 	LoadHttpDat(DEF_HTTP_DAT_FILE);
-	contentType = GetContentType();
 
-	if(IsCorrectContentType(contentType))
-	{
-		outFile = combine(outDir, xcout("%s" MARGIN_PTN ".%s", makeCompactStamp(NULL), httpContentTypeToExt(contentType)));
-		outFile = toCreatablePath(outFile, IMAX);
+	outFile = combine(outDir, xcout("%s" MARGIN_PTN ".%s", makeCompactStamp(NULL), GetOutExt()));
+	outFile = toCreatablePath(outFile, IMAX);
 
-		writeBinary(outFile, HttpDat.Body);
-	}
+	writeBinary(outFile, HttpDat.Body);
+
 	memFree(outFile);
 }
