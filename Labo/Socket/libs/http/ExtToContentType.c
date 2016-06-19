@@ -270,9 +270,9 @@ char *httpExtToContentType(char *ext)
 {
 	uint index;
 
-	for(index = 0; index < lengthof(Table); index++)
+	for(index = lengthof(Table); index; index--)
 	{
-		char **pair = Table[index];
+		char **pair = Table[index - 1];
 
 		if(!_stricmp(pair[0], ext))
 		{
@@ -290,9 +290,9 @@ char *httpContentTypeToExt(char *contentType)
 {
 	uint index;
 
-	for(index = 0; index < lengthof(Table); index++)
+	for(index = lengthof(Table); index; index--)
 	{
-		char **pair = Table[index];
+		char **pair = Table[index - 1];
 
 		if(startsWithICase(contentType, pair[1]))
 		{
