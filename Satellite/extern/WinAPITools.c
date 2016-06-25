@@ -336,28 +336,23 @@ int main(int argc, char **argv)
 	{
 		char *rFile;
 		char *wFile;
-		char *extractedFile;
 		uint hdl;
 
 		rFile = nextArg();
 		wFile = nextArg();
 
-		extractedFile = xcout("%s.1", wFile);
-
 		hdl = mutexLock("{aed96b6d-8a77-40fb-9285-9b75405fc3b2}");
 		{
-			if(!existFile(extractedFile))
+			if(_access(wFile, 0))
+//			if(!existFile(wFile))
 			{
 				createPath(wFile, 'X');
 				removeFileIfExist(wFile);
 				moveFile(rFile, wFile);
-
-				createFile(extractedFile);
 			}
 		}
 		mutexUnlock(hdl);
 
-		memFree(extractedFile);
 		return;
 	}
 	if(argIs("/MONITOR"))
