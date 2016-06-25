@@ -1,7 +1,8 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Collabo.h"
 
-#define REV_MAX 100
+#define REV_MAX 1000
+//#define REV_MAX 100 // è≠Ç»Ç¢ãCÇ™ÇµÇΩÅB@ 2016.6.26
 
 #define GAME_ORDER_FILE "order.txt"
 #define GAME_TITLE_FILE "title.txt"

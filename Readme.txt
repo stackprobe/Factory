@@ -12,7 +12,7 @@ Cで書いたツールとライブラリの寄せ集めです。
 --------
 
 Windows 7 Home Premium
-Visual C++ 2008 Express Edition
+Visual C++ 2008 Express Edition (きっと Visual C++ 2010 Express Edition でも可)
 
 システムドライブ = C
 
@@ -24,7 +24,7 @@ Visual C++ 2008 Express Edition
 
 	C:\1, C:\2, C:\3, ... C:\999
 
-	★ビルド手順内の fcrlf がこのパスを生成し、zz がこれらのパスを削除します。
+	★ビルド手順中の fcrlf がこのパスを生成し、zz がこれらのパスを削除します。
 
 
 ビルド手順
@@ -38,18 +38,18 @@ Visual C++ 2008 Express Edition
 
 	OpenConsole.bat を実行する。
 
-3. 以下のコマンドを実行する。（全てコンパイル・リンク）
+3. 全てコンパイル・リンク（以下のコマンドを実行する）
 
 	> cd build\_cx
 	> rebuild
 	> ff
 	> cx **
 
-4. 以下のコマンドを実行する。（改行コードをCR-LFにする）
+4. 改行コードをCR-LFにする（以下のコマンドを実行する）
 
 	> fcrlf
 
-5. 以下のコマンドを実行する。（一時ファイルを削除する）
+5. 一時ファイルを削除する（以下のコマンドを実行する）
 
 	> zz
 

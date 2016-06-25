@@ -60,7 +60,7 @@
 	ãÛîíÇä‹Ç‹Ç»Ç¢ÉpÉXÇ≈Ç†ÇÈÇ±Ç∆ÅB
 */
 #define ZIP7_LOCAL_FILE "7za.exe"
-#define ZIP7_FILE "C:\\app\\7za920\\" ZIP7_LOCAL_FILE
+#define ZIP7_FILE "C:\\app\\7z1602-extra\\" ZIP7_LOCAL_FILE
 
 #define VER_BETA 1100000000
 

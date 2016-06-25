@@ -14,13 +14,38 @@ static char *Get7zExeFile(void)
 	static char *file;
 
 	if(!file)
-		file = GetCollaboFile("C:\\app\\7za920\\7za.exe");
+		file = GetCollaboFile("C:\\app\\7z1602-extra\\7za.exe");
 
 	return file;
+}
+static char *Unlittering(char *dir, char *file7z)
+{
+	if(2 <= lsCount(dir))
+	{
+		char *wRtDir = makeFreeDir();
+		char *wDir;
+		char *name = changeExt(getLocal(file7z), "");
+
+		wDir = combine(wRtDir, name);
+		createDir(wDir);
+
+		LOGPOS();
+		cout("< %s\n", dir);
+		cout("> %s\n", wDir);
+
+		moveDir(dir, wDir);
+
+		memFree(dir);
+		dir = wRtDir;
+		memFree(wDir);
+		memFree(name);
+	}
+	return dir;
 }
 static void Extract7z(char *file7z)
 {
 	char *dir;
+	char *dir2;
 
 	errorCase(!existFile(file7z));
 
@@ -28,6 +53,7 @@ static void Extract7z(char *file7z)
 	addCwd(dir);
 	coExecute_x(xcout("%s x \"%s\"", Get7zExeFile(), file7z));
 	unaddCwd();
+	dir = Unlittering(dir, file7z);
 	execute_x(xcout("START %s", dir));
 	memFree(dir);
 }
