@@ -123,7 +123,7 @@ static void PrimeRange(uint64 minval, uint64 maxval, char *outFile, char *cancel
 				if(handleWaitForMillis(cancelEv, 0))
 				{
 					WrUI64Flush(fp);
-					errorCase(fprintf(fp, "íÜé~ÇµÇ‹ÇµÇΩÅB\n") < 0);
+					errorCase(fprintf(fp, "Break in %I64u\nOk\n", value - 1) < 0);
 					break;
 				}
 
