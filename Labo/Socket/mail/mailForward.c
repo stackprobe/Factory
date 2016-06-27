@@ -237,6 +237,9 @@ static void Distribute(autoList_t *mail, autoList_t *memberList, char *groupName
 		{}
 		else
 		{
+			cout("★即返信・連続送信すると失敗することがあるっぽいのでちょっと待つ。\n");
+			coSleep(3000);
+
 			DistributeOne(mail, groupName, memberFrom, member, counter);
 		}
 	}
@@ -334,8 +337,7 @@ static void RecvLoop(void)
 			/*
 				即返信すると破棄されることがある？
 			*/
-			coSleep(10000);
-//			coSleep(3000); // del @ 2016.6.28
+//			coSleep(3000); // moved @ 2016.6.28
 
 			RecvEvent(mail);
 		}

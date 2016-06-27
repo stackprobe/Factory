@@ -119,7 +119,7 @@ static void RecvLoop(void)
 				/*
 					‘¦•ÔM‚·‚é‚Æ”jŠü‚³‚ê‚é‚±‚Æ‚ª‚ ‚éH
 				*/
-				coSleep(3000);
+//				coSleep(3000); moved @ 2016.6.28
 
 				RecvEvent(mail);
 			}
