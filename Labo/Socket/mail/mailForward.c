@@ -334,7 +334,8 @@ static void RecvLoop(void)
 			/*
 				ë¶ï‘êMÇ∑ÇÈÇ∆îjä¸Ç≥ÇÍÇÈÇ±Ç∆Ç™Ç†ÇÈÅH
 			*/
-			coSleep(3000);
+			coSleep(10000);
+//			coSleep(3000); // del @ 2016.6.28
 
 			RecvEvent(mail);
 		}

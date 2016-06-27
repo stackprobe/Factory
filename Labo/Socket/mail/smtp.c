@@ -150,6 +150,7 @@ int sendMailEx(char *smtpServer, uint portno, char *sendFrom, char *sendTo, auto
 		{
 			return 0;
 		}
-		sleep(3000);
+		coSleep(15000);
+//		sleep(3000); // del @ 2016.6.28
 	}
 }
