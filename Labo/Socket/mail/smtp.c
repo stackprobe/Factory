@@ -134,7 +134,7 @@ int sendMail(char *smtpServer, uint portno, char *sendFrom, char *sendTo, autoLi
 	cout("send mail condition: %d\n", Successful);
 	return Successful;
 }
-int sendMailEx(char *smtpServer, uint portno, char *sendFrom, char *sendTo, autoList_t *mail, uint retrycnt) // ret: ? Successful
+int sendMailEx(char *smtpServer, uint portno, char *sendFrom, char *sendTo, autoList_t *mail, uint retrycnt, uint retryWaitMillis) // ret: ? Successful
 {
 	cout("sendMailEx()\n");
 
@@ -150,6 +150,10 @@ int sendMailEx(char *smtpServer, uint portno, char *sendFrom, char *sendTo, auto
 		{
 			return 0;
 		}
-		coSleep(4000);
+		coSleep(retryWaitMillis);
 	}
+}
+int sendMailEx2(char *smtpServer, uint portno, char *sendFrom, char *sendTo, autoList_t *mail)
+{
+	return sendMailEx(smtpServer, portno, sendFrom, sendTo, mail, 6, 20000);
 }

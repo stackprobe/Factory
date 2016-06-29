@@ -189,7 +189,7 @@ static void DistributeOne(autoList_t *mail, char *groupName, char *memberFrom, c
 	addElement(sendData, (uint)strx(""));
 	addLines_x(sendData, GetMailBody(mail));
 
-	sendMailEx(SmtpServer, SmtpPortno, memberFrom, memberTo, sendData, 4);
+	sendMailEx2(SmtpServer, SmtpPortno, memberFrom, memberTo, sendData);
 
 endfunc:
 	memFree(date);

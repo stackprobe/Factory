@@ -98,7 +98,7 @@ static void RecvEvent(autoList_t *mail)
 		cout("forward addr: %s\n", mailAddr);
 
 		mail2 = MakeMailData(mailAddr, mail);
-		sendMailEx(SmtpServer, SmtpPortno, SelfMailAddress, mailAddr, mail2, 4);
+		sendMailEx2(SmtpServer, SmtpPortno, SelfMailAddress, mailAddr, mail2);
 		releaseDim(mail2, 1);
 	}
 	cout("forward end.\n");
