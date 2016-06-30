@@ -1,1 +1,1 @@
-mkpw.exe /9L
+mkpw.exe /9L %*
