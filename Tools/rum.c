@@ -770,6 +770,48 @@ static void Commit(char *dir) // dir: バックアップ元、存在するルートディレクトリ
 			removeDir(storeDir);
 		}
 	}
+	// 親 .rum チェック
+	{
+		char *parentDir = strx(dir);
+
+		for(; ; )
+		{
+			parentDir = changeLocal_xc(parentDir, "");
+
+			if(strlen(parentDir) == 2) // ? ルートに達した。
+				break;
+
+			parentDir = addExt(parentDir, EXT_STOREDIR);
+
+			if(existDir(parentDir))
+			{
+				cout("####################\n");
+				cout("## 親に .rum アリ ##\n");
+				cout("####################\n");
+				cout("%s\n", parentDir);
+				sleep(500);
+			}
+		}
+	}
+	// 子 .rum チェック
+	{
+		autoList_t *subDirs = lssDirs(dir);
+		char *subDir;
+		uint index;
+
+		foreach(subDirs, subDir, index)
+		{
+			if(!_stricmp(EXT_STOREDIR, getExt(subDir)))
+			{
+				cout("####################\n");
+				cout("## 子に .rum アリ ##\n");
+				cout("####################\n");
+				cout("%s\n", subDir);
+				sleep(500);
+			}
+		}
+		releaseDim(subDirs, 1);
+	}
 
 	if(!QuietMode)
 	{

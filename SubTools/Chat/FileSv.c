@@ -20,6 +20,8 @@
 #include "C:\Factory\Labo\Socket\libs\http\ExtToContentType.h"
 #include "Common.h"
 
+#define HEADER_FIRST_LINE_LENMAX 18000
+
 // ---- I/O ----
 
 FILE *TryFileOpen(char *file, char *mode)
@@ -449,6 +451,12 @@ static int Perform(int sock, void *vi)
 
 		if(!p)
 		{
+			if(HEADER_FIRST_LINE_LENMAX < strlen(header))
+			{
+				cout("RECV TOO-LONG\n");
+				memFree(header);
+				return 0;
+			}
 			if(i->ConnectedTime + 2 < now())
 			{
 				cout("RECV TIMEOUT\n");

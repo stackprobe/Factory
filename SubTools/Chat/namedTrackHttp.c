@@ -7,7 +7,7 @@
 #include "C:\Factory\Labo\Socket\tunnel\libs\Tunnel.h"
 #include "C:\Factory\Common\Options\URL.h"
 
-#define HTTP_HEADER_LENMAX 17000
+#define HEADER_FIRST_LINE_LENMAX 18000
 
 typedef struct ChInfo_st
 {
@@ -93,18 +93,17 @@ static void HttpNamedChannelFltr(autoBlock_t *buff, uint prm)
 
 	ab_addBytes(i->RecvBuff, buff);
 	setSize(buff, 0);
-
-	if(HTTP_HEADER_LENMAX < getSize(i->RecvBuff))
-	{
-		ab_swap(buff, i->RecvBuff);
-		i->HeaderSend = 1;
-		return;
-	}
 	header = ab_toLine(i->RecvBuff);
 	p = strchr(header, '\r');
 
 	if(!p)
 	{
+		if(HEADER_FIRST_LINE_LENMAX < getSize(i->RecvBuff))
+		{
+			cout("RECV TOO-LONG\n");
+			ab_swap(buff, i->RecvBuff);
+			i->HeaderSend = 1;
+		}
 		memFree(header);
 		return;
 	}
