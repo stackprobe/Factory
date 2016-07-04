@@ -233,8 +233,10 @@ static void PerformTh(int sock, char *strip)
 	ChannelInfo_t *decChannel;
 	autoBlock_t *rippedBuffer;
 	uint thhdls[2];
+LOGPOS(); // test
 
 	*(uint *)ip = 0;
+LOGPOS(); // test
 
 	inner_uncritical();
 	{
@@ -245,29 +247,36 @@ static void PerformTh(int sock, char *strip)
 		leaveCritical(&CritConnectWait);
 	}
 	inner_critical();
+LOGPOS(); // test
 
 	if(ReverseMode)
 	{
+LOGPOS(); // test
 		fwdSock = -1; // ダミー
 		cout("接続: %d -> ?\n", sock);
 	}
 	else
 	{
+LOGPOS(); // test
 		fwdSock = sockConnect(ip, FwdDomain, FwdPort);
 		cout("接続: %d -> %d\n", sock, fwdSock);
 
 		if(fwdSock == -1)
 			goto endfunc;
 	}
+LOGPOS(); // test
 	memset(channels, 0x00, sizeof(channels));
+LOGPOS(); // test
 
 	channels[0].OtherSide = channels + 1;
 	channels[0].RecvSock = sock;
 	channels[0].SendSock = fwdSock;
+LOGPOS(); // test
 
 	channels[1].OtherSide = channels + 0;
 	channels[1].RecvSock = fwdSock;
 	channels[1].SendSock = sock;
+LOGPOS(); // test
 
 	// negotiate >
 	{
@@ -490,7 +499,9 @@ readArgs:
 
 	cout("開始\n");
 	SockStartup();
+LOGPOS(); // test
 	sockServerTh(PerformTh, portno, connectmax, IdleTh);
+LOGPOS(); // test
 	SockCleanup();
 	cout("終了\n");
 
