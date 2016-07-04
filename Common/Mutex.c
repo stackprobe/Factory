@@ -121,7 +121,7 @@ void mutexUnlock(uint hdl)
 	handleClose(hdl);
 }
 
-#define COMMONMUTEXNAME "cerulean.charlotte.stackprobe.5496 Factory common mutex object"
+#define COMMONMUTEXNAME "cerulean.charlotte Factory common mutex object"
 
 static uint CommonHandle;
 static uint CommonLockCount;
@@ -150,7 +150,7 @@ void unmutex(void)
 
 	親プロセス
 		main() {
-			uint hdl = eventOpen("cerulean.charlotte.stackprobe.5496 Factory test event object");
+			uint hdl = eventOpen("cerulean.charlotte Factory test event object");
 			子プロセス開始
 			eventSleep(hdl); <- 子プロセス終了待ち
 		}
@@ -158,7 +158,7 @@ void unmutex(void)
 	子プロセス
 		main() {
 			するべき処理
-			eventWakeup("cerulean.charlotte.stackprobe.5496 Factory test event object");
+			eventWakeup("cerulean.charlotte Factory test event object");
 		}
 
 	同じハンドルで何回もスリープする

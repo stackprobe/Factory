@@ -161,7 +161,7 @@ int main(int argc, char **argv)
 	MutexHandle = mutexOpen(MutexName);
 	StartEventHandle = eventOpen(StartEventName);
 	AnswerEventHandle = eventOpen(AnswerEventName);
-	StopAppEventHandle = eventOpen_x(xcout("cerulean.charlotte.stackprobe.5496 Factory Requester stop app event object %s %u", c_md5_makeHexHashLine(ServerDomain), ServerPort));
+	StopAppEventHandle = eventOpen_x(xcout("cerulean.charlotte Factory Requester stop app event object %s %u", c_md5_makeHexHashLine(ServerDomain), ServerPort));
 
 	if(argIs("/T"))
 	{

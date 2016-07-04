@@ -27,7 +27,7 @@
 #define MILLIS_TIMEOUT_SELECT_ACCEPT 1000
 #define MILLIS_TIMEOUT_TRANSMIT_END 300
 
-#define TRANSMIT_END_EVENT "cerulean.charlotte.stackprobe.5496 Factory SockServerTh transmit end event object"
+#define TRANSMIT_END_EVENT "cerulean.charlotte Factory SockServerTh transmit end event object"
 
 typedef struct TransInfo_st
 {

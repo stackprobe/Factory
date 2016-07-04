@@ -581,9 +581,9 @@ int main(int argc, char **argv)
 	ReceptorLoopResFile(NULL, Perform, Idle);
 #else // OLD
 	ReceptorLoop(
-		"cerulean.charlotte.stackprobe.5496 Hemachi Server start event object",
-		"cerulean.charlotte.stackprobe.5496 Hemachi Server answer event object",
-		"cerulean.charlotte.stackprobe.5496 Hemachi Server mutex object",
+		"cerulean.charlotte Hemachi Server start event object",
+		"cerulean.charlotte Hemachi Server answer event object",
+		"cerulean.charlotte Hemachi Server mutex object",
 		"C:\\Factory\\tmp\\Hemachi_Server_Params.tmp",
 		"C:\\Factory\\tmp\\Hemachi_Server_Answer.tmp",
 		Perform,
