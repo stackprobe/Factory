@@ -472,7 +472,7 @@ readArgs:
 		goto readArgs;
 	}
 
-	ssen = xcout("ccstackprobe Factory crypTunnel stop server event object %u", portno);
+	ssen = xcout("cerulean.charlotte.stackprobe.5496 Factory crypTunnel stop server event object %u", portno);
 
 	if(argIs("/S"))
 	{

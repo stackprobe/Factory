@@ -1,6 +1,6 @@
 #include "all.h"
 
-#define MUTEXNAME "ccstackprobe Factory Hemachi FileShare mutex object"
+#define MUTEXNAME "cerulean.charlotte.stackprobe.5496 Factory Hemachi FileShare mutex object"
 
 static uint MutexHandle;
 

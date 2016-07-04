@@ -78,7 +78,7 @@ void error2(char *source, uint lineno, char *function, char *message)
 	runFinalizers();
 
 #define SRC_MUTEX "Mutex.c"
-#define NM_MUTEX "ccstackprobe Factory error mutex object"
+#define NM_MUTEX "cerulean.charlotte.stackprobe.5496 Factory error mutex object"
 
 	if(noErrorDlgMode)
 		goto endproc;

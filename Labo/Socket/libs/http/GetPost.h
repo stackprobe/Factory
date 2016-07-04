@@ -44,7 +44,7 @@ void httpDecodeQuery(char *query, httpDecode_t *out);
 void httpDecode(char *header, uchar *content, httpDecode_t *out);
 void httpDecodeFree(httpDecode_t *out);
 
-#define HTTPSENDRESPONSEFILETYPE_FILEIO_MUTEXNAME "ccstackprobe Factory httpSendResponseFileType file-io mutex object"
+#define HTTPSENDRESPONSEFILETYPE_FILEIO_MUTEXNAME "cerulean.charlotte.stackprobe.5496 Factory httpSendResponseFileType file-io mutex object"
 
 void httpSendResponseFileType(SockStream_t *i, char *file, char *contentType);
 void httpSendResponseFile(SockStream_t *i, char *file);

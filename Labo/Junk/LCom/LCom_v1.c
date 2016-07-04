@@ -1,8 +1,8 @@
 #include "LCom_v1.h"
 
-#define PREF_MUTEX          "ccstackprobe Factory LCom mutex object "
-#define PREF_EVENT_REQUEST  "ccstackprobe Factory LCom event object Request "
-#define PREF_EVENT_RESPONSE "ccstackprobe Factory LCom event object Response "
+#define PREF_MUTEX          "cerulean.charlotte.stackprobe.5496 Factory LCom mutex object "
+#define PREF_EVENT_REQUEST  "cerulean.charlotte.stackprobe.5496 Factory LCom event object Request "
+#define PREF_EVENT_RESPONSE "cerulean.charlotte.stackprobe.5496 Factory LCom event object Response "
 
 #define PREF_FILE_REQUEST  "C:\\Factory\\tmp\\LCom_Request_"
 #define PREF_FILE_RESPONSE "C:\\Factory\\tmp\\LCom_Response_"

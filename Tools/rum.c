@@ -781,6 +781,8 @@ static void Commit(char *dir) // dir: バックアップ元、存在するルートディレクトリ
 			if(strlen(parentDir) == 2) // ? ルートに達した。
 				break;
 
+			errorCase(strlen(parentDir) <= 3); // 2bs
+
 			parentDir = addExt(parentDir, EXT_STOREDIR);
 
 			if(existDir(parentDir))

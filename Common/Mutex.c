@@ -121,7 +121,7 @@ void mutexUnlock(uint hdl)
 	handleClose(hdl);
 }
 
-#define COMMONMUTEXNAME "ccstackprobe Factory common mutex object"
+#define COMMONMUTEXNAME "cerulean.charlotte.stackprobe.5496 Factory common mutex object"
 
 static uint CommonHandle;
 static uint CommonLockCount;

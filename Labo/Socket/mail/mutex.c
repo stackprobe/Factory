@@ -1,6 +1,6 @@
 #include "mutex.h"
 
-#define MAILMUTEXNAME "ccstackprobe Factory mail mutex object"
+#define MAILMUTEXNAME "cerulean.charlotte.stackprobe.5496 Factory mail mutex object"
 
 static uint MailMutexHandle;
 

@@ -84,7 +84,7 @@ static void LoadFile(char *saveDir, char *loadedFile)
 }
 int main(int argc, char **argv)
 {
-	uint mtx = mutexOpen("ccstackprobe Factory LoadFile Proc mutex object");
+	uint mtx = mutexOpen("cerulean.charlotte.stackprobe.5496 Factory LoadFile Proc mutex object");
 
 	errorCase(!handleWaitForMillis(mtx, 0)); // ? ëΩèdãNìÆ
 
