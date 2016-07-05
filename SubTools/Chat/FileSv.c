@@ -131,12 +131,14 @@ autoList_t *TryGetFileList(char *findPtn)
 				char *lSize = xcout("%I64u", (uint64)fd.size);
 				time_t t = m_max(fd.time_create, fd.time_write);
 				char *stamp;
+				char *nameUrl = urlEncoder(name);
 
 				lSize = thousandComma(lSize);
 				stamp = makeJStamp(getStampDataTime(t), 0);
-				info = xcout("%s バイト　%s　<a href=\"%s?mode=download\" download=\"%s\">[ダウンロード]</a>", lSize, stamp, name, name);
+				info = xcout("%s バイト　%s　<a href=\"%s?mode=download\" download=\"%s\">[ダウンロード]</a>", lSize, stamp, nameUrl, nameUrl);
 				memFree(lSize);
 				memFree(stamp);
+				memFree(nameUrl);
 			}
 			addElement(list, (uint)name);
 			addElement(TGFL_InfoList, (uint)info);
@@ -276,20 +278,24 @@ static void Perform_FindPtn(ConnInfo_t *i, char *ttlPath, char *findPtn)
 			{
 				char *element = GetFileListElementTemplateHtml();
 				char *info = getLine(TGFL_InfoList, index);
+				char *nameUrl = urlEncoder(name);
 
 				element = strx(element);
 
 				element = replaceLine(element, "__INFO__", info, 0); // 先に, ファイル名にパターンがあると置換されてしまう。
 				element = replaceLine(element, "__NAME__", name, 0);
+				element = replaceLine(element, "__HREF__", nameUrl, 0);
 
 				addElement(wLines, (uint)element);
 
 				// old
 				/*
 				addElement(wLines, (uint)strx("<DIV>"));
-				addElement(wLines, (uint)xcout("<A HREF=\"%s\">%s</A>　%s", name, name, info));
+				addElement(wLines, (uint)xcout("<A HREF=\"%s\">%s</A>　%s", nameUrl, name, info));
 				addElement(wLines, (uint)strx("</DIV>"));
 				*/
+
+				memFree(nameUrl);
 			}
 		}
 		else
