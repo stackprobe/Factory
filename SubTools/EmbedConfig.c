@@ -66,9 +66,19 @@ int main(int argc, char **argv)
 		ChangeEmbedConfig(EMBCFG_FACTORY_DIR_DISABLED, 'D');
 		return;
 	}
-	if(argIs("--change-color-disabled"))
+	if(argIs("--dummy-01"))
 	{
-		ChangeEmbedConfig(EMBCFG_CHANGE_COLOR_DISABLED, 'D');
+		ChangeEmbedConfig(EMBCFG_DUMMY_01, 'Z');
+		return;
+	}
+	if(argIs("--dummy-02"))
+	{
+		ChangeEmbedConfig(EMBCFG_DUMMY_02, 'Z');
+		return;
+	}
+	if(argIs("--dummy-03"))
+	{
+		ChangeEmbedConfig(EMBCFG_DUMMY_03, 'Z');
 		return;
 	}
 	error_m("bad_opt");

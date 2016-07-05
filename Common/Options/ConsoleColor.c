@@ -4,11 +4,6 @@ static void ChangeColor(int color)
 {
 	errorCase(!m_isRange(color, 0x00, 0xff));
 
-	if(isChangeColorDisabled())
-	{
-		cout("CCD_COLOR %02x\n", color);
-		return;
-	}
 	execute_x(xcout("COLOR %02x\n", color));
 }
 

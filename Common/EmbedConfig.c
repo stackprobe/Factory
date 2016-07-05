@@ -6,7 +6,9 @@
 static char *EmbedConfig =
 	HEADER
 	"E" // EMBCFG_FACTORY_DIR_DISABLED
-	"E" // EMBCFG_CHANGE_COLOR_DISABLED
+	"X" // EMBCFG_DUMMY_01
+	"X" // EMBCFG_DUMMY_02
+	"X" // EMBCFG_DUMMY_03
 	;
 
 int isFactoryDirDisabled(void)
@@ -16,8 +18,4 @@ int isFactoryDirDisabled(void)
 int isFactoryDirEnabled(void)
 {
 	return !isFactoryDirDisabled();
-}
-int isChangeColorDisabled(void)
-{
-	return EmbedConfig[HEADER_SIZE + EMBCFG_CHANGE_COLOR_DISABLED] == 'D';
 }
