@@ -123,3 +123,25 @@ char *PathToURL(char *path) // ret: ファイル -> "/C$/abc/def.txt", ディレクトリ 
 	path = urlEncoder_x(path);
 	return path;
 }
+
+char *LiteUrlEncoder(char *name)
+{
+	autoBlock_t *buff = newBlock();
+	char *p;
+
+	for(p = name; *p; p++)
+	{
+		if(isMbc(p))
+		{
+			addByte(buff, *p++);
+			addByte(buff, *p);
+		}
+		else if(*p == '#' || *p == '%')
+		{
+			ab_addLine_x(buff, xcout("%%%02x", *p));
+		}
+		else
+			addByte(buff, *p);
+	}
+	return unbindBlock2Line(buff);
+}

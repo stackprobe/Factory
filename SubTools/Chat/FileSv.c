@@ -131,7 +131,7 @@ autoList_t *TryGetFileList(char *findPtn)
 				char *lSize = xcout("%I64u", (uint64)fd.size);
 				time_t t = m_max(fd.time_create, fd.time_write);
 				char *stamp;
-				char *nameUrl = urlEncoder(name);
+				char *nameUrl = LiteUrlEncoder(name);
 
 				lSize = thousandComma(lSize);
 				stamp = makeJStamp(getStampDataTime(t), 0);
@@ -278,7 +278,7 @@ static void Perform_FindPtn(ConnInfo_t *i, char *ttlPath, char *findPtn)
 			{
 				char *element = GetFileListElementTemplateHtml();
 				char *info = getLine(TGFL_InfoList, index);
-				char *nameUrl = urlEncoder(name);
+				char *nameUrl = LiteUrlEncoder(name);
 
 				element = strx(element);
 

@@ -46,7 +46,7 @@ char *urlEncoder(char *url)
 		if(IsNoPctChar(*p))
 			addByte(buff, *p);
 		else
-			ab_addLine(buff, xcout("%%%02x", *p));
+			ab_addLine_x(buff, xcout("%%%02x", *p));
 	}
 	memFree(url);
 	url = unbindBlock2Line(buff);

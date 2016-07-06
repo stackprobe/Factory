@@ -10,3 +10,5 @@ extern int UTP_EndSlash;
 
 char *URLToPath(char *url);
 char *PathToURL(char *path);
+
+char *LiteUrlEncoder(char *name);

@@ -31,6 +31,11 @@ int isEmptyJTkn(char *token);
 #define m_tolower(c) (m_isupper((c)) ? m_nctolower(c) : (c))
 
 #define m_isspace(c) ((c) <= ' ')
+#define m_ispunct(c) ( \
+	'!' <= (c) && (c) <= '/' || \
+	':' <= (c) && (c) <= '@' || \
+	'[' <= (c) && (c) <= '`' || \
+	'{' <= (c) && (c) <= '~')
 
 int c2upper(int c);
 int c2lower(int c);
