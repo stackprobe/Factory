@@ -1,3 +1,16 @@
+/*
+	SyncDir.exe 入力DIR 出力DIR
+
+	- - -
+
+	2つのディレクトリを比較し、少ないコストで出力DIRを入力DIRと同じ内容にする。
+
+	パスの大文字・小文字を区別する。
+
+	同じパスのファイルは、入力DIRの方がファイル日付が新しい場合のみ上書きする。
+	作成日と更新日の新しい方をファイル日付とする。
+*/
+
 #include "C:\Factory\Common\all.h"
 
 static void GetPaths(char *rootDir, autoList_t **p_dirs, autoList_t **p_files)
@@ -150,34 +163,34 @@ static void SyncDir(char *rRootDir, char *wRootDir) // (rRootDir, wRootDir): abs
 	// dir
 	{
 		autoList_t *newDirs = newList();
-		autoList_t *noChangeDirs = newList();
+		autoList_t *bothDirs = newList();
 		autoList_t *oldDirs = newList();
 
-		mergeLines2(rDirs, wDirs, newDirs, noChangeDirs, oldDirs);
+		mergeLines2(rDirs, wDirs, newDirs, bothDirs, oldDirs);
 
 		DelDirs(wRootDir, oldDirs);
 		MkDirs(wRootDir, newDirs);
 
 		releaseAutoList(newDirs);
-		releaseAutoList(noChangeDirs);
+		releaseAutoList(bothDirs);
 		releaseAutoList(oldDirs);
 	}
 
 	// file
 	{
 		autoList_t *newFiles = newList();
-		autoList_t *noChangedFiles = newList();
+		autoList_t *bothFiles = newList();
 		autoList_t *oldFiles = newList();
 
-		mergeLines2(rFiles, wFiles, newFiles, noChangedFiles, oldFiles);
-		EraseNoChangeFiles(rRootDir, wRootDir, noChangedFiles);
+		mergeLines2(rFiles, wFiles, newFiles, bothFiles, oldFiles);
+		EraseNoChangeFiles(rRootDir, wRootDir, bothFiles);
 
 		DelFiles(wRootDir, oldFiles);
-		CpFiles(rRootDir, wRootDir, noChangedFiles);
+		CpFiles(rRootDir, wRootDir, bothFiles);
 		CpFiles(rRootDir, wRootDir, newFiles);
 
 		releaseAutoList(oldFiles);
-		releaseAutoList(noChangedFiles);
+		releaseAutoList(bothFiles);
 		releaseAutoList(newFiles);
 	}
 

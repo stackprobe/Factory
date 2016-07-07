@@ -162,6 +162,17 @@ static void DC_OutputDiff(int keepTree)
 	memFree(dir1);
 	memFree(dir2);
 }
+static void EraseRWFiles(char *target)
+{
+	char *file;
+	uint index;
+
+	foreach(RWFiles, file, index)
+		if(!_stricmp(file, target))
+			file[0] = '\0';
+
+	trimLines(RWFiles);
+}
 static void DoConfirm(void)
 {
 restart:
@@ -176,6 +187,7 @@ restart:
 	cout("ENTER = 続行\n");
 	cout("0 = 確認用差分出力_階層ナシ\n");
 	cout("1 = 確認用差分出力_階層アリ\n");
+	cout(". = .git* を削除\n");
 	cout("SPACE = 絞り込み\n");
 	cout("OTHER = 中止\n");
 	cout("------------\n");
@@ -191,6 +203,11 @@ restart:
 
 	case '1':
 		DC_OutputDiff(1);
+		goto restart;
+
+	case '.':
+		EraseRWFiles(".gitattributes");
+		EraseRWFiles(".gitignore");
 		goto restart;
 
 	case 0x20:
