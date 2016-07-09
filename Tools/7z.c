@@ -49,6 +49,7 @@ static void Extract7z(char *file7z)
 
 	errorCase(!existFile(file7z));
 
+	file7z = makeFullPath(file7z);
 	dir = makeFreeDir();
 	addCwd(dir);
 	coExecute_x(xcout("%s x \"%s\"", Get7zExeFile(), file7z));
@@ -56,6 +57,7 @@ static void Extract7z(char *file7z)
 	dir = Unlittering(dir, file7z);
 	execute_x(xcout("START %s", dir));
 	memFree(dir);
+	memFree(file7z);
 }
 int main(int argc, char **argv)
 {
