@@ -3,13 +3,17 @@
 
 	- - -
 
-	7z.exe [7z-FILE | ZIP-FILE]
+	7z.exe [/C] [7z-FILE | ZIP-FILE]
+
+		/C ... 入力ファイルと同じ場所に展開する。
 */
 
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Collabo.h"
 
-static char *Get7zExeFile(void)
+static int ExtractSameDir;
+
+static char *Get7zExeFile(void) // ret: 空白を含まないパスであること。
 {
 	static char *file;
 
@@ -47,20 +51,49 @@ static void Extract7z(char *file7z)
 	char *dir;
 	char *dir2;
 
-	errorCase(!existFile(file7z));
-
 	file7z = makeFullPath(file7z);
-	dir = makeFreeDir();
-	addCwd(dir);
-	coExecute_x(xcout("%s x \"%s\"", Get7zExeFile(), file7z));
-	unaddCwd();
-	dir = Unlittering(dir, file7z);
-	execute_x(xcout("START %s", dir));
+
+	cout("< %s\n", file7z);
+
+	errorCase(!existFile(file7z));
+	errorCase(!*getExt(file7z)); // ? 拡張子ナシ
+
+	if(ExtractSameDir)
+	{
+		dir = changeExt(file7z, "");
+		dir = toCreatablePath(dir, 100);
+
+		cout("> %s\n", dir);
+
+		createDir(dir);
+		addCwd(dir);
+		coExecute_x(xcout("%s x \"%s\"", Get7zExeFile(), file7z));
+		unaddCwd();
+	}
+	else
+	{
+		dir = makeFreeDir();
+
+		cout("> %s\n", dir);
+
+		addCwd(dir);
+		coExecute_x(xcout("%s x \"%s\"", Get7zExeFile(), file7z));
+		unaddCwd();
+		dir = Unlittering(dir, file7z);
+		execute_x(xcout("START %s", dir));
+	}
 	memFree(dir);
 	memFree(file7z);
 }
 int main(int argc, char **argv)
 {
+readArgs:
+	if(argIs("/C"))
+	{
+		ExtractSameDir = 1;
+		goto readArgs;
+	}
+
 	if(hasArgs(1))
 	{
 		Extract7z(nextArg());
