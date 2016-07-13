@@ -90,6 +90,10 @@ int main(int argc, char **argv)
 readArgs:
 	if(argIs("/C"))
 	{
+		cout("+----------------+\n");
+		cout("| ƒJƒŒƒ“ƒg‚É“WŠJ |\n");
+		cout("+----------------+\n");
+
 		ExtractSameDir = 1;
 		goto readArgs;
 	}
