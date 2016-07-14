@@ -23,7 +23,8 @@ static void Init(void)
 static void PostGenWFile(char *rFile)
 {
 	if(OutputAndDelete)
-		semiRemovePath(rFile);
+//		semiRemovePath(rFile);
+		removeFile(rFile);
 }
 static void DoEncode(char *rFile, char *wFile)
 {
@@ -84,9 +85,9 @@ static void Main2(void)
 readArgs:
 	if(argIs("/OAD"))
 	{
-		cout("+-----------------+\n");
-		cout("| OutputAndDelete |\n");
-		cout("+-----------------+\n");
+		cout("+-------------------+\n");
+		cout("| OUTPUT AND DELETE |\n");
+		cout("+-------------------+\n");
 
 		OutputAndDelete = 1;
 		goto readArgs;
