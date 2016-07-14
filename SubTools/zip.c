@@ -6,6 +6,13 @@
 			BASE-NAME を指定すると、この名前をパック内の最上位階層にする。
 			ZIP-FILE の拡張子は "zip" でなくても良い。
 
+	zip.exe /PK ZIP-FILE SRC-DIR [BASE-NAME]
+
+		... SRC-DIR を ZIP-FILE にパックする。
+			最上位階層はそのまま！ (/Pとの違いはここだけ！)
+			BASE-NAME を指定すると、この名前をパック内の最上位階層にする。
+			ZIP-FILE の拡張子は "zip" でなくても良い。
+
 	zip.exe /R ZIP-FILE [BASE-NAME]
 
 		... ZIP-FILE を再パックする。
@@ -38,7 +45,7 @@
 
 		... ZIP-FILE を OUT-DIR に展開する。
 			OUT-DIR が存在しなければ作成する。
-			不要な最上位階層を除去しない！
+			最上位階層はそのまま！
 			ZIP-FILE の拡張子は "zip" でなくても良い。
 			OUT-DIR に既存のファイルがあったら上書きする。
 			OUT-DIR の既存のファイルに対してディレクトリの上書きは失敗する。error(); にならない。
@@ -243,13 +250,15 @@ static char *GetPathTailVer(uint version) // ret: bind
 
 	return pathTail;
 }
-static void PackZipFileEx(char *zipFile, char *srcDir, int srcDirRmFlag, char *baseName, uint version)
+static void PackZipFileEx2(char *zipFile, char *srcDir, int srcDirRmFlag, char *baseName, uint version, int keepOneDir)
 {
 	char *workDir = makeTempDir(NULL);
 	char *destDir;
 
 	srcDir = strx(srcDir);
-	srcDir = IntoIfOneDir(srcDir);
+
+	if(!keepOneDir)
+		srcDir = IntoIfOneDir(srcDir);
 
 	destDir = strx(workDir);
 
@@ -280,6 +289,10 @@ static void PackZipFileEx(char *zipFile, char *srcDir, int srcDirRmFlag, char *b
 	memFree(srcDir);
 	memFree(workDir);
 	memFree(destDir);
+}
+static void PackZipFileEx(char *zipFile, char *srcDir, int srcDirRmFlag, char *baseName, uint version)
+{
+	PackZipFileEx2(zipFile, srcDir, srcDirRmFlag, baseName, version, 0);
 }
 static void RepackZipFile(char *zipFile, char *baseName)
 {
@@ -339,6 +352,28 @@ int main(int argc, char **argv)
 		cout("baseName: %s\n", baseName ? baseName : "<none>");
 
 		PackZipFileEx(zipFile, srcDir, 0, baseName, 0);
+
+		memFree(zipFile);
+		memFree(srcDir);
+		memFree(baseName);
+		return;
+	}
+	if(argIs("/PK"))
+	{
+		char *zipFile;
+		char *srcDir;
+		char *baseName;
+
+		zipFile = makeFullPath(nextArg());
+		srcDir  = makeFullPath(nextArg());
+		baseName = hasArgs(1) ? lineToFairLocalPath(nextArg(), 100) : NULL;
+
+		cout("[PACK]\n");
+		cout("zipFile: %s\n", zipFile);
+		cout("srcDir: %s\n", srcDir);
+		cout("baseName: %s\n", baseName ? baseName : "<none>");
+
+		PackZipFileEx2(zipFile, srcDir, 0, baseName, 0, 1);
 
 		memFree(zipFile);
 		memFree(srcDir);
