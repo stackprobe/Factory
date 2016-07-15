@@ -337,9 +337,9 @@ static void RecvLoop(void)
 			*/
 //			coSleep(3000); // moved @ 2016.6.28
 
-			cout("RecvEvent.1.åªéûçè: %s\n", c_makeJStamp(NULL, 0));
+			cout("RecvEvent.1.now: %s\n", c_makeJStamp(NULL, 0));
 			RecvEvent(mail);
-			cout("RecvEvent.2.åªéûçè: %s\n", c_makeJStamp(NULL, 0));
+			cout("RecvEvent.2.now: %s\n", c_makeJStamp(NULL, 0));
 		}
 		releaseDim(mails, 2);
 
