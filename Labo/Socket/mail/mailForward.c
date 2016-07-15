@@ -29,8 +29,6 @@
 #include "smtp.h"
 #include "tools.h"
 
-#define STOP_FLAG_FILE "C:\\Factory\\tmp\\mailForward_Stop.flg"
-
 static char *PopServer;
 static uint PopPortno = 110;
 static char *SmtpServer;
@@ -339,7 +337,9 @@ static void RecvLoop(void)
 			*/
 //			coSleep(3000); // moved @ 2016.6.28
 
+			cout("RecvEvent.1.åªéûçè: %s\n", c_makeJStamp(NULL, 0));
 			RecvEvent(mail);
+			cout("RecvEvent.2.åªéûçè: %s\n", c_makeJStamp(NULL, 0));
 		}
 		releaseDim(mails, 2);
 
