@@ -4,6 +4,7 @@
 
 #define ENCODE_PASSPHRASE "fkug"
 #define EXT_ENCODED "fkug"
+#define EXT_MID "tmp_fkug"
 
 static autoList_t *KeyTableList;
 static int OutputAndDelete;
@@ -39,12 +40,18 @@ static void DoEncode(char *rFile, char *wFile)
 }
 static void DoDecode(char *rFile, char *wFile)
 {
+	char *mFile = addExt(strx(rFile), EXT_MID);
+
 	cout("Decode\n");
 	cout("< %s\n", rFile);
+	cout("+ %s\n", mFile);
 	cout("> %s\n", wFile);
 
-	copyFile(rFile, wFile);
-	rngcphrDecryptFile(wFile, KeyTableList);
+	copyFile(rFile, mFile);
+	rngcphrDecryptFile(mFile, KeyTableList);
+	copyFile(mFile, wFile);
+
+	removeFile_x(mFile);
 
 	PostGenWFile(rFile);
 }

@@ -1,6 +1,12 @@
 #include "all.h"
 
+#define LOGFILESIZE_MAX 10000000 // 10m
+#define LOGFILE_PERIOD 3600
+
 static FILE *WrFP;
+static char *LogFileBase;
+static uint64 LogFileSize;
+static uint LogFileTime;
 
 static void CloseWrFP(void)
 {
@@ -8,10 +14,29 @@ static void CloseWrFP(void)
 	fileClose(WrFP);
 	WrFP = NULL;
 }
-void setCoutWrFile(char *file, int appendMode)
+void setCoutWrFile(char *file, char *mode)
 {
 	errorCase(WrFP);
-	WrFP = fileOpen(file, appendMode ? "at" : "wt");
+	WrFP = fileOpen(file, mode);
+	addFinalizer(CloseWrFP);
+}
+static void OpenLogFile(void)
+{
+	char *file;
+	char *stamp = makeCompactStamp(NULL);
+
+	file = xcout("%s_%s000.log", LogFileBase, stamp);
+	file = toCreatablePath(file, 1000);
+	WrFP = fileOpen(file, "wb");
+	memFree(file);
+	memFree(stamp);
+	LogFileTime = now();
+}
+void setCoutLogFile(char *fileBase)
+{
+	errorCase(WrFP);
+	LogFileBase = fileBase;
+	OpenLogFile();
 	addFinalizer(CloseWrFP);
 }
 void cout(char *format, ...)
@@ -20,13 +45,29 @@ void cout(char *format, ...)
 
 	if(WrFP)
 	{
-		va_start(marker, format);
+		int ret;
 
-		if(vfprintf(WrFP, format, marker) < 0)
+		va_start(marker, format);
+		ret = vfprintf(WrFP, format, marker);
+
+		if(ret < 0)
 		{
 			error();
 		}
 		va_end(marker);
+
+		if(LogFileBase)
+		{
+			LogFileSize += ret;
+
+			if(LOGFILESIZE_MAX <= LogFileSize || LOGFILE_PERIOD <= now() - LogFileTime)
+			{
+				fileClose(WrFP);
+				WrFP = NULL; // error(); ‘Îô
+				OpenLogFile();
+				LogFileSize = 0;
+			}
+		}
 	}
 	va_start(marker, format);
 

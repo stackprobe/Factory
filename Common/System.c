@@ -233,9 +233,13 @@ uint64 nextCommonCount(void)
 		line = readFirstLine(FILE_SHARE_COUNTER);
 		counter = toValue64(line);
 		memFree(line);
+
+		if(counter < 1000) // ? 小さすぎる。ファイルぶっ壊れた？
+			goto initCounter;
 	}
 	else // カウンタ初期化
 	{
+	initCounter:
 #if 1
 		counter = (uint64)time(NULL) * 1000;
 #else //old
@@ -515,19 +519,32 @@ static void ReadSysArgs(void)
 
 			releaseAutoList(subArgs);
 		}
-		else if(!_stricmp(arg, "//O")) // 標準出力(coutの出力)をファイルに書き出す。★注意：termination();しないとストリーム開きっぱ！
+		/*
+			プロセス終了時に閉じていないストリームは自動的に閉じてくれるけど、
+			プロセス終了直後に他のプロセスが当該ファイルを開こうとすると、開けないことがある。
+			-> ストリームを閉じるのが、シェルに制御を返すより遅れる？
+			-> 何れにせよ明示的に閉じたほうが良い。
+		*/
+		else if(!_stricmp(arg, "//O")) // 標準出力(coutの出力)をファイルに書き出す。★注意：termination();しないとストリームを閉じない。
 		{
 			desertElement(Args, argi);
 			arg = (char *)desertElement(Args, argi);
 
-			setCoutWrFile(arg, 0);
+			setCoutWrFile(arg, "wt");
 		}
-		else if(!_stricmp(arg, "//A")) // 標準出力(coutの出力)をファイルに追記する。★注意：termination();しないとストリーム開きっぱ！
+		else if(!_stricmp(arg, "//A")) // 標準出力(coutの出力)をファイルに追記する。★注意：termination();しないとストリームを閉じない。
 		{
 			desertElement(Args, argi);
 			arg = (char *)desertElement(Args, argi);
 
-			setCoutWrFile(arg, 1);
+			setCoutWrFile(arg, "at");
+		}
+		else if(!_stricmp(arg, "//L")) // 標準出力(coutの出力)をログに出力する。★注意：termination();しないとストリームを閉じない。
+		{
+			desertElement(Args, argi);
+			arg = (char *)desertElement(Args, argi);
+
+			setCoutLogFile(arg);
 		}
 		else if(!_stricmp(arg, "//-E"))
 		{
