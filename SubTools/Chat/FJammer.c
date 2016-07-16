@@ -2,7 +2,7 @@
 #include "C:\Factory\Common\Options\RingCipher2.h"
 #include "C:\Factory\OpenSource\sha512.h"
 
-#define ENCODE_PASSPHRASE "fkug"
+#define ENCODE_PASSPHRASE "fkug " __DATE__ " " __TIME__
 #define EXT_ENCODED "fkug"
 #define EXT_MID "tmp_fkug"
 
