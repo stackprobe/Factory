@@ -32,6 +32,7 @@ uint lsCount(char *dir);
 
 // ---- cmdDir ----
 
+void cmdDir_ls2File_noClear(char *dir, char *dirsFile, char *filesFile);
 void cmdDir_ls2File(char *dir, char *dirsFile, char *filesFile);
 void cmdDir_lss2File(char *dir, char *dirsFile, char *filesFile);
 autoList_t *cmdDir_lsFiles(char *dir);

@@ -390,7 +390,7 @@ static void CD_ExecBatch(char *dir, char *trailOpts, char *outFile)
 	FILE *wfp;
 
 	wfp = fileOpen(batFile, "wt");
-	writeLine(wfp, "DIRCMD=");
+	writeLine(wfp, "SET DIRCMD=");
 	writeLine_x(wfp, xcout("DIR \"%s\" %s > \"%s\"", dir, trailOpts, midFile));
 	fileClose(wfp);
 
@@ -413,17 +413,25 @@ static void CD_ExecBatch(char *dir, char *trailOpts, char *outFile)
 		writeLine(wfp, path);
 		memFree(path);
 	}
+	fileClose(rfp);
+	fileClose(wfp);
+
 	removeFile_x(batFile);
 	removeFile_x(midFile);
+
 	memFree(dir);
+}
+void cmdDir_ls2File_noClear(char *dir, char *dirsFile, char *filesFile)
+{
+	CD_ExecBatch(dir, "/AD /B", dirsFile);
+	CD_ExecBatch(dir, "/A-D /B", filesFile);
 }
 void cmdDir_ls2File(char *dir, char *dirsFile, char *filesFile)
 {
 	removeFileIfExist(dirsFile);
 	removeFileIfExist(filesFile);
 
-	CD_ExecBatch(dir, "/AD /B", dirsFile);
-	CD_ExecBatch(dir, "/A-D /B", filesFile);
+	cmdDir_ls2File_noClear(dir, dirsFile, filesFile);
 }
 void cmdDir_lss2File(char *dir, char *dirsFile, char *filesFile)
 {
@@ -440,7 +448,7 @@ void cmdDir_lss2File(char *dir, char *dirsFile, char *filesFile)
 		if(!subDir)
 			break;
 
-		cmdDir_ls2File(subDir, dirsFile, filesFile);
+		cmdDir_ls2File_noClear(subDir, dirsFile, filesFile);
 	}
 	fileClose(fp);
 }
