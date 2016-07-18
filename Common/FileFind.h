@@ -29,3 +29,14 @@ uint fileSearchCount(char *wCard);
 int fileSearchExist(char *wCard);
 
 uint lsCount(char *dir);
+
+// ---- cmdDir ----
+
+void cmdDir_ls2File(char *dir, char *dirsFile, char *filesFile);
+void cmdDir_lss2File(char *dir, char *dirsFile, char *filesFile);
+autoList_t *cmdDir_lsFiles(char *dir);
+autoList_t *cmdDir_lsDirs(char *dir);
+autoList_t *cmdDir_lssFiles(char *dir);
+autoList_t *cmdDir_lssDirs(char *dir);
+
+// ----

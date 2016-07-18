@@ -3,21 +3,21 @@
 
 		... SRC-DIR を ZIP-FILE にパックする。
 			不要な最上位階層を除去する。
-			BASE-NAME を指定すると、この名前をパック内の最上位階層にする。
+			BASE-NAME を指定すると、この名前をパック内の最上位階層にする。"$" を指定すると ZIP-FILE のローカル名のノードになる。
 			ZIP-FILE の拡張子は "zip" でなくても良い。
 
 	zip.exe /PK ZIP-FILE SRC-DIR [BASE-NAME]
 
 		... SRC-DIR を ZIP-FILE にパックする。
 			最上位階層はそのまま！ (/Pとの違いはここだけ！)
-			BASE-NAME を指定すると、この名前をパック内の最上位階層にする。
+			BASE-NAME を指定すると、この名前をパック内の最上位階層にする。"$" を指定すると ZIP-FILE のローカル名のノードになる。
 			ZIP-FILE の拡張子は "zip" でなくても良い。
 
 	zip.exe /R ZIP-FILE [BASE-NAME]
 
 		... ZIP-FILE を再パックする。
 			不要な最上位階層を除去する。
-			BASE-NAME を指定すると、この名前をパック内の最上位階層にする。
+			BASE-NAME を指定すると、この名前をパック内の最上位階層にする。"$" を指定すると ZIP-FILE のローカル名のノードになる。
 			ZIP-FILE の拡張子は "zip" でなくても良い。
 
 	zip.exe /RB ZIP-FILE
@@ -61,15 +61,18 @@
 
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\CRandom.h"
+#include "C:\Factory\Meteor\7z.h"
 
 /*
 	7-Zip Command line version 9.20
 	空白を含まないパスであること。
 */
-#define ZIP7_LOCAL_FILE "7za.exe"
-#define ZIP7_FILE "C:\\app\\7z1602-extra\\" ZIP7_LOCAL_FILE
+#define ZIP7_LOCAL_FILE LOCALFILE_7Z_EXE
+#define ZIP7_FILE FILE_7Z_EXE
 
 #define VER_BETA 1100000000
+
+#define BASENAME_AUTO "$"
 
 static char *GetZip7File(void)
 {
@@ -264,7 +267,18 @@ static void PackZipFileEx2(char *zipFile, char *srcDir, int srcDirRmFlag, char *
 
 	if(baseName)
 	{
-		destDir = combine_xc(destDir, baseName);
+		char *tmpbn;
+
+		if(!strcmp(baseName, BASENAME_AUTO))
+		{
+			tmpbn = changeExt(getLocal(zipFile), "");
+			cout("baseName: %s -> %s\n", BASENAME_AUTO, tmpbn);
+		}
+		else
+			tmpbn = strx(baseName);
+
+		destDir = combine_xc(destDir, tmpbn);
+		memFree(tmpbn);
 
 		if(version)
 			destDir = addLine(destDir, GetPathTailVer(version));

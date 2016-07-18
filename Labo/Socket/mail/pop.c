@@ -88,6 +88,8 @@ static void Perform(int sock)
 	uint mailnum;
 	uint mailno;
 
+	LOGPOS_T();
+
 	memFree(RecvLineDisp(ss)); // maybe +OK
 
 	SendLineDisp_x(ss, xcout("USER %s", UserName));
@@ -130,6 +132,8 @@ static void Perform(int sock)
 	SendLineDisp(ss, "QUIT");
 	memFree(RecvLineDisp(ss)); // maybe +OK
 
+	LOGPOS_T();
+
 	ReleaseSockStream(ss);
 }
 autoList_t *mailRecv(char *popServer, uint portno, char *user, char *pass, uint recvMax, uint sizeMax, int recvAndDelete) // ret: releaseDim(mailRecv(), 2);
@@ -144,6 +148,7 @@ autoList_t *mailRecv(char *popServer, uint portno, char *user, char *pass, uint 
 	cout("recvMax: %u\n", recvMax);
 	cout("sizeMax: %u\n", sizeMax);
 	cout("recvAndDelete: %d\n", recvAndDelete);
+	LOGPOS_T();
 
 	UserName = user;
 	Passphrase = pass;
@@ -159,6 +164,7 @@ autoList_t *mailRecv(char *popServer, uint portno, char *user, char *pass, uint 
 
 	mailUnlock();
 
+	LOGPOS_T();
 	cout("%u mail(s) recv.\n", getCount(MailList));
 	return MailList;
 }

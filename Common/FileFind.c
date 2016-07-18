@@ -379,3 +379,103 @@ uint lsCount(char *dir)
 
 	return count;
 }
+
+// ---- cmdDir ----
+
+static void CD_ExecBatch(char *dir, char *trailOpts, char *outFile)
+{
+	char *batFile = makeTempPath("bat");
+	char *midFile = makeTempPath(NULL);
+	FILE *rfp;
+	FILE *wfp;
+
+	wfp = fileOpen(batFile, "wt");
+	writeLine(wfp, "DIRCMD=");
+	writeLine_x(wfp, xcout("DIR \"%s\" %s > \"%s\"", dir, trailOpts, midFile));
+	fileClose(wfp);
+
+	execute_x(xcout("CMD /C \"%s\"", batFile));
+
+	dir = makeFullPath(dir);
+
+	rfp = fileOpen(midFile, "rt");
+	wfp = fileOpen(outFile, "at");
+
+	for(; ; )
+	{
+		char *line = readLine(rfp);
+		char *path;
+
+		if(!line)
+			break;
+
+		path = combine(dir, line);
+		writeLine(wfp, path);
+		memFree(path);
+	}
+	removeFile_x(batFile);
+	removeFile_x(midFile);
+	memFree(dir);
+}
+void cmdDir_ls2File(char *dir, char *dirsFile, char *filesFile)
+{
+	removeFileIfExist(dirsFile);
+	removeFileIfExist(filesFile);
+
+	CD_ExecBatch(dir, "/AD /B", dirsFile);
+	CD_ExecBatch(dir, "/A-D /B", filesFile);
+}
+void cmdDir_lss2File(char *dir, char *dirsFile, char *filesFile)
+{
+	FILE *fp;
+
+	cmdDir_ls2File(dir, dirsFile, filesFile);
+
+	fp = fileOpen(dirsFile, "rt");
+
+	for(; ; )
+	{
+		char *subDir = readLine(fp);
+
+		if(!subDir)
+			break;
+
+		cmdDir_ls2File(subDir, dirsFile, filesFile);
+	}
+	fileClose(fp);
+}
+static autoList_t *CD_CallFunc(char *dir, void (*func)(char *, char *, char *), int dirMode)
+{
+	char *dirsFile = makeTempPath(NULL);
+	char *filesFile = makeTempPath(NULL);
+	autoList_t *ret;
+
+	func(dir, dirsFile, filesFile);
+
+	if(dirMode)
+		ret = readLines(dirsFile);
+	else
+		ret = readLines(filesFile);
+
+	removeFile_x(dirsFile);
+	removeFile_x(filesFile);
+	return ret;
+}
+autoList_t *cmdDir_lsFiles(char *dir)
+{
+	return CD_CallFunc(dir, cmdDir_ls2File, 0);
+}
+autoList_t *cmdDir_lsDirs(char *dir)
+{
+	return CD_CallFunc(dir, cmdDir_ls2File, 1);
+}
+autoList_t *cmdDir_lssFiles(char *dir)
+{
+	return CD_CallFunc(dir, cmdDir_lss2File, 0);
+}
+autoList_t *cmdDir_lssDirs(char *dir)
+{
+	return CD_CallFunc(dir, cmdDir_lss2File, 1);
+}
+
+// ----

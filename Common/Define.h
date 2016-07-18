@@ -46,8 +46,14 @@ typedef unsigned __int64 uint64;
 #define foreach(list, element, index) \
 	for(index = 0; index < getCount(list) ? (*(uint *)&element = getElement(list, index), 1) : (*(uint *)&element = 0); index++)
 
+#define LOGPOS2(mode) \
+	cout("%s (%d) %s %u %s\n", __FILE__, __LINE__, __FUNCTION__, GetCurrentThreadId(), LOGPOS_Time(mode))
+
 #define LOGPOS() \
-	cout("%s (%d) %s %u %s\n", __FILE__, __LINE__, __FUNCTION__, GetCurrentThreadId(), LOGPOS_Time())
+	LOGPOS2(0)
+
+#define LOGPOS_T() \
+	LOGPOS2('T')
 
 #define m_swap(lop1, lop2, TYPE_T) \
 	do { \

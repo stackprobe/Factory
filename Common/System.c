@@ -699,9 +699,9 @@ foundPath:
 
 // ----
 
-char *LOGPOS_Time(void)
+char *LOGPOS_Time(int mode)
 {
-	static char buff[66]; // 最大値 -> "307445734561825:51.615 18446744073709551615 +18446744073709551615" == 65文字
+	static char buff[93]; // 最長になるケース -> "307445734561825:51.615 18446744073709551615 +18446744073709551615 @ Thu Jan 01 16:59:59 3001" == 92文字
 	static uint64 firstMillis;
 	static uint64 lastMillis;
 	uint64 millis = nowTick();
@@ -725,6 +725,17 @@ char *LOGPOS_Time(void)
 			,millis - firstMillis
 			,millis - lastMillis
 			);
+	}
+	if(mode == 'T')
+	{
+		char *p = strchr(buff, '\0');
+		char *stamp = makeStamp(0L);
+
+		*p++ = ' ';
+		*p++ = '@';
+		*p++ = ' ';
+		strcpy(p, stamp);
+		memFree(stamp);
 	}
 	lastMillis = millis;
 	return buff;

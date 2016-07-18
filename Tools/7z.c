@@ -10,6 +10,7 @@
 
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Collabo.h"
+#include "C:\Factory\Meteor\7z.h"
 
 static int ExtractSameDir;
 
@@ -18,7 +19,7 @@ static char *Get7zExeFile(void) // ret: 空白を含まないパスであること。
 	static char *file;
 
 	if(!file)
-		file = GetCollaboFile("C:\\app\\7z1602-extra\\7za.exe");
+		file = GetCollaboFile(FILE_7Z_EXE);
 
 	return file;
 }
@@ -91,7 +92,7 @@ readArgs:
 	if(argIs("/C"))
 	{
 		cout("+----------------+\n");
-		cout("| カレントに展開 |\n");
+		cout("| 同じ場所に展開 |\n");
 		cout("+----------------+\n");
 
 		ExtractSameDir = 1;

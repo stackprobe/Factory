@@ -187,7 +187,8 @@ static void DistributeOne(autoList_t *mail, char *groupName, char *memberFrom, c
 	addElement(sendData, (uint)strx(""));
 	addLines_x(sendData, GetMailBody(mail));
 
-	sendMailEx2(SmtpServer, SmtpPortno, memberFrom, memberTo, sendData);
+//	sendMailEx2(SmtpServer, SmtpPortno, memberFrom, memberTo, sendData); // bug ? @ 2016.7.19
+	sendMailEx2(SmtpServer, SmtpPortno, SelfMailAddress, memberTo, sendData);
 
 endfunc:
 	memFree(date);
@@ -337,9 +338,7 @@ static void RecvLoop(void)
 			*/
 //			coSleep(3000); // moved @ 2016.6.28
 
-			cout("RecvEvent.1.now: %s\n", c_makeJStamp(NULL, 0));
 			RecvEvent(mail);
-			cout("RecvEvent.2.now: %s\n", c_makeJStamp(NULL, 0));
 		}
 		releaseDim(mails, 2);
 

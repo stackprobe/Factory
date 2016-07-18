@@ -61,4 +61,6 @@ void setArgIndex(uint index);
 
 char *innerResPathFltr(char *path);
 
-char *LOGPOS_Time(void);
+// ----
+
+char *LOGPOS_Time(int mode);

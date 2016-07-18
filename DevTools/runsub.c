@@ -1,5 +1,5 @@
 /*
-	> runsub.exe [/-B] [/-S | /-R] [/R ROOT-DIR] [/T TIMEWAIT-SEC] [/TM TIMEWAIT-MILLIS]
+	> runsub.exe [/-B] [/-S | /-R] [/R ROOT-DIR] [/T TIMEWAIT-SEC] [/TM TIMEWAIT-MILLIS] TARGET
 
 		/-B             ... 実行するプログラムの終了を待たずに次へ進む。
 		/-S             ... サブディレクトリを無視する。
@@ -7,6 +7,9 @@
 		ROOT-DIR        ... 検索のルートディレクトリを指定する。デフォ = 実行時のカレント
 		TIMEWAIT-SEC    ... プログラムを実行する度に待つ秒数。
 		TIMEWAIT-MILLIS ... プログラムを実行する度に待つミリ秒数。
+		TARGET          ... 実行するプログラムのノード名
+		                    全てのプログラムを実行する場合は * を指定する。
+		                    *PTN とすると部分一致になる。
 */
 
 #include "C:\Factory\Common\all.h"

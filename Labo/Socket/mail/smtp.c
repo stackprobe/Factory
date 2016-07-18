@@ -64,6 +64,8 @@ static void Perform(int sock)
 	char *line;
 	uint index;
 
+	LOGPOS_T();
+
 	if(RecvStatus(ss) != 220)
 		goto endfunc;
 
@@ -107,6 +109,7 @@ static void Perform(int sock)
 
 endfunc:
 	ReleaseSockStream(ss);
+	LOGPOS_T();
 }
 int sendMail(char *smtpServer, uint portno, char *sendFrom, char *sendTo, autoList_t *mail) // ret: ? Successful
 {
@@ -118,6 +121,7 @@ int sendMail(char *smtpServer, uint portno, char *sendFrom, char *sendTo, autoLi
 	cout("sendFrom: %s\n", sendFrom);
 	cout("sendTo: %s\n", sendTo);
 	cout("mail: %u line(s)\n", getCount(mail));
+	LOGPOS_T();
 
 	MailFrom = sendFrom;
 	MailTo = sendTo;
@@ -131,6 +135,7 @@ int sendMail(char *smtpServer, uint portno, char *sendFrom, char *sendTo, autoLi
 
 	mailUnlock();
 
+	LOGPOS_T();
 	cout("send mail condition: %d\n", Successful);
 	return Successful;
 }
