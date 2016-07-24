@@ -61,6 +61,7 @@
 
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\CRandom.h"
+#include "C:\Factory\OpenSource\md5.h"
 #include "C:\Factory\Meteor\7z.h"
 
 /*
@@ -120,6 +121,10 @@ static void PackZipFile(char *zipFile, char *srcDir)
 	addCwd(srcDir);
 	coExecute_x(xcout("%s a \"%s\" *", GetZip7File(), zipFile));
 	unaddCwd();
+
+	cout("+--- zip md5 ----------------------+\n");
+	cout("| %s |\n", md5_makeHexHashFile(zipFile));
+	cout("+----------------------------------+\n");
 }
 static uint InputVersion(void) // ret: 0 == canel, 1 Å` 999 == "0.01" Å` "9.99", VER_BETA == BETA
 {
