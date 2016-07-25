@@ -368,6 +368,7 @@ static void MakeAppIndex(char *rootDir, AppInfo_t *ai, char *appIndexFmt, char *
 	appIndexFmt = replaceLine(appIndexFmt, "*app-name*", ai->AppName, 0);
 	appIndexFmt = replaceLine(appIndexFmt, "*newest*", getLine(dlLinkList, 0), 0);
 	appIndexFmt = replaceLine(appIndexFmt, "*newest-rev*", ((RevInfo_t *)getElement(ai->RevInfos, 0))->Rev, 0);
+	appIndexFmt = replaceLine(appIndexFmt, "*newest-md5*", ((RevInfo_t *)getElement(ai->RevInfos, 0))->Hash, 0);
 
 	{
 		char *description = strx(ai->Description);
