@@ -227,6 +227,10 @@ static char *GetRandColor(uint hexlow, uint hexhi)
 }
 */
 
+#define ESCPTN_1 "__\x1b_1__"
+#define ESCPTN_2 "__\x1b_2__"
+#define ESCPTN_3 "__\x1b_3__"
+
 static char *B_LinkColor = "#0080ff";
 static char *B_BackColor = "#ffffff";
 static char *B_TextColor = "#000000";
@@ -261,9 +265,13 @@ static void Perform_FindPtn(ConnInfo_t *i, char *ttlPath, char *findPtn)
 	}
 	*/
 
-	body = replaceLine(body, "__LINK-COLOR__", B_LinkColor, 0);
-	body = replaceLine(body, "__BACK-COLOR__", B_BackColor, 0);
-	body = replaceLine(body, "__TEXT-COLOR__", B_TextColor, 0);
+	body = replaceLine(body, "__LINK-COLOR__", ESCPTN_1, 0);
+	body = replaceLine(body, "__BACK-COLOR__", ESCPTN_2, 0);
+	body = replaceLine(body, "__TEXT-COLOR__", ESCPTN_3, 0);
+
+	body = replaceLine(body, ESCPTN_1, B_LinkColor, 0);
+	body = replaceLine(body, ESCPTN_2, B_BackColor, 0);
+	body = replaceLine(body, ESCPTN_3, B_TextColor, 0);
 
 	{
 		autoList_t *list = TryGetFileList(findPtn);
@@ -282,9 +290,13 @@ static void Perform_FindPtn(ConnInfo_t *i, char *ttlPath, char *findPtn)
 
 				element = strx(element);
 
-				element = replaceLine(element, "__INFO__", info, 0); // 先に, ファイル名にパターンがあると置換されてしまう。
-				element = replaceLine(element, "__NAME__", name, 0);
-				element = replaceLine(element, "__HREF__", nameUrl, 0);
+				element = replaceLine(element, "__NAME__", ESCPTN_1, 0);
+				element = replaceLine(element, "__INFO__", ESCPTN_2, 0);
+				element = replaceLine(element, "__HREF__", ESCPTN_3, 0);
+
+				element = replaceLine(element, ESCPTN_1, name, 0);
+				element = replaceLine(element, ESCPTN_2, info, 0);
+				element = replaceLine(element, ESCPTN_3, nameUrl, 0);
 
 				addElement(wLines, (uint)element);
 
