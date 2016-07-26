@@ -401,6 +401,11 @@ static void CD_ExecBatch(char *dir, char *trailOpts, char *outFile)
 	rfp = fileOpen(midFile, "rt");
 	wfp = fileOpen(outFile, "at");
 
+	/*
+		ファイル・ディレクトリが１つも無ければ、midFile は空(0バイト)になる。
+		0 バイトのファイルを開くと、readLine() は初回から NULL を返す。-> ""(空行)が追加されることはない！
+	*/
+
 	for(; ; )
 	{
 		char *line = readLine(rfp);
@@ -409,8 +414,15 @@ static void CD_ExecBatch(char *dir, char *trailOpts, char *outFile)
 		if(!line)
 			break;
 
+		if(!*line) // これは無いはずだけど、念のため。
+		{
+			LOGPOS();
+			memFree(line);
+			continue;
+		}
 		path = combine(dir, line);
 		writeLine(wfp, path);
+		memFree(line);
 		memFree(path);
 	}
 	fileClose(rfp);
@@ -459,6 +471,11 @@ static autoList_t *CD_CallFunc(char *dir, void (*func)(char *, char *, char *), 
 	autoList_t *ret;
 
 	func(dir, dirsFile, filesFile);
+
+	/*
+		ファイル・ディレクトリが１つも無ければ、dirsFile, filesFile は空(0バイト)になる。
+		0 バイトのファイルを readLines() すると { } を返す。-> { "" } とか、空行を含むリストを返すことはない！
+	*/
 
 	if(dirMode)
 		ret = readLines(dirsFile);
