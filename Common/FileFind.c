@@ -386,12 +386,14 @@ static void CD_ExecBatch(char *dir, char *trailOpts, char *outFile)
 {
 	char *batFile = makeTempPath("bat");
 	char *midFile = makeTempPath(NULL);
+	char *erroutFile = makeTempPath(NULL);
 	FILE *rfp;
 	FILE *wfp;
 
 	wfp = fileOpen(batFile, "wt");
+	writeLine(wfp, "@ECHO OFF");
 	writeLine(wfp, "SET DIRCMD=");
-	writeLine_x(wfp, xcout("DIR \"%s\" %s > \"%s\"", dir, trailOpts, midFile));
+	writeLine_x(wfp, xcout("DIR \"%s\" %s 1> \"%s\" 2> \"%s\"", dir, trailOpts, midFile, erroutFile));
 	fileClose(wfp);
 
 	execute_x(xcout("CMD /C \"%s\"", batFile));
@@ -430,6 +432,7 @@ static void CD_ExecBatch(char *dir, char *trailOpts, char *outFile)
 
 	removeFile_x(batFile);
 	removeFile_x(midFile);
+	removeFile_x(erroutFile);
 
 	memFree(dir);
 }

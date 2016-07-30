@@ -26,6 +26,8 @@ int main(int argc, char **argv)
 	uint timeWaitNumPeak = 0;
 	uint totalNumPeak = 0;
 
+	hasArgs(0); // for ReadSysArgs()
+
 	for(loopcnt = 0; ; loopcnt++)
 	{
 		char *outText;

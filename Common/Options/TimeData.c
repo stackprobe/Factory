@@ -133,7 +133,7 @@ TimeData_t ResStamp2TimeData(uint64 prmStamp)
 	{
 		stamp *= 10000;
 	}
-	else if(stamp < 10000000000) // ? YYYYMMDDHHMM
+	else if(stamp < 1000000000000) // ? YYYYMMDDHHMM
 	{
 		stamp *= 100;
 	}
