@@ -15,7 +15,7 @@ autoList_t *GetPriceDay(uint date, char *pair)
 		FixedCache    = CreatePriceDayCache();
 		SnapshotCache = CreatePriceDayCache();
 
-		DummyPriceDay = GetDummyPriceDay();
+		DummyPriceDay = LoadDummyPriceDay();
 
 		ExecuteCollect();
 		inited = 1;

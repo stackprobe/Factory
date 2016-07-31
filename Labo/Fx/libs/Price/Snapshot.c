@@ -35,7 +35,7 @@ autoList_t *GetSnapshotPriceDay(uint date, char *pair)
 	char *file = GetPriceDayFile(SS_DIR, date, pair);
 	autoList_t *list;
 
-	list = GetPriceDay_File(file);
+	list = LoadPriceDay(file);
 	memFree(file);
 	return list;
 }

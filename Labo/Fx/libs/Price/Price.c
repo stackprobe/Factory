@@ -9,6 +9,10 @@ Price_t *CreatePrice(double bid, double ask)
 
 	return i;
 }
+Price_t *CopyPrice(Price_t *i)
+{
+	return CreatePrice(i->Bid, i->Ask);
+}
 void ReleasePrice(Price_t *i)
 {
 	if(!i)

@@ -1,6 +1,6 @@
 typedef struct PriceDayCache_st
 {
-	int Dummy;
+	rbTree_t *Tree;
 }
 PriceDayCache_t;
 

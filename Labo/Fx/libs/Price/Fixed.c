@@ -16,7 +16,7 @@ autoList_t *GetFixedPriceDay(uint date, char *pair)
 	char *file = GetPriceDayFile(FIXED_DIR, date, pair);
 	autoList_t *list;
 
-	list = GetPriceDay_File(file);
+	list = LoadPriceDay(file);
 	memFree(file);
 	return list;
 }

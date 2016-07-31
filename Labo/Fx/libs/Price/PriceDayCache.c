@@ -4,11 +4,21 @@
 
 #include "all.h"
 
+static void CreateTree(PriceDayCache_t *i)
+{
+	i->Tree = rbCreateTree((uint (*)(uint))strx, (sint (*)(uint, uint))strcmp, (void (*)(uint))memFree);
+}
+static void ReleaseTree(PriceDayCache_t *i)
+{
+	rbtCallAllValue(i->Tree, (void (*)(uint))ReleasePriceDay);
+	rbReleaseTree(i->Tree);
+}
+
 PriceDayCache_t *CreatePriceDayCache(void)
 {
 	PriceDayCache_t *i = nb(PriceDayCache_t);
 
-	i->Dummy = 0;
+	CreateTree(i);
 
 	return i;
 }
@@ -17,23 +27,36 @@ void ReleasePriceDayCache(PriceDayCache_t *i)
 	if(!i)
 		return;
 
+	ReleaseTree(i);
 	memFree(i);
 }
 
 // <-- cdtor
 
-autoList_t *PDC_GetPriceDay(PriceDayCache_t *i, uint date, char *pair)
+static uint GetKey(uint date, char *pair)
 {
-	error(); // TODO
-	return NULL;
+	static char *key;
+
+	memFree(key);
+	key = xcout("%08u_%s", date, pair);
+	return (uint)key;
+}
+
+autoList_t *PDC_GetPriceDay(PriceDayCache_t *i, uint date, char *pair) // ret: NULL == not found
+{
+	if(!rbtHasKey(i->Tree, GetKey(date, pair)))
+		return NULL;
+
+	return (autoList_t *)rbtGetValue(i->Tree, GetKey(date, pair));
 }
 void PDC_AddPriceDay(PriceDayCache_t *i, uint date, char *pair, autoList_t *list)
 {
-	error(); // TODO
+	rbtAddValue(i->Tree, GetKey(date, pair), (uint)list);
 }
 void PDC_Clear(PriceDayCache_t *i)
 {
-	error(); // TODO
+	ReleaseTree(i);
+	CreateTree(i);
 }
 
 // <-- accessor

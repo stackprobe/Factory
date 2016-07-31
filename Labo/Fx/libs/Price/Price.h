@@ -6,6 +6,7 @@ typedef struct Price_st
 Price_t;
 
 Price_t *CreatePrice(double bid, double ask);
+Price_t *CopyPrice(Price_t *i);
 void ReleasePrice(Price_t *i);
 
 // <-- cdtor
