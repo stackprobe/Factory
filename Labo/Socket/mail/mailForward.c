@@ -83,17 +83,20 @@ static char *MakeSubjectFrom(char *groupName, char *mailFrom, uint counter)
 }
 static char *MakeDateField(void)
 {
+	stampData_t tmpsd;
+
 	updateStampDataTime(0L);
+	tmpsd = lastStampData;
 
 	return xcout(
 		"%s, %u %s %04u %02u:%02u:%02u +0900"
-		,getEWeekDay(lastStampData.weekday)
-		,lastStampData.day
-		,getEMonth(lastStampData.month)
-		,lastStampData.year
-		,lastStampData.hour
-		,lastStampData.minute
-		,lastStampData.second
+		,getEWeekDay(tmpsd.weekday)
+		,tmpsd.day
+		,getEMonth(tmpsd.month)
+		,tmpsd.year
+		,tmpsd.hour
+		,tmpsd.minute
+		,tmpsd.second
 		);
 }
 

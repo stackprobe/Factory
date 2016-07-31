@@ -17,14 +17,18 @@ TimeData_t;
 
 TimeData_t GetTimeData(uint y, uint m, uint d, uint h, uint i, uint s);
 
-TimeData_t Sec2TimeData(uint64 sec);
-uint64 TimeData2Sec(TimeData_t i);
+TimeData_t TSec2TimeData(uint64 tSec);
+uint64 TimeData2TSec(TimeData_t td);
 
 TimeData_t Stamp2TimeData(uint64 stamp);
 uint64 TimeData2Stamp(TimeData_t td);
 
+uint64 Posix2TSec(uint64 t);
+uint64 TSec2Posix(uint64 tSec);
+
 TimeData_t GetNowTimeData(void);
-uint64 GetNowSec(void);
+uint64 GetNowTSec(void);
+uint64 GetNowPosix(void);
 
 TimeData_t ResStamp2TimeData(uint64 prmStamp);
 TimeData_t Res2TimeData(char *prm);

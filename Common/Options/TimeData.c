@@ -1,4 +1,12 @@
+/*
+	TSec (time second) == ローカル時間 0001/01/01 00:00:00 からの経過秒数
+
+	Epoch, Epoch Time == ローカル時間 1970/01/01 00:00:00 からの経過秒数
+*/
+
 #include "TimeData.h"
+
+#define EPOCH_ZERO_TSEC 62135596800ui64
 
 TimeData_t GetTimeData(uint y, uint m, uint d, uint h, uint i, uint s)
 {
@@ -15,35 +23,35 @@ TimeData_t GetTimeData(uint y, uint m, uint d, uint h, uint i, uint s)
 	return td;
 }
 
-TimeData_t Sec2TimeData(uint64 sec)
+TimeData_t TSec2TimeData(uint64 tSec)
 {
 	TimeData_t td;
 
-	td.S = sec % 60;
-	sec /= 60;
-	td.I = sec % 60;
-	sec /= 60;
-	td.H = sec % 24;
-	sec /= 24;
+	td.S = tSec % 60;
+	tSec /= 60;
+	td.I = tSec % 60;
+	tSec /= 60;
+	td.H = tSec % 24;
+	tSec /= 24;
 
-	Day2Date(sec, &td.Y, &td.M, &td.D);
+	Day2Date(tSec, &td.Y, &td.M, &td.D);
 
-	td.W = (uint)(sec % 7);
+	td.W = (uint)(tSec % 7);
 
 	return td;
 }
-uint64 TimeData2Sec(TimeData_t td)
+uint64 TimeData2TSec(TimeData_t td)
 {
-	uint64 sec = Date2Day(td.Y, td.M, td.D);
+	uint64 tSec = Date2Day(td.Y, td.M, td.D);
 
-	sec *= 24;
-	sec += td.H;
-	sec *= 60;
-	sec += td.I;
-	sec *= 60;
-	sec += td.S;
+	tSec *= 24;
+	tSec += td.H;
+	tSec *= 60;
+	tSec += td.I;
+	tSec *= 60;
+	tSec += td.S;
 
-	return sec;
+	return tSec;
 }
 
 TimeData_t Stamp2TimeData(uint64 stamp)
@@ -83,6 +91,15 @@ uint64 TimeData2Stamp(TimeData_t td)
 	return stamp;
 }
 
+uint64 Epoch2TSec(uint64 t)
+{
+	return (uint64)t + EPOCH_ZERO_TSEC;
+}
+uint64 TSec2Epoch(uint64 tSec)
+{
+	return (time_t)(tSec - EPOCH_ZERO_TSEC);
+}
+
 TimeData_t GetNowTimeData(void)
 {
 	stampData_t *sd = getStampDataTime(0);
@@ -98,9 +115,13 @@ TimeData_t GetNowTimeData(void)
 
 	return td;
 }
-uint64 GetNowSec(void)
+uint64 GetNowTSec(void)
 {
-	return TimeData2Sec(GetNowTimeData());
+	return TimeData2TSec(GetNowTimeData());
+}
+uint64 GetNowEpoch(void) // == time(NULL) + ローカル時間
+{
+	return TSec2Epoch(GetNowTSec());
 }
 
 TimeData_t ResStamp2TimeData(uint64 prmStamp)
@@ -139,7 +160,7 @@ TimeData_t ResStamp2TimeData(uint64 prmStamp)
 	}
 
 	td = Stamp2TimeData(stamp);
-	td = Sec2TimeData(TimeData2Sec(td)); // fltr
+	td = TSec2TimeData(TimeData2TSec(td)); // fltr
 
 	cout("%I64u -> %04u/%02u/%02u %02u:%02u:%02u\n", prmStamp, td.Y, td.M, td.D, td.H, td.I, td.S); // debug-out
 

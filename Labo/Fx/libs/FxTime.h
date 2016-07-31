@@ -1,2 +1,2 @@
-time_t FxTime2Time(uint fxTime);
-uint Time2FxTime(time_t t);
+uint64 FxTime2TSec(uint fxTime);
+uint TSec2FxTime(uint64 tSec);

@@ -1,2 +1,2 @@
-Price_t *GetPrice_T(time_t t);
-Price_t *GetPrice(uint fxTime);
+Price_t *GetPrice_TSec(uint64 tSec, char *pair);
+Price_t *GetPrice(uint fxTime, char *pair);
