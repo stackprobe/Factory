@@ -1,5 +1,17 @@
 #include "all.h"
 
+static int IsAllZero(autoList_t *list)
+{
+	Price_t *i;
+	uint index;
+
+	foreach(list, i, index)
+		if(i != NULL)
+			return 0;
+
+	return 1;
+}
+
 // ---- normalize ----
 
 static void CompletionLead(autoList_t *list)
@@ -8,7 +20,7 @@ static void CompletionLead(autoList_t *list)
 	uint rIndex;
 
 	for(rIndex = 0; ; rIndex++)
-		if(!getElement(list, rIndex))
+		if(getElement(list, rIndex))
 			break;
 
 	for(index = 0; index < rIndex; index++)
@@ -20,7 +32,7 @@ static void CompletionTrail(autoList_t *list)
 	uint rIndex;
 
 	for(rIndex = getCount(list) - 1; ; rIndex--)
-		if(!getElement(list, rIndex))
+		if(getElement(list, rIndex))
 			break;
 
 	for(index = getCount(list) - 1; rIndex < index; index--)
@@ -66,6 +78,10 @@ static void Completion(autoList_t *list)
 {
 	uint index;
 
+	errorCase(IsAllZero(list)); // ? ファイルはあるけど、中には１件も入ってない。
+	// ダミーデータにしてもいいか..
+	// 有り得ないはずなので、とりあえずエラー扱いにしておく。
+
 	/*
 		１回以上連続する失敗の直後に取得されたデータは何時のデータか分からないので捨てる。
 		但し、その直後も失敗していたら捨てない。
@@ -83,6 +99,8 @@ static void Completion(autoList_t *list)
 			index++;
 		}
 	}
+
+	errorCase(IsAllZero(list)); // 2bs
 
 	CompletionLead(list);
 	CompletionTrail(list);

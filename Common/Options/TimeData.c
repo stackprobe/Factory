@@ -2,6 +2,8 @@
 	TSec (time second) == ローカル時間 0001/01/01 00:00:00 からの経過秒数
 
 	Epoch, Epoch Time == ローカル時間 1970/01/01 00:00:00 からの経過秒数
+
+	time(NULL) は UTC の 1970/01/01 00:00:00 からの経過秒数であることに注意！
 */
 
 #include "TimeData.h"
