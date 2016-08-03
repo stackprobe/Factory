@@ -11,19 +11,17 @@
 #define TRADING_TIME (END_TIME - START_TIME) // ŽæˆøŽžŠÔ
 #define INTERVAL_TIME (TIME_CYCLE - TRADING_TIME) // ‚¨‹x‚ÝŽžŠÔ
 
-uint64 FxTime2TSec(uint fxTime)
+uint64 FxTime2TSec(uint64 fxTime)
 {
-	uint count = fxTime / TRADING_TIME;
-	uint rem   = fxTime % TRADING_TIME;
+	uint64 count = fxTime / TRADING_TIME;
+	uint64 rem   = fxTime % TRADING_TIME;
 
 	return count * TIME_CYCLE + rem + START_TIME;
 }
-uint TSec2FxTime(uint64 tSec)
+uint64 TSec2FxTime(uint64 tSec)
 {
 	uint64 count = tSec / TIME_CYCLE;
 	uint64 rem   = tSec % TIME_CYCLE;
-
-	m_range(rem, START_TIME, END_TIME);
 
 	return count * TRADING_TIME + rem - START_TIME;
 }

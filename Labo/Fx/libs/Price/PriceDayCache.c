@@ -47,7 +47,7 @@ autoList_t *PDC_GetPriceDay(PriceDayCache_t *i, uint date, char *pair) // ret: N
 	if(!rbtHasKey(i->Tree, GetKey(date, pair)))
 		return NULL;
 
-	return (autoList_t *)rbtGetValue(i->Tree, GetKey(date, pair));
+	return (autoList_t *)rbtGetLastAccessValue(i->Tree);
 }
 void PDC_AddPriceDay(PriceDayCache_t *i, uint date, char *pair, autoList_t *list)
 {
