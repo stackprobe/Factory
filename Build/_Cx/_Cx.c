@@ -3,6 +3,8 @@
 #define CLSTDERR "_$e.tmp"
 #define CLSTDOUT "_$o.tmp"
 
+#define CLOPTIONS "/W2 /w24013 /WX /Oxt /J /GF"
+
 #define BUILT_TIME_MARGIN 0
 
 enum
@@ -241,7 +243,7 @@ static void Build(char *module, uint remCount) // remCount: 0 == –³Œø
 		remove(objfile);
 		remove(exefile);
 
-		execute_x(xcout("2> " CLSTDERR " > " CLSTDOUT " CL /W2 /WX /Oxt /J /GF /c %s", source));
+		execute_x(xcout("2> " CLSTDERR " > " CLSTDOUT " CL " CLOPTIONS " /c %s", source));
 
 		BuiltObjCount++;
 		addElement(BuiltLines, (uint)xcout("BUILT_OBJ %s", objfile));
@@ -270,7 +272,7 @@ static void Build(char *module, uint remCount) // remCount: 0 == –³Œø
 		remove(objfile);
 		remove(exefile);
 
-		execute_x(xcout("2> " CLSTDERR " > " CLSTDOUT " CL /W2 /WX /Oxt /J /GF %s @%s", source, response));
+		execute_x(xcout("2> " CLSTDERR " > " CLSTDOUT " CL " CLOPTIONS " %s @%s", source, response));
 
 		BuiltExeCount++;
 		addElement(BuiltLines, (uint)xcout("BUILT_EXE %s", exefile));

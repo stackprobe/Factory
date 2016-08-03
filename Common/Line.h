@@ -47,6 +47,7 @@ char *strx(char *line);
 char *strr(char *line);
 char *strxl(char *line, uint count);
 char *strz(char *buffer, char *line);
+void strzp(char **p_buffer, char *line);
 
 char *strxRng(char *p, char *q);
 

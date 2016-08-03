@@ -40,7 +40,11 @@ autoList_t *GetPriceDay(uint date, char *pair)
 		ExecuteSnapshot();
 		PDC_Clear(SnapshotCache);
 
-		SnapshotReloaded();
+		{
+			void SnapshotReloaded(void); // ..\Common.h
+
+			SnapshotReloaded();
+		}
 
 		lastSnapshotTime = now();
 	}

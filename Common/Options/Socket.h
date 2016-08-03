@@ -16,6 +16,9 @@
 
 #define SOCK_SIGNATURE "X-GET\x20"
 
+void SockPostOpen(int sock);
+void SockPreClose(int sock);
+
 int sock_hasKey(void);
 
 char *SockIp2Line(uchar ip[4]);
