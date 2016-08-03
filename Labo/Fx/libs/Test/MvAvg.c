@@ -7,9 +7,9 @@
 
 int main(int argc, char **argv)
 {
-	uint64 bgnFxTime = TSec2FxTime(TimeData2TSec(Stamp2TimeData(BGN_STAMP)));
-	uint64 endFxTime = TSec2FxTime(TimeData2TSec(Stamp2TimeData(END_STAMP)));
-	uint64 fxTime;
+	uint bgnFxTime = TSec2FxTime(TimeData2TSec(Stamp2TimeData(BGN_STAMP)));
+	uint endFxTime = TSec2FxTime(TimeData2TSec(Stamp2TimeData(END_STAMP)));
+	uint fxTime;
 
 	for(fxTime = bgnFxTime; fxTime <= endFxTime; fxTime += 2)
 	{

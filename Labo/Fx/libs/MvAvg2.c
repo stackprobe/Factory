@@ -1,6 +1,6 @@
 #include "all.h"
 
-MvAvg_t *CreateMvAvg(uint64 fxTime, uint64 span, char *pair)
+MvAvg_t *CreateMvAvg(uint fxTime, uint span, char *pair)
 {
 	MvAvg_t *i = nb(MvAvg_t);
 
@@ -27,7 +27,7 @@ void ReleaseMvAvg(MvAvg_t *i)
 
 // <-- cdtor
 
-static void DoShift(MvAvg_t *i, uint64 fxTime)
+static void DoShift(MvAvg_t *i, uint fxTime)
 {
 	if(i->CurrFxTime)
 	if(fxTime < i->CurrFxTime - i->Span / 2 || i->CurrFxTime < fxTime - i->Span / 2)
@@ -62,7 +62,7 @@ static void DoShift(MvAvg_t *i, uint64 fxTime)
 	}
 }
 
-double MA_GetMid(MvAvg_t *i, uint64 fxTime)
+double MA_GetMid(MvAvg_t *i, uint fxTime)
 {
 	errorCase(fxTime & 1);
 	errorCase(fxTime < i->Span);

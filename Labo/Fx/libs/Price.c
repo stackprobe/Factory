@@ -12,7 +12,7 @@ Price_t *GetPrice_TSec(uint64 tSec, char *pair)
 
 	return (Price_t *)getElement(GetPriceDay(date, pair), index);
 }
-Price_t *GetPrice(uint64 fxTime, char *pair)
+Price_t *GetPrice(uint fxTime, char *pair)
 {
 	return GetPrice_TSec(FxTime2TSec(fxTime), pair);
 }

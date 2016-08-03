@@ -31,7 +31,7 @@ static uint GetKey(uint64 span, char *pair)
 
 // ----
 
-MvAvg_t *MAC_GetMvAvg(uint64 fxTime, uint64 span, char *pair)
+MvAvg_t *MAC_GetMvAvg(uint fxTime, uint span, char *pair)
 {
 	MvAvg_t *i;
 
