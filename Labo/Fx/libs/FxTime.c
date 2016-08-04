@@ -30,6 +30,8 @@ uint TSec2FxTime(uint64 tSec)
 	uint64 rem   = tSec % TIME_CYCLE;
 	uint64 tmp;
 
+	errorCase(rem < START_TIME || END_TIME <= rem);
+
 	tmp = count * TRADING_TIME + rem - START_TIME;
 	tmp -= EPOCH_ZERO_FXTIME;
 

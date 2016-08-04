@@ -20,11 +20,16 @@ static void Test02(void)
 
 	for(fxTime = bgnFxTime; fxTime <= endFxTime; fxTime += 2)
 	{
-		cout("%I64u,%I64u,%u\n"
+		uint t;
+
+		cout("%I64u,%I64u,%u,%u\n"
 			,TimeData2Stamp(TSec2TimeData(FxTime2TSec(fxTime)))
 			,FxTime2TSec(fxTime)
 			,fxTime
+			,t = TSec2FxTime(FxTime2TSec(fxTime))
 			);
+
+		errorCase(t != fxTime);
 	}
 }
 
