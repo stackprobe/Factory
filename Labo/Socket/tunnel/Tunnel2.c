@@ -52,7 +52,7 @@ static void WriteLog(uint conId, int direction, autoBlock_t *rawData)
 	{
 		int chr = getByte(rawData, index);
 
-		if(m_isasciikana(chr) && chr != '\\')
+		if(m_isasciikana(chr) && chr != '"' && chr != '\\')
 		{
 			writeChar(OutputFp, chr);
 		}
