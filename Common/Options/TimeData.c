@@ -121,6 +121,10 @@ uint64 GetNowTSec(void)
 {
 	return TimeData2TSec(GetNowTimeData());
 }
+uint64 GetNowStamp(void)
+{
+	return TimeData2Stamp(GetNowTimeData());
+}
 uint64 GetNowEpoch(void) // == time(NULL) + ƒ[ƒJƒ‹ŠÔ
 {
 	return TSec2Epoch(GetNowTSec());

@@ -77,6 +77,10 @@ void noop_uu(uint dummy1, uint dummy2)
 {
 	// noop
 }
+uint echo_u(uint prm)
+{
+	return prm;
+}
 uint getZero(void)
 {
 	return 0;

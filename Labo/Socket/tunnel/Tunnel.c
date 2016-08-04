@@ -6,11 +6,11 @@
 	Tunnel.exe RECV-PORT FWD-HOST FWD-PORT [/C CONNECT-MAX] [/F LOG-FILE | /A LOG-FILE] [/U | /D]
 
 		CONNECT-MAX ... 最大接続数, 省略時は 1000
-		/F ... 新規 or 上書き
-		/A ... 新規 or 追記
-		LOG-FILE ... ログファイル
-		/U ... アップロードのみ
-		/D ... ダウンロードのみ
+		/F          ... 新規 or 上書き
+		/A          ... 新規 or 追記
+		LOG-FILE    ... ログファイル
+		/U          ... アップロードのみ
+		/D          ... ダウンロードのみ
 */
 
 #include "libs\Tunnel.h"

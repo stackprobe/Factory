@@ -18,6 +18,7 @@ void coSleep(uint millis);
 void noop(void);
 void noop_u(uint dummy);
 void noop_uu(uint dummy1, uint dummy2);
+uint echo_u(uint prm);
 uint getZero(void);
 char *getEnvLine(char *name);
 uint64 nowTick(void);

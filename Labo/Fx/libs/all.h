@@ -10,5 +10,5 @@
 #include "FxTime.h"
 #include "Price.h"
 #include "MvAvg.h"
-#include "MvAvg2.h"
+#include "MvAvgStruct.h"
 #include "MvAvgCache.h"
