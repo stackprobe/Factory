@@ -26,14 +26,14 @@ static void T2DivId(char *rFile)
 		if(!line)
 			break;
 
-		errorCase(!lineExp("<17,09>,<1,10,09>,<1,CDRS>,<>", line));
+		errorCase(!lineExp("<17,09>,<4,10,09>,<1,CDRS>,<>", line));
 
 		p = line + 17;
 		p[0] = '\0';
 		stamp = toValue64(line);
 		p[0] = ',';
 
-		p = strchr(line + 19, ',');
+		p = strchr(line + 22, ',');
 		p[0] = '\0';
 		id = toValue(line + 18);
 		p[0] = ',';
@@ -55,7 +55,7 @@ static void T2DivId(char *rFile)
 		{
 			char *endWFile = changeExt(wFile, "");
 
-			endWFile = addLine_x(endWFile, xcout("-%I64u.csv", stamp));
+			endWFile = addLine_x(endWFile, xcout("-%I64u-%u.csv", stamp, id));
 			moveFile(wFile, endWFile);
 			memFree(endWFile);
 
