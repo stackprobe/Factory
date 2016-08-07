@@ -35,5 +35,9 @@ double GetMid(Price_t *i)
 {
 	return (i->Bid + i->Ask) / 2.0;
 }
+double GetSpread(Price_t *i)
+{
+	return i->Bid - i->Ask;
+}
 
 // <-- accessor

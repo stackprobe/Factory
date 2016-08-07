@@ -14,5 +14,6 @@ void ReleasePrice(Price_t *i);
 double GetBid(Price_t *i);
 double GetAsk(Price_t *i);
 double GetMid(Price_t *i);
+double GetSpread(Price_t *i);
 
 // <-- accessor
