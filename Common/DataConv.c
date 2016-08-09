@@ -82,12 +82,30 @@ char *toCreatablePath(char *path, uint faultCountMax) // ret: strr(path)
 {
 	uint faultCount = 0;
 
-	while(existPath(path))
+	while(existPath(path));
 	{
+		errorCase(faultCountMax <= faultCount);
 		faultCount++;
-		errorCase(faultCountMax < faultCount);
 
 		path = incrementPath(path);
+	}
+	return path;
+}
+char *toCreatableTildaPath(char *path, uint faultCountMax) // ret: strr(path)
+{
+	if(existPath(path))
+	{
+		{
+			char *ext = strx(getExt(path));
+
+			path = changeExt(path, "");
+			path = addLine(path, "~1");
+			path = addExt(path, ext);
+
+			memFree(ext);
+		}
+
+		path = toCreatablePath(path, faultCountMax);
 	}
 	return path;
 }

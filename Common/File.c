@@ -30,16 +30,16 @@ char *combine(char *dir, char *file)
 	return dirFile;
 }
 
-static char *GetLocalEx(char *path, uint p_index)
+static char *GetLocalEx(char *path, uint plus_index)
 {
 	char *p = mbs_strrchr(path, '\\');
 
 	if(!p)
 		return path;
 
-	return p + p_index;
+	return p + plus_index;
 }
-static char *GetExtEx(char *path, uint p_index)
+static char *GetExtEx(char *path, uint plus_index)
 {
 	char *local = getLocal(path);
 	char *p;
@@ -52,9 +52,9 @@ static char *GetExtEx(char *path, uint p_index)
 	if(!p || p == local)
 		return strchr(local, '\0');
 
-	return p + p_index;
+	return p + plus_index;
 }
-char *getLocalDelim(char *path)
+char *getLocalWithYen(char *path)
 {
 	return GetLocalEx(path, 0);
 }
@@ -62,7 +62,7 @@ char *getLocal(char *path)
 {
 	return GetLocalEx(path, 1);
 }
-char *getExtDelim(char *path)
+char *getExtWithDot(char *path)
 {
 	return GetExtEx(path, 0);
 }
@@ -83,7 +83,7 @@ char *changeLocal(char *path, char *newLocal)
 	}
 	else
 	{
-		*getLocalDelim(path) = '\0';
+		*getLocalWithYen(path) = '\0';
 	}
 	return path;
 }
@@ -107,14 +107,14 @@ char *changeExt(char *path, char *newExt)
 
 	if(*newExt)
 	{
-		char *ext = getExtDelim(path);
+		char *ext = getExtWithDot(path);
 
 		*ext++ = '.';
 		strcpy(ext, newExt);
 	}
 	else
 	{
-		*getExtDelim(path) = '\0';
+		*getExtWithDot(path) = '\0';
 	}
 	return path;
 }

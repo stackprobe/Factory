@@ -81,7 +81,7 @@ static void L2AsciiFile(char *file)
 		lineExp("<>.", file) ||
 		lineExp("<>..<>", file))
 	{
-		char *xp = getExtDelim(file);
+		char *xp = getExtWithDot(file);
 
 		line2csym(file);
 

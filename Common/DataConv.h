@@ -4,6 +4,7 @@ char *incrementColumn(char *column);
 char *incrementPath(char *path);
 
 char *toCreatablePath(char *path, uint faultCountMax);
+char *toCreatableTildaPath(char *path, uint faultCountMax);
 
 #define m_c2i(chr) \
 	((chr) & 0x40 ? ((chr) & 0x1f) + 9 : (chr) & 0x0f)

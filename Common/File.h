@@ -1,9 +1,9 @@
 void trimPath(char *path);
 char *combine(char *dir, char *file);
 
-char *getLocalDelim(char *path);
+char *getLocalWithYen(char *path);
 char *getLocal(char *path);
-char *getExtDelim(char *path);
+char *getExtWithDot(char *path);
 char *getExt(char *path);
 char *changeLocal(char *path, char *newLocal);
 char *getParent(char *path);
