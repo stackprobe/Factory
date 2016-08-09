@@ -8,6 +8,8 @@ char *getExt(char *path);
 char *changeLocal(char *path, char *newLocal);
 char *getParent(char *path);
 char *changeExt(char *path, char *newExt);
+void eraseLocal(char *path);
+void eraseExt(char *path);
 char *addLocal(char *path, char *newLocal);
 char *addExt(char *path, char *newExt);
 

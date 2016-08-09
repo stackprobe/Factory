@@ -118,6 +118,14 @@ char *changeExt(char *path, char *newExt)
 	}
 	return path;
 }
+void eraseLocal(char *path)
+{
+	getLocalWithYen(path)[0] = '\0';
+}
+void eraseExt(char *path)
+{
+	getExtWithDot(path)[0] = '\0';
+}
 char *addLocal(char *path, char *newLocal) // strr() íçà”
 {
 	if(*newLocal)
