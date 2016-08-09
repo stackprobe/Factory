@@ -82,7 +82,7 @@ char *toCreatablePath(char *path, uint faultCountMax) // ret: strr(path)
 {
 	uint faultCount = 0;
 
-	while(existPath(path));
+	while(existPath(path))
 	{
 		errorCase(faultCountMax <= faultCount);
 		faultCount++;

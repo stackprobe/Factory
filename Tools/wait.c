@@ -1,14 +1,35 @@
+#pragma comment(lib, "user32.lib") // for mouse
+
 #include "C:\Factory\Common\all.h"
 
+static void DoAntiScreenSaver(void)
+{
+	SetCursorPos(0, 0); // âÊñ ç∂è„
+	mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+	sleep(100);
+	mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+}
 int main(int argc, char **argv)
 {
 	int simpleMode = 0;
+	int antiScreenSaver = 0;
 	uint errorLevel = 0;
 	uint remain;
 
+readArgs:
 	if(argIs("/S"))
 	{
 		simpleMode = 1;
+		goto readArgs;
+	}
+	if(argIs("/ANTSS"))
+	{
+		cout("+--------+\n");
+		cout("| ANT-SS |\n");
+		cout("+--------+\n");
+
+		antiScreenSaver = 1;
+		goto readArgs;
 	}
 
 	if(argIs("-7")) // éüÇÃ 7, 17, 27, 37, 47, 57 ïbÇë“Ç¬ÅB
@@ -88,6 +109,10 @@ int main(int argc, char **argv)
 					break;
 				}
 			}
+		}
+		if(antiScreenSaver && remain % 30 == 0)
+		{
+			DoAntiScreenSaver();
 		}
 		sleep(1000);
 		remain--;
