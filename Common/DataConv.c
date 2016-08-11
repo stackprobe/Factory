@@ -99,7 +99,7 @@ char *toCreatableTildaPath(char *path, uint faultCountMax) // ret: strr(path)
 			char *ext = strx(getExtWithDot(path));
 
 			eraseExt(path);
-			path = addLine(path, "~1");
+			path = addLine(path, "~0");
 			path = addLine(path, ext);
 
 			memFree(ext);
