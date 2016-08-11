@@ -10,15 +10,28 @@ static uint LogFileTime;
 
 static void CloseWrFP(void)
 {
-	errorCase(!WrFP);
-	fileClose(WrFP);
-	WrFP = NULL;
+	if(WrFP)
+	{
+		fileClose(WrFP);
+		WrFP = NULL;
+	}
 }
 void setCoutWrFile(char *file, char *mode)
 {
-	errorCase(WrFP);
-	WrFP = fileOpen(file, mode);
-	addFinalizer(CloseWrFP);
+	if(WrFP)
+	{
+		fileClose(WrFP);
+		WrFP = fileOpen(file, mode);
+	}
+	else
+	{
+		WrFP = fileOpen(file, mode);
+		addFinalizer(CloseWrFP);
+	}
+}
+void unsetCoutWrFile(void)
+{
+	CloseWrFP();
 }
 static void OpenLogFile(void)
 {
