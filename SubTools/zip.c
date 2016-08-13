@@ -64,6 +64,9 @@
 #include "C:\Factory\OpenSource\md5.h"
 #include "C:\Factory\Meteor\7z.h"
 
+#define ZIP_MD5_HISTORY_FILE "C:\\Factory\\tmp\\zip_md5_history.txt"
+#define ZIP_MD5_HISTORY_LMT 20
+
 /*
 	7-Zip Command line version 9.20
 	ãÛîíÇä‹Ç‹Ç»Ç¢ÉpÉXÇ≈Ç†ÇÈÇ±Ç∆ÅB
@@ -114,8 +117,13 @@ static void ExtractZipFile(char *zipFile, char *destDir)
 {
 	coExecute_x(xcout("%s x -y \"%s\" -o\"%s\"", GetZip7File(), zipFile, destDir));
 }
+
+static char *PZF_DestZipFile;
+
 static void PackZipFile(char *zipFile, char *srcDir)
 {
+	char *md5;
+
 	removeFileIfExist(zipFile);
 
 	addCwd(srcDir);
@@ -123,8 +131,28 @@ static void PackZipFile(char *zipFile, char *srcDir)
 	unaddCwd();
 
 	cout("+--- zip md5 ----------------------+\n");
-	cout("| %s |\n", md5_makeHexHashFile(zipFile));
+	cout("| %s |\n", md5 = md5_makeHexHashFile(zipFile));
 	cout("+----------------------------------+\n");
+
+	// history
+	{
+		autoList_t *lines = existFile(ZIP_MD5_HISTORY_FILE) ?
+			readLines(ZIP_MD5_HISTORY_FILE) :
+			newList();
+
+		while(ZIP_MD5_HISTORY_LMT < getCount(lines))
+			memFree((char *)desertElement(lines, 0));
+
+		addElement(lines, (uint)xcout("----"));
+		addElement(lines, (uint)xcout("[%s]", c_makeJStamp(NULL, 0)));
+		addElement(lines, (uint)xcout("< %s", PZF_DestZipFile ? PZF_DestZipFile : zipFile));
+		addElement(lines, (uint)xcout("%s", md5));
+
+		writeLines(ZIP_MD5_HISTORY_FILE, lines);
+		releaseDim(lines, 1);
+	}
+
+	memFree(md5);
 }
 static uint InputVersion(void) // ret: 0 == canel, 1 Å` 999 == "0.01" Å` "9.99", VER_BETA == BETA
 {
@@ -467,7 +495,9 @@ int main(int argc, char **argv)
 		cout("destZipFile: %s\n", destZipFile);
 		cout("midZipFile: %s\n", midZipFile);
 
+		PZF_DestZipFile = destZipFile;
 		PackZipFileEx(midZipFile, outDir, 1, projName, 0);
+		PZF_DestZipFile = NULL;
 		createDir(outDir);
 		coExecute_x(xcout("Compact.exe /C \"%s\"", outDir)); // à≥èk
 		copyFile(midZipFile, destZipFile);
@@ -501,7 +531,9 @@ int main(int argc, char **argv)
 			cout("midZipFile: %s\n", midZipFile);
 			cout("version: %03u\n", version);
 
+			PZF_DestZipFile = destZipFile;
 			PackZipFileEx(midZipFile, outDir, 1, projName, version);
+			PZF_DestZipFile = NULL;
 			createDir(outDir);
 			coExecute_x(xcout("Compact.exe /C \"%s\"", outDir)); // à≥èk
 			copyFile(midZipFile, destZipFile);
