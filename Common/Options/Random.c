@@ -42,3 +42,7 @@ void mt19937_initRnd(uint seed)
 	mt19937_initByArray(initKey);
 	releaseAutoBlock(initKey);
 }
+uint getRandElement(autoList_t *list)
+{
+	return getElement(list, mt19937_rnd(getCount(list)));
+}

@@ -6,3 +6,4 @@
 
 void sha512_expand(autoBlock_t *block, uint exnum);
 void mt19937_initRnd(uint seed);
+uint getRandElement(autoList_t *list);

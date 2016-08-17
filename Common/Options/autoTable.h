@@ -21,6 +21,10 @@ uint *tableCellAt(autoTable_t *i, uint x, uint y);
 uint getTableCell(autoTable_t *i, uint x, uint y);
 void setTableCell(autoTable_t *i, uint x, uint y, uint e);
 
+uint *touchTableCellAt(autoTable_t *i, uint x, uint y);
+uint refTableCell(autoTable_t *i, uint x, uint y);
+void putTableCell(autoTable_t *i, uint x, uint y, uint e);
+
 void resetTableCell(autoTable_t *i, uint x, uint y);
 void resetTableRect(autoTable_t *i, uint l, uint t, uint w, uint h);
 void resetTable(autoTable_t *i);

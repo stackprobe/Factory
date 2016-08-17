@@ -76,6 +76,24 @@ void setTableCell(autoTable_t *i, uint x, uint y, uint e)
 	*tableCellAt(i, x, y) = e;
 }
 
+uint *touchTableCellAt(autoTable_t *i, uint x, uint y)
+{
+	resizeTable(
+		i,
+		m_max(x + 1, getTableWidth(i)),
+		m_max(y + 1, getTableHeight(i))
+		);
+	return tableCellAt(i, x, y);
+}
+uint refTableCell(autoTable_t *i, uint x, uint y)
+{
+	return *touchTableCellAt(i, x, y);
+}
+void putTableCell(autoTable_t *i, uint x, uint y, uint e)
+{
+	*touchTableCellAt(i, x, y) = e;
+}
+
 void resetTableCell(autoTable_t *i, uint x, uint y)
 {
 	uint *p = tableCellAt(i, x, y);

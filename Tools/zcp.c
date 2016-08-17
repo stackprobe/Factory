@@ -12,6 +12,12 @@
 		/EF ... 拡張子フィルタ
 
 			コピー先のファイル・ディレクトリ名の終端の '_' を除去する。
+
+		/B ... コピー先の親ディレクトリを指定する。
+
+			以下は同じ
+			zcp /B サンプルデータ out
+			zcp サンプルデータ out\サンプルデータ
 */
 
 #include "C:\Factory\Common\all.h"
@@ -40,6 +46,7 @@ int main(int argc, char **argv)
 	int force_mode = 0;
 	int move_mode = 0;
 	int ef_mode = 0;
+	int b_mode = 0;
 
 readArgs:
 	if(argIs("/F"))
@@ -57,6 +64,11 @@ readArgs:
 		ef_mode = 1;
 		goto readArgs;
 	}
+	if(argIs("/B"))
+	{
+		b_mode = 1;
+		goto readArgs;
+	}
 
 	srcPath = nextArg();
 	destPath = nextArg();
@@ -70,6 +82,9 @@ readArgs:
 
 	srcPath = makeFullPath(srcPath);
 	destPath = makeFullPath(destPath);
+
+	if(b_mode)
+		destPath = addLocal(destPath, getLocal(srcPath));
 
 	cout("< %s\n", srcPath);
 	cout("> %s\n", destPath);
