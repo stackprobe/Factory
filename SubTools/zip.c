@@ -134,7 +134,7 @@ static void PackZipFile(char *zipFile, char *srcDir)
 	cout("| %s |\n", md5 = md5_makeHexHashFile(zipFile));
 	cout("+----------------------------------+\n");
 
-	// history
+	if(isFactoryDirEnabled()) // history
 	{
 		autoList_t *lines = existFile(ZIP_MD5_HISTORY_FILE) ?
 			readLines(ZIP_MD5_HISTORY_FILE) :
@@ -151,7 +151,6 @@ static void PackZipFile(char *zipFile, char *srcDir)
 		writeLines(ZIP_MD5_HISTORY_FILE, lines);
 		releaseDim(lines, 1);
 	}
-
 	memFree(md5);
 }
 static uint InputVersion(void) // ret: 0 == canel, 1 Å` 999 == "0.01" Å` "9.99", VER_BETA == BETA
