@@ -39,6 +39,8 @@ void termination_fileCloseAll(void)
 			LOGPOS();
 			fclose(fp);
 		}
+		releaseAutoList(OpenedFPList);
+		OpenedFPList = NULL;
 	}
 }
 

@@ -66,3 +66,73 @@ int FileImporter(char *rDir) // ret: ? successful
 
 	return ret;
 }
+
+// ---- FileExportTouchImport ----
+
+static char *FETI_TargetDir;
+
+static void FETI_Import(void)
+{
+	FileImporter(FETI_TargetDir);
+}
+void FileExportTouchImport(char *targetDir, int (*callback)(char *entityFile, char *realPath))
+{
+	char *wrkBnchDir = makeTempPath(NULL);
+
+	errorCase(m_isEmpty(targetDir));
+	errorCase(!callback);
+
+	FileExporter(targetDir, wrkBnchDir);
+	FETI_TargetDir = targetDir;
+	addFinalizer(FETI_Import);
+
+	{
+		autoList_t *files = lsFiles(wrkBnchDir);
+		char *file;
+		uint index;
+
+		foreach(files, file, index)
+		{
+			if(!_stricmp("dat", getExt(file)))
+			{
+				char *file_s = changeExt(file, "file_s");
+				char *realFile;
+				char *entityFile = makeTempPath("entity");
+				char *midFile = makeTempPath(NULL);
+				int ret;
+
+				realFile = readText_b(file_s);
+
+				LOGPOS();
+				copyFile(file, entityFile);
+				LOGPOS();
+
+				ret = callback(entityFile, realFile);
+
+				LOGPOS();
+
+				moveFile(entityFile, midFile);
+				removeFile(file);
+				moveFile(midFile, file);
+
+				memFree(file_s);
+				memFree(realFile);
+				memFree(entityFile);
+				memFree(midFile);
+
+				if(!ret)
+					break;
+			}
+		}
+		releaseDim(files, 1);
+	}
+
+	unaddFinalizer(FETI_Import);
+	FETI_Import();
+	FETI_TargetDir = NULL;
+
+	removeDir(wrkBnchDir);
+	memFree(wrkBnchDir);
+}
+
+// ----

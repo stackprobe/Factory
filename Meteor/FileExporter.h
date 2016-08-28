@@ -5,3 +5,9 @@
 
 int FileExporter(char *rDir, char *wDir);
 int FileImporter(char *rDir);
+
+// ---- FileExportTouchImport ----
+
+void FileExportTouchImport(char *targetDir, int (*callback)(char *entityFile, char *realPath));
+
+// ----

@@ -822,6 +822,10 @@ void movePath(char *rPath, char *wPath)
 		moveFile(rPath, wPath);
 }
 
+void setFileSizeFP(FILE *fp, uint64 size)
+{
+	errorCase(_chsize_s(_fileno(fp), (sint64)size) != 0); // ? Ž¸”s
+}
 void setFileSize(char *file, uint64 size)
 {
 	FILE *fp;

@@ -78,6 +78,7 @@ void moveDir(char *srcDir, char *destDir);
 void copyPath(char *rPath, char *wPath);
 void movePath(char *rPath, char *wPath);
 
+void setFileSizeFP(FILE *fp, uint64 size);
 void setFileSize(char *file, uint64 size);
 uint64 getFileSizeFP(FILE *fp);
 uint64 getFileSize(char *file);

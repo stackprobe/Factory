@@ -147,7 +147,7 @@ static void LoadFile(char *rFile)
 
 static void ParseHTTPReqRes(void)
 {
-	// TODO
+	error(); // TODO
 }
 
 // ----
