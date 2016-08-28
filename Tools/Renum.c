@@ -1,4 +1,15 @@
+/*
+	Renum.exe [/N] 開始番号 ステップ [対象DIR]
+*/
+
 #include "C:\Factory\Common\all.h"
+
+static int ToNumOnly;
+
+static uint StartNum;
+static uint NumStep;
+
+static char *IN_NamePtr;
 
 static int IsNumbered(char *file)
 {
@@ -6,13 +17,14 @@ static int IsNumbered(char *file)
 
 	for(p = file; *p; p++)
 	{
-		if(*p == '_')
-			return 1;
+		if(*p == '.' || *p == '_')
+			break;
 
 		if(!m_isdecimal(*p))
-			break;
+			return 0;
 	}
-	return 0;
+	IN_NamePtr = p;
+	return 1;
 }
 static void DoFRenum(void)
 {
@@ -21,35 +33,38 @@ static void DoFRenum(void)
 	autoList_t *destFiles = newList();
 	char *file;
 	uint index;
-	uint no = 10;
+	uint no = StartNum;
 
 	eraseParents(files);
 	sortJLinesICase(files);
 
 	foreach(files, file, index)
 	{
-		char *name;
-		char *lfile;
+		char *dest;
 
-		if(IsNumbered(file))
-			name = mbs_strchr(file, '_') + 1;
+		if(ToNumOnly)
+			dest = xcout("%04u%s", no, getExtWithDot(file));
+		else if(IsNumbered(file))
+			dest = xcout("%04u%s", no, IN_NamePtr);
 		else
-			name = file;
+			dest = xcout("%04u_%s", no, file);
 
-		lfile = xcout("%04u_%s", no, name);
+		if(strcmp(file, dest)) // ? file != dest
+		{
+			cout("< %s\n", file);
+			cout("> %s\n", dest);
+		}
+		addElement(midFiles, (uint)xcout("_$$$_%s", dest));
+		addElement(destFiles, (uint)dest);
 
-		cout("< %s\n", file);
-		cout("> %s\n", lfile);
-
-		addElement(midFiles, (uint)xcout("_$$$_%s", lfile));
-		addElement(destFiles, (uint)lfile);
-
-		no += 10;
+		no += NumStep;
 	}
 	cout("Press R to renumber\n");
 
 	if(getKey() != 'R')
 		termination(0);
+
+	LOGPOS();
 
 	for(index = 0; index < getCount(files); index++)
 		moveFile(
@@ -71,6 +86,13 @@ static void DoFRenum(void)
 }
 int main(int argc, char **argv)
 {
+	ToNumOnly = argIs("/N");
+
+	StartNum = toValue(nextArg());
+	NumStep  = toValue(nextArg());
+
+	errorCase(!NumStep);
+
 	addCwd(hasArgs(1) ? nextArg() : c_dropDir());
 	DoFRenum();
 	unaddCwd();
