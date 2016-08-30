@@ -153,7 +153,7 @@ static void PackZipFile(char *zipFile, char *srcDir)
 	}
 	memFree(md5);
 }
-static uint InputVersion(void) // ret: 0 == canel, 1 Å` 999 == "0.01" Å` "9.99", VER_BETA == BETA
+static uint InputVersion(void) // ret: 0 == cancel, 1 Å` 999 == "0.01" Å` "9.99", VER_BETA == BETA
 {
 	char *sVersion;
 	uint version;
