@@ -3,9 +3,10 @@
 
 	- - -
 
-	7z.exe [/C] [7z-FILE | ZIP-FILE]
+	7z.exe [/C] [/T] [7z-FILE | ZIP-FILE]
 
 		/C ... 入力ファイルと同じ場所に展開する。
+		/T ... 不要な上位階層を除去する。
 */
 
 #include "C:\Factory\Common\all.h"
@@ -13,6 +14,7 @@
 #include "C:\Factory\Meteor\7z.h"
 
 static int ExtractSameDir;
+static int TrimOneDir;
 
 static char *Get7zExeFile(void) // ret: 空白を含まないパスであること。
 {
@@ -47,6 +49,45 @@ static char *Unlittering(char *dir, char *file7z)
 	}
 	return dir;
 }
+static void DoTrimOneDir(char *wDir)
+{
+	char *rDir = strx(wDir);
+	int dove = 0;
+
+	while(lsCount(rDir) == 1)
+	{
+		autoList_t *paths = ls(rDir);
+		char *path;
+
+		path = getLine(paths, 0);
+
+		if(!existDir(path))
+		{
+			releaseDim(paths, 1);
+			break;
+		}
+		memFree(rDir);
+		rDir = path;
+		releaseAutoList(paths);
+		dove = 1;
+	}
+	if(dove)
+	{
+		char *midDir = strx(wDir);
+
+		midDir = toCreatablePath(midDir, IMAX); // 折角なのでチルダ版
+
+		cout("< %s\n", rDir);
+		cout("> %s\n", wDir);
+		cout("M %s\n", midDir);
+
+		createDir(midDir);
+		moveDir(rDir, midDir);
+		recurRemoveDir(wDir);
+		moveFile(midDir, wDir);
+	}
+	memFree(rDir);
+}
 static void Extract7z(char *file7z)
 {
 	char *dir;
@@ -62,7 +103,7 @@ static void Extract7z(char *file7z)
 	if(ExtractSameDir)
 	{
 		dir = changeExt(file7z, "");
-		dir = toCreatablePath(dir, 100);
+		dir = toCreatableTildaPath(dir, 10000);
 
 		cout("> %s\n", dir);
 
@@ -83,6 +124,9 @@ static void Extract7z(char *file7z)
 		dir = Unlittering(dir, file7z);
 		execute_x(xcout("START %s", dir));
 	}
+	if(TrimOneDir)
+		DoTrimOneDir(dir);
+
 	memFree(dir);
 	memFree(file7z);
 }
@@ -96,6 +140,13 @@ readArgs:
 		cout("+----------------+\n");
 
 		ExtractSameDir = 1;
+		goto readArgs;
+	}
+	if(argIs("/T"))
+	{
+		cout("TRIM-ONE-DIR\n");
+
+		TrimOneDir = 1;
 		goto readArgs;
 	}
 

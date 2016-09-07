@@ -1016,6 +1016,12 @@ char *changeLocal_xc(char *path, char *newLocal)
 	memFree(path);
 	return out;
 }
+char *changeLocal_cx(char *path, char *newLocal)
+{
+	char *out = changeLocal(path, newLocal);
+	memFree(newLocal);
+	return out;
+}
 void changeRoots_xc(autoList_t *pathList, char *root, char *newRoot)
 {
 	changeRoots(pathList, root, newRoot);
