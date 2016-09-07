@@ -1,5 +1,7 @@
 #include "C:\Factory\Common\all.h"
 
+static int Mode = 'B'; // "BGS" == Both, Getter only, Setter only
+
 static void RemovePublicEtc(autoList_t *tokens)
 {
 	while(getCount(tokens))
@@ -8,6 +10,7 @@ static void RemovePublicEtc(autoList_t *tokens)
 
 		if(
 			strcmp(token, "final") &&
+			strcmp(token, "static") &&
 			strcmp(token, "private") &&
 			strcmp(token, "protected") &&
 			strcmp(token, "public")
@@ -39,10 +42,25 @@ static char *GetPrmName(char *name)
 }
 int main(int argc, char **argv)
 {
-	autoList_t *lines = inputLines();
+	autoList_t *lines;
 	char *line;
 	uint index;
 	autoList_t *outLines = newList();
+
+readArgs:
+	if(argIs("/Go") || argIs("/-S")) // Getter only
+	{
+		Mode = 'G';
+		goto readArgs;
+	}
+	if(argIs("/So") || argIs("/-G")) // Setter only
+	{
+		Mode = 'S';
+		goto readArgs;
+	}
+	errorCase_m(hasArgs(1), "Unknown args");
+
+	lines = inputLines();
 
 	foreach(lines, line, index)
 	{
@@ -79,16 +97,20 @@ int main(int argc, char **argv)
 				else
 					setterLeftPrfx = "";
 
-				addElement(outLines, (uint)xcout("public %s get%s() {", type, virName));
-				addElement(outLines, (uint)xcout("\treturn %s;", name));
-				addElement(outLines, (uint)xcout("}"));
-				addElement(outLines, (uint)xcout(""));
-
-				addElement(outLines, (uint)xcout("public void set%s(%s %s) {", virName, type, prmName));
-				addElement(outLines, (uint)xcout("\t%s%s = %s;", setterLeftPrfx, name, prmName));
-				addElement(outLines, (uint)xcout("}"));
-				addElement(outLines, (uint)xcout(""));
-
+				if(Mode != 'S') // ? ! Setter only -> output Getter
+				{
+					addElement(outLines, (uint)xcout("public %s get%s() {", type, virName));
+					addElement(outLines, (uint)xcout("\treturn %s;", name));
+					addElement(outLines, (uint)xcout("}"));
+					addElement(outLines, (uint)xcout(""));
+				}
+				if(Mode != 'G') // ? ! Getter only -> output Setter
+				{
+					addElement(outLines, (uint)xcout("public void set%s(%s %s) {", virName, type, prmName));
+					addElement(outLines, (uint)xcout("\t%s%s = %s;", setterLeftPrfx, name, prmName));
+					addElement(outLines, (uint)xcout("}"));
+					addElement(outLines, (uint)xcout(""));
+				}
 				memFree(name);
 				memFree(virName);
 				memFree(prmName);
