@@ -3,10 +3,11 @@
 
 	- - -
 
-	7z.exe [/C] [/T] [7z-FILE | ZIP-FILE]
+	7z.exe [/C] [/T] [/OAD] [7z-FILE | ZIP-FILE]
 
-		/C ... 入力ファイルと同じ場所に展開する。
-		/T ... 不要な上位階層を除去する。
+		/C   ... 入力ファイルと同じ場所に展開する。
+		/T   ... 不要な上位階層を除去する。
+		/OAD ... 元ファイル自動削除
 */
 
 #include "C:\Factory\Common\all.h"
@@ -15,6 +16,7 @@
 
 static int ExtractSameDir;
 static int TrimOneDir;
+static int OutputAndDelete;
 
 static char *Get7zExeFile(void) // ret: 空白を含まないパスであること。
 {
@@ -127,6 +129,11 @@ static void Extract7z(char *file7z)
 	if(TrimOneDir)
 		DoTrimOneDir(dir);
 
+	if(OutputAndDelete)
+	{
+		LOGPOS();
+		removeFile(file7z);
+	}
 	memFree(dir);
 	memFree(file7z);
 }
@@ -147,6 +154,15 @@ readArgs:
 		cout("TRIM-ONE-DIR\n");
 
 		TrimOneDir = 1;
+		goto readArgs;
+	}
+	if(argIs("/OAD"))
+	{
+		cout("+-------------------+\n");
+		cout("| OUTPUT AND DELETE |\n");
+		cout("+-------------------+\n");
+
+		OutputAndDelete = 1;
 		goto readArgs;
 	}
 
