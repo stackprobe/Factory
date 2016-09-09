@@ -77,7 +77,7 @@ static void DoTrimOneDir(char *wDir)
 	{
 		char *midDir = strx(wDir);
 
-		midDir = toCreatablePath(midDir, IMAX); // ê‹äpÇ»ÇÃÇ≈É`ÉãÉ_î≈
+		midDir = toCreatablePath(midDir, IMAX);
 
 		cout("< %s\n", rDir);
 		cout("> %s\n", wDir);
