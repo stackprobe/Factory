@@ -358,13 +358,6 @@ int isJLine(char *line, int okJpn, int okRet, int okTab, int okSpc)
 	memFree(swrk);
 	return retval;
 }
-char *lineFltr(char *line)
-{
-	errorCase(!line);
-	errorCase(!isJLine(line, 1, 0, 1, 1));
-
-	return line;
-}
 char *lineToJDoc(char *line, int okRet)
 {
 	autoList_t *lines;
@@ -912,4 +905,14 @@ autoBlock_t *decodeBase64(autoBlock_t *src)
 		addByte(dest, value & 0xff);
 	}
 	return dest;
+}
+
+int isLine(char *line)
+{
+	return line && isJLine(line, 1, 0, 1, 1);
+}
+char *asLine(char *line)
+{
+	errorCase(!isLine(line));
+	return line;
 }
