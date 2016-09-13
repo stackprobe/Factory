@@ -22,5 +22,5 @@ int HGet_GetOrPost(void);
 uint HGet_GetResHeaderFieldCount(void);
 char *HGet_GetResHeaderFieldName(uint index);
 char *HGet_GetResHeaderFieldValue(uint index);
-void HGet_GetResBody2File(char *file);
+void HGet_MvResBodyFile(char *destFile);
 autoBlock_t *HGet_GetResBody(void);
