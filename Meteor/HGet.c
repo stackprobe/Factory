@@ -61,14 +61,15 @@ void HGet_Reset(void)
 	ResBodySizeMax = IMAX_64;
 	Resetted = 1;
 
-	// clear ...
-
-	removeFileIfExist(Body1TmpFile);
-	removeFileIfExist(Body3TmpFile);
-	removeFileIfExist(SuccessfulFile);
-	removeFileIfExist(ResHeaderFile);
-	removeFileIfExist(ResBodyFile);
-	removeFileIfExist(ParamFile);
+	// clear
+	{
+		removeFileIfExist(Body1TmpFile);
+		removeFileIfExist(Body3TmpFile);
+		removeFileIfExist(SuccessfulFile);
+		removeFileIfExist(ResHeaderFile);
+		removeFileIfExist(ResBodyFile);
+		removeFileIfExist(ParamFile);
+	}
 }
 void HGet_SetProxy_IE(void)
 {
@@ -271,15 +272,23 @@ static int Perform(int method) // method: "HGP"
 
 	fileClose(fp);
 
-	removeFileIfExist(SuccessfulFile); // 2bs
-	removeFileIfExist(ResHeaderFile); // 2bs
-	removeFileIfExist(ResBodyFile); // 2bs
+	// clear
+	{
+		removeFileIfExist(SuccessfulFile);
+		removeFileIfExist(ResHeaderFile);
+		removeFileIfExist(ResBodyFile);
+
+		releaseDim(ResHeader, 2);
+		ResHeader = newList();
+	}
 
 	coExecute_x(xcout("START \"\" /B /WAIT \"%s\" //R \"%s\"", GetHGetFile(), ParamFile));
 
 	if(!existFile(SuccessfulFile)) // ? 失敗した。
+	{
+		removeFileIfExist(ResBodyFile); // 失敗したら res-body は必ず空。
 		return 0;
-
+	}
 	fp = fileOpen(ResHeaderFile, "rt");
 
 	for(; ; )
@@ -294,6 +303,12 @@ static int Perform(int method) // method: "HGP"
 
 		addElement(pair, (uint)strx(line));
 		addElement(pair, (uint)strx(p + 2));
+
+		// 必要無いかもしれないけど、いちおう整形しておく。
+		{
+			ucTrimEdge(getLine(pair, 0));
+			ucTrimEdge(getLine(pair, 1));
+		}
 
 		addElement(ResHeader, (uint)pair);
 
@@ -333,14 +348,14 @@ char *HGet_GetResHeaderFieldValue(uint index)
 
 	return getLine(getList(ResHeader, index), 1);
 }
-void HGet_GetResBody2File(char *file)
+void HGet_MvResBodyFile(char *destFile)
 {
 	errorCase(!Resetted);
 
 	if(!existFile(ResBodyFile))
-		createFile(file);
+		createFile(destFile);
 
-	copyFile(ResBodyFile, file);
+	moveFile(ResBodyFile, destFile);
 }
 autoBlock_t *HGet_GetResBody(void)
 {
