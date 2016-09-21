@@ -68,7 +68,7 @@
 #define ZIP_MD5_HISTORY_LMT 20
 
 /*
-	7-Zip Command line version 9.20
+	7-Zip Extra 16.02 か何か
 	空白を含まないパスであること。
 */
 #define ZIP7_LOCAL_FILE LOCALFILE_7Z_EXE
@@ -376,7 +376,7 @@ static void RepackAllZipFile(char *rootDir)
 }
 int main(int argc, char **argv)
 {
-	errorCase(!existFile(ZIP7_LOCAL_FILE) && !existFile(ZIP7_FILE));
+	errorCase_m(!existFile(ZIP7_LOCAL_FILE) && !existFile(ZIP7_FILE), "7zさんが居ません。");
 
 	/*
 		★★★ パスはこの関数内でフルパスにすること。★★★
