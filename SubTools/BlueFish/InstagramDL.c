@@ -82,7 +82,6 @@ static autoList_t *ParseUrls(char *resBodyFile)
 static void Downloaded(autoBlock_t *imageData)
 {
 	char *imgLocal = GetCurrImgLocal();
-//	char *imgLocal = GetLastImgLocal();
 	char *imgFile;
 
 	imgFile = combine(DestDir, imgLocal);
@@ -94,8 +93,6 @@ static void Downloaded(autoBlock_t *imageData)
 	cout("> %s\n", imgFile);
 
 	writeBinary(imgFile, imageData);
-
-//	SetLastImgLocal(imgLocal);
 
 	memFree(imgLocal);
 	memFree(imgFile);
