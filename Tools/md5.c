@@ -15,16 +15,20 @@
 
 		LOOP { dropPath -> disp md5 }
 
+	md5.exe ... /LSS
+
+		found list -> disp md5
+
 	md5.exe ... PATH
 
 		PATH -> disp md5
 
+		ディレクトリの場合、直下のファイルのハッシュ一覧を出力する。
+		サブディレクトリも見たいときは dmd5 コマンドを使ってね。
+
 	md5.exe ...
 
 		CWD -> disp md5
-
-	ディレクトリの場合、直下のファイルのハッシュ一覧を出力する。
-	サブディレクトリも見たいときは dmd5 コマンドを使ってね。
 */
 
 #include "C:\Factory\Common\all.h"
@@ -32,7 +36,7 @@
 
 int QuietMode;
 
-static ShowHashDir(char *dir)
+static void ShowHashDir(char *dir)
 {
 	autoList_t *paths = ls(dir);
 	autoList_t files;
@@ -48,7 +52,7 @@ static ShowHashDir(char *dir)
 	}
 	releaseDim(paths, 1);
 }
-static ShowHashBlock(autoBlock_t *block)
+static void ShowHashBlock(autoBlock_t *block)
 {
 	if(!QuietMode)
 	{
@@ -77,7 +81,6 @@ int main(int argc, char **argv)
 		ShowHashBlock(gndBlockLineVar(line, gab));
 		return;
 	}
-
 	if(argIs("/D")) // Drop
 	{
 		for(; ; )
@@ -97,7 +100,18 @@ int main(int argc, char **argv)
 		}
 		return;
 	}
+	if(argIs("/LSS"))
+	{
+		autoList_t *files = readLines(FOUNDLISTFILE);
+		char *file;
+		uint index;
 
+		foreach(files, file, index)
+			cout("%s %s\n", c_md5_makeHexHashFile(file), file);
+
+		releaseDim(files, 1);
+		return;
+	}
 	if(hasArgs(1))
 	{
 		char *path = nextArg();

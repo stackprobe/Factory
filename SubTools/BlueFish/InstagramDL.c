@@ -4,6 +4,7 @@
 
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Collabo.h"
+#include "C:\Factory\Common\Options\TimeData.h"
 
 // ---- known url ----
 
@@ -21,23 +22,14 @@ static void SetKnownUrl(char *url)
 	writeOneLineNoRet_b(KNOWN_URL_FILE, url);
 }
 
-// ---- last img local ----
-
-#define LAST_IMG_LOCAL_FILE "C:\\appdata\\instagram-dl\\last-img-local.txt"
-
-static char *GetLastImgLocal(void)
-{
-	return existFile(LAST_IMG_LOCAL_FILE) ? readText_b(LAST_IMG_LOCAL_FILE) : strx("0001.jpg"); // default
-}
-static void SetLastImgLocal(char *local)
-{
-	if(!existFile(LAST_IMG_LOCAL_FILE))
-		createPath(LAST_IMG_LOCAL_FILE, 'X');
-
-	writeOneLineNoRet_b(LAST_IMG_LOCAL_FILE, local);
-}
-
 // ----
+
+static char *GetCurrImgLocal(void)
+{
+	uint64 stamp = GetNowStamp();
+
+	return xcout("IMG_%08u_%06u.jpg", (uint)(stamp / 1000000ui64), (uint)(stamp % 1000000ui64));
+}
 
 static char *Account;
 static char *DestDir;
@@ -89,7 +81,8 @@ static autoList_t *ParseUrls(char *resBodyFile)
 }
 static void Downloaded(autoBlock_t *imageData)
 {
-	char *imgLocal = GetLastImgLocal();
+	char *imgLocal = GetCurrImgLocal();
+//	char *imgLocal = GetLastImgLocal();
 	char *imgFile;
 
 	imgFile = combine(DestDir, imgLocal);
@@ -102,7 +95,7 @@ static void Downloaded(autoBlock_t *imageData)
 
 	writeBinary(imgFile, imageData);
 
-	SetLastImgLocal(imgLocal);
+//	SetLastImgLocal(imgLocal);
 
 	memFree(imgLocal);
 	memFree(imgFile);
