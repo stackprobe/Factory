@@ -9,17 +9,42 @@
 // ---- known url ----
 
 #define KNOWN_URL_FILE "C:\\appdata\\instagram-dl\\known-url.txt"
+#define KNOWN_URL_MAX 12
 
-static char *GetKnownUrl(void)
+static autoList_t *GetAllKnownUrl(void)
 {
-	return existFile(KNOWN_URL_FILE) ? readText_b(KNOWN_URL_FILE) : strx("URL-DUMMY"); // dummy
+	autoList_t *ret;
+
+	createPath(KNOWN_URL_FILE, 'f');
+	ret = readLines(KNOWN_URL_FILE);
+	trimLines(ret);
+	return ret;
 }
-static void SetKnownUrl(char *url)
+static int IsKnownUrl(char *url)
 {
-	if(!existFile(KNOWN_URL_FILE))
-		createPath(KNOWN_URL_FILE, 'X');
+	autoList_t *knownUrls = GetAllKnownUrl();
+	char *knownUrl;
+	uint index;
 
-	writeOneLineNoRet_b(KNOWN_URL_FILE, url);
+	foreach(knownUrls, knownUrl, index)
+		if(!strcmp(url, knownUrl))
+			break;
+
+	releaseDim(knownUrls, 1);
+	return (int)knownUrl;
+}
+static void AddKnownUrl(char *url)
+{
+	autoList_t *knownUrls = GetAllKnownUrl();
+	char *knownUrl;
+
+	addElement(knownUrls, (uint)strx(url));
+
+	while(KNOWN_URL_MAX < getCount(knownUrls))
+		memFree((char *)desertElement(knownUrls, 0));
+
+	writeLines(KNOWN_URL_FILE, knownUrls);
+	releaseDim(knownUrls, 1);
 }
 
 // ----
@@ -175,15 +200,12 @@ int main(int argc, char **argv)
 		autoList_t *urls = ParseUrls(resBodyFile);
 		char *url;
 		uint index;
-		char *knownUrl = GetKnownUrl();
 
 		LOGPOS();
 
 		foreach(urls, url, index)
-			if(!strcmp(url, knownUrl))
+			if(IsKnownUrl(url))
 				break;
-
-		memFree(knownUrl);
 
 		if(index)
 		{
@@ -199,7 +221,7 @@ int main(int argc, char **argv)
 				if(!Download(url))
 					break;
 
-				SetKnownUrl(url);
+				AddKnownUrl(url);
 			}
 		}
 		releaseDim(urls, 1);
