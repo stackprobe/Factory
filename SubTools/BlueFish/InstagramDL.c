@@ -9,7 +9,7 @@
 // ---- known url ----
 
 #define KNOWN_URL_FILE "C:\\appdata\\instagram-dl\\known-url.txt"
-#define KNOWN_URL_MAX 12
+#define KNOWN_URL_MAX 5
 
 static autoList_t *GetAllKnownUrl(void)
 {
@@ -38,10 +38,10 @@ static void AddKnownUrl(char *url)
 	autoList_t *knownUrls = GetAllKnownUrl();
 	char *knownUrl;
 
-	addElement(knownUrls, (uint)strx(url));
+	insertElement(knownUrls, 0, (uint)strx(url));
 
 	while(KNOWN_URL_MAX < getCount(knownUrls))
-		memFree((char *)desertElement(knownUrls, 0));
+		memFree((char *)unaddElement(knownUrls));
 
 	writeLines(KNOWN_URL_FILE, knownUrls);
 	releaseDim(knownUrls, 1);
