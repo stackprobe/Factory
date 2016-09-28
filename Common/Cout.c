@@ -121,3 +121,13 @@ char *xcout(char *format, ...)
 
 	return buffer;
 }
+void coutJLine(char *line)
+{
+	coutJLine_x(strx(line));
+}
+void coutJLine_x(char *line)
+{
+	line2JLine(line, 1, 0, 1, 1);
+	cout("%s\n", line);
+	memFree(line);
+}
