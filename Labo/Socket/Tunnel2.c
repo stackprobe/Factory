@@ -137,6 +137,8 @@ static int IdleTh(void)
 }
 int main(int argc, char **argv)
 {
+	cout("★これも古いバージョンです。\n");
+
 	PortNo = toValue(nextArg());
 	FwdHost = nextArg();
 	FwdPortNo = toValue(nextArg());

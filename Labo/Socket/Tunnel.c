@@ -109,6 +109,8 @@ int main(int argc, char **argv)
 	uint portno = 8080;
 	uint connectmax = 10;
 
+	cout("★これは古いバージョンです。\n");
+
 readArgs:
 	// 転送先
 	if(argIs("/FD")) // Forward Domain

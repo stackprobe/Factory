@@ -55,6 +55,7 @@ char *lineToFairRelPath(char *line, uint dirSize);
 char *lineToFairRelPath_x(char *line, uint dirSize);
 int isFairRelPath(char *path, uint dirSize);
 char *toFairFullPathFltr(char *path);
+char *toFairFullPathFltr_x(char *path);
 
 void autoIndent(autoList_t *lines);
 void autoLeftIndent(autoList_t *lines, uint span);

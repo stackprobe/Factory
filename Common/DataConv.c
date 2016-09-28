@@ -645,6 +645,13 @@ char *toFairFullPathFltr(char *path) // path ‚ª•s³‚Èê‡‚Í error();
 	memFree(path);
 	return result;
 }
+char *toFairFullPathFltr_x(char *path)
+{
+	char *retPath = toFairFullPathFltr(path);
+
+	memFree(path);
+	return retPath;
+}
 
 void autoIndent(autoList_t *lines)
 {
