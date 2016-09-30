@@ -925,6 +925,22 @@ void viewTextLines(autoList_t *lines)
 {
 	releaseDim(editTextLines(lines), 1);
 }
+
+#define SRP_LFILE_LOG "_ÉçÉO.log"
+
+static void SRP_LogInit(char *wDir)
+{
+	createFileIfNotExist_x(combine(wDir, SRP_LFILE_LOG));
+}
+static void SRP_Log(char *wDir, char *wPath, char *rPath)
+{
+	FILE *fp = fileOpen_xc(combine(wDir, SRP_LFILE_LOG), "at");
+
+	writeLine(fp, wPath);
+	writeLine(fp, rPath);
+
+	fileClose(fp);
+}
 void semiRemovePath(char *path)
 {
 	static char *destDir;
@@ -934,9 +950,14 @@ void semiRemovePath(char *path)
 	if(!destDir)
 		destDir = makeFreeDir();
 
+	SRP_LogInit(destDir);
+
 	destPath = combine(destDir, getLocal(path));
 	destPath = toCreatablePath(destPath, destCount);
 	movePath(path, destPath);
+
+	SRP_Log(destDir, destPath, path);
+
 	memFree(destPath);
 	destCount++;
 }
@@ -1160,6 +1181,16 @@ void mkAddCwd_x(char *dir)
 void createFile_x(char *file)
 {
 	createFile(file);
+	memFree(file);
+}
+void createDirIfNotExist_x(char *dir)
+{
+	createDirIfNotExist(dir);
+	memFree(dir);
+}
+void createFileIfNotExist_x(char *file)
+{
+	createFileIfNotExist(file);
 	memFree(file);
 }
 void createPath_x(char *path, int mode)

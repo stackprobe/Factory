@@ -130,4 +130,6 @@ autoList_t *editTextLines_x(autoList_t *lines);
 void addCwd_x(char *dir);
 void mkAddCwd_x(char *dir);
 void createFile_x(char *file);
+void createDirIfNotExist_x(char *dir);
+void createFileIfNotExist_x(char *file);
 void createPath_x(char *path, int mode);
