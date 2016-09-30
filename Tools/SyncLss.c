@@ -23,6 +23,7 @@ static void SyncLss(void)
 	cout("< %s\n", selFile);
 	cout("> *\n");
 
+	for(; ; )
 	{
 		const char *CFM_PTN = "SYNC";
 		char *cfmInput;
@@ -30,10 +31,15 @@ static void SyncLss(void)
 		cout("### 確認のため %s と入力してね。### (ignore case)\n", CFM_PTN);
 		cfmInput = coInputLine();
 
-		if(_stricmp(cfmInput, CFM_PTN)) // ? 一致しない。
+		if(!*cfmInput)
 		{
 			memFree(cfmInput);
 			termination(0);
+		}
+		if(!_stricmp(cfmInput, CFM_PTN)) // ? 一致した。
+		{
+			memFree(cfmInput);
+			break;
 		}
 		memFree(cfmInput);
 	}
