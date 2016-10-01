@@ -926,7 +926,7 @@ void viewTextLines(autoList_t *lines)
 	releaseDim(editTextLines(lines), 1);
 }
 
-#define SRP_LFILE_LOG "_ƒƒO.log"
+#define SRP_LFILE_LOG "_”¼íœƒƒO.log"
 
 static void SRP_LogInit(char *wDir)
 {

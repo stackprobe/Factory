@@ -52,7 +52,7 @@ static void FSqDiv(char *srcdir, uint divnum)
 	}
 
 	ProgressBegin();
-	progCyc = getCount(files) / 100;
+	progCyc = getCount(files) / 79;
 	m_maxim(progCyc, 1);
 
 	foreach(files ,file, index)

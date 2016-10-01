@@ -24,12 +24,13 @@ typedef struct SockStream_st
 		char *SaveFile;
 		char *ServerName;
 		int M4UServerMode_Operated;
-		uint RecvSizeLimiter;
+		uint64 RecvSizeLimiter;
 	}
 	Extra;
 }
 SockStream_t;
 
+SockStream_t *CreateSockStream2(int sock, uint timeout, uint blockTimeout, uint64 recvSizeLimiter);
 SockStream_t *CreateSockStream(int sock, uint timeout);
 void ReleaseSockStream(SockStream_t *i);
 void DestroySockStream(SockStream_t *i);

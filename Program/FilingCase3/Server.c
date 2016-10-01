@@ -1,50 +1,101 @@
 #include "C:\Factory\Common\Options\SockServerTh.h"
 #include "C:\Factory\Common\Options\SockStream.h"
+#include "C:\Factory\Common\Options\CRRandom.h"
 
 #define EV_STOP "{49e9f81c-dae4-464f-a209-301eed85b011}"
 
-static char *RootDir = "C:\\appdata\\FilingCase3\\Root";
+static uint64 KeepDiskFree = 2500000000ui64; // 2.5 GB
+static char *RootDir = "C:\\appdata\\FilingCase3";
+static char *DataDir;
+static char *TempDir;
 static uint EvStop;
 
+static int RecvPrmData(SockStream_t *ss, char *dataFile, uint64 dataSize) // ret: ? 成功
+{
+	FILE *fp = fileOpen(dataFile, "wb");
+	uint64 count;
+
+	for(count = 0; count < dataSize; count++)
+	{
+		int chr = SockRecvChar(ss);
+
+		if(chr == EOF)
+			break;
+
+		writeChar(fp, chr);
+	}
+	fileClose(fp);
+	return count == dataSize;
+}
 static void PerformTh(int sock, char *strip)
 {
-	SockStream_t *ss = CreateSockStream(sock, 0);
-	autoBlock_t *buff = nobCreateBlock(20000000);
+	SockStream_t *ss = CreateSockStream2(sock, 0, 30, 0);
 
 	for(; ; )
 	{
 		char *command;
 		char *path;
 		char *sDataSize;
-		uint dataSize;
+		uint64 dataSize;
+		char *dataFile;
 
 		command   = SockRecvLine(ss, 30);
 		path      = SockRecvLine(ss, 1000);
 		sDataSize = SockRecvLine(ss, 30);
 
-		line2csym(command);
-		toUpperLine(command);
-		path = lineToFairRelPath_x(path, strlen(RootDir));
-		line2csym(sDataSize);
-		dataSize = toValue(sDataSize);
+		coutJLine_x(xcout("command: %s\n", command));
+		coutJLine_x(xcout("path: %s\n", path));
+		coutJLine_x(xcout("dataSize: %s\n", sDataSize));
 
-		cout("command: %s\n", command);
-		cout("path: %s\n", path);
-		cout("dataSize: %u\n", dataSize);
+		dataSize = toValue64(sDataSize);
 
+		if(!isFairRelPath(path, strlen(RootDir)))
+		{
+			cout("不正なパスです。\n");
+			goto fault;
+		}
 		updateDiskSpace(RootDir[0]);
 
-		if(lastDiskFree < (uint64)dataSize)
+		if(lastDiskFree < KeepDiskFree)
+		{
+			cout("実行に必要なディスクの空き領域が不足しています。\n");
 			goto fault;
+		}
+		if(lastDiskFree - KeepDiskFree < dataSize)
+		{
+			cout("ディスクの空き領域が要求データサイズに対して不足しています。\n");
+			goto fault;
+		}
+		dataFile = combine_cx(TempDir, MakeUUID(1));
+
+		if(!RecvPrmData(ss, dataFile, dataSize))
+		{
+			cout("データの受信に失敗しました。\n");
+			goto fault2;
+		}
+
+		{
+			char *ender = SockRecvLine(ss, 30);
+
+			if(_stricmp(ender, "/e"))
+			{
+				cout("不正な終端です。\n");
+				memFree(ender);
+				goto fault2;
+			}
+			memFree(ender);
+		}
 
 		if(!_stricmp(command, "GET"))
 		{
 			error(); // TODO
 		}
 
-
 		error(); // TODO
 
+	fault2:
+		removeFile(dataFile);
+		memFree(dataFile);
 
 	fault:
 		memFree(command);
@@ -52,7 +103,6 @@ static void PerformTh(int sock, char *strip)
 		memFree(sDataSize);
 	}
 	ReleaseSockStream(ss);
-	releaseAutoBlock(buff);
 }
 static int IdleTh(void)
 {
@@ -91,6 +141,11 @@ readArgs:
 		RootDir = nextArg();
 		goto readArgs;
 	}
+	if(argIs("/D"))
+	{
+		KeepDiskFree = toValue64(nextArg());
+		goto readArgs;
+	}
 
 	if(argIs("/S"))
 	{
@@ -101,6 +156,7 @@ readArgs:
 
 	cout("ポート番号: %u\n", portNo);
 	cout("最大同時接続数: %u\n", connectMax);
+	cout("確保するディスクの空き領域: %I64u\n", KeepDiskFree);
 	cout("RootDir.0: %s\n", RootDir);
 
 	errorCase(!m_isRange(portNo, 1, 65535));
@@ -111,14 +167,23 @@ readArgs:
 
 	cout("RootDir.1: %s\n", RootDir);
 
-	errorCase_m(isAbsRootDir(RootDir), "ルートディレクトリは指定出来ません。");
+	DataDir = combine(RootDir, "d");
+	TempDir = combine(RootDir, "e");
 
-	createPath(RootDir, 'd');
+	cout("DataDir: %s\n", DataDir);
+	cout("TempDir: %s\n", TempDir);
+
+	createPath(DataDir, 'd');
+	createPath(TempDir, 'd');
+
+	recurClearDir(TempDir);
 
 	EvStop = eventOpen(EV_STOP);
 
 	sockServerTh(PerformTh, portNo, connectMax, IdleTh);
 
 	memFree(RootDir);
+	memFree(DataDir);
+	memFree(TempDir);
 	handleClose(EvStop);
 }

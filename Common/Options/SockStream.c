@@ -8,6 +8,22 @@
 
 /*
 	sock == -1 のとき、最初から閉じているソケットとして扱う。
+
+	timeout: タイムアウトまでの秒数, 0 == 無制限
+	blockTimeout: 無通信タイムアウトまでの秒数, 0 == 無制限
+	recvSizeLimiter: 総受信サイズの上限, 0 == 無制限
+*/
+SockStream_t *CreateSockStream2(int sock, uint timeout, uint blockTimeout, uint64 recvSizeLimiter)
+{
+	SockStream_t *i = CreateSockStream(sock, timeout);
+
+	SetSockStreamBlockTimeout(i, blockTimeout);
+	i->Extra.RecvSizeLimiter = recvSizeLimiter;
+	return i;
+}
+
+/*
+	sock == -1 のとき、最初から閉じているソケットとして扱う。
 */
 SockStream_t *CreateSockStream(int sock, uint timeout) // timeout: タイムアウトまでの秒数, 0: 無制限
 {
@@ -148,7 +164,7 @@ int SockRecvChar(SockStream_t *i)
 			i->R_Buff.Size = retval;
 			i->R_Buff.Index = 1;
 
-			if(i->Extra.RecvSizeLimiter)
+			if(i->Extra.RecvSizeLimiter != 0UI64)
 			{
 				if(i->Extra.RecvSizeLimiter <= retval) // 0 で閉じる <- 0 になると無効になるので..
 					i->Sock = -1;
