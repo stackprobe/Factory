@@ -186,3 +186,20 @@ void inner_critical(void)
 		enterCritical(&CritCommon);
 	}
 }
+
+void initSemaphore(semaphore_t *i, uint count)
+{
+	i->Count = count;
+}
+void fnlzSemaphore(semaphore_t *i)
+{
+	// TODO
+}
+void enterSemaphore(semaphore_t *i)
+{
+	error(); // TODO
+}
+void leaveSemaphore(semaphore_t *i)
+{
+	error(); // TODO
+}

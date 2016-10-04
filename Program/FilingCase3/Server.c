@@ -9,22 +9,29 @@ static char *RootDir = "C:\\appdata\\FilingCase3";
 static char *DataDir;
 static char *TempDir;
 static uint EvStop;
+static critical_t CritFileIO;
 
 static int RecvPrmData(SockStream_t *ss, char *dataFile, uint64 dataSize) // ret: ? ê¨å˜
 {
-	FILE *fp = fileOpen(dataFile, "wb");
 	uint64 count;
 
-	for(count = 0; count < dataSize; count++)
+	enterCritical(&CritFileIO);
 	{
-		int chr = SockRecvChar(ss);
+		FILE *fp = fileOpen(dataFile, "wb");
 
-		if(chr == EOF)
-			break;
+		for(count = 0; count < dataSize; count++)
+		{
+			int chr = SockRecvChar(ss);
 
-		writeChar(fp, chr);
+			if(chr == EOF)
+				break;
+
+			writeChar(fp, chr);
+		}
+		fileClose(fp);
 	}
-	fileClose(fp);
+	leaveCritical(&CritFileIO);
+
 	return count == dataSize;
 }
 static void PerformTh(int sock, char *strip)
@@ -179,6 +186,7 @@ readArgs:
 	recurClearDir(TempDir);
 
 	EvStop = eventOpen(EV_STOP);
+	initCritical(&CritFileIO);
 
 	sockServerTh(PerformTh, portNo, connectMax, IdleTh);
 
@@ -186,4 +194,5 @@ readArgs:
 	memFree(DataDir);
 	memFree(TempDir);
 	handleClose(EvStop);
+	fnlzCritical(&CritFileIO);
 }
