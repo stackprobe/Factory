@@ -9,7 +9,7 @@
 // ---- known url ----
 
 #define KNOWN_URL_FILE "C:\\appdata\\instagram-dl\\known-url.txt"
-#define KNOWN_URL_MAX 5
+#define KNOWN_URL_MAX 20
 
 static autoList_t *GetAllKnownUrl(void)
 {
