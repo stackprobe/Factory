@@ -121,6 +121,20 @@ void leaveCritical(critical_t *i)
 	LeaveCriticalSection(&i->Csec);
 }
 
+/*
+	critical()
+	uncritical()
+	inner_uncritical()
+	inner_critical()
+
+	は、１プロセス中、以下の順序で呼び出されなければならない。
+
+	ONE-PROCESS :
+		critical(); -> ONE-PROCESS -> uncritical();
+		| inner_uncritical(); -> ONE-PROCESS -> inner_critical();
+		| ""
+*/
+
 #define INNER_UNLOCK_MAX 3
 
 static int CritCommonInited;
@@ -185,21 +199,4 @@ void inner_critical(void)
 	{
 		enterCritical(&CritCommon);
 	}
-}
-
-void initSemaphore(semaphore_t *i, uint count)
-{
-	i->Count = count;
-}
-void fnlzSemaphore(semaphore_t *i)
-{
-	// TODO
-}
-void enterSemaphore(semaphore_t *i)
-{
-	error(); // TODO
-}
-void leaveSemaphore(semaphore_t *i)
-{
-	error(); // TODO
 }
