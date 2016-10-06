@@ -221,8 +221,9 @@ int collectEvents(uint hdl, uint millis) // ts_
 	/*
 		一つのハンドルに複数のシグナルが来ても蓄積されることは無いらしい。
 		ので上のコードで良いはずだけど、何かあったら嫌なので下のままにしておく。
+		-> おかない。@ 2016.10.6
 	*/
-#if 0
+#if 1
 	return WaitForSingleObject((HANDLE)hdl, millis) == WAIT_OBJECT_0 ? 1 : 0;
 #else
 	uint scnt = 0;

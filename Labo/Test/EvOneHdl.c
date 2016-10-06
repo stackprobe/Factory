@@ -13,6 +13,9 @@ int main(int argc, char **argv)
 {
 	uint ev = eventOpen("EvOneHdl-Test");
 	uint th;
+	uint th1;
+	uint th2;
+	uint th3;
 
 	// ---- 1 ----
 
@@ -40,6 +43,41 @@ int main(int argc, char **argv)
 	th = 0;
 
 	cout("2_OK!\n");
+
+	// ---- 3 ----
+
+	th1 = runThread(Test2Th, (void *)ev);
+	sleep(100);
+	th2 = runThread(Test2Th, (void *)ev);
+	sleep(100);
+	th3 = runThread(Test2Th, (void *)ev);
+
+	sleep(100);
+
+	LOGPOS();
+	eventSet(ev); // XXX no crit
+
+	sleep(100);
+
+	LOGPOS();
+	eventSet(ev); // XXX no crit
+
+	sleep(100);
+
+	LOGPOS();
+	eventSet(ev); // XXX no crit
+
+	sleep(100);
+
+	LOGPOS();
+	waitThread(th1);
+	waitThread(th2);
+	waitThread(th3);
+	th1 = 0;
+	th2 = 0;
+	th3 = 0;
+
+	cout("3_OK!\n");
 
 	// ----
 

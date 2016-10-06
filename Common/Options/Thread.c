@@ -200,3 +200,35 @@ void inner_critical(void)
 		enterCritical(&CritCommon);
 	}
 }
+
+// ˆÈ‰º ts_ ‚Å‚Í‚È‚¢‚±‚Æ‚É’ˆÓI
+
+void initSemaphore(semaphore_t *i, uint count)
+{
+	i->EvLeave = eventOpen_x(xcout("{0585e92b-bc63-4521-abdd-bc613fcf691b}_%u", (uint)GetCurrentProcessId()));
+	i->Count = count;
+}
+void fnlzSemaphore(semaphore_t *i)
+{
+	handleClose(i->EvLeave);
+}
+void enterSemaphore(semaphore_t *i)
+{
+	while(!i->Count)
+	{
+		inner_uncritical();
+		{
+			collectEvents(i->EvLeave, INFINITE);
+		}
+		inner_critical();
+	}
+	i->Count--;
+}
+void leaveSemaphore(semaphore_t *i)
+{
+	if(!i->Count)
+	{
+		eventSet(i->EvLeave);
+	}
+	i->Count++;
+}

@@ -28,3 +28,15 @@ void critical(void);
 void uncritical(void);
 void inner_uncritical(void);
 void inner_critical(void);
+
+typedef struct semaphore_st
+{
+	uint EvLeave;
+	uint Count;
+}
+semaphore_t;
+
+void initSemaphore(semaphore_t *i, uint count);
+void fnlzSemaphore(semaphore_t *i);
+void enterSemaphore(semaphore_t *i);
+void leaveSemaphore(semaphore_t *i);
