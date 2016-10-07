@@ -5,6 +5,7 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Collabo.h"
 #include "C:\Factory\Common\Options\TimeData.h"
+#include "C:\Factory\OpenSource\md5.h"
 
 // ---- known url ----
 
@@ -45,6 +46,47 @@ static void AddKnownUrl(char *url)
 
 	writeLines(KNOWN_URL_FILE, knownUrls);
 	releaseDim(knownUrls, 1);
+}
+
+// ---- known hash ----
+
+#define KNOWN_HASH_FILE "C:\\appdata\\instagram-dl\\known-hash.txt"
+#define KNOWN_HASH_MAX 20
+
+static autoList_t *GetAllKnownHash(void)
+{
+	autoList_t *ret;
+
+	createPath(KNOWN_HASH_FILE, 'f');
+	ret = readLines(KNOWN_HASH_FILE);
+	trimLines(ret);
+	return ret;
+}
+static int IsKnownHash(char *hash)
+{
+	autoList_t *knownHashes = GetAllKnownHash();
+	char *knownHash;
+	uint index;
+
+	foreach(knownHashes, knownHash, index)
+		if(!strcmp(hash, knownHash))
+			break;
+
+	releaseDim(knownHashes, 1);
+	return (int)knownHash;
+}
+static void AddKnownHash(char *hash)
+{
+	autoList_t *knownHashes = GetAllKnownHash();
+	char *knownHash;
+
+	insertElement(knownHashes, 0, (uint)strx(hash));
+
+	while(KNOWN_HASH_MAX < getCount(knownHashes))
+		memFree((char *)unaddElement(knownHashes));
+
+	writeLines(KNOWN_HASH_FILE, knownHashes);
+	releaseDim(knownHashes, 1);
 }
 
 // ----
@@ -122,6 +164,28 @@ static void Downloaded(autoBlock_t *imageData)
 	memFree(imgLocal);
 	memFree(imgFile);
 }
+static int CheckDownloaded(autoBlock_t *imageData) // ret: ? 保存する。
+{
+	char *hash = md5_makeHexHashBlock(imageData);
+	int ret = 0;
+
+	cout("hash: %s\n", hash);
+
+	if(IsKnownHash(hash))
+	{
+		cout("■■■■■■■■■■■■■■■■■■■■■\n");
+		cout("■既知のファイルであるため保存しません！■\n");
+		cout("■■■■■■■■■■■■■■■■■■■■■\n");
+	}
+	else
+	{
+		AddKnownHash(hash);
+		ret = 1;
+	}
+	memFree(hash);
+	cout("ret: %d\n", ret);
+	return ret;
+}
 static int Download(char *url) // ret: ? successful
 {
 	char *successfulFlag = makeTempPath(NULL);
@@ -154,7 +218,9 @@ static int Download(char *url) // ret: ? successful
 	{
 		autoBlock_t *imageData = readBinary(resBodyFile);
 
-		Downloaded(imageData);
+		if(CheckDownloaded(imageData))
+			Downloaded(imageData);
+
 		releaseAutoBlock(imageData);
 		ret = 1;
 	}
@@ -171,7 +237,7 @@ static int Download(char *url) // ret: ? successful
 
 	return ret;
 }
-int main(int argc, char **argv)
+static void Main2(void)
 {
 	char *successfulFlag = makeTempPath(NULL);
 	char *resHeaderFile = makeTempPath(NULL);
@@ -233,4 +299,9 @@ int main(int argc, char **argv)
 	memFree(successfulFlag);
 	memFree(resHeaderFile);
 	memFree(resBodyFile);
+}
+int main(int argc, char **argv)
+{
+	Main2();
+	termination(0);
 }

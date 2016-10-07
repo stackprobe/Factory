@@ -98,6 +98,10 @@ static void GitFactory(char *rDir, char *wDir, int allowOverwrite)
 	antiSubversion = 1;
 	files = lss(rDir);
 	changeRoots(files, rDir, NULL);
+
+	foreach(files, file, index)
+		errorCase_m(startsWithICase(file, ".git"), ".gitÇ≈énÇ‹ÇÈâΩÇ©Ç™Ç†ÇËÇ‹Ç∑ÅB");
+
 	RemoveIgnoreFiles(files);
 	sortJLinesICase(files);
 

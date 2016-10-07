@@ -52,6 +52,22 @@ void setCoutLogFile(char *fileBase)
 	OpenLogFile();
 	addFinalizer(CloseWrFP);
 }
+void setCoutLogFileAdd(char *fileBase)
+{
+	char *file;
+	char *stamp;
+
+	errorCase(WrFP);
+	stamp = makeCompactStamp(NULL);
+	stamp[11] = '\0'; // 10分間隔で区切る。サイズは見ない！デカくなってもファイルを切り替えない！
+	file = xcout("%s_%s000.log", fileBase, stamp);
+	WrFP = fileOpen(file, "ab");
+	addFinalizer(CloseWrFP);
+	memFree(file);
+	memFree(stamp);
+
+	writeLine_x(WrFP, xcout("[%s] ログ追記開始", makeJStamp(NULL, 0)));
+}
 void cout(char *format, ...)
 {
 	va_list marker;

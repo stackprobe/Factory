@@ -548,7 +548,14 @@ static void ReadSysArgs(void)
 			desertElement(Args, argi);
 			arg = (char *)desertElement(Args, argi);
 
-			setCoutLogFile(arg);
+			setCoutLogFile(arg); // arg == fileBase
+		}
+		else if(!_stricmp(arg, "//LA")) // 標準出力(coutの出力)をログに追記する。★注意：termination();しないとストリームを閉じない。
+		{
+			desertElement(Args, argi);
+			arg = (char *)desertElement(Args, argi);
+
+			setCoutLogFileAdd(arg); // arg == fileBase
 		}
 		else if(!_stricmp(arg, "//-E"))
 		{
