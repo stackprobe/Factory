@@ -59,8 +59,8 @@ void setCoutLogFileAdd(char *fileBase)
 
 	errorCase(WrFP);
 	stamp = makeCompactStamp(NULL);
-	stamp[11] = '\0'; // 10分間隔で区切る。サイズは見ない！デカくなってもファイルを切り替えない！
-	file = xcout("%s_%s000.log", fileBase, stamp);
+	stamp[10] = '\0'; // １時間で区切る。サイズは見ない！デカくなってもファイルを切り替えない！
+	file = xcout("%s_%s0000.log", fileBase, stamp);
 	WrFP = fileOpen(file, "ab");
 	addFinalizer(CloseWrFP);
 	memFree(file);
