@@ -336,6 +336,11 @@ void SockSendLine(SockStream_t *i, char *line)
 	SockSendToken(i, "\r\n"); // CR-LF
 	SockFlush(i);
 }
+void SockSendLine_NF(SockStream_t *i, char *line)
+{
+	SockSendToken(i, line);
+	SockSendToken(i, "\r\n"); // CR-LF
+}
 void SockSendValue(SockStream_t *i, uint value)
 {
 	uchar block[4];

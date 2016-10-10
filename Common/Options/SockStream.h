@@ -54,6 +54,7 @@ autoBlock_t *SockRipRecvBuffer(SockStream_t *i);
 char *SockRecvLine(SockStream_t *i, uint lenmax);
 void SockSendToken(SockStream_t *i, char *token);
 void SockSendLine(SockStream_t *i, char *line);
+void SockSendLine_NF(SockStream_t *i, char *line);
 
 extern uint SockRecvBlock_LastRecvSize;
 

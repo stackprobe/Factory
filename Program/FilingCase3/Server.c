@@ -3,19 +3,21 @@
 #include "C:\Factory\Common\Options\CRRandom.h"
 
 #define EV_STOP "{49e9f81c-dae4-464f-a209-301eed85b011}"
+#define FILEIO_MAX 20
 
 static uint64 KeepDiskFree = 2500000000ui64; // 2.5 GB
 static char *RootDir = "C:\\appdata\\FilingCase3";
 static char *DataDir;
 static char *TempDir;
 static uint EvStop;
-static critical_t CritFileIO;
+static semaphore_t SmphFileIO;
+static critical_t CritCommand;
 
 static int RecvPrmData(SockStream_t *ss, char *dataFile, uint64 dataSize) // ret: ? 成功
 {
 	uint64 count;
 
-	enterCritical(&CritFileIO);
+	enterSemaphore(&SmphFileIO);
 	{
 		FILE *fp = fileOpen(dataFile, "wb");
 
@@ -30,15 +32,85 @@ static int RecvPrmData(SockStream_t *ss, char *dataFile, uint64 dataSize) // ret
 		}
 		fileClose(fp);
 	}
-	leaveCritical(&CritFileIO);
+	leaveSemaphore(&SmphFileIO);
 
 	return count == dataSize;
+}
+static void FC3_SendBlock(SockStream_t *ss, void *block, uint blockSize)
+{
+	SockSendValue(ss, blockSize);
+	SockSendBlock(ss, block, blockSize);
+}
+static void FC3_SendLine(SockStream_t *ss, char *line)
+{
+	FC3_SendBlock(ss, line, strlen(line));
+}
+
+thread_tls static SockStream_t *SL_SS;
+
+static int SL_Action(struct _finddata_t *i)
+{
+	char *lPath;
+
+	if(i->attrib & _A_SUBDIR)
+		lPath = xcout("%s\\", i->name);
+	else
+		lPath = strx(i->name);
+
+	FC3_SendLine(SL_SS, lPath);
+	memFree(lPath);
+	return 1;
+}
+static void SendResList(SockStream_t *ss, char *relPath)
+{
+	char *wCard = combine_cx(DataDir, xcout("%s\\*", relPath));
+
+	enterSemaphore(&SmphFileIO);
+	{
+		SL_SS = ss;
+		fileSearch(wCard, SL_Action);
+		SL_SS = NULL;
+	}
+	leaveSemaphore(&SmphFileIO);
+
+	memFree(wCard);
+
+	FC3_SendLine(ss, ""); // terminator
+}
+static void SendResFile(SockStream_t *ss, char *relPath)
+{
+	char *file = combine(DataDir, relPath);
+
+	enterSemaphore(&SmphFileIO);
+	{
+		FILE *fp = fileOpen(file, "rb");
+
+		SockSendValue(ss, (uint)getFileSizeFP(fp)); // XXX: 4 GB 以上は想定しない。
+		fileSeek(fp, SEEK_SET, 0);
+
+		for(; ; )
+		{
+			autoBlock_t *buff = readBinaryStream(fp, 2000000); // 2 MB
+
+			if(!buff)
+				break;
+
+			SockSendBlock(ss, directGetBuffer(buff), getSize(buff));
+		}
+		fileClose(fp);
+	}
+	leaveSemaphore(&SmphFileIO);
+
+	memFree(file);
 }
 static void PerformTh(int sock, char *strip)
 {
 	SockStream_t *ss = CreateSockStream2(sock, 0, 30, 0);
+	int keepConn;
 
-	for(; ; )
+	LOGPOS();
+
+	do
 	{
 		char *command;
 		char *path;
@@ -46,19 +118,31 @@ static void PerformTh(int sock, char *strip)
 		uint64 dataSize;
 		char *dataFile;
 
+		keepConn = 0;
+
 		command   = SockRecvLine(ss, 30);
 		path      = SockRecvLine(ss, 1000);
 		sDataSize = SockRecvLine(ss, 30);
 
-		coutJLine_x(xcout("command: %s\n", command));
-		coutJLine_x(xcout("path: %s\n", path));
-		coutJLine_x(xcout("dataSize: %s\n", sDataSize));
+		if(IsEOFSockStream(ss))
+		{
+			cout("切断されました。\n");
+			goto fault;
+		}
+		coutJLine_x(xcout("command: %s", command));
+		coutJLine_x(xcout("path: %s", path));
+		coutJLine_x(xcout("dataSize: %s", sDataSize));
 
 		dataSize = toValue64(sDataSize);
 
-		if(!isFairRelPath(path, strlen(RootDir)))
+		if(!isFairRelPath(path, strlen(DataDir)))
 		{
+			char *tmp;
+
 			cout("不正なパスです。\n");
+			tmp = lineToFairRelPath(path, strlen(DataDir));
+			cout("正規化 -> %s\n", tmp);
+			memFree(tmp);
 			goto fault;
 		}
 		updateDiskSpace(RootDir[0]);
@@ -93,12 +177,67 @@ static void PerformTh(int sock, char *strip)
 			memFree(ender);
 		}
 
-		if(!_stricmp(command, "GET"))
+		if(!_stricmp(command, "LIST"))
 		{
-			error(); // TODO
+			enterCritical(&CritCommand);
+			{
+				SendResList(ss, path);
+			}
+			leaveCritical(&CritCommand);
 		}
+		else if(!_stricmp(command, "GET"))
+		{
+			enterCritical(&CritCommand);
+			{
+				SendResFile(ss, path);
+			}
+			leaveCritical(&CritCommand);
+		}
+		else if(!_stricmp(command, "POST"))
+		{
+			char *file = combine(DataDir, path);
 
-		error(); // TODO
+			enterCritical(&CritCommand);
+			{
+				LOGPOS();
+				recurRemovePathIfExist(file);
+				LOGPOS();
+				createPath(file, 'X');
+				LOGPOS();
+				moveFile(dataFile, file);
+				LOGPOS();
+				createFile(dataFile);
+				LOGPOS();
+			}
+			leaveCritical(&CritCommand);
+
+			memFree(file);
+
+			FC3_SendLine(ss, "1");
+		}
+		else if(!_stricmp(command, "DELETE"))
+		{
+			char *file = combine(DataDir, path);
+
+			enterCritical(&CritCommand);
+			{
+				LOGPOS();
+				recurRemovePathIfExist(file);
+				LOGPOS();
+			}
+			leaveCritical(&CritCommand);
+
+			memFree(file);
+
+			FC3_SendLine(ss, "1");
+		}
+		else
+		{
+			cout("不明なコマンドです。\n");
+			goto fault2;
+		}
+		SockFlush(ss);
+		keepConn = 1;
 
 	fault2:
 		removeFile(dataFile);
@@ -109,6 +248,9 @@ static void PerformTh(int sock, char *strip)
 		memFree(path);
 		memFree(sDataSize);
 	}
+	while(keepConn);
+
+	LOGPOS();
 	ReleaseSockStream(ss);
 }
 static int IdleTh(void)
@@ -130,7 +272,7 @@ static int IdleTh(void)
 int main(int argc, char **argv)
 {
 	uint portNo = 65123;
-	uint connectMax = 20;
+	uint connectMax = 100;
 
 readArgs:
 	if(argIs("/P"))
@@ -186,7 +328,8 @@ readArgs:
 	recurClearDir(TempDir);
 
 	EvStop = eventOpen(EV_STOP);
-	initCritical(&CritFileIO);
+	initSemaphore(&SmphFileIO, FILEIO_MAX);
+	initCritical(&CritCommand);
 
 	sockServerTh(PerformTh, portNo, connectMax, IdleTh);
 
@@ -194,5 +337,6 @@ readArgs:
 	memFree(DataDir);
 	memFree(TempDir);
 	handleClose(EvStop);
-	fnlzCritical(&CritFileIO);
+	fnlzSemaphore(&SmphFileIO);
+	fnlzCritical(&CritCommand);
 }

@@ -155,7 +155,7 @@ void critical(void)
 {
 	if(!CritCommonLockCount)
 	{
-		if(!CritCommonInited) // 遅くとも最初の runThread() 呼び出し前(＝最初のスレッド生成前)に呼ばれる。<- 初期化は atomic に行われる。
+		if(!CritCommonInited) // 遅くとも最初の runThread() 呼び出し前(＝最初のスレッド生成前)に呼ばれる。<- 初期化はクリティカルに行われる。
 		{
 			CritCommonInited = 1;
 			initCritical(&CritCommon);
