@@ -221,6 +221,9 @@ void enterSemaphore(semaphore_t *i)
 			collectEvents(i->EvLeave, INFINITE);
 		}
 		inner_critical();
+
+		if(2 <= i->Count)
+			eventSet(i->EvLeave);
 	}
 	i->Count--;
 }
