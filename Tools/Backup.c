@@ -129,7 +129,7 @@ static void BackupDirs(autoList_t *targetDirs)
 
 		writeLine(fp, "SET COPYCMD=");
 		writeLine(fp, line = xcout("MD \"%s\"", destDir)); memFree(line);
-		writeLine(fp, line = xcout("XCOPY.EXE \"%s\" \"%s\" /E /H /K", targetDir, destDir)); memFree(line);
+		writeLine(fp, line = xcout("ROBOCOPY.EXE \"%s\" \"%s\" /MIR", targetDir, destDir)); memFree(line);
 
 		fileClose(fp);
 
