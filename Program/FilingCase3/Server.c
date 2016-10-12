@@ -52,6 +52,12 @@ static int SL_Action(struct _finddata_t *i)
 {
 	char *lPath;
 
+	if(
+		!strcmp(i->name, ".") ||
+		!strcmp(i->name, "..")
+		)
+		goto endFunc;
+
 	if(i->attrib & _A_SUBDIR)
 		lPath = xcout("%s\\", i->name);
 	else
@@ -59,6 +65,7 @@ static int SL_Action(struct _finddata_t *i)
 
 	FC3_SendLine(SL_SS, lPath);
 	memFree(lPath);
+endFunc:
 	return 1;
 }
 static void SendResList(SockStream_t *ss, char *relPath)
@@ -85,8 +92,7 @@ static void SendResFile(SockStream_t *ss, char *relPath)
 	{
 		FILE *fp = fileOpen(file, "rb");
 
-		SockSendValue(ss, (uint)getFileSizeFP(fp)); // XXX: 4 GB à»è„ÇÕëzíËÇµÇ»Ç¢ÅB
-		fileSeek(fp, SEEK_SET, 0);
+		SockSendValue64(ss, getFileSizeFPSS(fp));
 
 		for(; ; )
 		{

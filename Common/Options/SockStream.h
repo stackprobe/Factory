@@ -63,6 +63,8 @@ void SockSendBlock(SockStream_t *i, void *block, uint blockSize);
 
 uint SockRecvValue(SockStream_t *i);
 void SockSendValue(SockStream_t *i, uint value);
+void SockSendValue64(SockStream_t *i, uint64 value);
+uint64 SockRecvValue64(SockStream_t *i);
 
 // _x
 void SockSendToken_x(SockStream_t *i, char *token);

@@ -327,18 +327,18 @@ uint fileSearchCount(char *wCard)
 	return FSC_Count;
 }
 
-static int FSX_Flag;
+static int FSX_Found;
 
 static int FSX_Action(struct _finddata_t *i)
 {
-	FSX_Flag = 1;
+	FSX_Found = 1;
 	return 0;
 }
 int fileSearchExist(char *wCard)
 {
-	FSX_Flag = 0;
+	FSX_Found = 0;
 	fileSearch(wCard, FSX_Action);
-	return FSX_Flag;
+	return FSX_Found;
 }
 
 uint lsCount(char *dir)

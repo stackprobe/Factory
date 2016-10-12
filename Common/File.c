@@ -862,6 +862,16 @@ uint64 getFileSizeFP(FILE *fp)
 	}
 	return size;
 }
+uint64 getFileSizeFPSS(FILE *fp)
+{
+	uint64 size = getFileSizeFP(fp);
+
+	if(_fseeki64(fp, 0I64, SEEK_SET) != 0) // ? Ž¸”s
+	{
+		error();
+	}
+	return size;
+}
 uint64 getSeekPos(FILE *fp)
 {
 	sint64 pos = _ftelli64(fp);

@@ -348,6 +348,13 @@ void SockSendValue(SockStream_t *i, uint value)
 	valueToBlock(block, value);
 	SockSendBlock(i, block, 4);
 }
+void SockSendValue64(SockStream_t *i, uint64 value)
+{
+	uchar block[8];
+
+	value64ToBlock(block, value);
+	SockSendBlock(i, block, 8);
+}
 
 uint SockRecvBlock_LastRecvSize;
 
@@ -376,6 +383,13 @@ uint SockRecvValue(SockStream_t *i)
 
 	SockRecvBlock(i, block, 4);
 	return blockToValue(block);
+}
+uint64 SockRecvValue64(SockStream_t *i)
+{
+	uchar block[8];
+
+	SockRecvBlock(i, block, 8);
+	return blockToValue64(block);
 }
 
 // _x
