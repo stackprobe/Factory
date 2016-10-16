@@ -28,6 +28,8 @@
 #include "pop.h"
 #include "smtp.h"
 #include "tools.h"
+#include "C:\Factory\Common\Options\CRRandom.h"
+#include "C:\Factory\Common\Options\Sequence.h"
 
 static char *PopServer;
 static uint PopPortno = 110;
@@ -213,6 +215,7 @@ static void Distribute(autoList_t *mail, autoList_t *memberList, char *groupName
 	uint index;
 	int unreturn;
 	uint counter;
+	autoList_t *shuffledMemberList;
 
 	foreach(memberList, member, index)
 	{
@@ -229,14 +232,21 @@ static void Distribute(autoList_t *mail, autoList_t *memberList, char *groupName
 
 	counter = NextCounter(groupName);
 
-	foreach(memberList, member, index)
+	shuffledMemberList = copyAutoList(memberList);
+	shuffle(shuffledMemberList);
+
+	foreach(shuffledMemberList, member, index)
 	{
 		int sendonly = findLine(SendOnlyMemberList, member) < getCount(SendOnlyMemberList); // ? 'member' is sendonly member
 
 		if(unreturn && member == memberFrom)
-		{}
+		{
+			cout("■折り返し配信拒否メンバーなので飛ばす。\n");
+		}
 		else if(sendonly)
-		{}
+		{
+			cout("■送信オンリーメンバーなので飛ばす。\n");
+		}
 		else
 		{
 			cout("★即返信・連続送信すると失敗することがあるっぽいのでちょっと待つ。\n");
@@ -245,6 +255,7 @@ static void Distribute(autoList_t *mail, autoList_t *memberList, char *groupName
 			DistributeOne(mail, groupName, memberFrom, member, counter);
 		}
 	}
+	releaseAutoList(shuffledMemberList);
 }
 static void RecvEvent(autoList_t *mail)
 {
@@ -325,6 +336,7 @@ static void RecvLoop(void)
 {
 	double lastHTm = -1.0;
 	double currHTm;
+	double diffHTm;
 
 	for(; ; )
 	{
@@ -350,13 +362,21 @@ static void RecvLoop(void)
 		if(index) // ? 何かメールを受信した。
 			lastHTm = currHTm;
 
+		diffHTm = currHTm - lastHTm;
+		m_range(diffHTm, 0.0, 10.0);
+		waitMax = 2 + (uint)d2i(diffHTm * 3.0);
+
+		// old
+		/*
 		if(lastHTm + 1.0 < currHTm) // ? 最後の受信からかなり経った。
 			waitMax = 15; // 45 sec
 		else
 			waitMax = 3; // 9 sec
+		*/
 
 		cout("lastHTm: %f\n", lastHTm);
 		cout("currHTm: %f\n", currHTm);
+		cout("diffHTm: %f\n", diffHTm);
 		cout("waitMax: %u\n", waitMax);
 
 		for(index = 0; index < waitMax; index++)
@@ -372,6 +392,8 @@ endLoop:;
 }
 int main(int argc, char **argv)
 {
+	mt19937_initCRnd();
+
 	GroupList = newList();
 	UnreturnMemberList = newList();
 	SendOnlyMemberList = newList();

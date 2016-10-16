@@ -6,7 +6,7 @@
 #define FILEIO_MAX 20
 
 static uint64 KeepDiskFree = 2500000000ui64; // 2.5 GB
-static char *RootDir = "C:\\appdata\\FilingCase3";
+static char *RootDir = "C:\\appdata\\FilingCase3\\Long_aaaaaaaaaa_bbbbbbbbbb_cccccccccc_dddddddddd_eeeeeeeeee_ffffffffff_gggggggggg_Long"; // 100 文字くらい。
 static char *DataDir;
 static char *TempDir;
 static uint EvStop;
@@ -29,6 +29,17 @@ static int RecvPrmData(SockStream_t *ss, char *dataFile, uint64 dataSize) // ret
 				break;
 
 			writeChar(fp, chr);
+
+			if(count % 30000000ui64 == 0ui64) // 30 MB
+			{
+				updateDiskSpace(RootDir[0]);
+
+				if(lastDiskFree < KeepDiskFree)
+				{
+					cout("実行に必要なディスクの空き領域が不足しているためデータ受信は失敗します。\n");
+					break;
+				}
+			}
 		}
 		fileClose(fp);
 	}
@@ -82,32 +93,39 @@ static void SendResList(SockStream_t *ss, char *relPath)
 
 	memFree(wCard);
 
-	FC3_SendLine(ss, ""); // terminator
+	FC3_SendLine(ss, "/LIST/e");
 }
 static void SendResFile(SockStream_t *ss, char *relPath)
 {
 	char *file = combine(DataDir, relPath);
 
-	enterSemaphore(&SmphFileIO);
+	if(existFile(file))
 	{
-		FILE *fp = fileOpen(file, "rb");
-
-		SockSendValue64(ss, getFileSizeFPSS(fp));
-
-		for(; ; )
+		enterSemaphore(&SmphFileIO);
 		{
-			autoBlock_t *buff = readBinaryStream(fp, 2000000); // 2 MB
+			FILE *fp = fileOpen(file, "rb");
 
-			if(!buff)
-				break;
+			SockSendValue64(ss, getFileSizeFPSS(fp));
 
-			SockSendBlock(ss, directGetBuffer(buff), getSize(buff));
+			for(; ; )
+			{
+				autoBlock_t *buff = readBinaryStream(fp, 2000000); // 2 MB
+
+				if(!buff)
+					break;
+
+				SockSendBlock(ss, directGetBuffer(buff), getSize(buff));
+			}
+			fileClose(fp);
 		}
-		fileClose(fp);
+		leaveSemaphore(&SmphFileIO);
 	}
-	leaveSemaphore(&SmphFileIO);
+	else
+		SockSendValue64(ss, 0ui64);
 
 	memFree(file);
+
+	FC3_SendLine(ss, "/GET/e");
 }
 static void PerformTh(int sock, char *strip)
 {
@@ -219,7 +237,31 @@ static void PerformTh(int sock, char *strip)
 
 			memFree(file);
 
-			FC3_SendLine(ss, "1");
+			FC3_SendLine(ss, "/POST/e");
+		}
+		else if(!_stricmp(command, "GET-POST"))
+		{
+			char *file = combine(DataDir, path);
+
+			enterCritical(&CritCommand);
+			{
+				SendResFile(ss, path);
+
+				LOGPOS();
+				recurRemovePathIfExist(file);
+				LOGPOS();
+				createPath(file, 'X');
+				LOGPOS();
+				moveFile(dataFile, file);
+				LOGPOS();
+				createFile(dataFile);
+				LOGPOS();
+			}
+			leaveCritical(&CritCommand);
+
+			memFree(file);
+
+			FC3_SendLine(ss, "/GET-POST/e");
 		}
 		else if(!_stricmp(command, "DELETE"))
 		{
@@ -235,7 +277,7 @@ static void PerformTh(int sock, char *strip)
 
 			memFree(file);
 
-			FC3_SendLine(ss, "1");
+			FC3_SendLine(ss, "/DELETE/e");
 		}
 		else
 		{
@@ -244,6 +286,7 @@ static void PerformTh(int sock, char *strip)
 		}
 		SockFlush(ss);
 		keepConn = 1;
+		cout("コマンドは正常に実行されました。\n");
 
 	fault2:
 		removeFile(dataFile);
@@ -323,7 +366,7 @@ readArgs:
 	cout("RootDir.1: %s\n", RootDir);
 
 	DataDir = combine(RootDir, "d");
-	TempDir = combine(RootDir, "e");
+	TempDir = combine(RootDir, "w");
 
 	cout("DataDir: %s\n", DataDir);
 	cout("TempDir: %s\n", TempDir);
