@@ -1,5 +1,11 @@
 /*
 	Server.exe [/P ポート番号] [/C 最大同時接続数] [/R ルートDIR] [/D 確保するディスクの空き領域] HARUNA-WA-DJBD [/S]
+
+		ポート番号     ... 1 ～ 65535, def: 65123
+		最大同時接続数 ... 1 ～ IMAX, def: 100
+		ルートDIR      ... 過去に指定したことのあるディレクトリ || 空のディレクトリ || createPath(, 'D') 可能なディレクトリ
+		確保するディスクの空き領域 ... バイト数を指定する。1 ～ IMAX_64, def: 2.5 GB
+		/S ... 停止
 */
 
 #include "C:\Factory\Common\Options\SockServerTh.h"
@@ -378,7 +384,7 @@ readArgs:
 	cout("TempDir: %s\n", TempDir);
 
 	createPath(DataDir, 'd');
-	createPath(TempDir, 'd');
+	createDirIfNotExist(TempDir);
 
 	recurClearDir(TempDir);
 
