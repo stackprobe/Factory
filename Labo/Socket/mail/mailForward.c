@@ -363,8 +363,8 @@ static void RecvLoop(void)
 			lastHTm = currHTm;
 
 		diffHTm = currHTm - lastHTm;
-		m_range(diffHTm, 0.0, 10.0);
-		waitMax = 2 + (uint)d2i(diffHTm * 3.0);
+		m_range(diffHTm, 0.0, 1.5);
+		waitMax = 2 + (uint)d2i(diffHTm * 12.0);
 
 		// old
 		/*
@@ -377,7 +377,7 @@ static void RecvLoop(void)
 		cout("lastHTm: %f\n", lastHTm);
 		cout("currHTm: %f\n", currHTm);
 		cout("diffHTm: %f\n", diffHTm);
-		cout("waitMax: %u\n", waitMax);
+		cout("waitMax: %u (%u sec)\n", waitMax, waitMax * 3);
 
 		for(index = 0; index < waitMax; index++)
 		{

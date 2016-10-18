@@ -1,16 +1,18 @@
+/*
+	Server.exe [/P ポート番号] [/C 最大同時接続数] [/R ルートDIR] [/D 確保するディスクの空き領域] HARUNA-WA-DJBD [/S]
+*/
+
 #include "C:\Factory\Common\Options\SockServerTh.h"
 #include "C:\Factory\Common\Options\SockStream.h"
 #include "C:\Factory\Common\Options\CRRandom.h"
 
-#define MTX_PROC "{281d2160-898d-4ae2-a25b-0cc33b87c60d}"
-#define EV_STOP  "{49e9f81c-dae4-464f-a209-301eed85b011}"
+#define EV_STOP "{49e9f81c-dae4-464f-a209-301eed85b011}"
 #define FILEIO_MAX 20
 
 static uint64 KeepDiskFree = 2500000000ui64; // 2.5 GB
 static char *RootDir = "C:\\appdata\\FilingCase3\\Long_aaaaaaaaaa_bbbbbbbbbb_cccccccccc_dddddddddd_eeeeeeeeee_ffffffffff_gggggggggg_Long"; // 100 文字くらい。
 static char *DataDir;
 static char *TempDir;
-static uint MtxProc;
 static uint EvStop;
 static semaphore_t SmphFileIO;
 static critical_t CritCommand;
@@ -347,19 +349,13 @@ readArgs:
 		goto readArgs;
 	}
 
+	errorCase(strcmp(nextArg(), "HARUNA-WA-DJBD"));
+
 	if(argIs("/S"))
 	{
 		LOGPOS();
 		eventWakeup(EV_STOP);
 		return;
-	}
-
-	MtxProc = mutexOpen(MTX_PROC);
-
-	if(!handleWaitForMillis(MtxProc, 0))
-	{
-		cout("既に起動しています。\n");
-		goto endProc;
 	}
 
 	cout("ポート番号: %u\n", portNo);
@@ -398,8 +394,4 @@ readArgs:
 	handleClose(EvStop);
 	fnlzSemaphore(&SmphFileIO);
 	fnlzCritical(&CritCommand);
-
-	mutexRelease(MtxProc);
-endProc:
-	handleClose(MtxProc);
 }
