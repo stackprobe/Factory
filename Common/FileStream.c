@@ -252,6 +252,16 @@ void readWriteBinary(FILE *rfp, FILE *wfp, uint64 size)
 	}
 	memFree(buff);
 }
+void readWriteBinaryToEnd(FILE *rfp, FILE *wfp)
+{
+	uint64 rPos = getSeekPos(rfp);
+	uint64 size;
+
+	size = getFileSizeFP(rfp);
+	fileSeek(rfp, SEEK_SET, rPos);
+	size -= rPos;
+	readWriteBinary(rfp, wfp, size);
+}
 void writeBinaryBlock(FILE *fp, autoBlock_t *block) // getSize(block) == 0 Ç≈Ç‡â¬
 {
 	if(fwrite(directGetBuffer(block), 1, getSize(block), fp) != getSize(block)) // fwrite(, 1, 0, ) ÇÃÇ∆Ç´ 0 Çï‘Ç∑ÅB

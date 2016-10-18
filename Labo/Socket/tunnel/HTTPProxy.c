@@ -11,8 +11,8 @@
 	                                          [/HR- H-KEY H-VAL]... [/HK- H-KEY]...
 	                                          [/HR+ H-KEY H-VAL]... [/HK+ H-KEY]...
 	                                          [/F FILTER-COMMAND]
-	                                          [/F+ FILTER-COMMAND]
 	                                          [/F- FILTER-COMMAND]
+	                                          [/F+ FILTER-COMMAND]
 
 		CONNECT-MAX       ... 最大接続数, 省略時 100
 		SOCK-TIMEOUT      ... 通信タイムアウト [秒] 0 == 無制限, 省略時 10 日
@@ -33,8 +33,8 @@
 		/HR+ ... ヘッダフィールドの置き換え・追加 (上下両方)
 		/HK+ ... ヘッダフィールドの削除           (上下両方)
 		/F   ... フィルターコマンド (上りのみ)
-		/F+  ... フィルターコマンド (下りのみ)
-		/F-  ... フィルターコマンド (上下両方)
+		/F-  ... フィルターコマンド (下りのみ)
+		/F+  ... フィルターコマンド (上下両方)
 
 	特殊なH-VAL
 

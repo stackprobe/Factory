@@ -126,12 +126,13 @@ uint64 nowTick(void)
 
 		if(UINTMAX / 2 < diffTick) // オーバーフローだろう。
 		{
-			cout("GetTickCount overflow\n");
+			cout("GetTickCount() overflow !\n");
 //			LOGPOS(); // 再帰しとるやんけプーw @ 2016.10.17
 			baseTick += (uint64)UINT_MAX + 1;
 		}
 		else // オーバーフローか？
 		{
+			cout("GetTickCount() overflow ?\n");
 //			LOGPOS(); // 再帰しとるやんけプーw @ 2016.10.17
 			baseTick += diffTick; // 前回と同じ戻り値になるように調整する。
 		}
