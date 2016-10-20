@@ -20,6 +20,7 @@
 	‚×‚«ª     R      ‘½”{’·   10iuint   ‘½”{’·     ­”‘æ basement ˆÊ‚Ü‚Å, ­”‘æ basement + 1 ˆÊˆÈ‰ºØ‚èÌ‚Ä
 	‘Î”       L      ‘½”{’·   ‘½”{’·     10iuint   ®”,                   ­”‘æ 1 ˆÊˆÈ‰ºØ‚èÌ‚Ä
 	i”•ÏŠ·   X      ‘½”{’·   10iuint   ‘½”{’·     ­”‘æ basement ˆÊ‚Ü‚Å, ­”‘æ basement + 1 ˆÊˆÈ‰ºØ‚èÌ‚Ä
+	Ø‚èÌ‚Ä   I      ‘½”{’·   10iuint   ‘½”{’·     ¬”‘æ [‰E€] ˆÊ‚Ü‚Å, ­”‘æ [‰E€] + 1 ˆÊˆÈ‰ºØ‚èÌ‚Ä
 
 	'10iuint' ‚Í radix, basement ‚ÉŠÖ‚í‚ç‚¸ 10 i” 0 ` 4294967295 ‚Ì®”
 
@@ -217,6 +218,7 @@ static void Main2(void)
 	char *op2;
 	char *ans;
 	int noShowMarume = 0;
+	int onceNoShowMarume = 0;
 
 	InitMemory();
 
@@ -254,6 +256,7 @@ readArgs:
 	{
 		pop= nextArg();
 		op2 = strx(nextArg());
+		onceNoShowMarume = 0;
 
 		if(op2[0] == '@')
 		{
@@ -302,6 +305,7 @@ readArgs:
 			}
 			break;
 
+		case 'i': ans = calcLine(op1, '/', "1", radix, toValue(op2)); onceNoShowMarume = 1; break;
 		case '=': ans = strx(op1); SetMemory(op2, op1); break;
 		case ';': ans = strx(op2); break;
 		case ',': ans = InsSepOp(strx(op1), toValue(op2)); break;
@@ -309,7 +313,7 @@ readArgs:
 		default:
 			error();
 		}
-		if(calcLastMarume && !noShowMarume)
+		if(calcLastMarume && !noShowMarume && !onceNoShowMarume)
 		{
 			char *tmp;
 

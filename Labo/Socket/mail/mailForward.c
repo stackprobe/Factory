@@ -367,8 +367,8 @@ static void RecvLoop(void)
 			lastHTm = currHTm;
 
 		diffHTm = currHTm - lastHTm;
-		m_range(diffHTm, 0.0, 1.5);
-		waitMax = 2 + (uint)d2i(diffHTm * 12.0);
+		m_range(diffHTm, 0.0, 24.0);
+		waitMax = 2 + (uint)d2i(diffHTm * 1.5);
 
 		// old
 		/*
