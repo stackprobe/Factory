@@ -338,7 +338,7 @@ static void RecvEvent(autoList_t *mail)
 }
 static void RecvLoop(void)
 {
-	double lastHTm = -1.0;
+	double lastHTm = -IMAX;
 	double currHTm;
 	double diffHTm;
 
