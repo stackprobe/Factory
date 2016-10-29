@@ -428,26 +428,28 @@ static void MakeAppIndex(char *rootDir, AppInfo_t *ai, char *appIndexFmt, char *
 static void MakeNewestIndex(char *rootDir)
 {
 	char *newestFile = combine(rootDir, NEWEST_FILE);
-	FILE *fp;
+	autoList_t *lines = newList();
 	AppInfo_t *ai;
 	uint index;
-
-	fp = fileOpen(newestFile, "wt");
 
 	foreach(AppInfos, ai, index)
 	{
 		RevInfo_t *ri = (RevInfo_t *)getElement(ai->RevInfos, 0);
 
-		writeLine_x(fp, xcout(
-			"%s %s %I64u %s"
+		addElement(lines, (uint)xcout(
+			"%s*%s*%I64u*%s"
 			,ai->AppName
 			,ri->Rev
 			,ri->Size
 			,ri->Hash
 			));
 	}
-	fileClose(fp);
+	shootingStarLines(lines);
+
+	writeLines(newestFile, lines);
+
 	memFree(newestFile);
+	releaseDim(lines, 1);
 }
 void MakeDLIndex(char *rootDir)
 {
