@@ -31,6 +31,8 @@
 		|  +--index.html <- out
 		|
 		+--index.html <- out
+		|
+		+--newest.html <- out
 
 		APP
 			ƒAƒvƒŠ–¼
@@ -96,6 +98,7 @@ static int IsHexStr(char *str)
 
 #define INDEX_FILE "index.html"
 #define ALLVER_FILE "allver.html"
+#define NEWEST_FILE "newest.txt"
 
 // ---- define ----
 
@@ -422,6 +425,30 @@ static void MakeAppIndex(char *rootDir, AppInfo_t *ai, char *appIndexFmt, char *
 	releaseDim(dlLinkList, 1);
 	memFree(strAppList);
 }
+static void MakeNewestIndex(char *rootDir)
+{
+	char *newestFile = combine(rootDir, NEWEST_FILE);
+	FILE *fp;
+	AppInfo_t *ai;
+	uint index;
+
+	fp = fileOpen(newestFile, "wt");
+
+	foreach(AppInfos, ai, index)
+	{
+		RevInfo_t *ri = (RevInfo_t *)getElement(ai->RevInfos, 0);
+
+		writeLine_x(fp, xcout(
+			"%s %s %I64u %s"
+			,ai->AppName
+			,ri->Rev
+			,ri->Size
+			,ri->Hash
+			));
+	}
+	fileClose(fp);
+	memFree(newestFile);
+}
 void MakeDLIndex(char *rootDir)
 {
 	char *rootIndexFmt = LoadFmtFile(ROOTINDEX_FMTFILE);
@@ -442,6 +469,8 @@ void MakeDLIndex(char *rootDir)
 			MakeAppIndex(rootDir, ai, appIndexFmt, appAllVerFmt);
 		}
 	}
+
+	MakeNewestIndex(rootDir);
 
 	memFree(rootIndexFmt);
 	memFree(appIndexFmt);
