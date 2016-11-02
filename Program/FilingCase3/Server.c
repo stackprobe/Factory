@@ -19,6 +19,7 @@ static uint64 KeepDiskFree = 2500000000ui64; // 2.5 GB
 static char *RootDir = "C:\\appdata\\FilingCase3\\Long_aaaaaaaaaa_bbbbbbbbbb_cccccccccc_dddddddddd_eeeeeeeeee_ffffffffff_gggggggggg_Long"; // 100 ï∂éöÇ≠ÇÁÇ¢ÅB
 static char *DataDir;
 static char *TempDir;
+static char *SigFile;
 static uint EvStop;
 static semaphore_t SmphFileIO;
 static critical_t CritCommand;
@@ -379,12 +380,15 @@ readArgs:
 
 	DataDir = combine(RootDir, "d");
 	TempDir = combine(RootDir, "w");
+	SigFile = combine(RootDir, "FilingCase3.sig");
 
 	cout("DataDir: %s\n", DataDir);
 	cout("TempDir: %s\n", TempDir);
+	cout("SigFile: %s\n", SigFile);
 
 	createPath(DataDir, 'd');
 	createDirIfNotExist(TempDir);
+	createFileIfNotExist(SigFile);
 
 	recurClearDir(TempDir);
 
@@ -397,6 +401,7 @@ readArgs:
 	memFree(RootDir);
 	memFree(DataDir);
 	memFree(TempDir);
+	memFree(SigFile);
 	handleClose(EvStop);
 	fnlzSemaphore(&SmphFileIO);
 	fnlzCritical(&CritCommand);
