@@ -59,7 +59,7 @@
 
 	----
 
-	2017.1.7 SEGV -> PfmConnect, buffTmp1 が複製されていなかったため ReallocSessionBuffs の再配置で変になったのかも？
+	2015.1.7 SEGV -> PfmConnect, buffTmp1 が複製されていなかったため ReallocSessionBuffs の再配置で変になったのかも？
 */
 
 #include "libs\Tunnel.h"
