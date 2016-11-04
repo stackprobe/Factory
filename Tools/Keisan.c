@@ -9,18 +9,19 @@
 	‚Q‚Ì•½•ûª‚ğ¬”‘æ100ˆÊ‚Ü‚Å‹‚ß‚éB
 		Keisan.exe /b 100 2 r 2
 
-	ˆ—       ‹L†   ¶€     ‰E€       •]‰¿’l     ¸“x
-	---------------------------------------------------------
-	‰ÁZ       +      ‘½”{’·   ‘½”{’·     ‘½”{’·     ŠÛ‚ß–³‚µ
-	Œ¸Z       -      ‘½”{’·   ‘½”{’·     ‘½”{’·     ŠÛ‚ß–³‚µ
-	æZ       *      ‘½”{’·   ‘½”{’·     ‘½”{’·     ŠÛ‚ß–³‚µ
-	œZ       /      ‘½”{’·   ‘½”{’·     ‘½”{’·     ­”‘æ basement ˆÊ‚Ü‚Å, ­”‘æ basement + 1 ˆÊˆÈ‰ºØ‚èÌ‚Ä
-	è—]       M      ‘½”{’·   ‘½”{’·     ‘½”{’·     ŠÛ‚ß–³‚µ
-	‚×‚«æ     P      ‘½”{’·   10iuint   ‘½”{’·     ŠÛ‚ß–³‚µ
-	‚×‚«ª     R      ‘½”{’·   10iuint   ‘½”{’·     ­”‘æ basement ˆÊ‚Ü‚Å, ­”‘æ basement + 1 ˆÊˆÈ‰ºØ‚èÌ‚Ä
-	‘Î”       L      ‘½”{’·   ‘½”{’·     10iuint   ®”,                   ­”‘æ 1 ˆÊˆÈ‰ºØ‚èÌ‚Ä
-	i”•ÏŠ·   X      ‘½”{’·   10iuint   ‘½”{’·     ­”‘æ basement ˆÊ‚Ü‚Å, ­”‘æ basement + 1 ˆÊˆÈ‰ºØ‚èÌ‚Ä
-	Ø‚èÌ‚Ä   I      ‘½”{’·   10iuint   ‘½”{’·     ¬”‘æ [‰E€] ˆÊ‚Ü‚Å, ­”‘æ [‰E€] + 1 ˆÊˆÈ‰ºØ‚èÌ‚Ä
+	ˆ—       ‹L†   ¶’l       ‰E’l       •]‰¿’l     ¸“x
+	-----------------------------------------------------------
+	‰ÁZ       +      ‘½”{’·     ‘½”{’·     ‘½”{’·     ŠÛ‚ß–³‚µ
+	Œ¸Z       -      ‘½”{’·     ‘½”{’·     ‘½”{’·     ŠÛ‚ß–³‚µ
+	æZ       *      ‘½”{’·     ‘½”{’·     ‘½”{’·     ŠÛ‚ß–³‚µ
+	œZ       /      ‘½”{’·     ‘½”{’·     ‘½”{’·     ­”‘æ basement ˆÊ‚Ü‚Å, ­”‘æ basement + 1 ˆÊˆÈ‰ºØ‚èÌ‚Ä
+	è—]       M      ‘½”{’·     ‘½”{’·     ‘½”{’·     ŠÛ‚ß–³‚µ
+	‚×‚«æ     P      ‘½”{’·     10iuint   ‘½”{’·     ŠÛ‚ß–³‚µ
+	‚×‚«ª     R      ‘½”{’·     10iuint   ‘½”{’·     ­”‘æ basement ˆÊ‚Ü‚Å, ­”‘æ basement + 1 ˆÊˆÈ‰ºØ‚èÌ‚Ä
+	‘Î”       L      ‘½”{’·     ‘½”{’·     10iuint   ®”,                   ­”‘æ 1 ˆÊˆÈ‰ºØ‚èÌ‚Ä
+	i”•ÏŠ·   X      ‘½”{’·     10iuint   ‘½”{’·     ­”‘æ basement ˆÊ‚Ü‚Å, ­”‘æ basement + 1 ˆÊˆÈ‰ºØ‚èÌ‚Ä
+	‘g‡‚¹     K      10iuint   10iuint   ‘½”{’·     ŠÛ‚ß–³‚µ
+	Ø‚èÌ‚Ä   I      ‘½”{’·     10iuint   ‘½”{’·     ¬”‘æ '‰E’l' ˆÊ‚Ü‚Å, ­”‘æ '‰E’l' + 1 ˆÊˆÈ‰ºØ‚èÌ‚Ä
 
 	'10iuint' ‚Í radix, basement ‚ÉŠÖ‚í‚ç‚¸ 10 i” 0 ` 4294967295 ‚Ì®”
 
@@ -209,6 +210,23 @@ static char *InsSepOp(char *line, uint ranks)
 	}
 	return line;
 }
+static char *Permutation(uint v1, uint v2, uint radix)
+{
+	char *ans = strx("1");
+	uint count;
+
+	m_range(v1, 1, UINTMAX);
+	m_range(v2, 1, v1);
+
+	for(count = v2; ; count++)
+	{
+		ans = calcLine_xx(ans, '*', xcout("%u", count), radix, 0);
+
+		if(count == v1)
+			break;
+	}
+	return ans;
+}
 static void Main2(void)
 {
 	uint radix = 10;
@@ -305,6 +323,7 @@ readArgs:
 			}
 			break;
 
+		case 'k': ans = Permutation(toValue(op1), toValue(op2), radix); break;
 		case 'i': ans = calcLine(op1, '/', "1", radix, toValue(op2)); onceNoShowMarume = 1; break;
 		case '=': ans = strx(op1); SetMemory(op2, op1); break;
 		case ';': ans = strx(op2); break;
