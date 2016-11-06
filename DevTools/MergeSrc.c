@@ -273,6 +273,9 @@ static void MergeDir(char *masterDir, char *slaveDir)
 	errorCase(!existDir(slaveDir));
 	errorCase(!mbs_stricmp(masterDir, slaveDir)); // マスターとスレーブが同じDIR
 
+	cout("■■■■■■■■■■■■■■■■\n");
+	cout("■ソースファイルをマージするよ■\n");
+	cout("■■■■■■■■■■■■■■■■\n");
 	cout("[マスター] > %s\n", masterDir);
 	cout("[スレーブ] < %s\n", slaveDir);
 	cout("続行？\n");
