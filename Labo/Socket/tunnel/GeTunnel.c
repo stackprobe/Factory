@@ -570,6 +570,7 @@ static void DataFltr(autoBlock_t *buff, uint prm)
 						addElement(parts1, (uint)"今日");
 						addElement(parts1, (uint)"元気");
 						addElement(parts1, (uint)"ビール");
+						addElement(parts1, (uint)"うまい！");
 
 						addElement(parts2, (uint)"も");
 						addElement(parts2, (uint)"だ");
@@ -585,7 +586,7 @@ static void DataFltr(autoBlock_t *buff, uint prm)
 							buff = addLine(buff, getLine(parts1, index));
 							buff = addLine(buff, getLine(parts2, index));
 						}
-						buff = addLine(buff, "うまい！");
+						buff = addLine(buff, getLine(parts1, 3));
 
 						beerUma = buff;
 					}
