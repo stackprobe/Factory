@@ -13,7 +13,7 @@
 
 		TRACK-NAME + 0x0d + 0x0a + SEND-DATA
 
-			TRACK-NAME: 1*100( C-SYMBOL + '.' + ':' )
+			TRACK-NAME: 1*100( C-SYMBOL + '-' + '.' + ':' )
 			SEND-DATA: *( 0x00 ... 0xff )
 */
 
@@ -49,7 +49,7 @@ static void Perform(int sock, int fwdSock)
 static int ReadArgs(void)
 {
 	TrackName = strx(nextArg());
-	line2csym_ext(TrackName, ".:");
+	line2csym_ext(TrackName, "-.:");
 
 	errorCase(m_isEmpty(TrackName) || TRACKNAME_LENMAX < strlen(TrackName));
 

@@ -13,6 +13,8 @@
 
 		★ DEF-FWD-HOST に NONE を指定すると、デフォルトの転送先は無効になります。
 
+		★ DEF-FWD-HOST に RED を指定すると、リダイレクト・モード（トラック名が転送先）になります。
+
 	- - - -
 
 	転送先リスト定義ファイル
@@ -28,6 +30,7 @@
 #define TRACKNAME_LENMAX 100
 #define HOST_LENMAX 255
 #define HOST_NONE "NONE"
+#define HOST_REDIRECT "RED"
 
 typedef struct TrackInfo_st
 {
@@ -148,9 +151,45 @@ static void PerformTh(int sock, char *strip)
 	}
 
 	if(!strcmp(FwdHost, HOST_NONE))
+	{
 		cout("デフォルトの転送先は無効です。\n");
+	}
+	else if(!strcmp(FwdHost, HOST_REDIRECT))
+	{
+		char *fwdHost;
+		uint fwdPortNo;
+
+		if(!trackName)
+			goto disconnect;
+
+		fwdHost = strx(trackName);
+
+		if(*fwdHost)
+			line2csym_ext(fwdHost, "-.:");
+
+		{
+			char *p = strchr(fwdHost, ':');
+
+			if(p)
+			{
+				*p = '\0';
+				fwdPortNo = toValue(p + 1);
+			}
+			else
+				fwdPortNo = FwdPortNo;
+		}
+
+		cout("リダイレクトされた転送先は [%s] ポート番号 %u です。\n", fwdHost, fwdPortNo);
+
+		if(*fwdHost && m_isRange(fwdPortNo, 1, 65535))
+			TransmitTh(sock, fwdHost, fwdPortNo, NULL);
+		else
+			cout("★転送先に問題があるため、切断します。\n");
+	}
 	else
+	{
 		TransmitTh(sock, FwdHost, FwdPortNo, buff);
+	}
 
 disconnect:
 	memFree(buff);
@@ -192,6 +231,20 @@ static int ReadArgs(void)
 		skipArg(3);
 		return 1;
 	}
+
+	if(!strcmp(FwdHost, HOST_NONE))
+	{
+		cout("+---------------------------------------+\n");
+		cout("| デフォルト転送は無効に指定されました。|\n");
+		cout("+---------------------------------------+\n");
+	}
+	else if(!strcmp(FwdHost, HOST_REDIRECT))
+	{
+		cout("+-------------------------------------------------------+\n");
+		cout("| デフォルト転送はリダイレクト・モードに指定されました。|\n");
+		cout("+-------------------------------------------------------+\n");
+	}
+
 	return 0;
 }
 static char *GetTitleSuffix(void)
