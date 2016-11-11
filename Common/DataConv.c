@@ -200,8 +200,10 @@ void line2csym_ext(char *line, char *extra)
 		altchrs = strx("");
 
 		for(chr = '0'; chr <= '9'; chr++) { altchrs = addChar(altchrs, chr); }
-		for(chr = 'A'; chr <= 'Z'; chr++) { altchrs = addChar(altchrs, chr); if(chr == 'U') altchrs = addLine(altchrs, "__"); }
+		for(chr = 'A'; chr <= 'Z'; chr++) { altchrs = addChar(altchrs, chr); }
 		for(chr = 'a'; chr <= 'z'; chr++) { altchrs = addChar(altchrs, chr); }
+
+		altchrs = addLine(altchrs, "__");
 
 		errorCase(strlen(altchrs) != 64); // 2bs
 	}
@@ -210,7 +212,7 @@ void line2csym_ext(char *line, char *extra)
 	{
 		chr = *p;
 
-		if('0' <= chr && chr <= '9' || 'A' <= chr && chr <= 'Z' || 'a' <= chr && chr <= 'z' || extra && strchr(extra, chr))
+		if('0' <= chr && chr <= '9' || 'A' <= chr && chr <= 'Z' || 'a' <= chr && chr <= 'z' || chr == '_' || extra && strchr(extra, chr))
 		{} else
 		{
 			*p = altchrs[chr & 0x3f];
