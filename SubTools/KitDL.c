@@ -1,6 +1,5 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Meteor\HGet.h"
-#include "C:\Factory\Meteor\7z.h"
 
 static char *DLUrl = "http://localhost/release/Kit";
 static char *DestDir = "C:\\app\\Kit";
@@ -107,14 +106,12 @@ readArgs:
 
 			LOGPOS();
 
-			semiRemovePath(wDir);
+			if(existDir(wDir))
+				semiRemovePath(wDir);
+
 			createDir(wDir);
 
-			addCwd(wDir);
-			{
-				coExecute_x(xcout("%s x \"%s\"", FILE_7Z_EXE, wDir));
-			}
-			unaddCwd();
+			coExecute_x(xcout("C:\\Factory\\SubTools\\zip.exe /U \"%s\" \"%s\"", appFile, wDir));
 
 			removeFile(appFile);
 			memFree(appFile);

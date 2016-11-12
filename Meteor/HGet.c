@@ -42,8 +42,8 @@ void HGet_Reset(void)
 	TimeoutMillis = 30000;
 	strzp(&Url, "http://localhost/");
 	HTTPVersion = 11;
-	releaseDim(Header, 2);
-	releaseDim(ResHeader, 2);
+	if(Header)    releaseDim(Header, 2);
+	if(ResHeader) releaseDim(ResHeader, 2);
 	Header = newList();
 	ResHeader = newList();
 	if(Body1) releaseAutoBlock(Body1);
@@ -294,6 +294,9 @@ static int Perform(int method) // method: "HGP"
 	for(; ; )
 	{
 		line = readLine(fp);
+
+		if(!line)
+			break;
 
 		p = strstr(line, ": ");
 		errorCase(!p);
