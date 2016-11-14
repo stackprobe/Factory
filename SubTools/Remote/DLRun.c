@@ -1,7 +1,5 @@
 /*
-	DLRun.exe [/C DIR] [/U URL]
-
-		DIR ... 落としてきたバッチ実行時のカレントDIR
+	DLRun.exe [/U DOWNLOAD-URL] [/C RUN-DIR]
 */
 
 #include "C:\Factory\Labo\Socket\libs\http\httpClient.h"
@@ -9,9 +7,33 @@
 #define FILE_LAST_DL_BAT "C:\\Factory\\tmp\\Remote_LastDLRun_bat.dat"
 #define FILE_DL_BAT "Run.bat"
 
-static char *DLUrl = "http://localhost/remote/DLRun.bat";
+static char *DLUrl = "http://localhost/_DLRun.bat_";
 static char *RunDir;
 
+static autoBlock_t *DoDownload(void)
+{
+	autoBlock_t *batImage = httpGetOrPost(DLUrl, NULL);
+
+	if(batImage)
+	{
+		autoBlock_t *batImage2;
+
+		coSleep(3000);
+		batImage2 = httpGetOrPost(DLUrl, NULL);
+
+		if(batImage2)
+		{
+			if(isSameBlock(batImage, batImage2))
+			{
+				releaseAutoBlock(batImage2);
+				return batImage;
+			}
+			releaseAutoBlock(batImage2);
+		}
+		releaseAutoBlock(batImage);
+	}
+	return NULL;
+}
 static int CheckBatImage(autoBlock_t *batImage)
 {
 	autoBlock_t *lastBatImage;
@@ -44,7 +66,7 @@ static void DLRun(void)
 	LOGPOS_T();
 
 	batFile = combine(dir, FILE_DL_BAT);
-	batImage = httpGetOrPost(DLUrl, NULL);
+	batImage = DoDownload();
 
 	LOGPOS();
 

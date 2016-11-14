@@ -3,7 +3,7 @@
 uint httpGetOrPostRetryMax = 2;
 uint httpGetOrPostRetryDelayMillis = 2000;
 uint httpGetOrPostTimeoutSec = 180;
-uint64 httpGetOrPostRecvBodySizeMax = 270000000ui64; // 270 MB
+uint64 httpGetOrPostRecvBodySizeMax = 20000000ui64; // 20 MB
 char *httpGetOrPostProxyDomain = NULL;
 uint httpGetOrPostProxyPortNo = 8080;
 
