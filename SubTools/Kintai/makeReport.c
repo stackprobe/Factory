@@ -31,8 +31,8 @@
 #include "C:\Factory\Common\Options\csv.h"
 #include "C:\Factory\Common\Options\Calc2.h"
 
-#define FILE_PROJECTS "C:\\home\\Kintai\\Projects.csv"
-#define FILE_TIMECARD "C:\\home\\Kintai\\TimeCard.csv"
+#define FILE_PROJECTS "S:\\Kintai\\Projects.csv"
+#define FILE_TIMECARD "S:\\Kintai\\TimeCard.csv"
 
 static autoList_t *ProjectsTable;
 static autoList_t *TimeCardTable;
