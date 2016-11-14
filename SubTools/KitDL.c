@@ -106,6 +106,8 @@ readArgs:
 
 			LOGPOS();
 
+			coSleep(2000); // ‰½‚©’Í‚İ‚Á‚Ï‚Å HGet ‚ğíœo—ˆ‚È‚¢‚ÆŒ™‚È‚Ì‚ÅA­‚µ‘Ò‚ÂB
+
 			if(existDir(wDir))
 				semiRemovePath(wDir);
 
