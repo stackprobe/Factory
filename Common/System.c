@@ -416,6 +416,12 @@ char *c_getOutFile(char *localFile)
 	memFree(outFile);
 	return outFile = getOutFile(localFile);
 }
+char *c_getOutFile_x(char *localFile)
+{
+	static char *outFile;
+	memFree(outFile);
+	return outFile = getOutFile_x(localFile);
+}
 char *getOutFile_x(char *localFile)
 {
 	char *ret = getOutFile(localFile);

@@ -45,6 +45,7 @@ char *lineToPrintLine_x(char *line, int insRet);
 void line2JLine(char *line, int okJpn, int okRet, int okTab, int okSpc);
 void line2JToken(char *token, int okJpn, int okBlank);
 int isJLine(char *line, int okJpn, int okRet, int okTab, int okSpc);
+int isJToken(char *token, int okJpn, int okBlank);
 char *lineToJDoc(char *line, int okRet);
 char *lineToJDoc_x(char *line, int okRet);
 char *lineToJDocMax(char *line, int okRet, uint lenmax);

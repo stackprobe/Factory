@@ -1,7 +1,7 @@
 /*
 	revClient.exe REV-HOST REV-PORT FWD-HOST FWD-PORT /S
 
-		/S ... í‚é~Ç∑ÇÈÅB
+		/S ... í‚é~Ç∑ÇÈ
 
 	revClient.exe REV-HOST REV-PORT FWD-HOST FWD-PORT [/C CONNECT-MAX] [/P POLLING-CYCLE]
 

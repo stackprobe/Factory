@@ -8,54 +8,97 @@ char *httpGetOrPostProxyDomain = NULL;
 uint httpGetOrPostProxyPortNo = 8080;
 
 /*
-	recvBodyFile ... 必ず作成する。失敗時は空にする。
+	recvBodyFile ... 成功時に必ず作成する。失敗時は必ず削除する。
 */
-int httpGetOrPostFile(char *url, char *sendBodyFile, char *recvBodyFile) // sendBodyFile: NULL == GET, ret: ? 成功
+int httpGetOrPostFile(char *url, autoBlock_t *sendBody, char *recvBodyFile) // sendBody: NULL == GET, ret: ? 成功
 {
-	uint retry;
 	char *domain;
-	uint portNo;
+	char *p;
 	char *path;
+	uint portNo;
+	uint retry;
+	int ret;
 
 	errorCase(!url);
-	errorCase(sendBodyFile && !existFile(sendBodyFile));
+//	sendBody
 	errorCase(m_isEmpty(recvBodyFile));
 
-	error(); // TODO
+	if(!*url)
+		return 0;
+
+	domain = strx(url);
+
+	if(startsWith(domain, "http://"))
+		eraseLine(domain, 7);
+
+	if(p = strchr(domain, '/'))
+	{
+		path = strx(p);
+		*p = '\0';
+	}
+	else
+		path = strx("/");
+
+	if(p = strchr(domain, ':'))
+	{
+		portNo = toValue(p + 1);
+		*p = '\0';
+	}
+	else
+		portNo = 80;
+
+	httpMultiPartContentLenMax = httpGetOrPostRecvBodySizeMax;
+
+	/*
+		sendBody != NULL の場合、
+		httpExtraHeader に Content-Type を指定しておかないと、Client.c で勝手に付けられる。
+	*/
+
+	SockStartup();
 
 	for(retry = 0; retry <= httpGetOrPostRetryMax; retry++)
 	{
-		error(); // TODO
+		ret = httpSendRequestFile(
+			domain,
+			portNo,
+			httpGetOrPostProxyDomain,
+			httpGetOrPostProxyPortNo,
+			path,
+			sendBody,
+			httpGetOrPostTimeoutSec,
+			recvBodyFile
+			);
+
+		if(ret)
+			break;
+
+		coSleep(httpGetOrPostRetryDelayMillis);
 	}
-	return 1;
+	SockCleanup();
+
+	memFree(domain);
+	memFree(path);
+
+	return ret;
 }
 autoBlock_t *httpGetOrPost(char *url, autoBlock_t *sendBody) // sendBody: NULL == GET, ret: NULL == 失敗
 {
-	char *sendBodyFile;
 	char *recvBodyFile;
 	autoBlock_t *recvBody;
 
 	errorCase(!url);
 //	sendBody
 
-	if(sendBody)
-	{
-		sendBodyFile = makeTempPath(NULL);
-		writeBinary(sendBodyFile, sendBody);
-	}
-	else
-		sendBodyFile = NULL;
-
 	recvBodyFile = makeTempPath(NULL);
 
-	if(httpGetOrPostFile(url, sendBodyFile, recvBodyFile))
+	if(httpGetOrPostFile(url, sendBody, recvBodyFile))
+	{
 		recvBody = readBinary(recvBodyFile);
+		removeFile(recvBodyFile);
+	}
 	else
 		recvBody = NULL;
 
-	if(sendBodyFile)
-		removeFile_x(sendBodyFile);
-
-	removeFile_x(recvBodyFile);
+	memFree(recvBodyFile);
 	return recvBody;
 }

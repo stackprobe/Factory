@@ -145,7 +145,7 @@ static void PerformTh(int sock, char *strip)
 	}
 
 	{
-		char *tmp = lineToPrintLine_x(buff, 0);
+		char *tmp = lineToPrintLine(buff, 0);
 		cout("ƒgƒ‰ƒbƒNU‚è•ª‚¯¸”s_buff: [%s]\n", tmp);
 		memFree(tmp);
 	}

@@ -349,6 +349,17 @@ void line2JLine(char *line, int okJpn, int okRet, int okTab, int okSpc)
 		}
 	}
 }
+int isJToken(char *token, int okJpn, int okBlank)
+{
+	char *swrk = strx(token);
+	int retval;
+
+	line2JToken(swrk, okJpn, okBlank);
+	retval = !strcmp(token, swrk);
+
+	memFree(swrk);
+	return retval;
+}
 int isJLine(char *line, int okJpn, int okRet, int okTab, int okSpc)
 {
 	char *swrk = strx(line);

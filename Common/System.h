@@ -43,6 +43,7 @@ char *getSelfDir(void);
 
 char *getOutFile(char *localFile);
 char *c_getOutFile(char *localFile);
+char *c_getOutFile_x(char *localFile);
 char *getOutFile_x(char *localFile);
 void openOutDir(void);
 
