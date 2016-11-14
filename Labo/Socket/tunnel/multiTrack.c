@@ -162,7 +162,7 @@ static void PerformTh(int sock, char *strip)
 		if(!trackName)
 			goto disconnect;
 
-		fwdHost = strx(trackName);
+		fwdHost = trackName;
 
 		if(*fwdHost)
 			line2csym_ext(fwdHost, "-.:");
