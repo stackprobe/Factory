@@ -520,6 +520,7 @@ static void DataFltr(autoBlock_t *buff, uint prm)
 
 			if(ErrorBodyFmt)
 			{
+#if 1 // 変数の展開アリ
 				char *body = strx(ErrorBodyFmt);
 
 				// 変数の展開
@@ -619,6 +620,13 @@ static void DataFltr(autoBlock_t *buff, uint prm)
 				ab_addLine(buff, body);
 
 				memFree(body);
+#else // 変数の展開ナシ
+				ab_addLine(buff, "HTTP/1.1 200 OK\r\n");
+				ab_addLine_x(buff, xcout("Content-Length: %u\r\n", strlen(ErrorBodyFmt)));
+				ab_addLine(buff, "Content-Type: text/html\r\n");
+				ab_addLine(buff, "\r\n");
+				ab_addLine(buff, ErrorBodyFmt);
+#endif
 			}
 			else
 			{
