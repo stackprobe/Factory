@@ -38,16 +38,16 @@ void cmdTitle_x(char *title)
 	execute_x(xcout("TITLE %s", title));
 	memFree(title);
 }
+static void ContextSwitching(void) // ts_
+{
+	Sleep(1); // fixme: どうやんの？
+}
 void sleep(uint millis) // ts_
 {
-	/*
-		他スレッドに制御を渡すために、inner_uncritical -> sleep(0) -> inner_critical しているところがあるが、
-		sleep(0) だと制御が渡らない。sleep(1) なら渡る。-> 強制的に sleep(1) にする。
-	*/
-	if(!millis)
-		millis = 1;
-
-	Sleep(millis);
+	if(millis)
+		Sleep(millis);
+	else
+		ContextSwitching(); // sleep(0); のときは、単にコンテキストスイッチの切り替えを行う。
 }
 void coSleep(uint millis)
 {

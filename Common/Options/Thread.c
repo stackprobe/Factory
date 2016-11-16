@@ -151,6 +151,15 @@ thread_tls static uint InnerLockCountList[INNER_UNLOCK_MAX];
 	} \
 	} while(0)
 
+#if 1
+static void CritAfterLeave(void)
+{
+	sleep(0);
+}
+#else
+#define CritAfterLeave() 1
+#endif
+
 void critical(void)
 {
 	if(!CritCommonLockCount)
@@ -173,6 +182,7 @@ void uncritical(void)
 	if(!CritCommonLockCount)
 	{
 		leaveCritical(&CritCommon);
+		CritAfterLeave();
 	}
 }
 void inner_uncritical(void)
@@ -182,6 +192,7 @@ void inner_uncritical(void)
 	if(CritCommonLockCount)
 	{
 		leaveCritical(&CritCommon);
+		CritAfterLeave();
 	}
 	InnerLockCountList[InnerUnlockCount] = CritCommonLockCount;
 	InnerUnlockCount++;
