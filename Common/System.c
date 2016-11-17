@@ -40,7 +40,7 @@ void cmdTitle_x(char *title)
 }
 static void ContextSwitching(void) // ts_
 {
-	Sleep(1); // fixme: Ç«Ç§Ç‚ÇÒÇÃÅH
+	Sleep(0); // fixme: Ç«Ç§Ç‚ÇÒÇÃÅH
 }
 void sleep(uint millis) // ts_
 {

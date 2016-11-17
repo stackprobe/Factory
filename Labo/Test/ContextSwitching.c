@@ -7,7 +7,9 @@ static void TestFunc(void *prm) // ts_
 
 	critical();
 	{
-		for(c = 0; c < 10; c++)
+		Sleep(100); // ‘Sˆõ‚±‚±‚Ü‚Å—ˆ‚é‚Ì‚ð‘Ò‚ÂB
+
+		for(c = 0; c < 100; c++)
 		{
 			cout("%s:%u\n", prm, c);
 
