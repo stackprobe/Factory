@@ -1,11 +1,12 @@
 /*
 	シンプル・バージョン管理プログラム
 
-	rum.exe [/F] [/Q] [/-COLL] [対象ディレクトリ]
+	rum.exe [/F] [/Q] [/-COLL] [/-NCHK] [対象ディレクトリ]
 
 		/F ... バイナリ除外モード(Factoryモード) == .obj .exe C:\Factory\tmp を無視
 		/Q ... 問い合わせを抑止する。
 		/-COLL ... コリジョン検査を行わない。多少速くなるかも。
+		/-NCHK ... 入れ子チェックを行わない。
 
 	rum.exe [/E | /T | /HA | /H | /1A | /1 | /R] [/D] [.rum_ディレクトリ]
 
@@ -728,6 +729,7 @@ endFunc:
 static int WithoutExeObjMode;
 static int QuietMode;
 static int NoCheckCollision;
+static int NoNestingCheck;
 
 static void Commit(char *dir) // dir: バックアップ元、存在するルートディレクトリではないディレクトリの絶対パス
 {
@@ -770,6 +772,11 @@ static void Commit(char *dir) // dir: バックアップ元、存在するルートディレクトリ
 			removeDir(storeDir);
 		}
 	}
+	if(NoNestingCheck)
+	{
+		LOGPOS();
+		goto endNestingCheck;
+	}
 	// 親 .rum チェック
 	{
 		char *parentDir = strx(dir);
@@ -794,6 +801,7 @@ static void Commit(char *dir) // dir: バックアップ元、存在するルートディレクトリ
 				sleep(500);
 			}
 		}
+		memFree(parentDir);
 	}
 	// 子 .rum チェック
 	{
@@ -814,6 +822,7 @@ static void Commit(char *dir) // dir: バックアップ元、存在するルートディレクトリ
 		}
 		releaseDim(subDirs, 1);
 	}
+endNestingCheck:
 
 	if(!QuietMode)
 	{
@@ -1132,6 +1141,11 @@ readArgs:
 	if(argIs("/-COLL"))
 	{
 		NoCheckCollision = 1;
+		goto readArgs;
+	}
+	if(argIs("/-NCHK"))
+	{
+		NoNestingCheck = 1;
 		goto readArgs;
 	}
 	Rum(hasArgs(1) ? nextArg() : c_dropDir());

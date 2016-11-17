@@ -40,7 +40,13 @@ void cmdTitle_x(char *title)
 }
 static void ContextSwitching(void) // ts_
 {
-	Sleep(0); // fixme: どうやんの？
+	// fixme: どうやんの？
+
+	static uint count;
+
+	count++; // どんな値になっても構わない。
+
+	Sleep((count & 0x0f) / 0x0f);
 }
 void sleep(uint millis) // ts_
 {

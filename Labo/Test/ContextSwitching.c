@@ -7,7 +7,7 @@ static void TestFunc(void *prm) // ts_
 
 	critical();
 	{
-		Sleep(100); // 全員ここまで来るのを待つ。
+//		Sleep(100); // 全員ここまで来るのを待つ。
 
 		for(c = 0; c < 100; c++)
 		{
