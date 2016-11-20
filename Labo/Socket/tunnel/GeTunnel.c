@@ -528,9 +528,9 @@ static void DataFltr(autoBlock_t *buff, uint prm)
 					char *hostname;
 					char *domain;
 					char *path;
-					char *randColorDark;
-					char *randColorLight;
-					char *beerUma;
+//					char *randColorDark;
+//					char *randColorLight;
+//					char *beerUma;
 
 					hostname = strx(refLine(HttpDat.H_Values, findLineCase(HttpDat.H_Keys, "host", 1)));
 					domain = strx(hostname);
@@ -548,6 +548,7 @@ static void DataFltr(autoBlock_t *buff, uint prm)
 					if(*path == '/')
 						eraseChar(path);
 
+#if 0 // del
 					randColorDark = xcout(
 						"%02x%02x%02x",
 						mt19937_range(0x00, 0x50),
@@ -591,26 +592,28 @@ static void DataFltr(autoBlock_t *buff, uint prm)
 
 						beerUma = buff;
 					}
+#endif
 
 					cout("HOSTNAME = [%s]\n", hostname);
 					cout("DOMAIN   = [%s]\n", domain);
 					cout("PATH     = [%s]\n", path);
-					cout("RNDCLR_D = [%s]\n", randColorDark);
-					cout("RNDCLR_L = [%s]\n", randColorLight);
-					cout("BEER_UMA = [%s]\n", beerUma);
+//					cout("RNDCLR_D = [%s]\n", randColorDark);
+//					cout("RNDCLR_L = [%s]\n", randColorLight);
+//					cout("BEER_UMA = [%s]\n", beerUma);
 
 					body = replaceLine(body, "$(HOSTNAME)", hostname, 1);
 					body = replaceLine(body, "$(DOMAIN)", domain, 1);
 					body = replaceLine(body, "$(PATH)", path, 1);
-					body = replaceLine(body, "$(RNDCLR_D)", randColorDark, 1);
-					body = replaceLine(body, "$(RNDCLR_L)", randColorLight, 1);
-					body = replaceLine(body, "$(BEER_UMA)", beerUma, 1);
+//					body = replaceLine(body, "$(RNDCLR_D)", randColorDark, 1);
+//					body = replaceLine(body, "$(RNDCLR_L)", randColorLight, 1);
+//					body = replaceLine(body, "$(BEER_UMA)", beerUma, 1);
 
 					memFree(hostname);
 					memFree(domain);
 					memFree(path);
-					memFree(randColorDark);
-					memFree(randColorLight);
+//					memFree(randColorDark);
+//					memFree(randColorLight);
+//					memFree(beerUma);
 				}
 
 				ab_addLine(buff, "HTTP/1.1 200 OK\r\n");
