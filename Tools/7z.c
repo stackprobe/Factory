@@ -139,6 +139,10 @@ static void Extract7z(char *file7z)
 }
 int main(int argc, char **argv)
 {
+	cout("=======\n");
+	cout("7z “WŠJ\n");
+	cout("=======\n");
+
 readArgs:
 	if(argIs("/C"))
 	{
