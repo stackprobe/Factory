@@ -103,7 +103,7 @@ char *getEnvLine(char *name) // ret: c_
 
 	return line;
 }
-#if 0
+#if 0 // for Test
 static DWORD GetTickCount_TEST(void)
 {
 	static int initOnce;
@@ -116,10 +116,10 @@ static DWORD GetTickCount_TEST(void)
 	}
 	return baseTick + GetTickCount();
 }
+#define GetTickCount() GetTickCount_TEST()
 #endif
 uint64 nowTick(void)
 {
-//	uint currTick = GetTickCount_TEST();
 	uint currTick = GetTickCount();
 	static uint lastTick;
 	static uint64 baseTick;

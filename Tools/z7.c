@@ -3,11 +3,11 @@
 
 	- - -
 
-	z7.exe [/C] [/T] [/Z] [/OAD] [入力ファイル | 入力DIR]
+	z7.exe [/C] [/T] [/7] [/OAD] [入力ファイル | 入力DIR]
 
 		/C   ... 入力ファイルと同じ場所に圧縮する。
 		/T   ... 不要な上位階層を除去する。(DIRのときのみ)
-		/Z   ... .zip にする。
+		/7   ... .7z にする。
 		/OAD ... 元ファイル・ディレクトリ自動削除
 */
 
@@ -17,7 +17,7 @@
 
 static int OutputSameDir;
 static int TrimTopDir;
-static int WFileType = '7'; // "7Z"
+static int WFileType = 'Z'; // "7Z"
 static int OutputAndDelete;
 
 static char *Get7zExeFile(void) // ret: 空白を含まないパスであること。
@@ -29,6 +29,9 @@ static char *Get7zExeFile(void) // ret: 空白を含まないパスであること。
 
 	return file;
 }
+
+static char *LastOutputDir;
+
 static char *GetWFile(char *path)
 {
 	char *file7z;
@@ -57,7 +60,8 @@ static char *GetWFile(char *path)
 		file7z = combine(dir, getLocal(path));
 		file7z = addExt(file7z, ext);
 
-		memFree(dir);
+		memFree(LastOutputDir);
+		LastOutputDir = dir;
 	}
 
 	cout("> %s\n", file7z);
@@ -118,6 +122,11 @@ static void Pack7z(char *path)
 	{
 		error();
 	}
+	if(!OutputSameDir)
+	{
+		LOGPOS();
+		coExecute_x(xcout("START %s", LastOutputDir));
+	}
 	if(OutputAndDelete)
 	{
 		LOGPOS();
@@ -130,7 +139,7 @@ static void Pack7z(char *path)
 int main(int argc, char **argv)
 {
 	cout("=======\n");
-	cout("7z 圧縮\n");
+	cout("z7 圧縮\n");
 	cout("=======\n");
 
 readArgs:
@@ -144,9 +153,9 @@ readArgs:
 		TrimTopDir = 1;
 		goto readArgs;
 	}
-	if(argIs("/Z"))
+	if(argIs("/7"))
 	{
-		WFileType = 'Z';
+		WFileType = '7';
 		goto readArgs;
 	}
 	if(argIs("/OAD"))
@@ -164,6 +173,10 @@ readArgs:
 	for(; ; )
 	{
 		Pack7z(c_dropDirFile());
+
 		cout("\n");
+		cout("-------\n");
+		cout("z7 圧縮\n");
+		cout("-------\n");
 	}
 }

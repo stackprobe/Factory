@@ -16,7 +16,7 @@
 #define FILEIO_MAX 20
 
 static uint64 KeepDiskFree = 2500000000ui64; // 2.5 GB
-static char *RootDir = "C:\\appdata\\FilingCase3\\Long_aaaaaaaaaa_bbbbbbbbbb_cccccccccc_dddddddddd_eeeeeeeeee_ffffffffff_gggggggggg_Long"; // 100 ï∂éöÇ≠ÇÁÇ¢ÅB
+static char *RootDir = "C:\\appdata\\FilingCase3\\LongPath_aaaaaaaaaa_bbbbbbbbbb_cccccccccc_dddddddddd_eeeeeeeeee_ffffffffff_gggggggggg"; // 100 ï∂éöÇ≠ÇÁÇ¢ÅB
 static char *DataDir;
 static char *TempDir;
 static char *SigFile;
@@ -380,7 +380,7 @@ readArgs:
 
 	DataDir = combine(RootDir, "d");
 	TempDir = combine(RootDir, "w");
-	SigFile = combine(RootDir, "FilingCase3.sig");
+	SigFile = combine(RootDir, "FilingCase3_{20276b27-459e-4bed-b744-cb8f57c5af91}.sig"); // shared_uuid
 
 	cout("DataDir: %s\n", DataDir);
 	cout("TempDir: %s\n", TempDir);

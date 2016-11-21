@@ -179,6 +179,10 @@ readArgs:
 	for(; ; )
 	{
 		Extract7z(c_dropFile());
+
 		cout("\n");
+		cout("-------\n");
+		cout("7z “WŠJ\n");
+		cout("-------\n");
 	}
 }
