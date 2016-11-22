@@ -1,4 +1,33 @@
 #include "C:\Factory\Common\all.h"
+#include "C:\Factory\Common\Options\MergeSort.h"
+
+static char *DedokoroListFile;
+
+static void AddDedokoro(char *package, char *className, char *file)
+{
+	FILE *fp;
+
+	if(!DedokoroListFile)
+		DedokoroListFile = getOutFile("Dedokoro.txt");
+
+	fp = fileOpen(DedokoroListFile, "at");
+
+	package = strx(package);
+	replaceChar(package, '/', '.');
+
+	writeToken(fp, package);
+	writeChar(fp, '.');
+	writeToken(fp, className);
+	writeChar(fp, ' ');
+	writeLine(fp, file);
+
+	memFree(package);
+
+	fileClose(fp);
+}
+
+static char *CurrClassFile;
+static char *CurrJarFile;
 
 static int UnknownFlag;
 
@@ -125,6 +154,13 @@ static void ExtractJava(char *javaFile, char *packageRootDir)
 	createPath(wFile, 'X');
 	copyFile(javaFile, wFile);
 
+	if(CurrJarFile)
+		AddDedokoro(package, className, CurrJarFile);
+	else if(CurrClassFile)
+		AddDedokoro(package, className, CurrClassFile);
+	else
+		AddDedokoro(package, className, javaFile);
+
 	memFree(package);
 	memFree(className);
 }
@@ -134,7 +170,11 @@ static void ExtractClass(char *classFile, char *wDir)
 
 	coExecute_x(xcout("C:\\Factory\\SubTools\\jad.exe /DJ \"%s\" \"%s\"", classFile, file));
 
+	CurrClassFile = classFile;
+
 	ExtractJava(file, wDir);
+
+	CurrClassFile = NULL;
 
 	removeFile(file);
 	memFree(file);
@@ -177,8 +217,12 @@ static void ExtractJar(char *jarFile, char *wDir)
 	coExecute("ATTRIB.EXE -R /S");
 	unaddCwd();
 
+	CurrJarFile = jarFile;
+
 	ExtractAllJava(dir, wDir);
 	ExtractAllClass(dir, wDir);
+
+	CurrJarFile = NULL;
 
 //	recurRemoveDir(dir); // utfñ¢ëŒâûÅI
 	coExecute_x(xcout("RD /S /Q \"%s\"", dir));
@@ -218,6 +262,12 @@ static void MakeJavaSrc(char *rDir, char *wDir)
 
 	memFree(rDir);
 	memFree(wDir);
+
+	if(DedokoroListFile)
+	{
+		MergeSortText(DedokoroListFile, DedokoroListFile, 128000000); // 128 MB
+		openOutDir();
+	}
 }
 int main(int argc, char **argv)
 {
