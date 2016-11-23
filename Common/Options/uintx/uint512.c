@@ -110,12 +110,10 @@ void UI512_Mul(uint512_t *a, uint512_t *b, uint512_t *ans, uint512_t *ans_hi)
 	A = B ... a < b ? 0 : 1
 	A > B ...
 
-		ans += A / (B + 1) + (A / B - A / (B + 1)) / (fill / b) [再帰] <-- TODO これでいいのか？
+		ans += A / (B + 1) + (A / B - A / (B + 1)) / (fill / b) [再帰] <-- todo これでいいのか？
 */
 void UI512_Div(uint512_t *a, uint512_t *b, uint512_t *ans)
 {
-	// TODO 遅い！
-
 	static uint512_t mask;
 	static uint512_t t;
 	static uint512_t m;

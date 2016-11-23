@@ -110,12 +110,10 @@ void UI%HBIT%_Mul(uint%HBIT%_t *a, uint%HBIT%_t *b, uint%HBIT%_t *ans, uint%HBIT
 	A = B ... a < b ? 0 : 1
 	A > B ...
 
-		ans += A / (B + 1) + (A / B - A / (B + 1)) / (fill / b) [再帰] <-- TODO これでいいのか？
+		ans += A / (B + 1) + (A / B - A / (B + 1)) / (fill / b) [再帰] <-- todo これでいいのか？
 */
 void UI%HBIT%_Div(uint%HBIT%_t *a, uint%HBIT%_t *b, uint%HBIT%_t *ans)
 {
-	// TODO 遅い！
-
 	static uint%HBIT%_t mask;
 	static uint%HBIT%_t t;
 	static uint%HBIT%_t m;

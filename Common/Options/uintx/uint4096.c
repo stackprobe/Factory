@@ -110,12 +110,10 @@ void UI4096_Mul(uint4096_t *a, uint4096_t *b, uint4096_t *ans, uint4096_t *ans_h
 	A = B ... a < b ? 0 : 1
 	A > B ...
 
-		ans += A / (B + 1) + (A / B - A / (B + 1)) / (fill / b) [再帰] <-- TODO これでいいのか？
+		ans += A / (B + 1) + (A / B - A / (B + 1)) / (fill / b) [再帰] <-- todo これでいいのか？
 */
 void UI4096_Div(uint4096_t *a, uint4096_t *b, uint4096_t *ans)
 {
-	// TODO 遅い！
-
 	static uint4096_t mask;
 	static uint4096_t t;
 	static uint4096_t m;

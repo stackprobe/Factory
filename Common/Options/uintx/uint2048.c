@@ -110,12 +110,10 @@ void UI2048_Mul(uint2048_t *a, uint2048_t *b, uint2048_t *ans, uint2048_t *ans_h
 	A = B ... a < b ? 0 : 1
 	A > B ...
 
-		ans += A / (B + 1) + (A / B - A / (B + 1)) / (fill / b) [再帰] <-- TODO これでいいのか？
+		ans += A / (B + 1) + (A / B - A / (B + 1)) / (fill / b) [再帰] <-- todo これでいいのか？
 */
 void UI2048_Div(uint2048_t *a, uint2048_t *b, uint2048_t *ans)
 {
-	// TODO 遅い！
-
 	static uint2048_t mask;
 	static uint2048_t t;
 	static uint2048_t m;

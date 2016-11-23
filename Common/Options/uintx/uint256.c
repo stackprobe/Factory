@@ -110,12 +110,10 @@ void UI256_Mul(uint256_t *a, uint256_t *b, uint256_t *ans, uint256_t *ans_hi)
 	A = B ... a < b ? 0 : 1
 	A > B ...
 
-		ans += A / (B + 1) + (A / B - A / (B + 1)) / (fill / b) [再帰] <-- TODO これでいいのか？
+		ans += A / (B + 1) + (A / B - A / (B + 1)) / (fill / b) [再帰] <-- todo これでいいのか？
 */
 void UI256_Div(uint256_t *a, uint256_t *b, uint256_t *ans)
 {
-	// TODO 遅い！
-
 	static uint256_t mask;
 	static uint256_t t;
 	static uint256_t m;

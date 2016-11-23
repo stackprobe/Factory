@@ -110,12 +110,10 @@ void UI1024_Mul(uint1024_t *a, uint1024_t *b, uint1024_t *ans, uint1024_t *ans_h
 	A = B ... a < b ? 0 : 1
 	A > B ...
 
-		ans += A / (B + 1) + (A / B - A / (B + 1)) / (fill / b) [再帰] <-- TODO これでいいのか？
+		ans += A / (B + 1) + (A / B - A / (B + 1)) / (fill / b) [再帰] <-- todo これでいいのか？
 */
 void UI1024_Div(uint1024_t *a, uint1024_t *b, uint1024_t *ans)
 {
-	// TODO 遅い！
-
 	static uint1024_t mask;
 	static uint1024_t t;
 	static uint1024_t m;

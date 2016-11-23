@@ -110,12 +110,10 @@ void UI128_Mul(uint128_t *a, uint128_t *b, uint128_t *ans, uint128_t *ans_hi)
 	A = B ... a < b ? 0 : 1
 	A > B ...
 
-		ans += A / (B + 1) + (A / B - A / (B + 1)) / (fill / b) [再帰] <-- TODO これでいいのか？
+		ans += A / (B + 1) + (A / B - A / (B + 1)) / (fill / b) [再帰] <-- todo これでいいのか？
 */
 void UI128_Div(uint128_t *a, uint128_t *b, uint128_t *ans)
 {
-	// TODO 遅い！
-
 	static uint128_t mask;
 	static uint128_t t;
 	static uint128_t m;
