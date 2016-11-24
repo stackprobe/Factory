@@ -2,6 +2,7 @@
 
 static int DirFileMode;
 static int AddDirToFilesMode; // ? ディレクトリも Files.txt に追加する。
+static int IgnoreSubDir;
 
 static void DispList(char *targetDir, autoList_t *searchPtns)
 {
@@ -10,10 +11,18 @@ static void DispList(char *targetDir, autoList_t *searchPtns)
 	char *path;
 	uint index;
 
-	     if(DirFileMode == 'D') paths = lssDirs(targetDir);
-	else if(DirFileMode == 'F') paths = lssFiles(targetDir);
-	else                        paths = lss(targetDir);
-
+	if(IgnoreSubDir)
+	{
+		     if(DirFileMode == 'D') paths = lsDirs(targetDir);
+		else if(DirFileMode == 'F') paths = lsFiles(targetDir);
+		else                        paths = ls(targetDir);
+	}
+	else
+	{
+		     if(DirFileMode == 'D') paths = lssDirs(targetDir);
+		else if(DirFileMode == 'F') paths = lssFiles(targetDir);
+		else                        paths = lss(targetDir);
+	}
 	sortJLinesICase(paths);
 
 	foreach(paths, path, index)
@@ -81,6 +90,11 @@ readArgs:
 	if(argIs("/D+"))
 	{
 		AddDirToFilesMode = 1;
+		goto readArgs;
+	}
+	if(argIs("/-S"))
+	{
+		IgnoreSubDir = 1;
 		goto readArgs;
 	}
 
