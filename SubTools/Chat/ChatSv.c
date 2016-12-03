@@ -226,8 +226,8 @@ static int Perform(char *prmFile, char *ansFile)
 		cout("TIME-LINE END\n");
 		writeBinary_cx(ansFile, buff);
 
-		memFree(bgnStmp);
-		memFree(endStmp);
+//		memFree(bgnStmp); // del_dbg @ 2016.12.3
+//		memFree(endStmp); // del_dbg @ 2016.12.3
 	}
 	else if(!strcmp(command, "HEARTBEAT"))
 	{
