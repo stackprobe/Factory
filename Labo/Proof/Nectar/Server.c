@@ -1,5 +1,5 @@
 #include "C:\Factory\Common\all.h"
-#include "C:\Factory\SubTools\libs\Nector.h"
+#include "C:\Factory\SubTools\libs\Nectar.h"
 
 static void Recved(autoBlock_t *message)
 {
@@ -11,13 +11,13 @@ static void Recved(autoBlock_t *message)
 }
 int main(int argc, char **argv)
 {
-	Nector_t *i = CreateNector("Nector_Test");
+	Nectar_t *i = CreateNectar("Nectar_Test");
 
 	LOGPOS();
 
 	while(waitKey(0) != 0x1b)
 	{
-		autoBlock_t *message = NectorReceipt(i);
+		autoBlock_t *message = NectarReceipt(i);
 
 		if(message)
 		{
@@ -26,5 +26,5 @@ int main(int argc, char **argv)
 		}
 	}
 	LOGPOS();
-	ReleaseNector(i);
+	ReleaseNectar(i);
 }

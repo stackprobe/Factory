@@ -9,12 +9,12 @@
 */
 
 #include "C:\Factory\Common\all.h"
-#include "C:\Factory\SubTools\libs\Nector.h"
+#include "C:\Factory\SubTools\libs\Nectar.h"
 
 int main(int argc, char **argv)
 {
-	Nector_t *i = CreateNector("Nector_Test");
+	Nectar_t *i = CreateNectar("Nectar_Test");
 
-	NectorSendLine(i, nextArg());
-	ReleaseNector(i);
+	NectarSendLine(i, nextArg());
+	ReleaseNectar(i);
 }

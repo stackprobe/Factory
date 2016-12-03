@@ -1,12 +1,12 @@
-#include "Nector.h"
+#include "Nectar.h"
 
 #define COMMON_ID "{91ed4458-fe67-4093-a430-9dbf09db9904}" // shared_uuid
 
 #define RECV_SIZE_MAX 20000000 // 20 MB
 
-Nector_t *CreateNector(char *name)
+Nectar_t *CreateNectar(char *name)
 {
-	Nector_t *i = (Nector_t *)memAlloc(sizeof(Nector_t));
+	Nectar_t *i = (Nectar_t *)memAlloc(sizeof(Nectar_t));
 	char *ident;
 
 	sha512_evacuate();
@@ -25,7 +25,7 @@ Nector_t *CreateNector(char *name)
 
 	return i;
 }
-void ReleaseNector(Nector_t *i)
+void ReleaseNectar(Nectar_t *i)
 {
 	handleClose(i->EvData);
 	handleClose(i->EvCtrl);
@@ -37,7 +37,7 @@ void ReleaseNector(Nector_t *i)
 
 // <-- cdtor
 
-static int SendBit(Nector_t *i, int data, int ctrl) // ret: ? 成功
+static int SendBit(Nectar_t *i, int data, int ctrl) // ret: ? 成功
 {
 	if(data)
 		eventSet(i->EvData);
@@ -49,7 +49,7 @@ static int SendBit(Nector_t *i, int data, int ctrl) // ret: ? 成功
 
 	if(!handleWaitForMillis(i->EvRecv, 30000)) // 30 秒 -- 受信側が存在すること前提なので、長め。
 	{
-		cout("Warning: Nector_送信タイムアウト\n");
+		cout("Warning: Nectar_送信タイムアウト\n");
 
 		// 異常終了なのでクリア
 		{
@@ -62,7 +62,7 @@ static int SendBit(Nector_t *i, int data, int ctrl) // ret: ? 成功
 	}
 	return 1;
 }
-static void Send(Nector_t *i, autoBlock_t *message)
+static void Send(Nectar_t *i, autoBlock_t *message)
 {
 	uint index;
 	uint bit;
@@ -86,7 +86,7 @@ static void Send(Nector_t *i, autoBlock_t *message)
 	}
 	SendBit(i, 1, 1);
 }
-static int RecvBit(Nector_t *i, uint *p_ret)
+static int RecvBit(Nectar_t *i, uint *p_ret)
 {
 	if(!handleWaitForMillis(i->EvSend, 2000)) // 2 秒 -- タイムアウトしても送信中のメッセージは維持される。interrupt 確保のため、短め。
 		return 0;
@@ -103,7 +103,7 @@ static int RecvBit(Nector_t *i, uint *p_ret)
 
 	return 1;
 }
-static autoBlock_t *Recv(Nector_t *i) // ret: NULL == 受信タイムアウト || サイズ超過
+static autoBlock_t *Recv(Nectar_t *i) // ret: NULL == 受信タイムアウト || サイズ超過
 {
 	autoBlock_t *retBuff = NULL;
 	static autoBlock_t *buff;
@@ -167,14 +167,14 @@ static autoBlock_t *Recv(Nector_t *i) // ret: NULL == 受信タイムアウト || サイズ
 
 // ---- send ----
 
-void NectorSend(Nector_t *i, autoBlock_t *buff)
+void NectarSend(Nectar_t *i, autoBlock_t *buff)
 {
 	Send(i, buff);
 }
-void NectorSendLine(Nector_t *i, char *line)
+void NectarSendLine(Nectar_t *i, char *line)
 {
 	autoBlock_t gab;
-	NectorSend(i, gndBlockLineVar(line, gab));
+	NectarSend(i, gndBlockLineVar(line, gab));
 }
 
 // ---- recv ----
@@ -182,7 +182,7 @@ void NectorSendLine(Nector_t *i, char *line)
 /*
 	クライアント応答用
 */
-autoBlock_t *NectorRecv(Nector_t *i)
+autoBlock_t *NectarRecv(Nectar_t *i)
 {
 	autoBlock_t *message;
 	uint c;
@@ -201,7 +201,7 @@ autoBlock_t *NectorRecv(Nector_t *i)
 	サーバー用
 	受信を待機する場合、時間を空けずに繰り返し呼び出すこと。
 */
-autoBlock_t *NectorReceipt(Nector_t *i)
+autoBlock_t *NectarReceipt(Nectar_t *i)
 {
 	return Recv(i);
 }
