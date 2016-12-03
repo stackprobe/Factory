@@ -12,7 +12,7 @@ Cで書いたツールとライブラリの寄せ集めです。
 --------
 
 Windows 7 Home Premium
-Visual C++ 2008 Express Edition (きっと Visual C++ 2010 Express Edition でも可)
+Visual C++ 2010 Express Edition (たぶん Visual C++ 2008 Express Edition でもOK)
 
 システムドライブ = C
 

@@ -1,6 +1,8 @@
 #include "Mutector.h"
 
-#define COMMON_ID "{fab3c841-8891-4273-8bd1-50525845fea7}"
+#define COMMON_ID "{fab3c841-8891-4273-8bd1-50525845fea7}" // shared_uuid
+
+#define RECV_SIZE_MAX 20000000 // 20 MB
 
 enum
 {
@@ -36,7 +38,7 @@ Mutector_t *CreateMutector(char *name)
 
 	for(index = 0; index < MUTECTOR_MTX_MAX; index++)
 	{
-		i->Mtxs[index] = mutexOpen_x(xcout("%s_%u", ident, index++));
+		i->Mtxs[index] = mutexOpen_x(xcout(COMMON_ID "_%s_%u", ident, index));
 		i->Statuses[index] = 0;
 	}
 	memFree(ident);
@@ -170,9 +172,132 @@ void MutectorSendLine(Mutector_t *i, char *line)
 
 // ---- recv_サーバー ----
 
+static Mutector_t *R_I;
+static int (*R_Interlude)(void);
+static void (*R_Recved)(autoBlock_t *);
+
+static uint R_Elapsed;
+
+static autoBlock_t *R_Buff;
+static int R_Chr;
+static int R_Bit;
+
+static void RecvedBit(uint bit)
+{
+	R_Chr <<= 1;
+	R_Chr |= bit;
+	R_Bit++;
+
+	if(R_Bit == 8)
+	{
+		if(RECV_SIZE_MAX <= getSize(R_Buff))
+		{
+			cout("Warning: 受信サイズ超過\n");
+
+			releaseAutoBlock(R_Buff);
+			R_Buff = NULL;
+//			R_Chr = 0;
+//			R_Bit = 0;
+		}
+		else
+		{
+			addByte(R_Buff, R_Chr);
+			R_Chr = 0;
+			R_Bit = 0;
+		}
+	}
+}
+static void RecvBit(uint m0, uint m1, uint m2)
+{
+	Set(R_I, M_Sync_0 + m1, 1);
+
+	// idling
+	{
+		static uint millis;
+
+		if(!Get(R_I, M_Sync_0 + m2))
+		{
+			if(millis < 200)
+				millis++;
+
+			sleep(millis);
+		}
+		else
+			millis = 0;
+
+		R_Elapsed += millis + 1;
+	}
+
+	Set(R_I, M_Sync_0 + m0, 0);
+
+	{
+		int b0 = Get(R_I, M_Bit_0_0 + m1);
+		int b1 = Get(R_I, M_Bit_1_0 + m1);
+
+		if(b0 && b1)
+		{
+			if(!R_Buff)
+				R_Buff = newBlock();
+
+			setSize(R_Buff, 0);
+			R_Chr = 0;
+			R_Bit = 0;
+		}
+		else if(!R_Buff)
+		{
+			// noop
+		}
+		else if(b0)
+		{
+			RecvedBit(0);
+		}
+		else if(b1)
+		{
+			RecvedBit(1);
+		}
+		else
+		{
+			R_Recved(R_Buff);
+
+			releaseAutoBlock(R_Buff);
+			R_Buff = NULL;
+//			R_Chr = 0;
+//			R_Bit = 0;
+		}
+	}
+}
+static void Recv(void)
+{
+	if(!TrySet(R_I, M_Recver))
+	{
+		cout("Warning: already Perform() running");
+		return;
+	}
+	Set(R_I, M_Sync_0, 1);
+
+	for(; ; )
+	{
+		RecvBit(0, 1, 2);
+		RecvBit(1, 2, 0);
+		RecvBit(2, 0, 1);
+
+		if(2000 <= R_Elapsed)
+		{
+			R_Elapsed -= 2000;
+
+			if(!R_Interlude())
+				break;
+		}
+	}
+	Clear(R_I, 0);
+}
 void MutectorRecv(Mutector_t *i, int (*interlude)(void), void (*recved)(autoBlock_t *))
 {
-	error(); // TODO
+	R_I = i;
+	R_Interlude = interlude;
+	R_Recved = recved;
+
+	Recv();
 }
 
 // ----

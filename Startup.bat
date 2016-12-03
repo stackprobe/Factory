@@ -1,15 +1,15 @@
 TITLE Factory
 
-IF EXIST "C:\Program Files\Microsoft Visual Studio 9.0\VC\vcvarsall.bat" (
-	CALL "C:\Program Files\Microsoft Visual Studio 9.0\VC\vcvarsall.bat"
+IF EXIST "C:\Program Files\Microsoft Visual Studio 10.0\VC\vcvarsall.bat" (
+	CALL "C:\Program Files\Microsoft Visual Studio 10.0\VC\vcvarsall.bat"
 ) ELSE (
-	IF EXIST "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat" (
-		CALL "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat"
+	IF EXIST "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat" (
+		CALL "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat"
 	) ELSE (
-		IF EXIST "C:\Program Files\Microsoft Visual Studio 10.0\VC\vcvarsall.bat" (
-			CALL "C:\Program Files\Microsoft Visual Studio 10.0\VC\vcvarsall.bat"
+		IF EXIST "C:\Program Files\Microsoft Visual Studio 9.0\VC\vcvarsall.bat" (
+			CALL "C:\Program Files\Microsoft Visual Studio 9.0\VC\vcvarsall.bat"
 		) ELSE (
-			CALL "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat"
+			CALL "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat"
 		)
 	)
 )
