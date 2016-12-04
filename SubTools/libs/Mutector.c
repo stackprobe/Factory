@@ -127,7 +127,7 @@ void MutectorSend(Mutector_t *i, autoBlock_t *message)
 	uint index;
 	uint bit;
 
-	Set(i, M_Sender, 1);
+	Set(i, M_Sender, 1); // ‘—M‘¤‚Ì”r‘¼
 
 	// Recver.Perform() Às’†‚©‚Ç‚¤‚©ŒŸ¸
 	{
