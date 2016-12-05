@@ -1,7 +1,7 @@
 /*
-	mkpw -> 62 P 22 L 2 = 130
-	mkpu -> 36 P 25 L 2 = 129
-	mkpd -> 10 P 40 L 2 = 132
+	mkpw -> 62 P 22 L 2 = 130.*
+	mkpu -> 36 P 25 L 2 = 129.*
+	mkpd -> 10 P 40 L 2 = 132.*
 */
 
 #include "C:\Factory\Common\all.h"

@@ -77,9 +77,9 @@ static void Clear(Mutector_t *i, int status)
 {
 	uint index;
 
-	for(index = 0; index < MUTECTOR_MTX_MAX; index++)
+	for(index = MUTECTOR_MTX_MAX; index; index--) // ”r‘¼—p‚ðÅŒã‚É‰ð•ú‚µ‚½‚¢B
 	{
-		Set(i, index, status);
+		Set(i, index - 1, status);
 	}
 }
 static int TrySet(Mutector_t *i, uint index)

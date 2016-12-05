@@ -39,7 +39,11 @@ uint mt19937_rnd(uint modulo) // ret: 0 Å` (modulo - 1)
 	{
 		return 0;
 	}
+#if 1
 	r_mod = 0x100000000ui64 % modulo;
+#else
+	r_mod = (0xffffffffui % modulo + 1) % modulo;
+#endif
 
 	do
 	{
