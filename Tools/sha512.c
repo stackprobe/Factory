@@ -5,23 +5,23 @@
 
 	sha512.exe ... /H HEX-STRING
 
-		HEX-STRING -> disp sha512
+		HEX-STRING <- disp sha512
 
 	sha512.exe ... /S CP932-STRING
 
-		CP932-STRING -> disp sha512
+		CP932-STRING <- disp sha512
 
 	sha512.exe ... /D
 
-		LOOP { dropPath -> disp sha512 }
+		LOOP { dropPath <- disp sha512 }
 
 	sha512.exe ... PATH
 
-		PATH -> disp sha512
+		PATH <- disp sha512
 
 	sha512.exe ...
 
-		CWD -> disp sha512
+		CWD <- disp sha512
 
 	ディレクトリの場合、直下のファイルのハッシュ一覧を出力する。
 */

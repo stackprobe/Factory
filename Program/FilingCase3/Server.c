@@ -4,7 +4,7 @@
 		ポート番号     ... 1 ～ 65535, def: 65123
 		最大同時接続数 ... 1 ～ IMAX, def: 100
 		ルートDIR      ... 過去に指定したことのあるディレクトリ || 空のディレクトリ || createPath(, 'D') 可能なディレクトリ
-		確保するディスクの空き領域 ... バイト数を指定する。1 ～ IMAX_64, def: 2.5 GB
+		確保するディスクの空き領域 ... バイト数を指定する。1 ～ IMAX_64, def: 500 MB
 		/S ... 停止
 */
 
@@ -15,7 +15,7 @@
 #define EV_STOP "{49e9f81c-dae4-464f-a209-301eed85b011}"
 #define FILEIO_MAX 20
 
-static uint64 KeepDiskFree = 2500000000ui64; // 2.5 GB
+static uint64 KeepDiskFree = 500000000ui64; // 500 MB
 static char *RootDir = "C:\\appdata\\FilingCase3\\LongPath_aaaaaaaaaa_bbbbbbbbbb_cccccccccc_dddddddddd_eeeeeeeeee_ffffffffff_gggggggggg"; // 100 文字くらい。
 static char *DataDir;
 static char *TempDir;

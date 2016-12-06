@@ -11,8 +11,7 @@
 		- - -
 		読み込みエンコード
 
-		AUTO     ... 自動判定
-		SJIS     ... Shift_JIS
+		SJIS    ... Shift_JIS
 		UTF16   ... UTF-16(LE) | UTF-16(BE) | UTF-16(LE)NoBOM
 		UTF16BE ... UTF-16(LE) | UTF-16(BE) | UTF-16(BE)NOBOM
 		UTF8    ... UTF-8
@@ -33,8 +32,7 @@
 
 typedef enum Enc_et
 {
-	ENC_AUTO = 1,
-	ENC_SJIS,
+	ENC_SJIS = 1,
 	ENC_UTF16,
 	ENC_UTF16_NOBOM,
 	ENC_UTF16BE,
@@ -111,10 +109,6 @@ static void DoConv2(char *rFile, char *wFile)
 	{
 		switch(REnc)
 		{
-		case ENC_AUTO:
-			error(); // TODO
-			return;
-
 		case ENC_UTF16:
 			UTF16ToSJISFile(rFile, wFile);
 			return;
@@ -204,7 +198,6 @@ readArgs:
 
 	errorCase(REnc == ENC_UTF16_NOBOM);
 	errorCase(REnc == ENC_UTF16BE_NOBOM);
-	errorCase(WEnc == ENC_AUTO);
 	errorCase(REnc != ENC_SJIS && WEnc != ENC_SJIS);
 	errorCase(REnc == ENC_SJIS && WEnc == ENC_SJIS);
 
