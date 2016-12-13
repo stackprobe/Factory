@@ -68,6 +68,7 @@ int main(int argc, char **argv)
 	dir = makeFullPath(dir);
 //	errorCase(!existDir(dir));
 
+	mkAppDataDir();
 	createFileIfNotExist(SAVE_FILE);
 
 	{

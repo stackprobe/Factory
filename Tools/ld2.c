@@ -15,6 +15,10 @@
 
 		保存されている NAME をクリアする。
 
+	> od NAME
+
+		保存されているディレクトリを開く。
+
 	----
 
 	ディレクトリは sd [NAME] [DIR] で保存する。
@@ -55,6 +59,25 @@ static void LoadDir(char *name)
 	}
 	releaseDim(lines, 1);
 }
+static void OpenDir(char *name)
+{
+	autoList_t *lines = readLines(SAVE_FILE);
+	uint index;
+
+	for(index = 0; index < getCount(lines); index += 2)
+		if(!_stricmp(name, getLine(lines, index)))
+			break;
+
+	if(index < getCount(lines))
+	{
+		coExecute_x(xcout("START \"\" \"%s\"", getLine(lines, index + 1)));
+	}
+	else
+	{
+		ShowList();
+	}
+	releaseDim(lines, 1);
+}
 static void ForgetDir(char *name)
 {
 	autoList_t *lines = readLines(SAVE_FILE);
@@ -77,6 +100,7 @@ static void ForgetDir(char *name)
 }
 int main(int argc, char **argv)
 {
+	mkAppDataDir();
 	createFileIfNotExist(SAVE_FILE);
 	removeFileIfExist(BATCH_FILE);
 
@@ -88,6 +112,11 @@ int main(int argc, char **argv)
 			return;
 		}
 		removeFile(SAVE_FILE);
+		return;
+	}
+	if(argIs("/O")) // Open
+	{
+		OpenDir(nextArg());
 		return;
 	}
 

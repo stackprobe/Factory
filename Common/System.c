@@ -763,3 +763,10 @@ char *LOGPOS_Time(int mode)
 	lastMillis = millis;
 	return buff;
 }
+
+// ----
+
+void mkAppDataDir(void)
+{
+	createDirIfNotExist("C:\\appdata");
+}

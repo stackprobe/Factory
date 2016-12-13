@@ -66,3 +66,7 @@ char *innerResPathFltr(char *path);
 // ----
 
 char *LOGPOS_Time(int mode);
+
+// ----
+
+void mkAppDataDir(void);
