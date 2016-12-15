@@ -63,9 +63,9 @@ static autoList_t *RecvMail(SockStream_t *ss, uint mailno)
 			memFree(line);
 
 			overCount++;
-			cout("overCount: %u\n", overCount);
+			cout("overCount: %u, %f\n", overCount, overCount / (double)IMAX);
 
-			if(1000000 < overCount) // ‚à‚¤’ú‚ß‚éB
+			if(IMAX < overCount) // ‚à‚¤’ú‚ß‚éB
 				break;
 		}
 		else
