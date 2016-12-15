@@ -77,8 +77,8 @@ static BOOL CALLBACK EnumFindWinTitle(HWND hWnd, LPARAM lp)
 
 		cout("winTitle: [%s]\n", winTitle);
 
-		if(mbs_stricmp(winTitle, P_WinTitle)) // ? 大文字小文字不問・完全一致した。
-//		if(mbs_stristr(winTitle, P_WinTitle)) // ? 大文字小文字不問・部分一致した。
+		if(!mbs_stricmp(winTitle, P_WinTitle)) // ? 大文字小文字不問・完全一致した。
+//		if( mbs_stristr(winTitle, P_WinTitle)) // ? 大文字小文字不問・部分一致した。
 		{
 			LOGPOS();
 			FoundFlag = 1;
