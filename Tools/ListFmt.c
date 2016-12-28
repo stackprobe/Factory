@@ -33,16 +33,15 @@ static char *GetLine(void)
 	ret = replaceLine(ret, T_ESCAPE "S", " ", 1);
 	ret = replaceLine(ret, T_ESCAPE "T", "\t", 1);
 	ret = replaceLine(ret, T_ESCAPE "Y", "\\", 1);
-	ret = replaceLine(ret, T_ESCAPE "0", refLine(CurrLines, 0), 0);
-	ret = replaceLine(ret, T_ESCAPE "1", refLine(CurrLines, 1), 0);
-	ret = replaceLine(ret, T_ESCAPE "2", refLine(CurrLines, 2), 0);
-	ret = replaceLine(ret, T_ESCAPE "3", refLine(CurrLines, 3), 0);
-	ret = replaceLine(ret, T_ESCAPE "4", refLine(CurrLines, 4), 0);
-	ret = replaceLine(ret, T_ESCAPE "5", refLine(CurrLines, 5), 0);
-	ret = replaceLine(ret, T_ESCAPE "6", refLine(CurrLines, 6), 0);
-	ret = replaceLine(ret, T_ESCAPE "7", refLine(CurrLines, 7), 0);
-	ret = replaceLine(ret, T_ESCAPE "8", refLine(CurrLines, 8), 0);
-	ret = replaceLine(ret, T_ESCAPE "9", refLine(CurrLines, 9), 0);
+	ret = replaceLine(ret, T_ESCAPE "1", refLine(CurrLines, 0), 0);
+	ret = replaceLine(ret, T_ESCAPE "2", refLine(CurrLines, 1), 0);
+	ret = replaceLine(ret, T_ESCAPE "3", refLine(CurrLines, 2), 0);
+	ret = replaceLine(ret, T_ESCAPE "4", refLine(CurrLines, 3), 0);
+	ret = replaceLine(ret, T_ESCAPE "5", refLine(CurrLines, 4), 0);
+	ret = replaceLine(ret, T_ESCAPE "6", refLine(CurrLines, 5), 0);
+	ret = replaceLine(ret, T_ESCAPE "7", refLine(CurrLines, 6), 0);
+	ret = replaceLine(ret, T_ESCAPE "8", refLine(CurrLines, 7), 0);
+	ret = replaceLine(ret, T_ESCAPE "9", refLine(CurrLines, 8), 0);
 
 	// ----
 
@@ -81,7 +80,7 @@ static void ListFmt(void)
 	char *file;
 	uint index;
 
-	errorCase(!getCount(ListFiles));
+	errorCase_m(!getCount(ListFiles), "1つ以上のファイルを指定して下さい。");
 
 	Lists = newList();
 
@@ -89,7 +88,7 @@ static void ListFmt(void)
 		addElement(Lists, (uint)readLines(file));
 
 	foreach(Lists, list, index)
-		errorCase(!getCount(list));
+		errorCase_m(!getCount(list), "空のファイルが指定されました。");
 
 	CurrLines = newList();
 	setCount(CurrLines, getCount(Lists));
@@ -99,12 +98,16 @@ static void ListFmt(void)
 int main(int argc, char **argv)
 {
 	ListFiles = newList();
-	addElement(ListFiles, (uint)FOUNDLISTFILE);
 
 readArgs:
 	if(argIs("/F"))
 	{
 		addElement(ListFiles, (uint)nextArg());
+		goto readArgs;
+	}
+	if(argIs("/LSS"))
+	{
+		addElement(ListFiles, (uint)FOUNDLISTFILE);
 		goto readArgs;
 	}
 	argIs("/-");
