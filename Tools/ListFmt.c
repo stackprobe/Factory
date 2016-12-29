@@ -1,13 +1,16 @@
 /*
-	ListFmt.exe [/F 入力ファイル] [/-] フォーマット...
+	ListFmt.exe [(/F 入力ファイル | /LSS)]... [/X] [/-] フォーマット...
 */
 
 #include "C:\Factory\Common\all.h"
+
+#define LIST_FILE_MAX 9
 
 #define S_ESCAPE "\1"
 #define T_ESCAPE "\2"
 
 static autoList_t *ListFiles;
+static int XMode;
 static char *Format;
 
 static autoList_t *Lists;
@@ -74,6 +77,29 @@ static void ListFmt_0(void)
 		ProcLine();
 	}
 }
+static void LFX_Next(uint list_index)
+{
+	autoList_t *list;
+	char *line;
+	uint index;
+
+	if(list_index == getCount(Lists))
+	{
+		ProcLine();
+		return;
+	}
+	list = getList(Lists, list_index);
+
+	foreach(list, line, index)
+	{
+		setElement(CurrLines, list_index, (uint)line);
+		LFX_Next(list_index + 1);
+	}
+}
+static void ListFmt_XMode(void)
+{
+	LFX_Next(0);
+}
 static void ListFmt(void)
 {
 	autoList_t *list;
@@ -81,6 +107,7 @@ static void ListFmt(void)
 	uint index;
 
 	errorCase_m(!getCount(ListFiles), "1つ以上のファイルを指定して下さい。");
+	errorCase_m(LIST_FILE_MAX < getCount(ListFiles), "ファイルが多過ぎます。");
 
 	Lists = newList();
 
@@ -93,7 +120,10 @@ static void ListFmt(void)
 	CurrLines = newList();
 	setCount(CurrLines, getCount(Lists));
 
-	ListFmt_0();
+	if(XMode)
+		ListFmt_XMode();
+	else
+		ListFmt_0();
 }
 int main(int argc, char **argv)
 {
@@ -108,6 +138,11 @@ readArgs:
 	if(argIs("/LSS"))
 	{
 		addElement(ListFiles, (uint)FOUNDLISTFILE);
+		goto readArgs;
+	}
+	if(argIs("/X"))
+	{
+		XMode = 1;
 		goto readArgs;
 	}
 	argIs("/-");
