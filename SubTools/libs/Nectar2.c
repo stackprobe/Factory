@@ -92,6 +92,11 @@ void Nectar2SendLine(Nectar2_t *i, char *line)
 	autoBlock_t gab;
 	Nectar2Send(i, gndBlockLineVar(line, gab));
 }
+void Nectar2SendLine_x(Nectar2_t *i, char *line)
+{
+	Nectar2SendLine(i, line);
+	memFree(line);
+}
 void Nectar2SendChar(Nectar2_t *i, int chr)
 {
 	static autoBlock_t *message;
