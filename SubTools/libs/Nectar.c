@@ -9,14 +9,14 @@ Nectar_t *CreateNectar(char *name)
 	Nectar_t *i = (Nectar_t *)memAlloc(sizeof(Nectar_t));
 	char *ident;
 
-	sha512_evacuate();
+	sha512_localize();
 	{
 		sha512_makeHashLine(name);
 		sha512_128_makeHexHash();
 
 		ident = strx(sha512_hexHash);
 	}
-	sha512_unevacuate();
+	sha512_unlocalize();
 
 	i->EvData = eventOpen_x(xcout(COMMON_ID "_%s_Data", ident));
 	i->EvCtrl = eventOpen_x(xcout(COMMON_ID "_%s_Ctrl", ident));

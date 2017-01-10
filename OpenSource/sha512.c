@@ -84,22 +84,22 @@ void sha512_makeHashFile(char *file)
 	sha512_release(i);
 }
 
-static autoBlock_t *EvacuateBuffer;
+static autoBlock_t *LocalizedBuffer;
 
-void sha512_evacuate(void)
+void sha512_localize(void)
 {
-	if(!EvacuateBuffer)
-		EvacuateBuffer = newBlock();
+	if(!LocalizedBuffer)
+		LocalizedBuffer = newBlock();
 
-	ab_addBlock(EvacuateBuffer, sha512_hash, 64);
-	ab_addBlock(EvacuateBuffer, sha512_hexHash, 129);
+	ab_addBlock(LocalizedBuffer, sha512_hash, 64);
+	ab_addBlock(LocalizedBuffer, sha512_hexHash, 129);
 }
-void sha512_unevacuate(void)
+void sha512_unlocalize(void)
 {
-	errorCase(!EvacuateBuffer);
+	errorCase(!LocalizedBuffer);
 
-	unaddBytesToBlock(EvacuateBuffer, sha512_hexHash, 129);
-	unaddBytesToBlock(EvacuateBuffer, sha512_hash, 64);
+	unaddBytesToBlock(LocalizedBuffer, sha512_hexHash, 129);
+	unaddBytesToBlock(LocalizedBuffer, sha512_hash, 64);
 }
 
 char *sha512_128Block(autoBlock_t *block)

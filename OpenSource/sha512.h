@@ -24,8 +24,8 @@ void sha512_makeHashBlock(autoBlock_t *text);
 void sha512_makeHashLine(char *line);
 void sha512_makeHashFile(char *file);
 
-void sha512_evacuate(void);
-void sha512_unevacuate(void);
+void sha512_localize(void);
+void sha512_unlocalize(void);
 
 char *sha512_128Block(autoBlock_t *block);
 char *sha512_128Bytes(void *bytes, uint size);

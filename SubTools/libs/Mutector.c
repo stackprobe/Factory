@@ -27,14 +27,14 @@ Mutector_t *CreateMutector(char *name)
 	char *ident;
 	uint index;
 
-	sha512_evacuate();
+	sha512_localize();
 	{
 		sha512_makeHashLine(name);
 		sha512_128_makeHexHash();
 
 		ident = strx(sha512_hexHash);
 	}
-	sha512_unevacuate();
+	sha512_unlocalize();
 
 	for(index = 0; index < MUTECTOR_MTX_MAX; index++)
 	{

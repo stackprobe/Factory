@@ -1,14 +1,8 @@
 #pragma once
 
-#pragma comment(lib, "ADVAPI32")
-
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\OpenSource\sha512.h"
-#include <wincrypt.h>
-
-void createKeyContainer(void);
-void deleteKeyContainer(void);
-autoBlock_t *makeCryptoBlock_MS(uint count);
+#include "CryptoRand_MS.h"
 
 uint getCryptoByte(void);
 uint getCryptoRand16(void);

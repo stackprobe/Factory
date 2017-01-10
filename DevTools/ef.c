@@ -5,6 +5,11 @@ int main(int argc, char **argv)
 	autoList_t *files;
 	autoList_t *selfiles;
 
+	cout("+-----------------------------+\n");
+	cout("| ファイルリストを更新します。|\n");
+	cout("+-----------------------------+\n");
+	sleep(500); // 見えるように
+
 	createFileIfNotExist(FOUNDLISTFILE);
 	files = readLines(FOUNDLISTFILE);
 	selfiles = selectLines(files);
