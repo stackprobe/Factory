@@ -10,6 +10,20 @@
 	}
 
 	main() {
+		uint hdl;
+		if(hdl = mutexTryLock("MUTEX_NAME")) {
+			ロック中
+			mutexUnlock(hdl);
+		}
+	}
+
+	main() {
+		uint hdl = mutexTryProcLock("MUTEX_NAME"); // ロック失敗 -> termination(1);
+		ロック中
+		mutexUnlock(hdl);
+	}
+
+	main() {
 		uint hdl = mutexOpen("MUTEX_NAME");
 		handleWaitForever(hdl);
 		ロック中
@@ -113,6 +127,25 @@ uint mutexLock(char *mutexName)
 	uint hdl = mutexOpen(mutexName);
 
 	handleWaitForever(hdl);
+	return hdl;
+}
+uint mutexTryLock(char *mutexName)
+{
+	uint hdl = mutexOpen(mutexName);
+
+	if(handleWaitForMillis(hdl, 0))
+		return hdl;
+
+	handleClose(hdl);
+	return 0;
+}
+uint mutexTryProcLock(char *mutexName)
+{
+	uint hdl = mutexTryLock(mutexName);
+
+	if(!hdl)
+		termination(1);
+
 	return hdl;
 }
 void mutexUnlock(uint hdl)

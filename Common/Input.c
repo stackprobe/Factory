@@ -197,7 +197,11 @@ autoList_t *editLines(autoList_t *lines) // ret: newList(), not NULL
 {
 	char *file = makeTempPath("txt");
 
-	writeLines(file, lines);
+	if(getCount(lines) == 1)
+		writeOneLineNoRet(file, getLine(lines, 0));
+	else
+		writeLines(file, lines);
+
 	execute(file); // ブロッキングで編集する。
 
 	if(existFile(file))

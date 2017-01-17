@@ -38,7 +38,8 @@
 #define SEED_DIR "C:\\Factory\\tmp"
 #define SEED_FILE SEED_DIR "\\CSeed.dat"
 
-#define SEEDSIZE 4096
+#define SEEDSIZE 65536 // 2017.1.12Å`
+//#define SEEDSIZE 4096
 
 static void GetCryptoSeed(uchar *seed)
 {

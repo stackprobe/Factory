@@ -1,5 +1,10 @@
 /*
-	ListFmt.exe [(/F 入力ファイル | /LSS)]... [/X] [/-] フォーマット...
+	ListFmt.exe [(/F 入力ファイル | /LSS | /C 初期値 最大値 増分 Z-PAD)]... [/X] [/-] フォーマット...
+
+		初期値   ... 0 ～ IMAX
+		最大値   ... 初期値 ～ IMAX
+		増分     ... 1 ～ IMAX
+		Z-PAD    ... 0 ～ IMAX
 */
 
 #include "C:\Factory\Common\all.h"
@@ -10,6 +15,7 @@
 #define T_ESCAPE "\2"
 
 static autoList_t *ListFiles;
+static autoList_t *WorkFiles;
 static int XMode;
 static char *Format;
 
@@ -125,9 +131,19 @@ static void ListFmt(void)
 	else
 		ListFmt_0();
 }
+static char *ZeroPad(uint value, uint minlen)
+{
+	char *ret = xcout("%u", value);
+
+	while(strlen(ret) < minlen)
+		ret = insertChar(ret, 0, '0');
+
+	return ret;
+}
 int main(int argc, char **argv)
 {
 	ListFiles = newList();
+	WorkFiles = newList();
 
 readArgs:
 	if(argIs("/F"))
@@ -140,6 +156,42 @@ readArgs:
 		addElement(ListFiles, (uint)FOUNDLISTFILE);
 		goto readArgs;
 	}
+	if(argIs("/C"))
+	{
+		autoList_t *list = newList();
+		uint count;
+		uint maxCount;
+		uint step;
+		uint zpminlen;
+
+		count    = toValue(nextArg());
+		maxCount = toValue(nextArg());
+		step     = toValue(nextArg());
+		zpminlen = toValue(nextArg());
+
+		m_range(count, 0, IMAX);
+		m_range(maxCount, count, IMAX);
+		m_range(step, 1, IMAX);
+		m_range(zpminlen, 0, IMAX);
+
+		for(; count <= maxCount; count += step)
+		{
+			addElement(list, (uint)ZeroPad(count, zpminlen));
+		}
+
+		// make work-file
+		{
+			char *file = makeTempPath(NULL);
+
+			writeLines(file, list);
+			releaseDim(list, 1);
+
+			addElement(ListFiles, (uint)file);
+			addElement(WorkFiles, (uint)file);
+		}
+
+		goto readArgs;
+	}
 	if(argIs("/X"))
 	{
 		XMode = 1;
@@ -149,4 +201,13 @@ readArgs:
 
 	Format = untokenize(allArgs(), " "); // gomi
 	ListFmt();
+
+	// remove work-files
+	{
+		char *file;
+		uint index;
+
+		foreach(WorkFiles, file, index)
+			removeFile(file);
+	}
 }

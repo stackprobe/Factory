@@ -8,6 +8,8 @@ void mltHandleWaitForever(autoList_t *hdls, uint *pIndex);
 void mutexRelease(uint hdl);
 
 uint mutexLock(char *mutexName);
+uint mutexTryLock(char *mutexName);
+uint mutexTryProcLock(char *mutexName);
 void mutexUnlock(uint hdl);
 
 void mutex(void);
