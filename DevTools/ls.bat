@@ -1,1 +1,1 @@
-lss.exe /-S %*
+@lss.exe /-S %*
