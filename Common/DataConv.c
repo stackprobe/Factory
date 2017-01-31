@@ -420,7 +420,7 @@ char *lineToJDocMax(char *line, int okRet, uint lenmax)
 	line = lineToJDoc_x(line, okRet);
 	return line;
 }
-static autoList_t *GetWindowsReserveNodeList(void)
+static autoList_t *GetWindowsReservedNodeList(void)
 {
 	static autoList_t *nodes;
 	uint i;
@@ -460,7 +460,7 @@ endfunc:
 */
 char *lineToFairLocalPath(char *line, uint dirSize)
 {
-	autoList_t *winResNodes = GetWindowsReserveNodeList();
+	autoList_t *winResNodes = GetWindowsReservedNodeList();
 	autoList_t *nodes;
 	char *node;
 	uint index;
