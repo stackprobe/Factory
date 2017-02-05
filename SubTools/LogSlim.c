@@ -81,8 +81,11 @@ static void InitDirInfos(void)
 	AddDirInfo(RootDir);
 
 	foreach(dirs, dir, index)
-		AddDirInfo(dir);
+	{
+		cout("[%u / %u] %s\n", index, getCount(dirs), dir);
 
+		AddDirInfo(dir);
+	}
 	releaseDim(dirs, 1);
 
 	LOGPOS();
