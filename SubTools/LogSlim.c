@@ -82,7 +82,7 @@ static void InitDirInfos(void)
 
 	foreach(dirs, dir, index)
 	{
-		cout("[%u / %u] %s\n", index, getCount(dirs), dir);
+		cout("[%.4f] %s\n", (double)index / getCount(dirs), dir);
 
 		AddDirInfo(dir);
 	}
