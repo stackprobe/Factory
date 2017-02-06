@@ -7,7 +7,7 @@
 
 	- - -
 
-	２回目は changeRate == 1.04 ～ 1.05 くらいになる？
+	２回目は changeRate == 1.04 ～ 1.05 くらいになる？ <- 何とかしろ！
 */
 
 #include "C:\Factory\Common\all.h"
@@ -162,7 +162,7 @@ static void DoConv(char *rFile, char *wFile, char *reportFile)
 
 	if(m_isRange(changeRate, NOOP_RATE_LOW, NOOP_RATE_HI))
 	{
-		message = "レートの振り幅が既定の範囲内なのでキャンセルします。";
+		message = "レートの振り幅が規定の範囲内なのでキャンセルします。";
 		OutputCancelled= 1;
 		goto outputReport;
 	}
