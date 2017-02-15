@@ -77,7 +77,11 @@ autoList_t *readBMPFile(char *file)
 	case 1: colPalCnt = 2; break;
 	case 4: colPalCnt = 16; break;
 	case 8: colPalCnt = 256; break;
-	case 24: colPalCnt = 0; break;
+
+	case 24:
+	case 32:
+		colPalCnt = 0;
+		break;
 
 	default:
 		error();
@@ -124,7 +128,7 @@ autoList_t *readBMPFile(char *file)
 				readChar(fp);
 			}
 		}
-		else
+		else if(Bfi.BitCount == 24)
 		{
 			for(x = 0; x < Bfi.Width; x++)
 			{
@@ -142,6 +146,23 @@ autoList_t *readBMPFile(char *file)
 			for(x = Bfi.Width % 4; x; x--)
 			{
 				readChar(fp);
+			}
+		}
+		else // ? Bfi.BitCount == 32
+		{
+			for(x = 0; x < Bfi.Width; x++)
+			{
+				uchar cR;
+				uchar cG;
+				uchar cB;
+
+				// BGR ’ˆÓ
+				cB = readChar(fp);
+				cG = readChar(fp);
+				cR = readChar(fp);
+				readChar(fp); // reserved
+
+				addElement(row, cR << 16 | cG << 8 | cB);
 			}
 		}
 		addElement(table, (uint)row);
