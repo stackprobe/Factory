@@ -242,6 +242,11 @@ void line2fsym(char *line)
 	strcpy(line, newLine);
 	memFree(newLine);
 }
+int toHalf(int chr)
+{
+	m_toHalf(chr);
+	return chr;
+}
 char *toPrintLine(autoBlock_t *block, int insRet)
 {
 	autoBlock_t *lineBuff = createBlock(getSize(block));

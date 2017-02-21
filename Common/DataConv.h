@@ -39,6 +39,7 @@ void line2fsym(char *line);
 #define m_toHalf(chr) \
 	(m_isHalf((chr)) || ((chr) = (chr) & 0x1f | 0xc0))
 
+int toHalf(int chr);
 char *toPrintLine(autoBlock_t *block, int insRet);
 char *lineToPrintLine(char *line, int insRet);
 char *lineToPrintLine_x(char *line, int insRet);
