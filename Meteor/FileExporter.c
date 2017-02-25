@@ -9,15 +9,18 @@ static char *GetFileExporterExeFile(void)
 
 	return file;
 }
+/*
+	rDir: ネットワークパス ok
+*/
 int FileExporter(char *rDir, char *wDir) // ret: ? successful
 {
 	char *successfulFile;
 	int ret;
 
-	rDir = makeFullPath(rDir);
+//	rDir = makeFullPath(rDir);
 	wDir = makeFullPath(wDir);
 
-	errorCase(!existDir(rDir));
+//	errorCase(!existDir(rDir));
 	errorCase(existDir(wDir));
 
 	createDir(wDir);
@@ -38,7 +41,7 @@ int FileExporter(char *rDir, char *wDir) // ret: ? successful
 		}
 		unaddCwd();
 	}
-	memFree(rDir);
+//	memFree(rDir);
 	memFree(wDir);
 	memFree(successfulFile);
 
@@ -69,12 +72,16 @@ int FileImporter(char *rDir) // ret: ? successful
 
 // ---- FileExportTouchImport ----
 
-static char *FETI_TargetDir;
+static char *FETI_WrkBnchDir;
 
 static void FETI_Import(void)
 {
-	FileImporter(FETI_TargetDir);
+	if(!FileImporter(FETI_WrkBnchDir))
+		cout("Warning: FETI_Import error!\n");
 }
+/*
+	targetDir: ネットワークパス ok
+*/
 void FileExportTouchImport(char *targetDir, int (*callback)(char *entityFile, char *realPath))
 {
 	char *wrkBnchDir = makeTempPath(NULL);
@@ -82,8 +89,8 @@ void FileExportTouchImport(char *targetDir, int (*callback)(char *entityFile, ch
 	errorCase(m_isEmpty(targetDir));
 	errorCase(!callback);
 
-	FileExporter(targetDir, wrkBnchDir);
-	FETI_TargetDir = targetDir;
+	errorCase(!FileExporter(targetDir, wrkBnchDir));
+	FETI_WrkBnchDir = wrkBnchDir;
 	addFinalizer(FETI_Import);
 
 	{
@@ -102,6 +109,8 @@ void FileExportTouchImport(char *targetDir, int (*callback)(char *entityFile, ch
 				int ret;
 
 				realFile = readText_b(file_s);
+
+				// FETI_Import() が runFinalizers() でちゃんと動くように copy -> move -> move している。
 
 				LOGPOS();
 				copyFile(file, entityFile);
@@ -129,7 +138,7 @@ void FileExportTouchImport(char *targetDir, int (*callback)(char *entityFile, ch
 
 	unaddFinalizer(FETI_Import);
 	FETI_Import();
-	FETI_TargetDir = NULL;
+	FETI_WrkBnchDir = NULL;
 
 	removeDir(wrkBnchDir);
 	memFree(wrkBnchDir);
