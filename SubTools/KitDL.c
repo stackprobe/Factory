@@ -1,6 +1,9 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Meteor\HGet.h"
 
+/*
+	HGet.exe ‚Í“]‘—æ(301‚ÌLocation)‚ğŸè‚ÉèŒJ‚Á‚Äæ‚Á‚Ä‚«‚Ä‚­‚ê‚é‚Ì‚Å Kit/ ‚Å‚È‚­‚Ä‚àok @ 2017.2.27
+*/
 static char *DLUrl = "http://localhost/release/Kit";
 static char *DestDir = "C:\\app\\Kit";
 
