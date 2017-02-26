@@ -48,6 +48,7 @@ static void DoFRenum(void)
 	char *file;
 	uint index;
 	uint no = StartNum;
+	char *unqptn = xcout("_$u=%08x_", time(NULL)); // 適当..
 
 	eraseParents(files);
 	sortJLinesICase(files);
@@ -55,6 +56,8 @@ static void DoFRenum(void)
 	foreach(files, file, index)
 	{
 		char *dest;
+
+		errorCase(!*file); // 2bs
 
 		if(ToNumOnly)
 			dest = xcout("%s%s", ZeroPad(no), getExtWithDot(file));
@@ -67,16 +70,25 @@ static void DoFRenum(void)
 		{
 			cout("< %s\n", file);
 			cout("> %s\n", dest);
+
+			addElement(midFiles, (uint)xcout("%s%s", unqptn, dest));
+			addElement(destFiles, (uint)dest);
 		}
-		addElement(midFiles, (uint)xcout("_$$$_%s", dest));
-		addElement(destFiles, (uint)dest);
+		else
+			file[0] = '\0';
 
 		no += NumStep;
 	}
+	trimLines(files);
+	errorCase(getCount(files) != getCount(midFiles)); // 2bs
+	errorCase(getCount(files) != getCount(destFiles)); // 2bs
+
 	cout("Press R to renumber\n");
 
 	if(getKey() != 'R')
 		termination(0);
+
+	// fixme: 移動テストしたい。
 
 	LOGPOS();
 
@@ -85,6 +97,8 @@ static void DoFRenum(void)
 			getLine(files, index),
 			getLine(midFiles, index)
 			);
+
+	LOGPOS();
 
 	for(index = 0; index < getCount(files); index++)
 		moveFile(
@@ -97,6 +111,7 @@ static void DoFRenum(void)
 	releaseDim(files, 1);
 	releaseDim(midFiles, 1);
 	releaseDim(destFiles, 1);
+	memFree(unqptn);
 }
 int main(int argc, char **argv)
 {
