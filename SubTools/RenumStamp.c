@@ -10,6 +10,7 @@
 
 #include "C:\Factory\Common\all.h"
 
+static int BatchMode;
 static int ToStampOnly;
 static int TimeKind = 'W'; // "CWX" == create, write, どちらか新しい方
 
@@ -115,10 +116,13 @@ static void DoFRenumStmp(void)
 	memFree(FStampsDir);
 	FStampsDir = NULL;
 
-	cout("Press R to renumber_stamp\n");
+	if(!BatchMode)
+	{
+		cout("Press R to renumber_stamp\n");
 
-	if(getKey() != 'R')
-		termination(0);
+		if(getKey() != 'R')
+			termination(0);
+	}
 
 	// fixme: 移動テストしたい。
 
@@ -148,6 +152,11 @@ static void DoFRenumStmp(void)
 int main(int argc, char **argv)
 {
 readArgs:
+	if(argIs("/B"))
+	{
+		BatchMode = 1;
+		goto readArgs;
+	}
 	if(argIs("/N"))
 	{
 		ToStampOnly = 1;
