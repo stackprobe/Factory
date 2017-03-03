@@ -4,7 +4,7 @@
 
 static uint ExitCode = 0;
 
-static void FormatFltr(char *p)
+static void ToFormat(char *p)
 {
 	for(; *p; p++)
 		if(strchr("012345678abcdef", *p))
@@ -57,7 +57,7 @@ static char *DoCheck(char *p)
 	}
 	*q = '\0';
 	q++;
-	FormatFltr(p);
+	ToFormat(p);
 
 	if(strcmp(p, NB_UUID_FMT))
 	{
