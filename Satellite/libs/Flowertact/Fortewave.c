@@ -1,6 +1,6 @@
 #include "Fortewave.h"
 
-#define IDENT_PREFIX "Fortewave_{d8600f7d-1ff4-47f3-b1c9-4b5aa15b6461}_" // shared_uuid
+#define IDENT_PREFIX "Fortewave_{d8600f7d-1ff4-47f3-b1c9-4b5aa15b6461}_" // shared_uuid@g
 
 Frtwv_t *Frtwv_Create(uchar *ident)
 {

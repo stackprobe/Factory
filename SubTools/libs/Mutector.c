@@ -1,6 +1,6 @@
 #include "Mutector.h"
 
-#define COMMON_ID "{fab3c841-8891-4273-8bd1-50525845fea7}" // shared_uuid
+#define COMMON_ID "{fab3c841-8891-4273-8bd1-50525845fea7}" // shared_uuid@g
 
 #define RECV_SIZE_MAX 20000000 // 20 MB
 

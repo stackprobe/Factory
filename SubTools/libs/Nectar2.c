@@ -1,6 +1,6 @@
 #include "Nectar2.h"
 
-#define COMMON_ID "{8cf92c5e-c4f7-4867-9e1a-5371bb53aa63}" // shared_uuid
+#define COMMON_ID "{8cf92c5e-c4f7-4867-9e1a-5371bb53aa63}" // shared_uuid@g
 
 enum
 {

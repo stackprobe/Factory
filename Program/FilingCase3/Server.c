@@ -380,7 +380,7 @@ readArgs:
 
 	DataDir = combine(RootDir, "d");
 	TempDir = combine(RootDir, "w");
-	SigFile = combine(RootDir, "FilingCase3_{20276b27-459e-4bed-b744-cb8f57c5af91}.sig"); // shared_uuid
+	SigFile = combine(RootDir, "FilingCase3_{20276b27-459e-4bed-b744-cb8f57c5af91}.sig"); // 未使用、とりあえず作る。
 
 	cout("DataDir: %s\n", DataDir);
 	cout("TempDir: %s\n", TempDir);

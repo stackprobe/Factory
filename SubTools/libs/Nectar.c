@@ -1,6 +1,6 @@
 #include "Nectar.h"
 
-#define COMMON_ID "{91ed4458-fe67-4093-a430-9dbf09db9904}" // shared_uuid
+#define COMMON_ID "{91ed4458-fe67-4093-a430-9dbf09db9904}" // shared_uuid@g
 
 #define RECV_SIZE_MAX 20000000 // 20 MB
 

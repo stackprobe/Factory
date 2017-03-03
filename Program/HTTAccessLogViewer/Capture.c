@@ -1,7 +1,7 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\csvStream.h"
 
-#define MUTEX_LOG "{4e08b31a-9280-4ee0-9f9a-2ef462589893}" // shared_uuid
+#define MUTEX_LOG "{4e08b31a-9280-4ee0-9f9a-2ef462589893}" // shared_uuid@ign このプログラムはもう使わない。
 
 static char *HTTDir;
 static char *WFile;

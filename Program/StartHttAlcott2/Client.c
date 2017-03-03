@@ -1,7 +1,7 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Satellite\libs\Flowertact\Fortewave.h"
 
-#define FORTEWAVE_IDENT "{319a5123-066b-44fe-b754-5cb16cc9c79d}" // shared_uuid
+#define FORTEWAVE_IDENT "{319a5123-066b-44fe-b754-5cb16cc9c79d}" // shared_uuid@g
 
 int main(int argc, char **argv)
 {

@@ -251,7 +251,7 @@ static void ReplaceVersion(char *dir, uint version) // version: 1 Å` 999, VER_BE
 		}
 		else if(!_stricmp("exe", getExt(file)))
 		{
-			static char *CONCERT_PTN = "{a9a54906-791d-4e1a-8a71-a4c69359cf68}:0.00"; // shared_uuid
+			static char *CONCERT_PTN = "{a9a54906-791d-4e1a-8a71-a4c69359cf68}:0.00"; // shared_uuid@g
 			autoBlock_t *text = readBinary(file);
 			uint conPos;
 
