@@ -6,6 +6,8 @@
 		ルートDIR      ... 過去に指定したことのあるディレクトリ || 空のディレクトリ || createPath(, 'D') 可能なディレクトリ
 		確保するディスクの空き領域 ... バイト数を指定する。1 ～ IMAX_64, def: 500 MB
 		/S ... 停止
+
+	★多重起動可能
 */
 
 #include "C:\Factory\Common\Options\SockServerTh.h"
@@ -333,6 +335,7 @@ int main(int argc, char **argv)
 {
 	uint portNo = 65123;
 	uint connectMax = 100;
+	char *evStopName;
 
 readArgs:
 	if(argIs("/P"))
@@ -358,13 +361,6 @@ readArgs:
 
 	errorCase(strcmp(nextArg(), "HARUNA-WA-DJBD"));
 
-	if(argIs("/S"))
-	{
-		LOGPOS();
-		eventWakeup(EV_STOP);
-		return;
-	}
-
 	cout("ポート番号: %u\n", portNo);
 	cout("最大同時接続数: %u\n", connectMax);
 	cout("確保するディスクの空き領域: %I64u\n", KeepDiskFree);
@@ -372,6 +368,15 @@ readArgs:
 
 	errorCase(!m_isRange(portNo, 1, 65535));
 	errorCase(!m_isRange(connectMax, 1, IMAX));
+
+	evStopName = xcout(EV_STOP "_%u", portNo);
+
+	if(argIs("/S"))
+	{
+		LOGPOS();
+		eventWakeup(evStopName);
+		return;
+	}
 
 	RootDir = makeFullPath(RootDir);
 	RootDir = toFairFullPathFltr_x(RootDir);
@@ -392,12 +397,13 @@ readArgs:
 
 	recurClearDir(TempDir);
 
-	EvStop = eventOpen(EV_STOP);
+	EvStop = eventOpen(evStopName);
 	initSemaphore(&SmphFileIO, FILEIO_MAX);
 	initCritical(&CritCommand);
 
 	sockServerTh(PerformTh, portNo, connectMax, IdleTh);
 
+	memFree(evStopName);
 	memFree(RootDir);
 	memFree(DataDir);
 	memFree(TempDir);

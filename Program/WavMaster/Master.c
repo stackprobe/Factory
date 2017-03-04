@@ -3,7 +3,7 @@
 
 	- - -
 
-	Master.exe INPUT-WAV-FILE OUTPUT-WAV-FILE REPORT-CSV-FILE
+	Master.exe [/E EV-CANCEL-NAME] INPUT-WAV-FILE OUTPUT-WAV-FILE REPORT-CSV-FILE
 
 	- - -
 
@@ -23,6 +23,15 @@
 
 static double Lvs[LV_RANGE + 1];
 static int OutputCancelled = 0;
+
+static uint EvCancel;
+
+#define CheckCancel() \
+	do { \
+	if(EvCancel && eqIntPulseSec(2, NULL)) { \
+		errorCase_m(handleWaitForMillis(EvCancel, 0), "要求により、キャンセルします。"); \
+	} \
+	} while(0) \
 
 static void PutLv(uint low, uint hi)
 {
@@ -87,6 +96,8 @@ static void DoConv(char *rFile, char *wFile, char *reportFile)
 		rowCount++;
 
 		releaseDim(row, 1);
+
+		CheckCancel();
 	}
 	cout("rowCount: %u\n", rowCount);
 
@@ -132,6 +143,8 @@ static void DoConv(char *rFile, char *wFile, char *reportFile)
 		ProgressRate((double)count / rowCount);
 
 		releaseDim(row, 1);
+
+		CheckCancel();
 	}
 	ProgressEnd(0);
 	LOGPOS();
@@ -216,6 +229,8 @@ static void DoConv(char *rFile, char *wFile, char *reportFile)
 		ProgressRate((double)count / rowCount);
 
 		releaseDim(row, 1);
+
+		CheckCancel();
 	}
 	ProgressEnd(0);
 	LOGPOS();
@@ -261,6 +276,11 @@ static void Fnlz(void)
 	LOGPOS();
 	termination(1);
 }
+static void ReleaseEvCancel(void)
+{
+	LOGPOS();
+	handleClose(EvCancel);
+}
 int main(int argc, char **argv)
 {
 	char *rFile;
@@ -273,6 +293,12 @@ int main(int argc, char **argv)
 
 	addFinalizer(Fnlz); // エラーダイアログ抑止！
 
+	if(argIs("/E"))
+	{
+		LOGPOS();
+		EvCancel = eventOpen(nextArg());
+		addFinalizer(ReleaseEvCancel);
+	}
 	rFile = nextArg();
 	wFile = nextArg();
 	reportFile = nextArg();
@@ -301,6 +327,8 @@ int main(int argc, char **argv)
 
 	removeFile_x(csvFile1);
 	removeFile_x(csvFile2);
+
+	unaddFinalizer(Fnlz);
 
 	termination(0);
 }
