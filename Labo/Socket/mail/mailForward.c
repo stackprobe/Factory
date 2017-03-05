@@ -440,26 +440,31 @@ readArgs:
 	}
 	if(argIs("/F")) // members File
 	{
+LOGPOS();
 		addElement(GroupList, (uint)readResourceLines(nextArg()));
 		goto readArgs;
 	}
 	if(argIs("/G")) // Groups file
 	{
+LOGPOS();
 		addElements_x(GroupList, readResourceFilesLines(nextArg()));
 		goto readArgs;
 	}
 	if(argIs("/N")) // group Names file
 	{
+LOGPOS();
 		GroupNameList = readResourceLines(nextArg());
 		goto readArgs;
 	}
 	if(argIs("/UR")) // Un-Return members file
 	{
+LOGPOS();
 		addElements_x(UnreturnMemberList, readResourceLines(nextArg()));
 		goto readArgs;
 	}
 	if(argIs("/SO")) // Send Only members file
 	{
+LOGPOS();
 		addElements_x(SendOnlyMemberList, readResourceLines(nextArg()));
 		goto readArgs;
 	}
@@ -468,6 +473,7 @@ readArgs:
 		CounterFileBase = nextArg();
 		goto readArgs;
 	}
+LOGPOS();
 
 	errorCase(m_isEmpty(PopServer));
 	errorCase(!PopPortno || 0xffff < PopPortno);
@@ -477,6 +483,7 @@ readArgs:
 	errorCase(m_isEmpty(PopPassphrase));
 	errorCase(m_isEmpty(SelfMailAddress));
 	errorCase(!getCount(GroupList));
+LOGPOS();
 
 	{
 		autoList_t *memberList;
@@ -487,11 +494,15 @@ readArgs:
 			errorCase(getCount(memberList) < 2);
 		}
 	}
+LOGPOS();
+
 	errorCase(!GroupNameList);
 	errorCase(getCount(GroupList) != getCount(GroupNameList));
 	errorCase(m_isEmpty(CounterFileBase));
+LOGPOS();
 
 	GetCounter("test"); // カウンタ取得テスト
+LOGPOS();
 
 	cmdTitle("mailForward");
 

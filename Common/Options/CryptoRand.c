@@ -49,6 +49,19 @@ static void GetCryptoSeed(uchar *seed)
 
 		mutex();
 
+		// zantei >
+
+		if(existFile(SEED_FILE) && getFileSize(SEED_FILE) != (uint64)SEEDSIZE)
+		{
+			cout("#########################################################\n");
+			cout("## SEED_FILE SIZE ERROR -- Ç«Ç¡Ç©Ç…å√Ç¢ exe Ç™Ç†ÇÈÇ≈ÅI ##\n");
+			cout("#########################################################\n");
+
+			removeFile(SEED_FILE);
+		}
+
+		// < zantei
+
 		if(existFile(SEED_FILE))
 		{
 			FILE *fp;
