@@ -7,7 +7,7 @@
 		確保するディスクの空き領域 ... バイト数を指定する。1 ～ IMAX_64, def: 500 MB
 		/S ... 停止
 
-	★多重起動可能
+	★多重起動非推奨
 */
 
 #include "C:\Factory\Common\Options\SockServerTh.h"
@@ -335,7 +335,6 @@ int main(int argc, char **argv)
 {
 	uint portNo = 65123;
 	uint connectMax = 100;
-	char *evStopName;
 
 readArgs:
 	if(argIs("/P"))
@@ -359,7 +358,7 @@ readArgs:
 		goto readArgs;
 	}
 
-	errorCase(strcmp(nextArg(), "HARUNA-WA-DJBD"));
+	errorCase_m(strcmp(nextArg(), "HARUNA-WA-DJBD"), "HARUNA-WA-DJBJAS");
 
 	cout("ポート番号: %u\n", portNo);
 	cout("最大同時接続数: %u\n", connectMax);
@@ -369,12 +368,10 @@ readArgs:
 	errorCase(!m_isRange(portNo, 1, 65535));
 	errorCase(!m_isRange(connectMax, 1, IMAX));
 
-	evStopName = xcout(EV_STOP "_%u", portNo);
-
 	if(argIs("/S"))
 	{
 		LOGPOS();
-		eventWakeup(evStopName);
+		eventWakeup(EV_STOP);
 		return;
 	}
 
@@ -385,11 +382,13 @@ readArgs:
 
 	DataDir = combine(RootDir, "d");
 	TempDir = combine(RootDir, "w");
-	SigFile = combine(RootDir, "FilingCase3_{20276b27-459e-4bed-b744-cb8f57c5af91}.sig"); // 未使用、とりあえず作る。
+	SigFile = combine(RootDir, "FilingCase3_{20276b27-459e-4bed-b744-cb8f57c5af91}.sig");
 
 	cout("DataDir: %s\n", DataDir);
 	cout("TempDir: %s\n", TempDir);
 	cout("SigFile: %s\n", SigFile);
+
+	errorCase_m(existDir(RootDir) && !accessible(SigFile), "指定されたディレクトリは、別のアプリケーションによって使用されています。");
 
 	createPath(DataDir, 'd');
 	createDirIfNotExist(TempDir);
@@ -397,13 +396,12 @@ readArgs:
 
 	recurClearDir(TempDir);
 
-	EvStop = eventOpen(evStopName);
+	EvStop = eventOpen(EV_STOP);
 	initSemaphore(&SmphFileIO, FILEIO_MAX);
 	initCritical(&CritCommand);
 
 	sockServerTh(PerformTh, portNo, connectMax, IdleTh);
 
-	memFree(evStopName);
 	memFree(RootDir);
 	memFree(DataDir);
 	memFree(TempDir);
