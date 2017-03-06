@@ -1,20 +1,17 @@
 /*
-	Server.exe [/P ポート番号] [/C 最大同時接続数] [/R ルートDIR] [/D 確保するディスクの空き領域] HARUNA-WA-DJBD [/S]
+	Server.exe [/P ポート番号] [/C 最大同時接続数] [/R ルートDIR] [/D 確保するディスクの空き領域] [/E 停止イベント名] HARUNA-WA-DJBD
 
 		ポート番号     ... 1 ～ 65535, def: 65123
 		最大同時接続数 ... 1 ～ IMAX, def: 100
 		ルートDIR      ... 過去に指定したことのあるディレクトリ || 空のディレクトリ || createPath(, 'D') 可能なディレクトリ
 		確保するディスクの空き領域 ... バイト数を指定する。1 ～ IMAX_64, def: 500 MB
-		/S ... 停止
-
-	★多重起動非推奨
+		停止イベント名 ... この名前のイベントにセットすると停止する。
 */
 
 #include "C:\Factory\Common\Options\SockServerTh.h"
 #include "C:\Factory\Common\Options\SockStream.h"
 #include "C:\Factory\Common\Options\CRRandom.h"
 
-#define EV_STOP "{49e9f81c-dae4-464f-a209-301eed85b011}"
 #define FILEIO_MAX 20
 
 static uint64 KeepDiskFree = 500000000ui64; // 500 MB
@@ -319,7 +316,7 @@ static int IdleTh(void)
 {
 	static int keep = 1;
 
-	if(handleWaitForMillis(EvStop, 0))
+	if(EvStop && handleWaitForMillis(EvStop, 0))
 		keep = 0;
 
 	while(hasKey())
@@ -395,6 +392,17 @@ readArgs:
 		KeepDiskFree = toValue64(nextArg());
 		goto readArgs;
 	}
+	if(argIs("/E"))
+	{
+		char *name = nextArg();
+
+		cout("停止イベント名: %s\n", name);
+
+		errorCase(m_isEmpty(name));
+
+		EvStop = eventOpen(name);
+		goto readArgs;
+	}
 
 	errorCase_m(strcmp(nextArg(), "HARUNA-WA-DJBD"), "HARUNA-WA-DJBJAS");
 
@@ -405,13 +413,6 @@ readArgs:
 
 	errorCase(!m_isRange(portNo, 1, 65535));
 	errorCase(!m_isRange(connectMax, 1, IMAX));
-
-	if(argIs("/S"))
-	{
-		LOGPOS();
-		eventWakeup(EV_STOP);
-		return;
-	}
 
 	RootDir = makeFullPath(RootDir);
 	RootDir = toFairFullPathFltr_x(RootDir);
@@ -434,7 +435,6 @@ readArgs:
 
 	recurClearDir(TempDir);
 
-	EvStop = eventOpen(EV_STOP);
 	initSemaphore(&SmphFileIO, FILEIO_MAX);
 	initCritical(&CritCommand);
 
@@ -444,7 +444,12 @@ readArgs:
 	memFree(DataDir);
 	memFree(TempDir);
 	memFree(SigFile);
-	handleClose(EvStop);
+
+	if(EvStop)
+		handleClose(EvStop);
+
 	fnlzSemaphore(&SmphFileIO);
 	fnlzCritical(&CritCommand);
+
+	cout("FC3_SERVER_END\n");
 }
