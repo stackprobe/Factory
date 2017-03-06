@@ -331,6 +331,44 @@ static int IdleTh(void)
 
 	return keep;
 }
+static int HasOtherRootDirParent(char *dir)
+{
+	dir = getParent(dir);
+
+	for(; ; )
+	{
+		char *file = combine(dir, getLocal(SigFile));
+
+		cout("chk_sig: %s\n", file);
+
+		if(existFile(file))
+		{
+			memFree(file);
+			memFree(dir);
+			return 1;
+		}
+		memFree(file);
+
+		if(isAbsRootDir(dir))
+			break;
+
+		dir= getParent_x(dir);
+	}
+	memFree(dir);
+	return 0;
+}
+static void CheckRootDir(void)
+{
+	if(!existDir(RootDir))
+		return;
+
+	if(accessible(SigFile))
+		return;
+
+	errorCase_m(lsCount(RootDir), "指定されたディレクトリは、別のアプリケーションによって使用されています。"); // ? 空ではない。
+
+	errorCase_m(HasOtherRootDirParent(RootDir), "指定されたディレクトリは、別のサービスによって使用されています。"); // ? 別の RootDir の配下
+}
 int main(int argc, char **argv)
 {
 	uint portNo = 65123;
@@ -388,7 +426,7 @@ readArgs:
 	cout("TempDir: %s\n", TempDir);
 	cout("SigFile: %s\n", SigFile);
 
-	errorCase_m(existDir(RootDir) && !accessible(SigFile), "指定されたディレクトリは、別のアプリケーションによって使用されています。");
+	CheckRootDir();
 
 	createPath(DataDir, 'd');
 	createDirIfNotExist(TempDir);
