@@ -133,7 +133,7 @@ void readWAVFileToCSVFile(char *rFile, char *wFile)
 	{
 		for(index = 0; index < RawData.Size; index++)
 		{
-			AddValue(wfp, (uint)readChar(rfp) * 0x0101);
+			AddValue(wfp, (uint)readChar(rfp) * 0x0100);
 		}
 	}
 	else // 16
