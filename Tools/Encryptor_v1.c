@@ -3,7 +3,7 @@
 
 	----
 
-	Encryptor.exe { /W KEY-WIDTH }*1 { /P PASS-PHRASE | /B KEY-BUNDLE | /F KEY-FILE }*1 { TARGET-FILE }*
+	Encryptor.exe [/W KEY-WIDTH] [/P PASS-PHRASE | /B KEY-BUNDLE | /F KEY-FILE] [TARGET-FILE]...
 
 		KEY-WIDTH   == 鍵の幅をバイト数で指定する。指定できるのは 16, 24, 32 のどれかで、デフォルトは 32
 		PASS-PHRASE == パスフレーズを指定する。

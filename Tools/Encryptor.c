@@ -1,5 +1,5 @@
 /*
-	Encryptor.exe { /P PASS-PHRASE | /B KEY-BUNDLE | /F KEY-FILE }*1 { TARGET-FILE }*
+	Encryptor.exe [/P PASS-PHRASE | /B KEY-BUNDLE | (/F | /KB) KEY-FILE] [TARGET-FILE]...
 
 		PASS-PHRASE == パスフレーズを指定する。
 		KEY-BUNDLE  == 鍵を16進数表記で指定する。
