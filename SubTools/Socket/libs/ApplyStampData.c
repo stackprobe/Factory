@@ -14,7 +14,7 @@ void ApplyStampData(stampData_t *i)
 	coExecute_x(xcout("TIME %u.%u.%u", i->hour, i->minute, i->second));
 	coExecute_x(xcout("DATE %u.%u.%u", i->year, i->month, i->day));
 }
-void PassiveApplyTimeData(time_t trueTime)
+void SlewApplyTimeData(time_t trueTime)
 {
 	time_t systemTime = time(NULL);
 	time_t t;

@@ -1,3 +1,7 @@
+/*
+	miso.exe [/W] [SERVER-HOST [SERVER-PORT]]
+*/
+
 #include "C:\Factory\Common\Options\SockClient.h"
 #include "C:\Factory\Common\Options\PadFile.h"
 #include "libs\ApplyStampData.h"
@@ -16,11 +20,11 @@ int main(int argc, char **argv)
 	uint trycnt;
 	FILE *fp;
 	time_t retTime;
-	int passiveMode = 0;
+	int slewMode = 0;
 
-	if(argIs("/P"))
+	if(argIs("/W"))
 	{
-		passiveMode = 1;
+		slewMode = 1;
 	}
 
 	if(hasArgs(1))
@@ -51,8 +55,8 @@ int main(int argc, char **argv)
 
 				if(!strcmp(server, "localhost"))
 					cout("%I64d\n", retTime);
-				else if(passiveMode)
-					PassiveApplyTimeData(retTime);
+				else if(slewMode)
+					SlewApplyTimeData(retTime);
 				else
 					ApplyStampData(getStampDataTime(retTime));
 
