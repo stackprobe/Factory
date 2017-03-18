@@ -343,7 +343,8 @@ int main(int argc, char **argv)
 
 		hdl = mutexLock("{aed96b6d-8a77-40fb-9285-9b75405fc3b2}");
 		{
-			if(_access(wFile, 0))
+			if(_access(wFile, 0) || !isSameFile(rFile, wFile))
+//			if(_access(wFile, 0))
 //			if(!existFile(wFile))
 			{
 				createPath(wFile, 'X');
