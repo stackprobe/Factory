@@ -93,4 +93,15 @@ int main(int argc, char **argv)
 		Csv2Bmp(getArg(0), getArg(1));
 		return;
 	}
+	if(argIs("/B2B"))
+	{
+		char *midFile = makeTempPath(NULL);
+
+		Bmp2Csv(getArg(0), midFile);
+		Csv2Bmp(midFile, getArg(1));
+
+		removeFile(midFile);
+		memFree(midFile);
+		return;
+	}
 }
