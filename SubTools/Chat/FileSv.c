@@ -1,5 +1,5 @@
 /*
-	FilerSv.exe [/S] [/CL リンク色] [/CB 背景色] [/CT 文字色] [/DD デフォルトDIR] [ポート番号]
+	FilerSv.exe [/S] [/CL リンク色] [/CB 背景色] [/CT 文字色] [/DD デフォルトDIR] [/VDDO] [ポート番号]
 
 		/S ... 停止する。起動直後だと止まらないこともある。ポート番号の前であること。
 
@@ -237,6 +237,8 @@ static char *B_TextColor = "#000000";
 
 static char *DefaultDir; // ローカル・フルパス
 
+static int VisibleDefaultDirOnly;
+
 static void Perform_FindPtn(ConnInfo_t *i, char *ttlPath, char *findPtn)
 {
 	char *body = GetFileListTemplateHtml();
@@ -369,6 +371,7 @@ static int ParseHeaderTokens(ConnInfo_t *i, autoList_t *tokens)
 		}
 		if(!file)
 		{
+		bad_url:
 			cout("BAD URL\n");
 
 			if(UTP_Path[0] == '\0') // ? パスを指定しなかった。
@@ -391,6 +394,28 @@ static int ParseHeaderTokens(ConnInfo_t *i, autoList_t *tokens)
 		}
 		cout("FILE: %s\n", file);
 
+		if(VisibleDefaultDirOnly)
+		{
+			cout("VDDO-CHECK\n");
+
+			if(!startsWithICase(file, DefaultDir)) // XXX ddのローカル名で始まるローカル名のパスにはアクセス出来ちゃうけど、まぁいいや...
+			{
+				char *fbd_content = "<html><body><h1>VDDO-FORBIDDEN</h1></body></html>";
+
+				cout("VDDO-FORBIDDEN\n");
+
+				i->SendBuff = newBlock();
+
+				ab_addLine(i->SendBuff, "HTTP/1.1 200 FORBIDDEN\r\n");
+				ab_addLine(i->SendBuff, "Connection: close\r\n");
+				ab_addLine_x(i->SendBuff, xcout("Content-Length: %u\r\n", strlen(fbd_content)));
+				ab_addLine(i->SendBuff, "\r\n");
+				ab_addLine(i->SendBuff, fbd_content);
+
+				memFree(file);
+				return 1;
+			}
+		}
 		if(UTP_HtmlMode)
 		{
 			Perform_FindPtn(i, file, file);
@@ -571,6 +596,12 @@ readArgs:
 	if(argIs("/DD"))
 	{
 		DefaultDir = nextArg();
+		goto readArgs;
+	}
+	if(argIs("/VDDO"))
+	{
+		LOGPOS();
+		VisibleDefaultDirOnly = 1;
 		goto readArgs;
 	}
 
