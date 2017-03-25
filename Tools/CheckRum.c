@@ -14,15 +14,54 @@ static int NoStrict;
 static autoList_t *RevDirs;
 static autoList_t *RevFiles;
 
-static void CheckRevDirsRevFiles(void)
-{
-	/*
-	TODO
+/*
+	チェック項目
 		RevDirs, 重複が無いこと。
 		RevDirs, 上から順に作成できること。
 		RevFiles, 重複が無いこと。
 		RevFiles, RevDirs のどれかの直下であること。
-	*/
+*/
+static void CheckRevDirsRevFiles(void)
+{
+	uint i;
+	uint j;
+
+	for(i = 1; i < getCount(RevDirs); i++)
+	for(j = 0; j < i; j++)
+	{
+		errorCase_m(!mbs_stricmp(getLine(RevDirs, i), getLine(RevDirs, j)), "ツリーファイルに重複があります。");
+	}
+	for(i = 0; i < getCount(RevDirs); i++)
+	{
+		char *dir = changeLocal(getLine(RevDirs, i), "");
+
+		if(*dir) // ? ローカル名じゃない。
+		{
+			for(j = 0; j < i; j++)
+				if(!mbs_stricmp(dir, getLine(RevDirs, j)))
+					break;
+
+			errorCase_m(j == i, "このツリーファイルは上から順に作成出来ません。");
+		}
+	}
+	for(i = 1; i < getCount(RevFiles); i++)
+	for(j = 0; j < i; j++)
+	{
+		errorCase_m(!mbs_stricmp(getLine(RevFiles, i), getLine(RevFiles, j)), "ファイルリストに重複があります。");
+	}
+	for(i = 1; i < getCount(RevFiles); i++)
+	{
+		char *dir = changeLocal(getLine(RevFiles, i), "");
+
+		if(*dir) // ? ローカル名じゃない。
+		{
+			for(j = 0; j < getCount(RevDirs); j++)
+				if(!mbs_stricmp(dir, getLine(RevDirs, j)))
+					break;
+
+			errorCase_m(j == getCount(RevDirs), "ファイルリストの問題：ツリーの配下に無いファイルがあります。");
+		}
+	}
 }
 
 static autoList_t *CheckAndReadLines(char *file, char *errorMessage)
