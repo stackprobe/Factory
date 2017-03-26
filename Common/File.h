@@ -1,6 +1,9 @@
 void trimPath(char *path);
 char *combine(char *dir, char *file);
 
+char *putYen(char *path);
+char *unputYen(char *path);
+
 char *getLocalWithYen(char *path);
 char *getLocal(char *path);
 char *getExtWithDot(char *path);

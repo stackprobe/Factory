@@ -396,19 +396,29 @@ static int ParseHeaderTokens(ConnInfo_t *i, autoList_t *tokens)
 
 		if(VisibleDefaultDirOnly)
 		{
+			static char *ddYen;
+
 			cout("VDDO-CHECK\n");
 
-			if(!startsWithICase(file, DefaultDir)) // XXX ddのローカル名で始まるローカル名のパスにはアクセス出来ちゃうけど、まぁいいや...
+			if(!ddYen)
+				ddYen = putYen(DefaultDir);
+
+			if(!mbs_stricmp(file, DefaultDir) || startsWithICase(file, ddYen))
 			{
-				char *fbd_content = "<html><body><h1>VDDO-FORBIDDEN</h1></body></html>";
+				cout("VDDO-OK\n");
+			}
+			else
+			{
+				char *fbd_content = "<html><body><h1>VDDO-FORBIDDEN</h1><hr/>ホームディレクトリ以外へのアクセスは禁止されています。</body></html>";
 
 				cout("VDDO-FORBIDDEN\n");
 
 				i->SendBuff = newBlock();
 
 				ab_addLine(i->SendBuff, "HTTP/1.1 200 FORBIDDEN\r\n");
-				ab_addLine(i->SendBuff, "Connection: close\r\n");
 				ab_addLine_x(i->SendBuff, xcout("Content-Length: %u\r\n", strlen(fbd_content)));
+				ab_addLine(i->SendBuff, "Content-Type: text/html; charset=Shift_JIS\r\n");
+				ab_addLine(i->SendBuff, "Connection: close\r\n");
 				ab_addLine(i->SendBuff, "\r\n");
 				ab_addLine(i->SendBuff, fbd_content);
 

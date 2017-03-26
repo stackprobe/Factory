@@ -30,6 +30,19 @@ char *combine(char *dir, char *file)
 	return dirFile;
 }
 
+char *putYen(char *path)
+{
+	return addChar(unputYen(path), '\\');
+}
+char *unputYen(char *path)
+{
+	path = strx(path);
+	escapeYen(path);
+	trimTrail(path, '/');
+	restoreYen(path);
+	return path;
+}
+
 static char *GetLocalEx(char *path, uint plus_index)
 {
 	char *p = mbs_strrchr(path, '\\');
