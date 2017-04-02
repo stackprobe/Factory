@@ -93,10 +93,10 @@ typedef unsigned __int64 uint64;
 #define IMAX_64 1000000000000000000i64
 
 #define m_01(flag) \
-	((flag) == 0 ? 0 : 1)
+	(!(flag) ? 0 : 1)
 
 #define m_10(flag) \
-	((flag) == 0 ? 1 : 0)
+	(!(flag) ? 1 : 0)
 
 typedef struct i2D_st // access free
 {
