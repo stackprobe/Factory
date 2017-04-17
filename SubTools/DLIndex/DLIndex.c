@@ -287,7 +287,7 @@ static void LoadAppInfos(char *rootDir)
 		ai->RevInfos = newList();
 
 		LoadRevInfos(dir, ai->RevInfos);
-		errorCase(!getCount(ai->RevInfos));
+		errorCase_m(!getCount(ai->RevInfos), "リリースされたリビジョンが１つもありません。");
 
 		{
 			char *file = combine(dir, DESCRIPTION_FILE);

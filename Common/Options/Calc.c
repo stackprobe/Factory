@@ -834,3 +834,9 @@ char *calcRootPower_x(char *line, uint exponent, uint radix, uint basement)
 	memFree(line);
 	return out;
 }
+char *calcLineToMarume_x(char *line, uint basement)
+{
+	char *out = calcLineToMarume(line, basement);
+	memFree(line);
+	return out;
+}
