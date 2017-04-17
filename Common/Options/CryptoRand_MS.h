@@ -5,7 +5,7 @@
 #include "C:\Factory\Common\all.h"
 #include <wincrypt.h>
 
-void createKeyContainer(void);
-void deleteKeyContainer(void);
+int createKeyContainer(void);
+int deleteKeyContainer(void);
 void getCryptoBlock_MS(uchar *buffer, uint size);
 autoBlock_t *makeCryptoBlock_MS(uint count);

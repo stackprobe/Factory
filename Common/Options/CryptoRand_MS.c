@@ -1,17 +1,25 @@
 #include "CryptoRand_MS.h"
 
-void createKeyContainer(void)
+int createKeyContainer(void) // ret: ? 成功
 {
 	HCRYPTPROV hp;
 
-	if(CryptAcquireContext(&hp, 0, 0, PROV_RSA_FULL, CRYPT_NEWKEYSET)) // エラー無視
-		CryptReleaseContext(hp, 0);
+	if(!CryptAcquireContext(&hp, 0, 0, PROV_RSA_FULL, CRYPT_NEWKEYSET)) // ? キーコンテナ作成失敗
+		return 0;
+
+	CryptReleaseContext(hp, 0);
+	return 1;
 }
-void deleteKeyContainer(void)
+int deleteKeyContainer(void) // ret: ? 成功
 {
 	HCRYPTPROV hp;
 
-	CryptAcquireContext(&hp, 0, 0, PROV_RSA_FULL, CRYPT_DELETEKEYSET); // エラー無視
+	if(!CryptAcquireContext(&hp, 0, 0, PROV_RSA_FULL, CRYPT_DELETEKEYSET)) // ? キーコンテナ削除失敗
+		return 0;
+
+	// hp 閉じるの不要らしい。
+
+	return 1;
 }
 void getCryptoBlock_MS(uchar *buffer, uint size)
 {
@@ -23,7 +31,10 @@ void getCryptoBlock_MS(uchar *buffer, uint size)
 		(GetLastError() != NTE_BAD_KEYSET ||
 			(cout("Create key container.\n"),
 			!CryptAcquireContext(&hp, 0, 0, PROV_RSA_FULL, CRYPT_NEWKEYSET))))
+	{
+		cout("Last error: %08x\n", GetLastError());
 		error();
+	}
 
 	if(!CryptGenRandom(hp, size, buffer))
 	{
