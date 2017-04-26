@@ -378,4 +378,5 @@ int main(int argc, char **argv)
 		handleClose(mtx);
 		return;
 	}
+	cout("Dummy cout: {cfb94d47-7371-4080-a0b2-c3c4c6deafd6}\n"); // shared_uuid@g
 }
