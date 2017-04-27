@@ -37,7 +37,8 @@
 <br/>
 «‘¾ŒÃ<br/>
 <br/>
-<a href="index.html">–ß‚é</a>
+<a href="index.html">–ß‚é</a><br/>
+<br/>
 
 </body>
 </html>
