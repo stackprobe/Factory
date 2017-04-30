@@ -1,5 +1,5 @@
 /*
-	C:\\Factory\\Common\\all.h より先に SockServer.h をインクルードするか all.h のインクルードを省略すること。
+	C:\Factory\Common\all.h より先に SockServer.h をインクルードするか all.h のインクルードを省略すること。
 
 	呼び出しシーケンス(１プロセス):
 		LISTEN | STARTUP, LISTENS, CLEANUP

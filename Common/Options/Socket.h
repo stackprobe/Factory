@@ -1,6 +1,6 @@
 /*
-	このヘッダは C:\\Factory\\Common\\all.h より先にインクルードすること。
-	C:\\Factory\\Common\\all.h を中で呼んでいるので all.h のインクルードを省略しても良い。
+	このヘッダは C:\Factory\Common\all.h より先にインクルードすること。
+	C:\Factory\Common\all.h を中で呼んでいるので all.h のインクルードを省略しても良い。
 */
 
 #pragma once

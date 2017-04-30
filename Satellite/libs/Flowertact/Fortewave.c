@@ -68,25 +68,32 @@ static void GetMessageRange(Frtwv_t *i)
 	if(existDir(i->MessageDir))
 	{
 		autoList_t *files = lsFiles(i->MessageDir);
-		char *file;
-		uint index;
-		uint firstNo = UINTMAX;
-		uint lastNo = 0;
 
-		foreach(files, file, index)
+		if(getCount(files))
 		{
-			uint no = toValue(getLocal(file));
+			char *file;
+			uint index;
+			uint firstNo = UINTMAX;
+			uint lastNo = 0;
 
-			m_minim(firstNo, no);
-			m_maxim(lastNo, no);
+			foreach(files, file, index)
+			{
+				uint no = toValue(getLocal(file));
+
+				m_minim(firstNo, no);
+				m_maxim(lastNo, no);
+			}
+			releaseDim(files, 1);
+
+			GMR_FirstNo = firstNo;
+			GMR_NextNo = lastNo + 1;
 		}
-		releaseDim(files, 1);
-
-		GMR_FirstNo = firstNo;
-		GMR_NextNo = lastNo + 1;
+		else
+			goto noMessages;
 	}
 	else
 	{
+	noMessages:
 		GMR_FirstNo = 0;
 		GMR_NextNo = 0;
 	}
@@ -205,7 +212,9 @@ autoBlock_t *Frtwv_Recv(Frtwv_t *i, uint millis)
 
 	if(!recvData)
 	{
+LOGPOS(); // test
 		handleWaitForMillis(i->MessagePostEvent, millis);
+LOGPOS(); // test
 		recvData = TryRecv(i);
 	}
 	return recvData;
