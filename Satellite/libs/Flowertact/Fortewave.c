@@ -212,9 +212,9 @@ autoBlock_t *Frtwv_Recv(Frtwv_t *i, uint millis)
 
 	if(!recvData)
 	{
-LOGPOS(); // test
+//LOGPOS(); // test
 		handleWaitForMillis(i->MessagePostEvent, millis);
-LOGPOS(); // test
+//LOGPOS(); // test
 		recvData = TryRecv(i);
 	}
 	return recvData;
