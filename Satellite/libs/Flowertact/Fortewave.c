@@ -124,6 +124,19 @@ static void TryRenumber(Frtwv_t *i)
 	}
 }
 
+uint Frtwv_GetJamDataCount(Frtwv_t *i)
+{
+	errorCase(!i);
+
+	handleWaitForever(i->Mutex);
+	{
+		GetMessageRange(i);
+	}
+	mutexRelease(i->Mutex);
+
+	return GMR_NextNo - GMR_FirstNo;
+}
+
 void Frtwv_SendOL(Frtwv_t *i, void *data, uint depth)
 {
 	autoBlock_t *sendData;
@@ -210,11 +223,17 @@ autoBlock_t *Frtwv_Recv(Frtwv_t *i, uint millis)
 
 	recvData = TryRecv(i);
 
-	if(!recvData)
+	if(!recvData && millis) // 待ち時間 0 なら 2 回も TryRecv しない。
 	{
-//LOGPOS(); // test
+#if 1 // マルチスレッド対応
+		inner_uncritical();
+		{
+			collectEvents(i->MessagePostEvent, millis);
+		}
+		inner_critical();
+#else // old
 		handleWaitForMillis(i->MessagePostEvent, millis);
-//LOGPOS(); // test
+#endif
 		recvData = TryRecv(i);
 	}
 	return recvData;

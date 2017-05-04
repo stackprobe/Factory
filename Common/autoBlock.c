@@ -222,10 +222,14 @@ autoBlock_t *desertBytes(autoBlock_t *i, uint index, uint count)
 
 	bytes = copyAutoBlock(gndSubBytesVar(i, index, count, gab));
 
+#if 1
+	copyBlock(i->Block + index, i->Block + index + count, i->Size - (index + count));
+#else // old_same
 	for(n = index; n < i->Size - count; n++)
 	{
 		i->Block[n] = i->Block[n + count];
 	}
+#endif
 	Resize(i, i->Size - count);
 	return bytes;
 }

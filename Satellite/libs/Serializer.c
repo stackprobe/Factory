@@ -125,9 +125,9 @@ static void *DeserializerMain(uint depth)
 }
 
 /*
-	depth == 0 ... ret == BYTES                 -> releaseDim(ret, 0, releaseAutoBlock); or releaseAutoBlock(ret);
-	depth == 1 ... ret == { BYTES ... }         -> releaseDim(ret, 1, releaseAutoBlock);
-	depth == 2 ... ret == {{ BYTES ... } ... }  -> releaseDim(ret, 2, releaseAutoBlock);
+	depth == 0 ... ret == BYTES                 -> releaseDim_BR(ret, 0, releaseAutoBlock); or releaseAutoBlock(ret);
+	depth == 1 ... ret == { BYTES ... }         -> releaseDim_BR(ret, 1, releaseAutoBlock);
+	depth == 2 ... ret == {{ BYTES ... } ... }  -> releaseDim_BR(ret, 2, releaseAutoBlock);
 
 	data ‚Æ depth ‚ªˆê’v‚µ‚È‚¢B-> error();
 */

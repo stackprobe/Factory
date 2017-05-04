@@ -1,11 +1,11 @@
 /*
-	boomClient.exe REV-HOST REV-PORT FWD-HOST FWD-PORT /S
+	boomClient.exe RECV-PORT FWD-HOST FWD-PORT /S
 
 		/S ... 停止する。
 
-	boomClient.exe REV-HOST REV-PORT FWD-HOST FWD-PORT [/C CONNECT-MAX] [/SS SEND-SIZE-MAX]
-	                                                   [/RS RECV-SIZE-MAX] [/T SOCK-TIMEOUT]
-	                                                   [/NCT NO-CONNECT-TIMEOUT] [/B]
+	boomClient.exe RECV-PORT FWD-HOST FWD-PORT [/C CONNECT-MAX] [/SS SEND-SIZE-MAX]
+	                                           [/RS RECV-SIZE-MAX] [/T SOCK-TIMEOUT]
+	                                           [/NCT NO-CONNECT-TIMEOUT] [/B]
 
 		CONNECT-MAX   ... 最大同時接続数, 省略時は 1000
 		SEND-SIZE-MAX ... 最大送信データサイズ, [バイト] 最小21

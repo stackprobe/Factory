@@ -1,4 +1,8 @@
 /*
+	crypTunnel.exe RECV-PORT FWD-HOST FWD-PORT /S
+
+		停止する。
+
 	crypTunnel.exe RECV-PORT FWD-HOST FWD-PORT [/C CONNECT-MAX] [/R] [/KW KEY-WIDTH] [/0] [/BSL BLOCK-SIZE-LIMIT] [/T] KEY-BUNDLE-FILE
 
 		RECV-PORT       ... 待ち受けポート番号
