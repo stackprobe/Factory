@@ -3,6 +3,8 @@
 #define LOGFILESIZE_MAX 10000000 // 10m
 #define LOGFILE_PERIOD 3600
 
+int coutOff;
+
 static FILE *WrFP;
 static char *LogFileBase;
 static uint64 LogFileSize;
@@ -71,6 +73,9 @@ void setCoutLogFileAdd(char *fileBase)
 void cout(char *format, ...)
 {
 	va_list marker;
+
+	if(coutOff)
+		return;
 
 	if(WrFP)
 	{

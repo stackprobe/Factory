@@ -1,3 +1,5 @@
+extern int coutOff;
+
 void setCoutWrFile(char *file, char *mode);
 void unsetCoutWrFile(void);
 void setCoutLogFile(char *fileBase);

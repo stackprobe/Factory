@@ -504,6 +504,11 @@ static void ReadSysArgs(void)
 			desertElement(Args, argi);
 			break;
 		}
+		else if(!_stricmp(arg, "//-C"))
+		{
+			desertElement(Args, argi);
+			coutOff = 1;
+		}
 		else if(!_stricmp(arg, "//F")) // パラメータをファイルから読み込んで置き換える。
 		{
 			char *text;
@@ -571,8 +576,8 @@ static void ReadSysArgs(void)
 		}
 		else if(!_stricmp(arg, "//-E"))
 		{
-			noErrorDlgMode = 1;
 			desertElement(Args, argi);
+			noErrorDlgMode = 1;
 		}
 		else
 			argi++;
