@@ -300,6 +300,8 @@ int main(int argc, char **argv)
 	cout("+---------------------------------------------+\n");
 	cout("| メーラーなど、動作中のアプリを閉じて下さい。|\n");
 	cout("+---------------------------------------------+\n");
+	cout("!! GREEN -> RED !!\n");
+
 	strDestDrv = dropPath();
 
 	if(!strDestDrv)
