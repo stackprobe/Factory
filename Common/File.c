@@ -704,7 +704,7 @@ static void CopyFile_DM(char *srcFile, char *destFile, char *destMode)
 }
 void joinFile(char *bodyFile, char *tailFile)
 {
-	CopyFile_DM(tailFile, bodyFile, "ab");
+	CopyFile_DM(tailFile, bodyFile, "ab"); // ˆø”‚Ì•À‚Ñ‚Æ‹tI
 }
 void copyFile(char *srcFile, char *destFile)
 {
