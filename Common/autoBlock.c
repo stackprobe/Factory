@@ -170,6 +170,14 @@ void insertBytes(autoBlock_t *i, uint index, autoBlock_t *bytes)
 
 		Resize(i, i->Size + bytes->Size);
 
+#if 1
+		copyBlock(
+			i->Block + index + bytes->Size,
+			i->Block + index,
+			i->Size - (index + bytes->Size)
+			);
+		memcpy(i->Block + index, bytes->Block, bytes->Size);
+#else // old_same
 		for(n = i->Size - 1; index + bytes->Size <= n; n--)
 		{
 			i->Block[n] = i->Block[n - bytes->Size];
@@ -180,6 +188,7 @@ void insertBytes(autoBlock_t *i, uint index, autoBlock_t *bytes)
 			if(n == index) break;
 			n--;
 		}
+#endif
 	}
 }
 void insertByteRepeat(autoBlock_t *i, uint index, uint byte, uint count)
@@ -194,6 +203,14 @@ void insertByteRepeat(autoBlock_t *i, uint index, uint byte, uint count)
 
 		Resize(i, i->Size + count);
 
+#if 1
+		copyBlock(
+			i->Block + index + count,
+			i->Block + index,
+			i->Size - (index + count)
+			);
+		memset(i->Block + index, byte, count);
+#else // old_same
 		for(n = i->Size - 1; index + count <= n; n--)
 		{
 			i->Block[n] = i->Block[n - count];
@@ -204,6 +221,7 @@ void insertByteRepeat(autoBlock_t *i, uint index, uint byte, uint count)
 			if(n == index) break;
 			n--;
 		}
+#endif
 	}
 }
 void insertByte(autoBlock_t *i, uint index, uint byte)
@@ -223,7 +241,11 @@ autoBlock_t *desertBytes(autoBlock_t *i, uint index, uint count)
 	bytes = copyAutoBlock(gndSubBytesVar(i, index, count, gab));
 
 #if 1
-	copyBlock(i->Block + index, i->Block + index + count, i->Size - (index + count));
+	copyBlock(
+		i->Block + index,
+		i->Block + index + count,
+		i->Size - (index + count)
+		);
 #else // old_same
 	for(n = index; n < i->Size - count; n++)
 	{
