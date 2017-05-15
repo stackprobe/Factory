@@ -1,0 +1,108 @@
+#include "C:\Factory\Common\Options\SClient.h"
+#include "libs\ApplyStampData.h"
+
+#define NICT_DOMAIN "ntp-a1.nict.go.jp"
+//#define NICT_DOMAIN "ntp-b1.nict.go.jp" // 予備の鯖？
+#define NICT_PORT 80
+
+static time_t NictTime;
+
+static int NictPerform(int sock, uint prm_dummy)
+{
+	SockStream_t *ss = CreateSockStream(sock, 5000);
+	char *line;
+	int ret = 0;
+
+	SockSendLine_NF(ss, "GET /cgi-bin/jst HTTP/1.1");
+	SockSendLine_NF(ss, "Host: " NICT_DOMAIN);
+	SockSendLine(ss, "");
+
+	for(; ; ) // ヘッダ読み飛ばし
+	{
+		char *line = SockRecvLine(ss, 2000);
+
+		if(!*line)
+		{
+			memFree(line);
+			break;
+		}
+		memFree(line);
+	}
+
+	memFree(SockRecvLine(ss, 100)); // <HTML>
+	memFree(SockRecvLine(ss, 100)); // <HEAD><TITLE> ...
+	memFree(SockRecvLine(ss, 100)); // <BODY>
+
+	line = SockRecvLine(ss, 100);
+
+	line2JLine(line, 1, 0, 0, 1); // 表示のため
+	cout("[%s]\n", line);
+
+	if(
+		lineExp("<1,,09>", line) ||
+		lineExp("<1,,09>.<1,,09>", line)
+		)
+	{
+		*strchrEnd(line, '.') = '\0'; // 小数点以下を除去
+
+		NictTime = toValue64(line);
+
+		if(m_isRange(NictTime, 1000000000ui64, 32500000000ui64)) // ? およそ 2000年 ～ 3000年, それ以外は何かおかしい！
+			ret = 1;
+	}
+	ReleaseSockStream(ss);
+	memFree(line);
+	return ret;
+}
+static int GetNictTime(void) // ret: ? 成功
+{
+	return SClient(NICT_DOMAIN, NICT_PORT, NictPerform, 0);
+}
+int main(int argc, char **argv)
+{
+	int viewOnly = 0;
+	int dayChangeEvasion = 1;
+
+readArgs:
+	if(argIs("/V"))
+	{
+		viewOnly = 1;
+		goto readArgs;
+	}
+	if(argIs("/-E"))
+	{
+		dayChangeEvasion = 0;
+		goto readArgs;
+	}
+
+	// ----
+
+	if(dayChangeEvasion)
+	{
+		uint hms = (uint)(toValue64(c_makeCompactStamp(NULL)) % 1000000ui64);
+
+		cout("hms: %06u\n", hms);
+
+		// アクティブオープンに最長 20 sec, 通信タイムアウト 5 sec で、だいたい 25 秒 + 2～3 秒くらいで更新を掛けられるはず。
+		// 余裕は 35 秒くらいでいいと思う。
+		// -- 1 分でいいや。
+
+//		if(hms < 5 || 235925 < hms)
+		if(hms < 5 || 235900 < hms)
+		{
+			cout("日付変更が近いので、中止します。\n");
+			return;
+		}
+	}
+	if(!GetNictTime())
+	{
+		cout("取得失敗\n");
+		return;
+	}
+	cout("取得した時刻：%s\n", c_makeJStamp(getStampDataTime(NictTime), 0));
+
+	if(!viewOnly)
+	{
+		SlewApplyTimeData(NictTime);
+	}
+}

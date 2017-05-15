@@ -1,5 +1,5 @@
 /*
-	miso.exe [/W] [SERVER-HOST [SERVER-PORT]]
+	miso.exe [/-W] [SERVER-HOST [SERVER-PORT]]
 */
 
 #include "C:\Factory\Common\Options\SockClient.h"
@@ -20,11 +20,11 @@ int main(int argc, char **argv)
 	uint trycnt;
 	FILE *fp;
 	time_t retTime;
-	int slewMode = 0;
+	int slewMode = 1;
 
-	if(argIs("/W"))
+	if(argIs("/-W"))
 	{
-		slewMode = 1;
+		slewMode = 0;
 	}
 
 	if(hasArgs(1))

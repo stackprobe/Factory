@@ -29,7 +29,8 @@ void SlewApplyTimeData(time_t trueTime)
 
 	do
 	{
-		sleep(100);
+//		sleep(100);
+		sleep(10);
 	}
 	while(systemTime == time(NULL));
 
