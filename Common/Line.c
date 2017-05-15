@@ -347,7 +347,8 @@ uint replaceLine_getLastReplacedCount(void)
 	return LastReplacedCount;
 }
 
-#define CB_MINSIZE 16
+//#define CB_MINSIZE 16 // ‚ß‚Á‚¿‚ád‚È‚Á‚Ä‚éA’x‚¢B@ 2017.5.15
+#define CB_MINSIZE 1024
 
 static uchar CB_Buff[CB_MINSIZE];
 
