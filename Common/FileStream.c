@@ -264,8 +264,11 @@ void readWriteBinaryToEnd(FILE *rfp, FILE *wfp)
 }
 void writeBinaryBlock(FILE *fp, autoBlock_t *block) // getSize(block) == 0 ‚Å‚à‰Â
 {
-	if(fwrite(directGetBuffer(block), 1, getSize(block), fp) != getSize(block)) // fwrite(, 1, 0, ) ‚Ì‚Æ‚« 0 ‚ğ•Ô‚·B
+	uint ret;
+
+	if((ret = fwrite(directGetBuffer(block), 1, getSize(block), fp)) != getSize(block)) // fwrite(, 1, 0, ) ‚Ì‚Æ‚« 0 ‚ğ•Ô‚·B
 	{
+		cout("fwrite error, ret: %u, block_size: %u, LastError: %08x\n", ret, getSize(block), GetLastError());
 		error();
 	}
 }

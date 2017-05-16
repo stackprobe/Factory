@@ -133,7 +133,7 @@ static void DoINIT(void)
 {
 	PBits = (uint *)memAlloc(PBIT_LEN * sizeof(uint));
 
-//	LOGPOS(); // データ生成する時以外何も表示しないこと！
+//	LOGPOS();
 
 	mutex();
 	{
@@ -149,7 +149,7 @@ static void DoINIT(void)
 	}
 	unmutex();
 
-//	LOGPOS(); // データ生成する時以外何も表示しないこと！
+//	LOGPOS();
 }
 static void INIT(void)
 {

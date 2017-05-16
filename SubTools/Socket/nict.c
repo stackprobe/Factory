@@ -1,3 +1,7 @@
+/*
+	非NTPでシステム時刻合わせ。
+*/
+
 #include "C:\Factory\Common\Options\SClient.h"
 #include "libs\ApplyStampData.h"
 
@@ -9,7 +13,7 @@ static time_t NictTime;
 
 static int NictPerform(int sock, uint prm_dummy)
 {
-	SockStream_t *ss = CreateSockStream(sock, 5000);
+	SockStream_t *ss = CreateSockStream(sock, 5);
 	char *line;
 	int ret = 0;
 
@@ -56,7 +60,16 @@ static int NictPerform(int sock, uint prm_dummy)
 }
 static int GetNictTime(void) // ret: ? 成功
 {
-	return SClient(NICT_DOMAIN, NICT_PORT, NictPerform, 0);
+	int ret;
+
+	// fixme: 秒単位で応答が遅くなれば、それだけ不正確な日時になるよなぁ...
+	// -- Slewで日時セットしているので時々そういうことがあってもいいや...
+
+	LOGPOS();
+	ret = SClient(NICT_DOMAIN, NICT_PORT, NictPerform, 0);
+	LOGPOS();
+
+	return ret;
 }
 int main(int argc, char **argv)
 {
@@ -77,6 +90,21 @@ readArgs:
 
 	// ----
 
+	LOGPOS();
+
+	// ss.000 秒になるべく近づけてみる。
+	{
+		time_t t = time(NULL);
+
+		do
+		{
+			sleep(10);
+		}
+		while(t == time(NULL));
+	}
+
+	LOGPOS();
+
 	if(dayChangeEvasion)
 	{
 		uint hms = (uint)(toValue64(c_makeCompactStamp(NULL)) % 1000000ui64);
@@ -86,9 +114,11 @@ readArgs:
 		// アクティブオープンに最長 20 sec, 通信タイムアウト 5 sec で、だいたい 25 秒 + 2～3 秒くらいで更新を掛けられるはず。
 		// 余裕は 35 秒くらいでいいと思う。
 		// -- 1 分でいいや。
+		// -- 1 秒でタイムアウトにしたので、@ GetNictTime()
 
 //		if(hms < 5 || 235925 < hms)
-		if(hms < 5 || 235900 < hms)
+//		if(hms < 5 || 235900 < hms)
+		if(hms < 5 || 235950 < hms)
 		{
 			cout("日付変更が近いので、中止します。\n");
 			return;
@@ -103,6 +133,8 @@ readArgs:
 
 	if(!viewOnly)
 	{
+		LOGPOS();
 		SlewApplyTimeData(NictTime);
+		LOGPOS();
 	}
 }

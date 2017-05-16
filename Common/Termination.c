@@ -60,7 +60,7 @@ void error2(char *source, uint lineno, char *function, char *message)
 	cout("+-------+\n");
 	cout("| ERROR |\n");
 	cout("+-------+\n");
-	cout("%s (%u) %s\n", source, lineno, function);
+	cout("%s (%u) %s ", source, lineno, function); cout("LastError=%08x\n", GetLastError());
 
 	if(message)
 	{
