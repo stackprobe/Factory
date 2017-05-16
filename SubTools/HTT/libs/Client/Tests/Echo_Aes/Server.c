@@ -18,7 +18,7 @@ autoBlock_t *ServiceCRPC(autoBlock_t *recvData, uint phase)
 {
 	autoBlock_t *sendData = newBlock();
 
-	ab_addLine(sendData, "You send [");
+	ab_addLine(sendData, "You sent [");
 	addBytes(sendData, recvData);
 	ab_addLine(sendData, "]");
 

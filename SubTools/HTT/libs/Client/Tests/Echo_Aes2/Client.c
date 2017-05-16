@@ -1,4 +1,8 @@
-#include "C:\Factory\SubTools\HTT\libs\Client\CRPC_Aes.h"
+/*
+	Client.exe SERVER-DOMAIN SERVER-PORT (/L [LOOP-COUNT] | MESSAGE)
+*/
+
+#include "C:\Factory\SubTools\HTT\libs\Client\CRPC_Aes2.h"
 #include "C:\Factory\DevTools\libs\RandData.h"
 
 static autoBlock_t *RawKey;
@@ -6,7 +10,7 @@ static int SilentMode;
 
 static int Perform(int sock, uint prm)
 {
-	SockStream_t *ss = ClientBegin(sock, "EchoTest_Aes"); // ★開始
+	SockStream_t *ss = ClientBegin(sock, "EchoTest_Aes2"); // ★開始
 	char *message = (char *)prm;
 	autoBlock_t gab;
 	autoBlock_t *recvData;
@@ -16,15 +20,11 @@ static int Perform(int sock, uint prm)
 
 	if(!SilentMode) cout("message: %s\n", message);
 
-	ClientCRPC_Begin(ss); // ★暗号通信の開始
-
 	recvData = ClientCRPC(ss, gndBlockLineVar(message, gab), RawKey); // ★暗号通信
-
-	ClientCRPC_End(); // ★暗号通信の終了
 
 	recvMessage = unbindBlock2Line(recvData);
 	if(!SilentMode) cout("recvMessage: %s\n", recvMessage);
-	exMessage = xcout("You send [%s]", message);
+	exMessage = xcout("You sent [%s]", message);
 	if(!SilentMode) cout("exMessage: %s\n", exMessage);
 
 	retval = !strcmp(recvMessage, exMessage); // ? 想定した応答メッセージと一致する。
@@ -43,7 +43,11 @@ int main(int argc, char **argv)
 
 	// init
 	{
-		RawKey = makeBlockHexLine("6d636a95a420a7780639a2a1d13eacb4"); // .\\Server.c と合わせること。
+		RawKey = makeBlockHexLine(
+			"aca545f2e563d2d8aca14f994845cc6052c8ec8c577873badd9399e1f01bf366"
+			"9d3743295d85dc92650356ffab2822f350c1e608aef336ae29613feae25ccb0b"
+			);
+			// .\\Server.c と合わせること。
 	}
 
 	serverHost = nextArg();

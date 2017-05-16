@@ -71,7 +71,7 @@ static int GetNictTime(void) // ret: ? ê¨å˜
 
 	return ret;
 }
-int main(int argc, char **argv)
+static void Main2(void)
 {
 	int viewOnly = 0;
 	int dayChangeEvasion = 1;
@@ -135,4 +135,9 @@ readArgs:
 		SlewApplyTimeData(NictTime);
 		LOGPOS();
 	}
+}
+int main(int argc, char **argv)
+{
+	Main2();
+	termination(0);
 }
