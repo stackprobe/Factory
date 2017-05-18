@@ -19,7 +19,23 @@ static void WrUI64Flush(FILE *fp)
 {
 	uint size = (uint)WrPos - (uint)WrBuff;
 
-	errorCase(fwrite(WrBuff, 1, size, fp) != size); // ? 失敗
+	if(fwrite(WrBuff, 1, size, fp) != size) // ? 失敗
+	{
+		// NTFS圧縮ファイルに書き込んでるストリームが47～49GBくらいになるとエラー。NTFS圧縮ファイルの制限っぽい。
+		// その場合の LastError は 0x299
+
+		// 圧縮ファイルは、非圧縮データを書き込んでからバックグラウンドで圧縮するらしい。
+		// いくつかのクラスタを纏めて圧縮するといくつかのクラスタが空く代わりに断片化する。
+		// 圧縮ファイルの場合、ありえん速さで断片が増えていく。断片の数の上限に達してエラーになる。らしい。
+
+		// このへん、https://en.wikipedia.org/wiki/NTFS#File_compression
+
+		if(GetLastError() == 0x299)
+		{
+			error_m("ファイル出力に失敗しました。システムエラーコードは 665 (0x299) です。今回のエラーに関係あるか分かりませんが、NTFS圧縮ファイルは 50GB ～ 60GB (環境によってはそれ以下のサイズ) を超えた辺りで出力に失敗するようです。その場合は「出力ファイル分割」をお試し下さい。");
+		}
+		error();
+	}
 	WrPos = WrBuff;
 }
 static void WrUI64(FILE *fp, uint64 value)
@@ -87,13 +103,14 @@ static int IsShortRange(uint64 minval, uint64 maxval)
 	cout("IsShortRange_ret: %d\n", ret);
 	return ret;
 }
-static void PrimeRange(uint64 minval, uint64 maxval, char *outFile, char *cancelEvName, char *reportEvName, char *reportMtxName, char *reportFile)
+static void PrimeRange(uint64 minval, uint64 maxval, char *outFile, char *cancelEvName, char *reportEvName, char *reportMtxName, char *reportFile, int divMode)
 {
 	FILE *fp = fileOpen(outFile, "wb");
 	uint cancelEv = eventOpen(cancelEvName);
 	uint reportEv = eventOpen(reportEvName);
 	uint reportMtx = mutexOpen(reportMtxName);
 	uint64 value;
+	int divrenflg = 0;
 
 //	errorCase(setvbuf(fp, NULL, _IOFBF, 64 * 1024 * 1024)); // ? 失敗 // old
 
@@ -133,6 +150,31 @@ static void PrimeRange(uint64 minval, uint64 maxval, char *outFile, char *cancel
 				mutexRelease(reportMtx);
 
 				eventSet(reportEv);
+
+				if(divMode)
+				{
+					sint64 size = _ftelli64(fp);
+
+					errorCase(size < 0I64);
+
+					if(2000000000 < size) // ? 2 GB <
+					{
+						WrUI64Flush(fp);
+						fileClose(fp);
+
+						if(!divrenflg)
+						{
+							outFile = strx(outFile); // g
+							outFile = toCreatableTildaPath(outFile, IMAX);
+
+							divrenflg = 1;
+						}
+						else
+							outFile = toCreatablePath(outFile, IMAX);
+
+						fp = fileOpen(outFile, "wb");
+					}
+				}
 			}
 			if(IsPrime_R(value))
 //				errorCase(fprintf(fp, "%I64u\n", value) < 0); // 遅い！
@@ -408,7 +450,8 @@ static void Main2(void)
 			DUMMY_UUID "_1",
 			DUMMY_UUID "_2",
 			DUMMY_UUID "_3",
-			makeTempFile("tmp")
+			makeTempFile("tmp"),
+			0
 			);
 		return;
 	}
@@ -421,6 +464,7 @@ static void Main2(void)
 		char *reportEvName;
 		char *reportMtxName;
 		char *reportFile;
+		int divMode = argIs("/D");
 
 		minval = toValue64(nextArg());
 		maxval = toValue64(nextArg());
@@ -430,7 +474,7 @@ static void Main2(void)
 		reportMtxName = nextArg();
 		reportFile = nextArg();
 
-		PrimeRange(minval, maxval, outFile, cancelEvName, reportEvName, reportMtxName, reportFile);
+		PrimeRange(minval, maxval, outFile, cancelEvName, reportEvName, reportMtxName, reportFile, divMode);
 		return;
 	}
 	if(argIs("/C"))
