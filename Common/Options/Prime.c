@@ -69,6 +69,8 @@ static void SavePBits(void)
 	autoBlock_t gab;
 
 	writeBinary(GetDatFile(), gndBlockVar(PBits, PBIT_LEN * sizeof(uint), gab));
+
+//	coExecute_x(xcout("ATTRIB.EXE +S +H \"%s\"", GetDatFile()));
 }
 static int LoadPBits(void)
 {
