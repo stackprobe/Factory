@@ -1,3 +1,17 @@
+/*
+	Date2Day.exe 年
+
+	Date2Day.exe 年 月
+
+	Date2Day.exe 年 月 日
+
+	Date2Day.exe 年 月 日 日数
+
+		日数は sint64
+
+	Date2Day.exe 年a 月a 日a 年b 月b 日b
+*/
+
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Date2Day.h"
 
