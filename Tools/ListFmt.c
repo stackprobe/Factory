@@ -1,10 +1,15 @@
 /*
-	ListFmt.exe [(/F 入力ファイル | /LSS | /C 初期値 最大値 増分 Z-PAD)]... [/X] [/-] フォーマット...
+	ListFmt.exe [(/F 入力ファイル | /LSS | /C 初期値 最大値 増分 Z-PAD)]... [/-M] [/X] [/-] フォーマット...
 
 		初期値   ... 0 ～ IMAX
 		最大値   ... 初期値 ～ IMAX
 		増分     ... 1 ～ IMAX
 		Z-PAD    ... 0 ～ IMAX
+
+	- - -
+	例:
+
+	ListFmt.exe /C 1 999 1 3 /F ListFmt.c /-M "$DListFmt.c$D の $1 行目: $2"
 */
 
 #include "C:\Factory\Common\all.h"
@@ -16,6 +21,7 @@
 
 static autoList_t *ListFiles;
 static autoList_t *WorkFiles;
+static int MinLCMode;
 static int XMode;
 static char *Format;
 
@@ -70,11 +76,22 @@ static void ListFmt_0(void)
 	autoList_t *list;
 	uint list_index;
 	uint index;
-	uint maxCount = 0;
+	uint maxCount;
 
-	foreach(Lists, list, list_index)
-		m_maxim(maxCount, getCount(list));
+	if(MinLCMode)
+	{
+		maxCount = UINTMAX;
 
+		foreach(Lists, list, list_index)
+			m_minim(maxCount, getCount(list));
+	}
+	else
+	{
+		maxCount = 0;
+
+		foreach(Lists, list, list_index)
+			m_maxim(maxCount, getCount(list));
+	}
 	for(index = 0; index < maxCount; index++)
 	{
 		foreach(Lists, list, list_index)
@@ -190,6 +207,11 @@ readArgs:
 			addElement(WorkFiles, (uint)file);
 		}
 
+		goto readArgs;
+	}
+	if(argIs("/-M"))
+	{
+		MinLCMode = 1;
 		goto readArgs;
 	}
 	if(argIs("/X"))

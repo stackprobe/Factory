@@ -1,5 +1,10 @@
 /*
 	seq.exe [/C WIDTH START-VAL COUNT STEP-VAL | /P PLAIN-PTN | PLAIN-PTN]...
+
+	- - -
+	ó·:
+
+	seq.exe "Ç±ÇÃçsÇÕ " /C 1 1 100 1 " çsñ⁄Ç≈Ç∑ÅB"
 */
 
 #include "C:\Factory\Common\all.h"
