@@ -4,7 +4,7 @@
 
 #include "C:\Factory\Common\all.h"
 
-static char *DLDir = "C:\\pub\\_hidden\\release\\Kit";
+static char *DLDir = "C:\\BlueFish\\BlueFish\\HTT\\stackprobe\\home\\_kit";
 static char *DestDir = "C:\\app\\Kit";
 
 static autoList_t *AppNames;
