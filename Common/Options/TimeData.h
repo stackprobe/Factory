@@ -23,13 +23,13 @@ uint64 TimeData2TSec(TimeData_t td);
 TimeData_t Stamp2TimeData(uint64 stamp);
 uint64 TimeData2Stamp(TimeData_t td);
 
-uint64 Epoch2TSec(uint64 t);
-uint64 TSec2Epoch(uint64 tSec);
+uint64 Epoch2TSec(time_t t);
+time_t TSec2Epoch(uint64 tSec);
 
 TimeData_t GetNowTimeData(void);
 uint64 GetNowTSec(void);
 uint64 GetNowStamp(void);
-uint64 GetNowEpoch(void);
+time_t GetNowEpoch(void);
 
 TimeData_t ResStamp2TimeData(uint64 prmStamp);
 TimeData_t Res2TimeData(char *prm);

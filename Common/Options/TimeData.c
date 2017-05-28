@@ -8,7 +8,7 @@
 
 #include "TimeData.h"
 
-#define EPOCH_ZERO_TSEC 62135596800ui64
+#define EPOCH_ZERO_TSEC 62135596800i64
 
 TimeData_t GetTimeData(uint y, uint m, uint d, uint h, uint i, uint s)
 {
@@ -93,11 +93,11 @@ uint64 TimeData2Stamp(TimeData_t td)
 	return stamp;
 }
 
-uint64 Epoch2TSec(uint64 t)
+uint64 Epoch2TSec(time_t t)
 {
 	return (uint64)t + EPOCH_ZERO_TSEC;
 }
-uint64 TSec2Epoch(uint64 tSec)
+time_t TSec2Epoch(uint64 tSec)
 {
 	return (time_t)(tSec - EPOCH_ZERO_TSEC);
 }
@@ -125,7 +125,7 @@ uint64 GetNowStamp(void)
 {
 	return TimeData2Stamp(GetNowTimeData());
 }
-uint64 GetNowEpoch(void) // == time(NULL) + ローカル時間
+time_t GetNowEpoch(void) // == time(NULL) + ローカル時間
 {
 	return TSec2Epoch(GetNowTSec());
 }

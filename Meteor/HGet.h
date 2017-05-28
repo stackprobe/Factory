@@ -6,7 +6,9 @@
 void HGet_Reset(void);
 void HGet_SetProxy_IE(void);
 void HGet_SetProxy(char *host, uint portNo);
+void HGet_SetConnectionTimeoutMillis(uint millis);
 void HGet_SetTimeoutMillis(uint millis);
+void HGet_SetNoTrafficTimeoutMillis(uint millis);
 void HGet_SetUrl(char *url);
 void HGet_SetHTTPVersion_10(void);
 void HGet_AddHeaderField(char *name, char *value);

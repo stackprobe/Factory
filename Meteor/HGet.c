@@ -13,7 +13,9 @@ static char *GetHGetFile(void)
 static int ProxyMode; // "DIS"
 static char *ProxyHost;
 static uint ProxyPortNo;
-static uint TimeoutMillis;
+static uint ConnectionTimeoutMillis; // 接続開始から、応答ヘッダを受信し終えるまでのタイムアウト
+static uint TimeoutMillis;           // 接続開始から、全て通信し終えるまでのタイムアウト
+static uint NoTrafficTimeoutMillis;  // 応答ボディ受信中の無通信タイムアウト
 static char *Url;
 static uint HTTPVersion; // 10 or 11
 static autoList_t *Header;    // { char *name, char *value } ...
@@ -39,7 +41,9 @@ void HGet_Reset(void)
 	ProxyMode = 'D';
 	strzp(&ProxyHost, "localhost");
 	ProxyPortNo = 8080;
-	TimeoutMillis = 30000;
+	ConnectionTimeoutMillis = 20000;
+	TimeoutMillis           = 30000;
+	NoTrafficTimeoutMillis  = 15000;
 	strzp(&Url, "http://localhost/");
 	HTTPVersion = 11;
 	if(Header)    releaseDim(Header, 2);
@@ -88,11 +92,23 @@ void HGet_SetProxy(char *host, uint portNo)
 	strzp(&ProxyHost, host);
 	ProxyPortNo = portNo;
 }
+void HGet_SetConnectionTimeoutMillis(uint millis)
+{
+	errorCase(!Resetted);
+
+	ConnectionTimeoutMillis = millis;
+}
 void HGet_SetTimeoutMillis(uint millis)
 {
 	errorCase(!Resetted);
 
 	TimeoutMillis = millis;
+}
+void HGet_SetNoTrafficTimeoutMillis(uint millis)
+{
+	errorCase(!Resetted);
+
+	NoTrafficTimeoutMillis = millis;
 }
 void HGet_SetUrl(char *url)
 {
@@ -217,8 +233,12 @@ static int Perform(int method) // method: "HGP"
 	default:
 		error();
 	}
-	writeLine(fp, "/T");
+	writeLine(fp, "/CT");
+	writeLine_x(fp, xcout("%u", ConnectionTimeoutMillis));
+	writeLine(fp, "/To");
 	writeLine_x(fp, xcout("%u", TimeoutMillis));
+	writeLine(fp, "/NTT");
+	writeLine_x(fp, xcout("%u", NoTrafficTimeoutMillis));
 	writeLine(fp, "/M");
 
 	switch(method)
