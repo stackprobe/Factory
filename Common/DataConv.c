@@ -936,6 +936,10 @@ int isLine(char *line)
 {
 	return line && isJLine(line, 1, 0, 1, 1);
 }
+/*
+	単一行だろうけど、絶対に単一行でないと困る文字列用フィルタ
+	改行区切りの引数ファイルの行データ専用？
+*/
 char *asLine(char *line)
 {
 	errorCase(!isLine(line));
