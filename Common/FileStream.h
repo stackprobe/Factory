@@ -83,6 +83,7 @@ void buffUnreadBuffer(BUFF *bp);
 FILE *fileOpen_cx(char *file, char *mode);
 FILE *fileOpen_xc(char *file, char *mode);
 FILE *fileOpen_xx(char *file, char *mode);
+autoList_t *readLines_x(char *file);
 char *readText_x(char *file);
 void writeToken_x(FILE *fp, char *line);
 void writeLine_x(FILE *fp, char *line);

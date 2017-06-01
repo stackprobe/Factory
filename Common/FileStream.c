@@ -677,6 +677,12 @@ FILE *fileOpen_xx(char *file, char *mode)
 	memFree(mode);
 	return out;
 }
+autoList_t *readLines_x(char *file)
+{
+	autoList_t *out = readLines(file);
+	memFree(file);
+	return out;
+}
 char *readText_x(char *file)
 {
 	char *out = readText(file);
