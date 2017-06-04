@@ -8,7 +8,7 @@ static FILE *FilesExtraFp;
 void (*lsDirAction)(char *dir); // extra-prm
 void (*lsFileAction)(char *file); // extra-prm
 
-autoList_t *lsInfos; // extra-prm
+autoList_t *lsInfos; // extra-prm -- ls êÍópÇ∆Ç∑ÇÈÅB
 
 static void AddPath(autoList_t *paths, char *path, FILE *extra_fp, void (*lsAction)(char *), autoList_t *infos)
 {

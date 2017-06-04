@@ -197,6 +197,33 @@ static void STD_ReadStream(uchar *block, uint size)
 	}
 	memset(block, 0x00, size);
 }
+static time_t AdjustCAWTime(time_t t)
+{
+	uint mil = (uint)(t % 1000);
+	char *wkst;
+
+	t /= 1000;
+	m_range(t, 19700102000000i64, 30000101000000i64); // 1970/1/2 ～ 3000/1/1
+	t = compactStampToTime(wkst = xcout("%I64d", t)); memFree(wkst);
+	t = toValue64_x(makeCompactStamp(getStampDataTime(t))) * 1000 + mil;
+	return t;
+}
+static time_t CheckAndAdjustCAWTime(time_t t)
+{
+	time_t ta = AdjustCAWTime(t);
+
+	if(t != ta)
+	{
+		cout("##################################\n");
+		cout("## タイムスタンプを矯正しました ##\n");
+		cout("##################################\n");
+		cout("< %I64u\n", t);
+		cout("> %I64u\n", ta);
+
+		t = ta;
+	}
+	return t;
+}
 
 /*
 	dir - 出力先、存在する空のディレクトリであること。
@@ -299,6 +326,12 @@ void StreamToDir(char *dir, void (*streamReader)(uchar *, uint))
 				STD_ReadStream(buffer, 8);
 				info.writeTime = blockToValue64(buffer);
 
+				if(!STD_TrustMode)
+				{
+					info.createTime = CheckAndAdjustCAWTime(info.createTime);
+					info.accessTime = CheckAndAdjustCAWTime(info.accessTime);
+					info.writeTime  = CheckAndAdjustCAWTime(info.writeTime);
+				}
 				infoRdy = 1;
 				STD_ReadStream(buffer, 1); // 再読込
 			}
