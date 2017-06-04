@@ -5,8 +5,7 @@ int main(int argc, char **argv)
 	uint h;
 	uint ret = 0;
 
-	updateStampData(makeStamp(0));
-	h = lastStampData.hour;
+	h = getStampData(makeStamp(0))->hour;
 	cout("h: %u\n", h);
 
 	if(h == 5)

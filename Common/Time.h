@@ -16,10 +16,6 @@ char *getJWeekDay(uint weekday);
 
 char *makeStamp(time_t t);
 
-extern stampData_t lastStampData;
-
-void updateStampData(char *stamp);
-void updateStampDataTime(time_t t);
 stampData_t *getStampData(char *stamp);
 stampData_t *getStampDataTime(time_t t);
 

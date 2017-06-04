@@ -1,6 +1,6 @@
 /*
 	time_t をセットするときは、ApplyStampData(getStampDataTime(t)); とする。
-	lastStampData が更新されることに注意せよ。
+	LastStampData が更新されることに注意せよ。
 */
 #include "ApplyStampData.h"
 

@@ -50,11 +50,11 @@ char *makeStamp(time_t t) // t == 0: åªéûçè
 	return stamp; // "Wed Jan 02 02:03:55 1980"
 }
 
-stampData_t lastStampData;
+static stampData_t LastStampData;
 
-void updateStampData(char *stamp)
+static void UpdateStampData(char *stamp)
 {
-	stampData_t *i = &lastStampData;
+	stampData_t *i = &LastStampData;
 	autoList_t tmplist;
 
 	errorCase(!stamp);
@@ -79,22 +79,22 @@ void updateStampData(char *stamp)
 
 	memFree(stamp);
 }
-void updateStampDataTime(time_t t)
+static void UpdateStampDataTime(time_t t)
 {
 	char *stamp = makeStamp(t);
 
-	updateStampData(stamp);
+	UpdateStampData(stamp);
 	memFree(stamp);
 }
 stampData_t *getStampData(char *stamp)
 {
-	updateStampData(stamp);
-	return &lastStampData;
+	UpdateStampData(stamp);
+	return &LastStampData;
 }
 stampData_t *getStampDataTime(time_t t)
 {
-	updateStampDataTime(t);
-	return &lastStampData;
+	UpdateStampDataTime(t);
+	return &LastStampData;
 }
 
 int isAllowStampData(stampData_t *i)

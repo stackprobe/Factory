@@ -85,10 +85,7 @@ static char *MakeSubjectFrom(char *groupName, char *mailFrom, uint counter)
 }
 static char *MakeDateField(void)
 {
-	stampData_t tmpsd;
-
-	updateStampDataTime(0L);
-	tmpsd = lastStampData;
+	stampData_t tmpsd = *getStampDataTime(0L);
 
 	return xcout(
 		"%s, %u %s %04u %02u:%02u:%02u +0900"
