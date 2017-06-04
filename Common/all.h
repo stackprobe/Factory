@@ -13,6 +13,7 @@
 #include "DataConv.h"
 #include "EmbedConfig.h"
 #include "File.h"
+#include "FileAttr.h"
 #include "FileFind.h"
 #include "FileStream.h"
 #include "FileTime.h"

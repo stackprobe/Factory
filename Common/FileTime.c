@@ -36,6 +36,10 @@ static void StampToFileTime(uint64 stamp, FILETIME *out_ft)
 	errorCase(!SystemTimeToFileTime(&st, &lft)); // ? Ž¸”s
 	errorCase(!LocalFileTimeToFileTime(&lft, out_ft)); // ? Ž¸”s
 }
+uint64 getFileStampByTime(time_t t)
+{
+	return toValue64_x(makeCompactStamp(getStampDataTime(t))) * 1000;
+}
 void getFileStamp(char *file, uint64 *createTime, uint64 *accessTime, uint64 *updateTime)
 {
 	FILE *fp = fileOpen(file, "rb");

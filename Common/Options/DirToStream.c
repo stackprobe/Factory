@@ -5,6 +5,7 @@
 
 #define SIGN_DIR 'D'
 #define SIGN_FILE 'F'
+#define SIGN_INFO 'I'
 #define SIGN_ENDDIR 0x00
 
 void VTreeToStream(VTree_t *vt, void (*streamWriter)(uchar *, uint))
@@ -52,20 +53,57 @@ void VTreeToStream(VTree_t *vt, void (*streamWriter)(uchar *, uint))
 	buffer[0] = SIGN_ENDDIR;
 	streamWriter(buffer, 1);
 }
+
+int DTS_WithInfo;
+
 void DirToStream(char *dir, void (*streamWriter)(uchar *, uint))
 {
 	autoList_t *pathsStack = newList();
+	autoList_t *infosStack = newList(); // !withInfo のときは使わない。
 	autoList_t *paths;
+	autoList_t *infos = NULL;
+	int withInfo = DTS_WithInfo;
 
 enterDir:
 	addCwd(dir);
-	paths = ls(".");
+
+	if(withInfo)
+	{
+		lsInfos = newList();
+		paths = ls(".");
+		infos = lsInfos;
+		lsInfos = NULL;
+	}
+	else
+		paths = ls(".");
+
 	eraseParents(paths);
-	rapidSortLines(paths);
+
+	if(withInfo)
+	{
+		char *path;
+		uint index;
+
+		foreach(paths, path, index)
+		{
+			path = strrm(path, 4);
+			setElement(paths, index, (uint)path);
+			valueToBlock(strchr(path, '\0') + 1, getElement(infos, index));
+		}
+		rapidSortLines(paths);
+
+		foreach(paths, path, index)
+		{
+			setElement(infos, index, blockToValue(strchr(path, '\0') + 1));
+		}
+	}
+	else
+		rapidSortLines(paths);
 
 	for(; ; )
 	{
-		uchar buffer[9];
+		uchar buffer[26];
+//		uchar buffer[9]; // old
 
 		while(getCount(paths))
 		{
@@ -75,6 +113,23 @@ enterDir:
 
 			streamWriter(path, strlen(path) + 1);
 
+			if(withInfo)
+			{
+				lsInfo_t *info = (lsInfo_t *)unaddElement(infos);
+
+				buffer[0] = SIGN_INFO;
+				buffer[1] =
+					info->attrArch     << 3 |
+					info->attrHidden   << 2 |
+					info->attrReadOnly << 1 |
+					info->attrSystem;
+				value64ToBlock(buffer +  2, getFileStampByTime(info->createTime));
+				value64ToBlock(buffer + 10, getFileStampByTime(info->accessTime));
+				value64ToBlock(buffer + 18, getFileStampByTime(info->writeTime));
+
+				memFree(info);
+				streamWriter(buffer, 26);
+			}
 			if(existDir(path))
 			{
 				buffer[0] = SIGN_DIR;
@@ -82,6 +137,10 @@ enterDir:
 
 				dir = path;
 				addElement(pathsStack, (uint)paths);
+
+				if(withInfo)
+					addElement(infosStack, (uint)infos);
+
 				goto enterDir;
 			}
 			buffer[0] = SIGN_FILE;
@@ -109,9 +168,14 @@ enterDir:
 			break;
 		}
 		paths = (autoList_t *)unaddElement(pathsStack);
+
+		if(withInfo)
+			infos = (autoList_t *)unaddElement(infosStack);
+
 		unaddCwd();
 	}
 	releaseAutoList(pathsStack);
+	releaseAutoList(infosStack);
 	unaddCwd();
 }
 
@@ -145,6 +209,8 @@ static void STD_ReadStream(uchar *block, uint size)
 void StreamToDir(char *dir, void (*streamReader)(uchar *, uint))
 {
 	uint dirDepth = 0;
+	lsInfo_t info;
+	int infoRdy = 0;
 
 	STD_ReadStop = 0;
 	STD_StreamReader = streamReader;
@@ -212,9 +278,48 @@ void StreamToDir(char *dir, void (*streamReader)(uchar *, uint))
 			}
 			STD_ReadStream(buffer, 1);
 
+			if(buffer[0] == SIGN_INFO)
+			{
+				int af;
+
+				STD_ReadStream(buffer, 1);
+				af = buffer[0];
+
+				info.attrArch     = m_01(af & 8);
+				info.attrHidden   = m_01(af & 4);
+				info.attrReadOnly = m_01(af & 2);
+				info.attrSystem   = m_01(af & 1);
+
+				STD_ReadStream(buffer, 8);
+				info.createTime = blockToValue64(buffer);
+
+				STD_ReadStream(buffer, 8);
+				info.accessTime = blockToValue64(buffer);
+
+				STD_ReadStream(buffer, 8);
+				info.writeTime = blockToValue64(buffer);
+
+				infoRdy = 1;
+				STD_ReadStream(buffer, 1); // 再読込
+			}
 			if(buffer[0] == SIGN_DIR)
 			{
 				createDir(path);
+
+				if(infoRdy)
+				{
+					setFileAttr(
+						path,
+						info.attrArch,
+						info.attrHidden,
+						info.attrReadOnly,
+						info.attrSystem
+						);
+
+					// 日時はセットしない。
+
+					infoRdy = 0;
+				}
 				addCwd(path);
 				dirDepth++;
 			}
@@ -239,6 +344,26 @@ void StreamToDir(char *dir, void (*streamReader)(uchar *, uint))
 					releaseAutoBlock(block);
 				}
 				fileClose(fp);
+
+				if(infoRdy)
+				{
+					setFileAttr(
+						path,
+						info.attrArch,
+						info.attrHidden,
+						info.attrReadOnly,
+						info.attrSystem
+						);
+
+					setFileStamp(
+						path,
+						info.createTime,
+						info.accessTime,
+						info.writeTime
+						);
+
+					infoRdy = 0;
+				}
 			}
 			else
 				error();

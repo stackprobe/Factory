@@ -1,5 +1,19 @@
+typedef struct lsInfo_st
+{
+	uint attrArch : 1;
+	uint attrHidden : 1;
+	uint attrReadOnly : 1;
+	uint attrSystem : 1;
+	time_t createTime;
+	time_t accessTime;
+	time_t writeTime;
+	// size ‚Í _fsize_t ‚ª 32 bit ‚È‚Ì‚Å–³‹‚·‚éB
+}
+lsInfo_t;
+
 extern void (*lsDirAction)(char *dir);
 extern void (*lsFileAction)(char *file);
+extern autoList_t *lsInfos;
 extern int antiSubversion;
 extern int ignoreUtfPath;
 extern uint findLimiter;

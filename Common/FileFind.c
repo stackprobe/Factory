@@ -8,7 +8,9 @@ static FILE *FilesExtraFp;
 void (*lsDirAction)(char *dir); // extra-prm
 void (*lsFileAction)(char *file); // extra-prm
 
-static void AddPath(autoList_t *paths, char *path, FILE *extra_fp, void (*lsAction)(char *))
+autoList_t *lsInfos; // extra-prm
+
+static void AddPath(autoList_t *paths, char *path, FILE *extra_fp, void (*lsAction)(char *), autoList_t *infos)
 {
 	if(lsAction)
 		lsAction(path);
@@ -20,6 +22,21 @@ static void AddPath(autoList_t *paths, char *path, FILE *extra_fp, void (*lsActi
 	}
 	else
 		addElement(paths, (uint)path);
+
+	if(infos)
+	{
+		lsInfo_t *i = (lsInfo_t *)memAlloc(sizeof(lsInfo_t));
+
+		i->attrArch     = m_01(lastFindData.attrib & _A_ARCH);
+		i->attrHidden   = m_01(lastFindData.attrib & _A_HIDDEN);
+		i->attrReadOnly = m_01(lastFindData.attrib & _A_RDONLY);
+		i->attrSystem   = m_01(lastFindData.attrib & _A_SYSTEM);
+		i->createTime   = lastFindData.time_create;
+		i->accessTime   = lastFindData.time_access;
+		i->writeTime    = lastFindData.time_write;
+
+		addElement(infos, (uint)i);
+	}
 }
 
 int antiSubversion; // extra-prm
@@ -49,6 +66,7 @@ autoList_t *ls(char *dir)
 {
 	autoList_t *paths = createAutoList(128);
 	autoList_t *files = createAutoList(128);
+	autoList_t *fileInfos = lsInfos ? createAutoList(128) : NULL;
 	intptr_t h;
 	char *absDir = makeFullPath(dir);
 	char *wCard;
@@ -105,11 +123,11 @@ autoList_t *ls(char *dir)
 
 			if(lastFindData.attrib & _A_SUBDIR) // ? dir
 			{
-				AddPath(paths, path, DirsExtraFp, lsDirAction);
+				AddPath(paths, path, DirsExtraFp, lsDirAction, lsInfos);
 			}
 			else // ? file
 			{
-				AddPath(files, path, FilesExtraFp, lsFileAction);
+				AddPath(files, path, FilesExtraFp, lsFileAction, fileInfos);
 			}
 		}
 		while(_findnext(h, &lastFindData) == 0);
@@ -121,6 +139,13 @@ autoList_t *ls(char *dir)
 	addElements(paths, files);
 	fixElements(paths);
 
+	if(lsInfos)
+	{
+		addElements(lsInfos, fileInfos);
+		fixElements(lsInfos);
+
+		releaseAutoList(fileInfos);
+	}
 	releaseAutoList(files);
 	memFree(absDir);
 	return paths;
