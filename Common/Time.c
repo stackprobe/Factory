@@ -1,3 +1,19 @@
+/*
+	getStampData
+	getStampDataTime
+
+		getStampData, getStampDataTime は LastStampData へのポインタを返す。
+
+		複数箇所で同じもの(LastStampData)を読み書きして酷い目にあわない為に、
+		stampData_t *i = getStampData(NULL);
+		ではなく
+		stampData_t i = *getStampData(NULL);
+		で受け取るようにすること。極力。
+
+		このファイル内の関数の引数に渡す時は直でokとする。
+		makeCompactStamp(getStampData(NULL));
+*/
+
 #include "all.h"
 
 static char *MonthList[] = {
