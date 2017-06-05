@@ -26,6 +26,10 @@ char *makeCompactStamp(stampData_t *i);
 time_t stampDataToTime(stampData_t *i);
 time_t compactStampToTime(char *stamp);
 
+// _x
+time_t compactStampToTime_x(char *stamp);
+
+// c_
 char *c_makeStamp(time_t t);
 char *c_makeJStamp(stampData_t *i, int nonWeekDay);
 char *c_makeCompactStamp(stampData_t *i);

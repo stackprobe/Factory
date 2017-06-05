@@ -201,6 +201,74 @@ void rapidSortJLinesICase(autoList_t *lines)
 	rapidSort(lines, (sint (*)(uint, uint))strcmp3);
 }
 
+static sint (*RSWSC_FuncComp)(uint, uint);
+
+static sint RSWSC_Comp(uint a, uint b)
+{
+	return RSWSC_FuncComp(*(uint *)a, *(uint *)b);
+}
+
+/*
+	subColumn:  null ok, lines と同じ長さのリストであること。
+	subColumns: null ok, 各要素は lines と同じ長さのリストであること。各要素は null 不可
+*/
+void rapidSortSubColumns(autoList_t *list, sint (*funcComp)(uint, uint), autoList_t *subColumn, autoList_t *subColumns)
+{
+	autoList_t *wList = newList();
+	uint element;
+	uint index;
+	uint *we;
+	uint wei;
+	uint weCount = 1 + (subColumn ? 1 : 0) + (subColumns ? getCount(subColumns) : 0);
+	autoList_t *sc;
+	uint sc_index;
+
+	foreach(list, element, index)
+	{
+		we = (uint *)memAlloc(weCount * sizeof(uint));
+		wei = 0;
+
+		we[wei++] = element;
+
+		if(subColumn)
+			we[wei++] = getElement(subColumn, index);
+
+		if(subColumns)
+			foreach(subColumns, sc, sc_index)
+				we[wei++] = getElement(sc, index);
+
+		addElement(wList, (uint)we);
+	}
+	RSWSC_FuncComp = funcComp;
+	rapidSort(wList, RSWSC_Comp);
+	RSWSC_FuncComp = NULL;
+
+	foreach(wList, we, index)
+	{
+		wei = 0;
+
+		setElement(list, index, we[wei++]);
+
+		if(subColumn)
+			setElement(subColumn, index, we[wei++]);
+
+		if(subColumns)
+			foreach(subColumns, sc, sc_index)
+				setElement(sc, index, we[wei++]);
+
+		memFree(we);
+	}
+	releaseAutoList(wList);
+}
+void rapidSortLinesSubColumns(autoList_t *lines, autoList_t *subColumn, autoList_t *subColumns)
+{
+	rapidSortSubColumns(lines, (sint (*)(uint, uint))strcmp2, subColumn, subColumns);
+}
+void rapidSortLinesICaseSubColumns(autoList_t *lines, autoList_t *subColumn, autoList_t *subColumns)
+{
+	rapidSortSubColumns(lines, (sint (*)(uint, uint))strcmp3, subColumn, subColumns);
+}
+
 sint strcmp3(char *line1, char *line2) // mbs_
 {
 	sint retval = mbs_stricmp(line1, line2);

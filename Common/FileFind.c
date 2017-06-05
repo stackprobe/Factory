@@ -8,7 +8,18 @@ static FILE *FilesExtraFp;
 void (*lsDirAction)(char *dir); // extra-prm
 void (*lsFileAction)(char *file); // extra-prm
 
-autoList_t *lsInfos; // extra-prm -- ls 専用とする。
+/*
+	例:
+		lsInfos = newList();
+		paths = ls(DIR);
+		infos = lsInfos;
+		lsInfos = NULL;
+
+		rapidSortLinesSubColumns(paths, infos, NULL);
+
+	ls のみ併用可能。lss と使うと、順序がぶっ壊れる。
+*/
+autoList_t *lsInfos; // extra-prm
 
 static void AddPath(autoList_t *paths, char *path, FILE *extra_fp, void (*lsAction)(char *), autoList_t *infos)
 {
@@ -30,6 +41,7 @@ static void AddPath(autoList_t *paths, char *path, FILE *extra_fp, void (*lsActi
 		i->attrArch     = m_01(lastFindData.attrib & _A_ARCH);
 		i->attrHidden   = m_01(lastFindData.attrib & _A_HIDDEN);
 		i->attrReadOnly = m_01(lastFindData.attrib & _A_RDONLY);
+		i->attrSubDir   = m_01(lastFindData.attrib & _A_SUBDIR);
 		i->attrSystem   = m_01(lastFindData.attrib & _A_SYSTEM);
 		i->createTime   = lastFindData.time_create;
 		i->accessTime   = lastFindData.time_access;

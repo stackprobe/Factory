@@ -5,6 +5,10 @@ void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint));
 void rapidSortLines(autoList_t *lines);
 void rapidSortJLinesICase(autoList_t *lines);
 
+void rapidSortSubColumns(autoList_t *list, sint (*funcComp)(uint, uint), autoList_t *subColumn, autoList_t *subColumns);
+void rapidSortLinesSubColumns(autoList_t *lines, autoList_t *subColumn, autoList_t *subColumns);
+void rapidSortLinesICaseSubColumns(autoList_t *lines, autoList_t *subColumn, autoList_t *subColumns);
+
 sint strcmp3(char *line1, char *line2);
 sint strcmp2(char *line1, char *line2);
 sint simpleComp(uint v1, uint v2);

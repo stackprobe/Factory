@@ -199,16 +199,19 @@ static void STD_ReadStream(uchar *block, uint size)
 }
 static time_t AdjustCAWTime(time_t t)
 {
-	uint mil = (uint)(t % 1000);
-	char *wkst;
+	uint mil;
 
+	m_range(t, 19700102000000000i64, 30000101000000000i64); // 1970/1/2 ～ 3000/1/1
+
+	mil = t % 1000;
 	t /= 1000;
-	m_range(t, 19700102000000i64, 30000101000000i64); // 1970/1/2 ～ 3000/1/1
-	t = compactStampToTime(wkst = xcout("%I64d", t)); memFree(wkst);
-	t = toValue64_x(makeCompactStamp(getStampDataTime(t))) * 1000 + mil;
+	t = compactStampToTime_x(xcout("%I64d", t));
+	t = toValue64_x(makeCompactStamp(getStampDataTime(t))); // to fair YMDhms
+	t *= 1000;
+	t += mil;
 	return t;
 }
-static time_t CheckAndAdjustCAWTime(time_t t)
+static time_t CheckAndAdjustCAWTime(time_t t, char *uiKind)
 {
 	time_t ta = AdjustCAWTime(t);
 
@@ -217,6 +220,7 @@ static time_t CheckAndAdjustCAWTime(time_t t)
 		cout("##################################\n");
 		cout("## タイムスタンプを矯正しました ##\n");
 		cout("##################################\n");
+		cout("%s\n", uiKind);
 		cout("< %I64u\n", t);
 		cout("> %I64u\n", ta);
 
@@ -328,9 +332,9 @@ void StreamToDir(char *dir, void (*streamReader)(uchar *, uint))
 
 				if(!STD_TrustMode)
 				{
-					info.createTime = CheckAndAdjustCAWTime(info.createTime);
-					info.accessTime = CheckAndAdjustCAWTime(info.accessTime);
-					info.writeTime  = CheckAndAdjustCAWTime(info.writeTime);
+					info.createTime = CheckAndAdjustCAWTime(info.createTime, "Create");
+					info.accessTime = CheckAndAdjustCAWTime(info.accessTime, "Access");
+					info.writeTime  = CheckAndAdjustCAWTime(info.writeTime, "Write");
 				}
 				infoRdy = 1;
 				STD_ReadStream(buffer, 1); // 再読込

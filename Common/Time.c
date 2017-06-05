@@ -217,6 +217,14 @@ time_t compactStampToTime(char *stamp)
 	return nt + 1; // ft - 1
 }
 
+// _x
+time_t compactStampToTime_x(char *stamp)
+{
+	time_t out = compactStampToTime(stamp);
+	memFree(stamp);
+	return out;
+}
+
 // c_
 char *c_makeStamp(time_t t)
 {

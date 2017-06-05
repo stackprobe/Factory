@@ -3,6 +3,7 @@ typedef struct lsInfo_st
 	uint attrArch : 1;
 	uint attrHidden : 1;
 	uint attrReadOnly : 1;
+	uint attrSubDir : 1;
 	uint attrSystem : 1;
 	time_t createTime;
 	time_t accessTime;
