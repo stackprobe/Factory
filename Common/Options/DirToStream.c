@@ -384,19 +384,20 @@ void StreamToDir(char *dir, void (*streamReader)(uchar *, uint))
 
 				if(infoRdy)
 				{
+					// ‘‚«‚İ‹Ö~‚É‚·‚é‚Æ“ú‚ğİ’èo—ˆ‚È‚­‚È‚é‚Ì‚ÅAæ‚ÉI
+					setFileStamp(
+						path,
+						info.createTime,
+						info.accessTime,
+						info.writeTime
+						);
+
 					setFileAttr(
 						path,
 						info.attrArch,
 						info.attrHidden,
 						info.attrReadOnly,
 						info.attrSystem
-						);
-
-					setFileStamp(
-						path,
-						info.createTime,
-						info.accessTime,
-						info.writeTime
 						);
 
 					infoRdy = 0;
