@@ -40,6 +40,10 @@ uint64 getFileStampByTime(time_t t)
 {
 	return toValue64_x(makeCompactStamp(getStampDataTime(t))) * 1000;
 }
+time_t getTimeByFileStamp(uint64 stamp)
+{
+	return compactStampToTime_x(xcout("%I64u", stamp / 1000));
+}
 void getFileStamp(char *file, uint64 *createTime, uint64 *accessTime, uint64 *updateTime)
 {
 	FILE *fp = fileOpen(file, "rb");

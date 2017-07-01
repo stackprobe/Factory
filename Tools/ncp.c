@@ -3,17 +3,26 @@
 
 		SERVER-DOMAIN ... サーバードメイン、デフォルトは localhost
 		SERVER-PORT   ... サーバーポート番号、デフォルトは 60022
-		/F            ... (サーバー側の)強制上書きモード、/UP, /MV のとき作用する。
+		/F            ... /UP, /MV のとき、強制上書きモード
 
-	ncp.exe ... /UP LOCAL-PATH SERVER-PATH
+	ncp.exe ... /UP LOCAL-PATH [SERVER-PATH]
 
 		ファイル・ディレクトリのアップロード
+
+		LOCAL-PATH に * を指定すると D&D になる。
+		SERVER-PATH を省略すると LOCAL-PATH のローカル名を使用する。
+
+		LOCAL-PATH は存在するディレクトリ又はファイルであること。
 
 	ncp.exe ... /DL LOCAL-PATH SERVER-PATH
 
 		ファイル・ディレクトリのダウンロード
 
-	ncp.exe ... /SV SERVER-PATH
+		LOCAL-PATH に * を指定すると C:\1, C:\2, C:\3... に SERVER-PATH のローカル名を連結したものを使用する。
+
+		LOCAL-PATH は作成可能なパスであること。
+
+	ncp.exe ... /SZ SERVER-PATH
 
 		ファイル・ディレクトリのサイズを得る。
 
@@ -24,6 +33,14 @@
 	ncp.exe ... /RM SERVER-PATH
 
 		ファイル・ディレクトリを削除する。
+
+	ncp.exe ... /LS
+
+		ファイル・ディレクトリのリストを得る。
+
+	- - -
+
+	タイムスタンプ・属性はコピーしない。
 */
 
 #include "C:\Factory\Common\Options\SockClient.h"
@@ -135,9 +152,9 @@ static void CR_Fnlz(void)
 
 	if(RequestAborted)
 	{
-		cout("+---------------------------+\n");
-		cout("| エラーまたは中断しました。|\n");
-		cout("+---------------------------+\n");
+		cout("+-------------------------+\n");
+		cout("| 失敗または中断しました。|\n");
+		cout("+-------------------------+\n");
 	}
 }
 
@@ -189,7 +206,6 @@ static void ReadEndToStream(FILE *rfp, FILE *wfp)
 int main(int argc, char **argv)
 {
 	sockClientAnswerFileSizeMax = UINT64MAX;
-
 	md5_interrupt = MD5Interrupt;
 
 readArgs:
@@ -219,8 +235,22 @@ readArgs:
 		cout("UPLOAD\n");
 
 		localPath = nextArg();
-		serverPath = nextArg();
 
+		if(localPath[0] == '*')
+			localPath = dropPath(); // g
+
+		if(hasArgs(1))
+			serverPath = nextArg();
+		else
+			serverPath = getLocal(localPath);
+
+		cout("< %s\n", localPath);
+		cout("> %s\n", serverPath);
+
+		errorCase(!*localPath);
+		errorCase(!*serverPath);
+
+		// send commands
 		writeLine(PrmFp, serverPath);
 		writeLine(PrmFp, "Dummy");
 		writeChar(PrmFp, 'U');
@@ -257,6 +287,7 @@ readArgs:
 	{
 		char *localPath;
 		char *serverPath;
+		char *willOpenDir = NULL;
 		int type;
 
 		cout("DOWNLOAD\n");
@@ -264,8 +295,19 @@ readArgs:
 		localPath = nextArg();
 		serverPath = nextArg();
 
-		errorCase(existPath(localPath));
+		errorCase(!*localPath);
+		errorCase(!*serverPath);
 
+		if(localPath[0] == '*')
+			localPath = combine(willOpenDir = makeFreeDir(), getLocal(serverPath)); // g
+
+		cout("< %s\n", localPath);
+		cout("> %s\n", serverPath);
+
+		errorCase(existPath(localPath));
+		errorCase(!creatable(localPath));
+
+		// send commands
 		writeLine(PrmFp, serverPath);
 		writeLine(PrmFp, "Dummy");
 		writeChar(PrmFp, 'D');
@@ -302,12 +344,20 @@ readArgs:
 			cout("| ちげーよ |\n");
 			cout("+----------+\n");
 		}
+		if(willOpenDir)
+		{
+			execute_x(xcout("START \"\" \"%s\"", willOpenDir));
+			memFree(willOpenDir);
+		}
 	}
 	else if(argIs("/SZ")) // Size
 	{
 		char *serverPath = nextArg();
 		int type;
 
+		errorCase(!*serverPath);
+
+		// send commands
 		writeLine(PrmFp, serverPath);
 		writeLine(PrmFp, "Dummy");
 		writeChar(PrmFp, 'S');
@@ -347,8 +397,12 @@ readArgs:
 		serverPath1 = nextArg();
 		serverPath2 = nextArg();
 
+		errorCase(!*serverPath1);
+		errorCase(!*serverPath2);
+
 		cout("MOVE\n");
 
+		// send commands
 		writeLine(PrmFp, serverPath1);
 		writeLine(PrmFp, serverPath2);
 		writeChar(PrmFp, 'M');
@@ -360,8 +414,11 @@ readArgs:
 	{
 		char *serverPath = nextArg();
 
+		errorCase(!*serverPath);
+
 		cout("REMOVE\n");
 
+		// send commands
 		writeLine(PrmFp, serverPath);
 		writeLine(PrmFp, "Dummy");
 		writeChar(PrmFp, 'X');
@@ -373,6 +430,7 @@ readArgs:
 	{
 		char *path;
 
+		// send commands
 		writeLine(PrmFp, "Dummy");
 		writeLine(PrmFp, "Dummy");
 		writeChar(PrmFp, 'L');
