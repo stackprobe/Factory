@@ -20,6 +20,10 @@ static char *RecvPath(SockStream_t *ss, char *parentDir)
 
 	if(!isFairRelPath(path, strlen(parentDir)))
 	{
+		cout("パス名の規約違反！\n");
+		line2JLine(path, 1, 0, 0, 1); // 表示のため
+		cout("! %s\n", path);
+
 		memFree(path);
 		return NULL;
 	}
@@ -151,8 +155,8 @@ static int Perform(int sock, void *dummyPrm)
 			}
 			getFileStamp(file, &createStamp, NULL, &writeStamp);
 
-			errorCase(!m_isRange(createStamp, STAMP_MIN, STAMP_MAX));
-			errorCase(!m_isRange(writeStamp,  STAMP_MIN, STAMP_MAX));
+			m_range(createStamp, STAMP_MIN, STAMP_MAX);
+			m_range(writeStamp,  STAMP_MIN, STAMP_MAX);
 
 			SockSendValue64(ss, createStamp);
 			SockSendValue64(ss, writeStamp);
@@ -162,7 +166,7 @@ static int Perform(int sock, void *dummyPrm)
 		}
 		else
 		{
-			cout("不明なコマンド\n");
+			cout("不明なコマンドですわ。\n");
 			break;
 		}
 		memFree(command);

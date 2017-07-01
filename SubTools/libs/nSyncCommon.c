@@ -23,8 +23,8 @@ void NS_SendFile(SockStream_t *ss, char *file)
 
 	getFileStamp(file, &createStamp, NULL, &writeStamp);
 
-	errorCase(!m_isRange(createStamp, STAMP_MIN, STAMP_MAX));
-	errorCase(!m_isRange(writeStamp,  STAMP_MIN, STAMP_MAX));
+	m_range(createStamp, STAMP_MIN, STAMP_MAX);
+	m_range(writeStamp,  STAMP_MIN, STAMP_MAX);
 
 	SockSendValue64(ss, createStamp);
 	SockSendValue64(ss, writeStamp);
@@ -66,10 +66,13 @@ void NS_RecvFile(SockStream_t *ss, char *file)
 	fileSize    = SockRecvValue64(ss);
 
 	if(SockRecvChar(ss) != 'A') // Alive
+	{
+		cout("Ç±ÇÃê⁄ë±ÇÕéÄÇÒÇ≈Ç‹Ç∑ÇÌÅB\n");
 		goto endFunc;
+	}
+	m_range(createStamp, STAMP_MIN, STAMP_MAX);
+	m_range(writeStamp,  STAMP_MIN, STAMP_MAX);
 
-	errorCase(!m_isRange(createStamp, STAMP_MIN, STAMP_MAX));
-	errorCase(!m_isRange(writeStamp,  STAMP_MIN, STAMP_MAX));
 	errorCase(FILE_SIZE_MAX < fileSize);
 
 	fp = fileOpen(midFile, "wb");

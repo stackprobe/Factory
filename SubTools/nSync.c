@@ -7,7 +7,7 @@
 		/TCW ... 作成日時と更新日時を比較する。
 
 		デフォルトでは更新日時を比較する。
-		新旧ではなく、同じかどうか。違っていたら元->先で上書きする。
+		★★★日時の比較は、新旧ではなく「同じかどうか」であることに注意！
 
 		PUSH ... クライアント -> サーバー
 		PULL ... サーバー -> クライアント
@@ -16,6 +16,9 @@
 
 		COPY ... 同期するだけ
 		MOVE ... 同期に成功したら、元ディレクトリの中身をクリアする。
+
+		root-dir は存在するディレクトリでなければならない。
+		rel-dir は（サーバー側にも）存在するディレクトリでなければならない！
 */
 
 #include "C:\Factory\Common\Options\SClient.h"
@@ -157,13 +160,6 @@ static int Perform(int sock, uint dummyPrm)
 	BothDirs  = merge(ClientDirs,  ServerDirs,  (sint (*)(uint, uint))mbs_stricmp, (void (*)(uint))memFree);
 	BothFiles = merge(ClientFiles, ServerFiles, (sint (*)(uint, uint))mbs_stricmp, (void (*)(uint))memFree);
 
-	cout("%u\n", getCount(ClientDirs));
-	cout("%u\n", getCount(ServerDirs));
-	cout("%u\n", getCount(BothDirs));
-	cout("%u\n", getCount(ClientFiles));
-	cout("%u\n", getCount(ServerFiles));
-	cout("%u\n", getCount(BothFiles));
-
 	addCwd(ActiveDir); // ここから ActiveDir に入るので、相対パスでファイル・ディレクトリ操作OK!
 
 	foreach(ClientDirs, dir, index)
@@ -262,13 +258,13 @@ static int Perform(int sock, uint dummyPrm)
 		if(!CheckEcho(ss))
 			break;
 
-		errorCase(!m_isRange(serverCreateStamp, STAMP_MIN, STAMP_MAX));
-		errorCase(!m_isRange(serverWriteStamp,  STAMP_MIN, STAMP_MAX));
+		m_range(serverCreateStamp, STAMP_MIN, STAMP_MAX);
+		m_range(serverWriteStamp,  STAMP_MIN, STAMP_MAX);
 
 		getFileStamp(file, &clientCreateStamp, NULL, &clientWriteStamp);
 
-		errorCase(!m_isRange(clientCreateStamp, STAMP_MIN, STAMP_MAX));
-		errorCase(!m_isRange(clientWriteStamp,  STAMP_MIN, STAMP_MAX));
+		m_range(clientCreateStamp, STAMP_MIN, STAMP_MAX);
+		m_range(clientWriteStamp,  STAMP_MIN, STAMP_MAX);
 
 		if(!IsSameFileStamp(serverCreateStamp, serverWriteStamp, clientCreateStamp, clientWriteStamp))
 		{
@@ -285,7 +281,12 @@ static int Perform(int sock, uint dummyPrm)
 
 	unaddCwd();
 
-	ret = CheckEcho(ss);
+	if(!CheckEcho(ss))
+		goto endFunc;
+
+	// TODO MoveMode のとき元ディレクトリをクリア
+
+	ret = 1;
 
 endFunc:
 	ReleaseSockStream(ss);
@@ -366,8 +367,6 @@ readArgs:
 
 	if(!SClient(ServerDomain, ServerPort, Perform, 0))
 	{
-		cout("+----------+\n");
-		cout("| 同期失敗 |\n");
-		cout("+----------+\n");
+		error_m("同期に失敗しましたわ。");
 	}
 }
