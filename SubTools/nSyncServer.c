@@ -61,13 +61,14 @@ static int Perform(int sock, void *dummyPrm)
 	{
 		char *recvHPw;
 
-		cout("合言葉は [%s] ですわ。\n", HelloPassword);
+		cout("合言葉は「%s」ですわ。\n", HelloPassword);
 
 		recvHPw = SockRecvLine(ss, strlen(HelloPassword) + 1);
 
 		if(strcmp(recvHPw, HelloPassword))
 		{
 			cout("ぶっぶーですわ！\n");
+//			coSleep(3000); // 間違えて接続というのもありそうなので、待たない。
 			memFree(recvHPw);
 			goto endFunc;
 		}
