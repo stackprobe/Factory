@@ -75,7 +75,7 @@ void NS_RecvFile(SockStream_t *ss, char *file)
 
 	if(SockRecvChar(ss) != 'A') // Alive
 	{
-		cout("‚±‚ÌÚ‘±‚Í€‚ñ‚Å‚Ü‚·‚íB\n");
+		cout("‚±‚ÌÚ‘±‚Í€‚ñ‚Å‚Ü‚·‚íB(STAMP-SIZE-RECVED)\n");
 		goto endFunc;
 	}
 
@@ -92,6 +92,13 @@ void NS_RecvFile(SockStream_t *ss, char *file)
 		writeChar(fp, SockRecvChar(ss));
 	}
 	fileClose(fp);
+
+	if(IsEOFSockStream(ss))
+	{
+		cout("‚±‚ÌÚ‘±‚Í€‚ñ‚Å‚Ü‚·‚íB(DATA-RECVED)\n");
+		removeFile(midFile);
+		goto endFunc;
+	}
 
 	setFileStamp(midFile, createStamp, 0, writeStamp);
 	NS_CreateParent(file);
