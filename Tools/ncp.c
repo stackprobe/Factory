@@ -443,10 +443,10 @@ readArgs:
 			char *serverPath = nextArg();
 
 			// send commands
-			writeLine(PrmFp, "Dummy");
+			writeLine(PrmFp, serverPath);
 			writeLine(PrmFp, "Dummy");
 			writeChar(PrmFp, 'J');
-			writeLine(PrmFp, serverPath);
+			writeChar(PrmFp, '-');
 		}
 		else
 		{
