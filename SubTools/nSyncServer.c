@@ -200,9 +200,10 @@ int main(int argc, char **argv)
 	ActiveDirDummy = makeTempDir(NULL);
 	ActiveDir = strx(ActiveDirDummy);
 
-	cmdTitle("nSyncServer");
+	NS_AppTitle = "nSyncServer";
+	cmdTitle(NS_AppTitle);
 	sockServerUserTransmit(Perform, (void *(*)(void))getZero, (void (*)(void *))noop_u, RecvPort, 1, Idle);
-	cmdTitle("nSyncServer");
+	cmdTitle(NS_AppTitle);
 
 	recurRemoveDir(ActiveDirDummy);
 }

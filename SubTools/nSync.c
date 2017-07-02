@@ -371,11 +371,12 @@ readArgs:
 	cout("r %s\n", RelDir);
 	cout("A %s\n", ActiveDir);
 
-	cmdTitle("nSync");
+	NS_AppTitle = "nSync";
+	cmdTitle(NS_AppTitle);
 
 	if(!SClient(ServerDomain, ServerPort, Perform, 0))
 	{
 		error_m("“¯Šú‚É¸”s‚µ‚Ü‚µ‚½‚íB");
 	}
-	cmdTitle("nSync");
+	cmdTitle(NS_AppTitle);
 }
