@@ -239,12 +239,10 @@ int main(int argc, char **argv)
 
 	NS_AppTitle = "nSyncServer";
 	cmdTitle(NS_AppTitle);
-	/*
-		クライアントが切断して鯖が切断する前にクライアントが次の接続を開始したとき切断されないように、1 -> 2
-		-> そもそも複数同時に接続しに来ても、切断せず待たせるようにする。2 -> 10
-		-> それは有り得ない。10 -> 1 @ 2017.7.2
-	*/
+
+	// memo: 同時接続禁止。Perform が切断してから次の接続を取りに行くので、connectmax は 1 で良い！
 	sockServerUserTransmit(Perform, (void *(*)(void))getZero, (void (*)(void *))noop_u, RecvPort, 1, Idle);
+
 	cmdTitle(NS_AppTitle);
 
 	recurRemoveDir(ActiveDirDummy);
