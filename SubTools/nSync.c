@@ -385,7 +385,9 @@ readArgs:
 
 	if(!SClient(ServerDomain, ServerPort, Perform, 0))
 	{
-		error_m("“¯Šú‚É¸”s‚µ‚Ü‚µ‚½‚íB");
+		cout("+--------------------------+\n");
+		cout("| “¯Šú‚É¸”s‚µ‚Ü‚µ‚½‚í!!!! |\n");
+		cout("+--------------------------+\n");
 	}
 	cmdTitle(NS_AppTitle);
 }
