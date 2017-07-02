@@ -258,13 +258,7 @@ static int Perform(int sock, uint dummyPrm)
 		if(!CheckEcho(ss))
 			break;
 
-		m_range(serverCreateStamp, STAMP_MIN, STAMP_MAX);
-		m_range(serverWriteStamp,  STAMP_MIN, STAMP_MAX);
-
 		getFileStamp(file, &clientCreateStamp, NULL, &clientWriteStamp);
-
-		m_range(clientCreateStamp, STAMP_MIN, STAMP_MAX);
-		m_range(clientWriteStamp,  STAMP_MIN, STAMP_MAX);
 
 		if(!IsSameFileStamp(serverCreateStamp, serverWriteStamp, clientCreateStamp, clientWriteStamp))
 		{
@@ -284,9 +278,21 @@ static int Perform(int sock, uint dummyPrm)
 	if(!CheckEcho(ss))
 		goto endFunc;
 
-	// TODO MoveMode のとき元ディレクトリをクリア
+	if(MoveMode)
+	{
+		if(PushMode) // PUSH
+		{
+			cout("CLEAR\n");
+			recurClearDir(ActiveDir);
+		}
+		else // PULL
+		{
+			cout("SEND-CLEAR\n");
+			SockSendLine(ss, "Clear");
+		}
+	}
 
-	ret = 1;
+	ret = CheckEcho(ss);
 
 endFunc:
 	ReleaseSockStream(ss);
@@ -365,8 +371,11 @@ readArgs:
 	cout("r %s\n", RelDir);
 	cout("A %s\n", ActiveDir);
 
+	cmdTitle("nSync");
+
 	if(!SClient(ServerDomain, ServerPort, Perform, 0))
 	{
 		error_m("同期に失敗しましたわ。");
 	}
+	cmdTitle("nSync");
 }

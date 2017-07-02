@@ -58,6 +58,8 @@ static int Perform(int sock, void *dummyPrm)
 
 	for(; ; )
 	{
+		cmdTitle("nSyncServer");
+
 		command = SockRecvLine(ss, RECV_LINE_LENMAX);
 
 		// ï\é¶ÇÃÇΩÇﬂ -- "", ECHO_WORD_REQ Ç…íçà”ÅI
@@ -112,6 +114,10 @@ static int Perform(int sock, void *dummyPrm)
 			NS_DeletePath(path);
 			memFree(path);
 		}
+		else if(!strcmp(command, "Clear"))
+		{
+			recurClearDir(ActiveDir);
+		}
 		else if(!strcmp(command, "Send"))
 		{
 			char *file = RecvPath(ss, ActiveDir);
@@ -154,9 +160,6 @@ static int Perform(int sock, void *dummyPrm)
 				break;
 			}
 			getFileStamp(file, &createStamp, NULL, &writeStamp);
-
-			m_range(createStamp, STAMP_MIN, STAMP_MAX);
-			m_range(writeStamp,  STAMP_MIN, STAMP_MAX);
 
 			SockSendValue64(ss, createStamp);
 			SockSendValue64(ss, writeStamp);
@@ -202,4 +205,6 @@ int main(int argc, char **argv)
 	sockServerUserTransmit(Perform, (void *(*)(void))getZero, (void (*)(void *))noop_u, RecvPort, 1, Idle);
 
 	recurRemoveDir(ActiveDirDummy);
+
+	cmdTitle("nSyncServer");
 }
