@@ -14,14 +14,23 @@ static char *RootDir;
 static char *ActiveDirDummy;
 static char *ActiveDir;
 
+static int CheckPath(char *path, char *parentDir)
+{
+#if 1
+	// fixme: 心許ないだろうか...
+	return !m_isEmpty(path) && strlen(parentDir) + 1 + strlen(path) <= PATH_SIZE;
+#else
+	return isFairRelPath(path, strlen(parentDir));
+#endif
+}
 static char *RecvPath(SockStream_t *ss, char *parentDir)
 {
 	char *path = SockRecvLine(ss, RECV_LINE_LENMAX);
 	char *ret;
 
-	if(!isFairRelPath(path, strlen(parentDir)))
+	if(!CheckPath(path, parentDir))
 	{
-		cout("パス名の規約違反！\n");
+		cout("パス名に問題があります！\n");
 		line2JLine(path, 1, 0, 0, 1); // 表示のため
 		cout("! %s\n", path);
 
@@ -232,10 +241,10 @@ int main(int argc, char **argv)
 	cmdTitle(NS_AppTitle);
 	/*
 		クライアントが切断して鯖が切断する前にクライアントが次の接続を開始したとき切断されないように、1 -> 2
-		そもそも複数同時に接続しに来ても、切断せず待たせるようにする。2 -> 10
-		@ 2017.7.2
+		-> そもそも複数同時に接続しに来ても、切断せず待たせるようにする。2 -> 10
+		-> それは有り得ない。10 -> 1 @ 2017.7.2
 	*/
-	sockServerUserTransmit(Perform, (void *(*)(void))getZero, (void (*)(void *))noop_u, RecvPort, 10, Idle);
+	sockServerUserTransmit(Perform, (void *(*)(void))getZero, (void (*)(void *))noop_u, RecvPort, 1, Idle);
 	cmdTitle(NS_AppTitle);
 
 	recurRemoveDir(ActiveDirDummy);

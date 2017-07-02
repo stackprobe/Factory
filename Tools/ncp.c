@@ -309,8 +309,8 @@ readArgs:
 		if(localPath[0] == '*')
 			localPath = combine(willOpenDir = makeFreeDir(), getLocal(serverPath)); // g
 
-		cout("< %s\n", localPath);
-		cout("> %s\n", serverPath);
+		cout("> %s\n", localPath);
+		cout("< %s\n", serverPath);
 
 		errorCase(existPath(localPath));
 		errorCase(!creatable(localPath));
