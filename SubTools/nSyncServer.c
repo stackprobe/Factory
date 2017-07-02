@@ -58,8 +58,6 @@ static int Perform(int sock, void *dummyPrm)
 
 	for(; ; )
 	{
-		cmdTitle("nSyncServer");
-
 		command = SockRecvLine(ss, RECV_LINE_LENMAX);
 
 		// ï\é¶ÇÃÇΩÇﬂ -- "", ECHO_WORD_REQ Ç…íçà”ÅI
@@ -202,9 +200,9 @@ int main(int argc, char **argv)
 	ActiveDirDummy = makeTempDir(NULL);
 	ActiveDir = strx(ActiveDirDummy);
 
+	cmdTitle("nSyncServer");
 	sockServerUserTransmit(Perform, (void *(*)(void))getZero, (void (*)(void *))noop_u, RecvPort, 1, Idle);
+	cmdTitle("nSyncServer");
 
 	recurRemoveDir(ActiveDirDummy);
-
-	cmdTitle("nSyncServer");
 }

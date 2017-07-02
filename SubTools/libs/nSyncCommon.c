@@ -1,5 +1,7 @@
 #include "nSyncCommon.h"
 
+char *NS_AppTitle = "_";
+
 void NS_DeletePath(char *path)
 {
 	cout("- %s\n", path);
@@ -18,7 +20,6 @@ void NS_SendFile(SockStream_t *ss, char *file)
 	uint64 createStamp;
 	uint64 writeStamp;
 	uint64 fileSize;
-	uint64 count;
 	FILE *fp;
 
 	cout("SEND-FILE\n");
@@ -34,16 +35,18 @@ void NS_SendFile(SockStream_t *ss, char *file)
 
 	fp = fileOpen(file, "rb");
 
-	for(count = 0; ; )
+	for(; ; )
 	{
 		autoBlock_t *buff = readBinaryStream(fp, 20000000); // 20 MB
 
 		if(!buff)
 			break;
 
-		count = getSeekPos(fp);
-		cmdTitle_x(xcout("nSync:Send:%I64u/%I64u=%.3fPct", count, fileSize, count * 100.0 / fileSize));
-
+		if(pulseSec(1, NULL))
+		{
+			uint64 count = getSeekPos(fp);
+			cmdTitle_x(xcout("%s Send %I64u / %I64u = %.3fPct", NS_AppTitle, count, fileSize, count * 100.0 / fileSize));
+		}
 		SockSendBlock(ss, directGetBuffer(buff), getSize(buff));
 		releaseAutoBlock(buff);
 	}
@@ -51,7 +54,7 @@ void NS_SendFile(SockStream_t *ss, char *file)
 
 	SockFlush(ss);
 
-	cmdTitle("nSync:Send:Ok");
+	cmdTitle_x(xcout("%s Send Ok", NS_AppTitle));
 	cout("SEND-FILE-OK\n");
 }
 void NS_RecvFile(SockStream_t *ss, char *file)
@@ -83,8 +86,8 @@ void NS_RecvFile(SockStream_t *ss, char *file)
 
 	for(count = 0; count < fileSize; count++)
 	{
-		if(count % repSpan == 0)
-			cmdTitle_x(xcout("nSync:Recv:%I64u/%I64u=%.3fPct", count, fileSize, count * 100.0 / fileSize));
+		if(eqIntPulseSec(1, NULL))
+			cmdTitle_x(xcout("%s Recv %I64u / %I64u = %.3fPct", NS_AppTitle, count, fileSize, count * 100.0 / fileSize));
 
 		writeChar(fp, SockRecvChar(ss));
 	}
@@ -97,6 +100,6 @@ void NS_RecvFile(SockStream_t *ss, char *file)
 endFunc:
 	memFree(midFile);
 
-	cmdTitle("nSync:Recv:Ok");
+	cmdTitle_x(xcout("%s Recv Ok", NS_AppTitle));
 	cout("RECV-FILE-OK\n");
 }
