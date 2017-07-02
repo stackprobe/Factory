@@ -226,7 +226,7 @@ int main(int argc, char **argv)
 
 	NS_AppTitle = "nSyncServer";
 	cmdTitle(NS_AppTitle);
-	sockServerUserTransmit(Perform, (void *(*)(void))getZero, (void (*)(void *))noop_u, RecvPort, 1, Idle);
+	sockServerUserTransmit(Perform, (void *(*)(void))getZero, (void (*)(void *))noop_u, RecvPort, 2, Idle);
 	cmdTitle(NS_AppTitle);
 
 	recurRemoveDir(ActiveDirDummy);
