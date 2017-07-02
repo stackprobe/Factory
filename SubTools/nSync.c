@@ -1,5 +1,5 @@
 /*
-	nSync.exe [/T time-margin-sec] [/TC | /TCW] server-domain server-port (PUSH | PULL) [PERFECT] (COPY | MOVE) root-dir rel-dir
+	nSync.exe [/T time-margin-sec] [/TC | /TCW] [/HPW hello-password] server-domain server-port (PUSH | PULL) [PERFECT] (COPY | MOVE) root-dir rel-dir
 
 		time-margin-sec ... 同じ日時と見なす誤差の範囲 (秒) デフォルト 2 秒
 
@@ -33,6 +33,7 @@ enum
 
 static uint TimeCompMode = TIME_WRITE;
 static time_t TimeMarginSec = 2;
+static char *HelloPassword;
 
 static char *ServerDomain;
 static uint ServerPort;
@@ -128,7 +129,7 @@ static void NSC_RecvFile(SockStream_t *ss, char *file)
 }
 static int Perform(int sock, uint dummyPrm)
 {
-	SockStream_t *ss = CreateSockStream(sock, 5);
+	SockStream_t *ss = CreateSockStream(sock, 2);
 	char *dir;
 	char *file;
 	uint index;
@@ -136,6 +137,9 @@ static int Perform(int sock, uint dummyPrm)
 
 	// 最初のエコーのやり取りが成功するまでは、短いタイムアウトを設定しておく。
 	// それ以降は無制限
+
+	if(HelloPassword)
+		SockSendLine(ss, HelloPassword);
 
 	if(!CheckEcho(ss))
 		goto endFunc;
@@ -315,6 +319,11 @@ readArgs:
 	if(argIs("/TCW"))
 	{
 		TimeCompMode = TIME_CREATE | TIME_WRITE;
+		goto readArgs;
+	}
+	if(argIs("/HPW"))
+	{
+		HelloPassword = nextArg();
 		goto readArgs;
 	}
 

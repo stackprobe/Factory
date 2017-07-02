@@ -1,5 +1,5 @@
 /*
-	nSyncServer.exe recv-port root-dir
+	nSyncServer.exe [/HPW hello-password] recv-port root-dir
 */
 
 #include "C:\Factory\Common\Options\SockServer.h"
@@ -7,6 +7,7 @@
 #include "libs\nSyncCommon.h"
 #include "libs\nSyncDefine.h"
 
+static char *HelloPassword;
 static uint RecvPort;
 static char *RootDir;
 
@@ -50,12 +51,28 @@ static void SendDirsAndFiles(SockStream_t *ss, char *dir)
 }
 static int Perform(int sock, void *dummyPrm)
 {
-	SockStream_t *ss = CreateSockStream(sock, 5);
+	SockStream_t *ss = CreateSockStream(sock, 2);
 	char *command = NULL;
 
 	// 最初に来る ECHO_WORD_REQ までは短いタイムアウトを設定する。
 	// それ以降は無制限
 
+	if(HelloPassword)
+	{
+		char *recvHPw;
+
+		cout("合言葉は [%s] ですわ。\n", HelloPassword);
+
+		recvHPw = SockRecvLine(ss, strlen(HelloPassword) + 1);
+
+		if(strcmp(recvHPw, HelloPassword))
+		{
+			cout("ぶっぶーですわ！\n");
+			memFree(recvHPw);
+			goto endFunc;
+		}
+		memFree(recvHPw);
+	}
 	for(; ; )
 	{
 		command = SockRecvLine(ss, RECV_LINE_LENMAX);
@@ -172,6 +189,8 @@ static int Perform(int sock, void *dummyPrm)
 		}
 		memFree(command);
 	}
+
+endFunc:
 	memFree(command);
 	ReleaseSockStream(ss);
 	return 0;
@@ -186,6 +205,10 @@ static int Idle(void)
 }
 int main(int argc, char **argv)
 {
+	if(argIs("/HPW"))
+	{
+		HelloPassword = nextArg();
+	}
 	RecvPort = toValue(nextArg());
 	RootDir = nextArg();
 
