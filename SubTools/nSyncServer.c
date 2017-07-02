@@ -54,6 +54,8 @@ static int Perform(int sock, void *dummyPrm)
 	SockStream_t *ss = CreateSockStream(sock, 2);
 	char *command = NULL;
 
+	LOGPOS();
+
 	// 最初に来る ECHO_WORD_REQ までは短いタイムアウトを設定する。
 	// それ以降は無制限
 
@@ -61,7 +63,7 @@ static int Perform(int sock, void *dummyPrm)
 	{
 		char *recvHPw;
 
-		cout("合言葉は「%s」ですわ。\n", HelloPassword);
+		cout("合言葉は [%s] ですわ。\n", HelloPassword);
 
 		recvHPw = SockRecvLine(ss, strlen(HelloPassword) + 1);
 
@@ -89,6 +91,8 @@ static int Perform(int sock, void *dummyPrm)
 
 		if(!strcmp(command, ECHO_WORD_REQ))
 		{
+			LOGPOS();
+
 			SetSockStreamTimeout(ss, 0);
 			SockSendLine(ss, ECHO_WORD_ANS);
 		}
@@ -226,7 +230,12 @@ int main(int argc, char **argv)
 
 	NS_AppTitle = "nSyncServer";
 	cmdTitle(NS_AppTitle);
-	sockServerUserTransmit(Perform, (void *(*)(void))getZero, (void (*)(void *))noop_u, RecvPort, 2, Idle);
+	/*
+		クライアントが切断して鯖が切断する前にクライアントが次の接続を開始したとき切断されないように、1 -> 2
+		そもそも複数同時に接続しに来ても、切断せず待たせるようにする。2 -> 10
+		@ 2017.7.2
+	*/
+	sockServerUserTransmit(Perform, (void *(*)(void))getZero, (void (*)(void *))noop_u, RecvPort, 10, Idle);
 	cmdTitle(NS_AppTitle);
 
 	recurRemoveDir(ActiveDirDummy);

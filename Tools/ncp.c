@@ -36,7 +36,15 @@
 
 	ncp.exe ... /LS
 
-		ファイル・ディレクトリのリストを得る。
+		ルート直下のファイル・ディレクトリのリストを得る。
+
+	ncp.exe ... /LS SERVER-PATH
+
+		ディレクトリ SERVER-PATH 配下のファイル・ディレクトリのリストを得る。
+
+	ncp.exe ... /LSS
+
+		全てのファイル・ディレクトリのリストを得る。
 
 	- - -
 
@@ -430,12 +438,24 @@ readArgs:
 	{
 		char *path;
 
-		// send commands
-		writeLine(PrmFp, "Dummy");
-		writeLine(PrmFp, "Dummy");
-		writeChar(PrmFp, 'L');
-		writeChar(PrmFp, '-');
+		if(hasArgs(1))
+		{
+			char *serverPath = nextArg();
 
+			// send commands
+			writeLine(PrmFp, "Dummy");
+			writeLine(PrmFp, "Dummy");
+			writeChar(PrmFp, 'K');
+			writeLine(PrmFp, serverPath);
+		}
+		else
+		{
+			// send commands
+			writeLine(PrmFp, "Dummy");
+			writeLine(PrmFp, "Dummy");
+			writeChar(PrmFp, 'L');
+			writeChar(PrmFp, '-');
+		}
 		ClientRequest();
 
 		while(path = readLine(AnsFp))

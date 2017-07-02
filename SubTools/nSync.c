@@ -135,14 +135,22 @@ static int Perform(int sock, uint dummyPrm)
 	uint index;
 	int ret = 0;
 
+	LOGPOS();
+
 	// 最初のエコーのやり取りが成功するまでは、短いタイムアウトを設定しておく。
 	// それ以降は無制限
 
 	if(HelloPassword)
 		SockSendLine(ss, HelloPassword);
 
+	LOGPOS();
+
 	if(!CheckEcho(ss))
+	{
+		LOGPOS();
 		goto endFunc;
+	}
+	LOGPOS();
 
 	SetSockStreamTimeout(ss, 0);
 
