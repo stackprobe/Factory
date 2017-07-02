@@ -445,7 +445,7 @@ readArgs:
 			// send commands
 			writeLine(PrmFp, "Dummy");
 			writeLine(PrmFp, "Dummy");
-			writeChar(PrmFp, 'K');
+			writeChar(PrmFp, 'J');
 			writeLine(PrmFp, serverPath);
 		}
 		else
@@ -453,9 +453,28 @@ readArgs:
 			// send commands
 			writeLine(PrmFp, "Dummy");
 			writeLine(PrmFp, "Dummy");
-			writeChar(PrmFp, 'L');
+			writeChar(PrmFp, 'K');
 			writeChar(PrmFp, '-');
 		}
+		ClientRequest();
+
+		while(path = readLine(AnsFp))
+		{
+			line2JLine(path, 1, 0, 0, 1);
+			cout("%s\n", path);
+			memFree(path);
+		}
+	}
+	else if(argIs("/LSS")) // List
+	{
+		char *path;
+
+		// send commands
+		writeLine(PrmFp, "Dummy");
+		writeLine(PrmFp, "Dummy");
+		writeChar(PrmFp, 'L');
+		writeChar(PrmFp, '-');
+
 		ClientRequest();
 
 		while(path = readLine(AnsFp))

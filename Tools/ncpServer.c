@@ -310,12 +310,34 @@ static int Perform(char *prmFile, char *ansFile)
 		}
 		retval = 1; // ‘¶İ‚µ‚È‚©‚Á‚½ê‡‚à¬Œ÷ˆµ‚¢B<- '”O‚Ì‚½‚ßíœ' ‚ğl—¶
 	}
-	else if(command == 'L') // List
+	else if(command == 'J' || command == 'K' || command == 'L') // List
 	{
-		autoList_t *paths = lss(".");
-		char *path;
+		autoList_t *paths;
+//		char *path;
 		uint index;
 
+		switch(command)
+		{
+		case 'J':
+			if(existDir(path)) {
+				paths = ls(path);
+			}
+			else {
+				paths = newList();
+			}
+			break;
+
+		case 'K':
+			paths = ls(".");
+			break;
+
+		case 'L':
+			paths = lss(".");
+			break;
+
+		default:
+			error();
+		}
 		changeRoots(paths, c_getCwd(), NULL);
 
 		foreach(paths, path, index)
