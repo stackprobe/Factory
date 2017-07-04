@@ -1,5 +1,5 @@
 /*
-	nSync.exe [/T time-margin-sec] [/TC | /TCW] [/HPW hello-password] server-domain server-port (PUSH | PULL) [PERFECT] (COPY | MOVE) root-dir rel-dir
+	nSync.exe [/T time-margin-sec] [/TC | /TCW] [/HPW hello-password] server-domain server-port (PUSH | PULL) (PERFECT | UPDATE) (COPY | MOVE) root-dir rel-dir
 
 		time-margin-sec ... 同じ日時と見なす誤差の範囲 (秒) デフォルト 2 秒
 
@@ -12,7 +12,8 @@
 		PUSH ... クライアント -> サーバー
 		PULL ... サーバー -> クライアント
 
-		PERFECT ... 元ディレクトリに存在しないファイル・ディレクトリは先ディレクトリから削除する。
+		PERFECT ... 元ディレクトリに存在しないファイル・ディレクトリを先ディレクトリから削除する。
+		UPDATE  ... 元ディレクトリに存在しないファイル・ディレクトリを先ディレクトリから削除しない。
 
 		COPY ... 同期するだけ
 		MOVE ... 同期に成功したら、元ディレクトリの中身をクリアする。
@@ -347,6 +348,10 @@ readArgs:
 
 	if(argIs("PERFECT"))
 		PerfectMode = 1;
+	else if(argIs("UPDATE"))
+		PerfectMode = 0;
+	else
+		error();
 
 	if(argIs("COPY"))
 		MoveMode = 0;
