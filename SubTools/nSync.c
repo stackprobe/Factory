@@ -398,12 +398,14 @@ readArgs:
 
 	if(!SClient(ServerDomain, ServerPort, Perform, 0))
 	{
-#if 1
+#if 0
 		error_m("“¯Šú‚É¸”s‚µ‚Ü‚µ‚½‚íI");
 #else
+		// error‚¾‚Æ‚Ñ‚Á‚­‚è‚·‚é‚Ì‚ÅA‚±‚Á‚¿‚Å‚¢‚¢‚âB@ 2017.7.4
 		cout("+--------------------------+\n");
 		cout("| “¯Šú‚É¸”s‚µ‚Ü‚µ‚½‚í!!!! |\n");
 		cout("+--------------------------+\n");
+		sleep(2000);
 #endif
 	}
 	cmdTitle(NS_AppTitle);
