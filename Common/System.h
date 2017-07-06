@@ -70,3 +70,5 @@ char *LOGPOS_Time(int mode);
 // ----
 
 void mkAppDataDir(void);
+char *getAppDataEnv(char *name, char *defval);
+uint getAppDataEnv32(char *name, uint defval);

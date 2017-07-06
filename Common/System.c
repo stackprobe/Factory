@@ -775,3 +775,45 @@ void mkAppDataDir(void)
 {
 	createDirIfNotExist("C:\\appdata");
 }
+
+#define APPDATA_ENVSFILE "C:\\appdata\\env"
+
+char *getAppDataEnv(char *name, char *defval)
+{
+	static autoList_t *envs;
+	char *env;
+	uint index;
+	uint nameLen;
+
+	if(!envs)
+	{
+		LOGPOS();
+
+		if(existFile(APPDATA_ENVSFILE))
+			envs = readLines(APPDATA_ENVSFILE);
+		else
+			envs = newList();
+	}
+	name = xcout("%s=", name);
+	nameLen = strlen(name);
+
+	foreach(envs, env, index)
+		if(startsWith(env, name))
+			break;
+
+	memFree(name);
+
+	if(env)
+		return env + nameLen;
+
+	return defval;
+}
+uint getAppDataEnv32(char *name, uint defval)
+{
+	char *sDefVal = xcout("%u", defval);
+	uint value;
+
+	value = toValue(getAppDataEnv(name, sDefVal));
+	memFree(sDefVal);
+	return value;
+}

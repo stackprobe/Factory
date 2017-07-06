@@ -15,9 +15,37 @@ static int NoCheckMode;
 static int ForceMode;
 static int IgnoreCase;
 
+static int DTS_Replaced;
+
+static void DoTrepStream(FILE *rfp, FILE *wfp)
+{
+	// TODO
+}
 static void DoTrepFile(char *file)
 {
-	error(); // TODO
+	char *midFile = makeTempPath(NULL);
+	FILE *rfp;
+	FILE *wfp;
+
+	rfp = fileOpen(file, "rb");
+	wfp = fileOpen(midFile, "wb");
+
+	DTS_Replaced = FALSE;
+
+	DoTrepStream(rfp, wfp);
+
+	fileClose(rfp);
+	fileClose(wfp);
+
+	if(DTS_Replaced)
+	{
+		removeFile(file);
+		moveFile(midFile, file);
+	}
+	else
+		removeFile(midFile);
+
+	memFree(midFile);
 }
 static void DoTrep(void)
 {

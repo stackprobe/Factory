@@ -1,11 +1,11 @@
 /*
 	ncp.exe [/S SERVER-DOMAIN] [/P SERVER-PORT] [/F] ...
 
-		SERVER-DOMAIN ... サーバードメイン、デフォルトは localhost
-		SERVER-PORT   ... サーバーポート番号、デフォルトは 60022
+		SERVER-DOMAIN ... サーバードメイン, デフォルトは appDataEnv の SERVER= 無ければ localhost
+		SERVER-PORT   ... サーバーポート番号, デフォルトは appDataEnv の NCP_SERVER_PORT= 無ければ 60022
 		/F            ... /UP, /MV のとき、強制上書きモード
 
-	ncp.exe ... /UP LOCAL-PATH [SERVER-PATH]
+	ncp.exe ... (/UP | UP) LOCAL-PATH [SERVER-PATH]
 
 		ファイル・ディレクトリのアップロード
 
@@ -14,7 +14,7 @@
 
 		LOCAL-PATH は存在するディレクトリ又はファイルであること。
 
-	ncp.exe ... /DL LOCAL-PATH SERVER-PATH
+	ncp.exe ... (/DL | DL) LOCAL-PATH SERVER-PATH
 
 		ファイル・ディレクトリのダウンロード
 
@@ -22,27 +22,27 @@
 
 		LOCAL-PATH は作成可能なパスであること。
 
-	ncp.exe ... /SZ SERVER-PATH
+	ncp.exe ... (/SZ | SZ) SERVER-PATH
 
 		ファイル・ディレクトリのサイズを得る。
 
-	ncp.exe ... /MV SERVER-PATH-1 SERVER-PATH-2
+	ncp.exe ... (/MV | MV) SERVER-PATH-1 SERVER-PATH-2
 
 		ファイル・ディレクトリを移動する。
 
-	ncp.exe ... /RM SERVER-PATH
+	ncp.exe ... (/RM | RM) SERVER-PATH
 
 		ファイル・ディレクトリを削除する。
 
-	ncp.exe ... /LS
+	ncp.exe ... (/LS | LS)
 
 		ルート直下のファイル・ディレクトリのリストを得る。
 
-	ncp.exe ... /LS SERVER-PATH
+	ncp.exe ... (/LS | LS) SERVER-PATH
 
 		ディレクトリ SERVER-PATH 配下のファイル・ディレクトリのリストを得る。
 
-	ncp.exe ... /LSS
+	ncp.exe ... (/LSS | LSS)
 
 		全てのファイル・ディレクトリのリストを得る。
 
@@ -213,6 +213,8 @@ static void ReadEndToStream(FILE *rfp, FILE *wfp)
 
 int main(int argc, char **argv)
 {
+	ServerDomain = getAppDataEnv("SERVER", ServerDomain);
+	ServerPort = getAppDataEnv32("NCP_SERVER_PORT", ServerPort);
 	sockClientAnswerFileSizeMax = UINT64MAX;
 	md5_interrupt = MD5Interrupt;
 
@@ -235,7 +237,7 @@ readArgs:
 
 	CR_Init();
 
-	if(argIs("/UP")) // Upload
+	if(argIs("/UP") || argIs("UP")) // Upload
 	{
 		char *localPath;
 		char *serverPath;
@@ -291,7 +293,7 @@ readArgs:
 		ClientRequest();
 		cout("SEND-END\n");
 	}
-	else if(argIs("/DL")) // Download
+	else if(argIs("/DL") || argIs("DL")) // Download
 	{
 		char *localPath;
 		char *serverPath;
@@ -358,7 +360,7 @@ readArgs:
 			memFree(willOpenDir);
 		}
 	}
-	else if(argIs("/SZ")) // Size
+	else if(argIs("/SZ") || argIs("SZ")) // Size
 	{
 		char *serverPath = nextArg();
 		int type;
@@ -397,7 +399,7 @@ readArgs:
 			cout("+--------------+\n");
 		}
 	}
-	else if(argIs("/MV")) // Move
+	else if(argIs("/MV") || argIs("MV")) // Move
 	{
 		char *serverPath1;
 		char *serverPath2;
@@ -418,7 +420,7 @@ readArgs:
 
 		ClientRequest();
 	}
-	else if(argIs("/RM")) // Remove
+	else if(argIs("/RM") || argIs("RM")) // Remove
 	{
 		char *serverPath = nextArg();
 
@@ -434,7 +436,7 @@ readArgs:
 
 		ClientRequest();
 	}
-	else if(argIs("/LS")) // List
+	else if(argIs("/LS") || argIs("LS")) // List
 	{
 		char *path;
 
@@ -465,7 +467,7 @@ readArgs:
 			memFree(path);
 		}
 	}
-	else if(argIs("/LSS")) // List
+	else if(argIs("/LSS") || argIs("LSS")) // List
 	{
 		char *path;
 
