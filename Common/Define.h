@@ -71,7 +71,8 @@ typedef unsigned __int64 uint64;
 #define m_isRange(value, minval, maxval) \
 	((minval) <= (value) && (value) <= (maxval))
 
-#define FOUNDLISTFILE "C:\\Factory\\tmp\\Files.txt"
+#define FOUNDLISTFILE   "C:\\Factory\\tmp\\Files.txt"
+#define SECTIONLISTFILE "C:\\Factory\\tmp\\Sections.txt"
 
 /*
 	®”‚ÌãŒÀ‚Æ‚µ‚Ä‰½‚Æ‚È‚­Œˆ‚ß‚½’l

@@ -1,7 +1,7 @@
 /*
 	検索対象 == カレントの配下
 
-	Search.exe [/E SPEC-EXTS] [/I] [/T] [/SVN] FIND-PATTERN
+	Search.exe [/E SPEC-EXTS] [/I] [/T] [/SVN] [/-] FIND-PATTERN
 
 		SPEC-EXTS ... 検索対象の拡張子を '.' 区切りで記述する。
 
@@ -56,6 +56,7 @@ static int TokenOnlyMode;
 
 static char *FindPattern;
 static autoList_t *FoundFiles;
+static autoList_t *Sections;
 static uint64 TotalCount;
 static uint64 TotalFileCount;
 
@@ -148,6 +149,8 @@ static void SearchFile(char *file)
 				DispRange(fp, ndx2b, ndx2e, (sint64)fileSize);
 				cout("\n");
 
+				addElement(Sections, (uint)xcout("%s\t%I64u\t%I64u", file, ndx1e + 1, ndx2b));
+
 				FSeek(fp, rIndex);
 				}
 
@@ -200,9 +203,11 @@ readArgs:
 		antiSubversion = 0;
 		goto readArgs;
 	}
+	argIs("/-");
 
 	FindPattern = nextArg();
 	FoundFiles = newList();
+	Sections = newList();
 
 	errorCase(FindPattern[0] == '\0');
 
@@ -219,6 +224,8 @@ readArgs:
 
 	writeLines(FOUNDLISTFILE, FoundFiles);
 	releaseDim(FoundFiles, 1);
+	writeLines(SECTIONLISTFILE, Sections);
+	releaseDim(Sections, 1);
 
 //	cout("-------------------\n");
 	cout("%9I64u %9I64u\n", TotalCount, TotalFileCount);
