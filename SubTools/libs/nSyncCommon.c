@@ -52,6 +52,7 @@ void NS_SendFile(SockStream_t *ss, char *file)
 	}
 	fileClose(fp);
 
+	SockSendChar(ss, 'A'); // Alive
 	SockFlush(ss);
 
 	cmdTitle_x(xcout("%s Send Ok", NS_AppTitle));
@@ -93,7 +94,8 @@ void NS_RecvFile(SockStream_t *ss, char *file)
 	}
 	fileClose(fp);
 
-	if(IsEOFSockStream(ss))
+	if(SockRecvChar(ss) != 'A') // Alive
+//	if(IsEOFSockStream(ss))
 	{
 		cout("Ç±ÇÃê⁄ë±ÇÕéÄÇÒÇ≈Ç‹Ç∑ÇÌÅB(DATA-RECVED)\n");
 		removeFile(midFile);
