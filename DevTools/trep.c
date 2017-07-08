@@ -18,7 +18,7 @@ static sint CompSection(uint v1, uint v2)
 	uint64 *a = (uint64 *)v1;
 	uint64 *b = (uint64 *)v2;
 
-	errorCase_m(a[0] == b[0], "同じ始点のセクションが複数あります。");
+	errorCase_m(a[0] == b[0], "同じ始点のセクションがあります。");
 
 	return m_simpleComp(a[0], b[0]);
 }
@@ -35,14 +35,12 @@ static void DoTrepStream(FILE *rfp, FILE *wfp, autoList_t *sections)
 	{
 		errorCase(section[1] < section[0]);
 		errorCase(fileSize < section[1]);
+		errorCase_m(section[0] < rPos, "重なっているセクションがあります。");
 
-		if(rPos <= section[0])
-		{
-			readWriteBinary(rfp, wfp, section[0] - rPos);
-			writeToken(wfp, DestPtn);
-			fileSeek(rfp, SEEK_SET, section[1]);
-			rPos = section[1];
-		}
+		readWriteBinary(rfp, wfp, section[0] - rPos);
+		writeToken(wfp, DestPtn);
+		fileSeek(rfp, SEEK_SET, section[1]);
+		rPos = section[1];
 	}
 	readWriteBinaryToEnd(rfp, wfp);
 }
@@ -167,6 +165,9 @@ readArgs:
 
 			errorCase_m(!existFile(file), "対象ファイルがありません。");
 			errorCase_m(endPos < bgnPos, "始点より終点が前になっています。");
+
+			// memo:
+			// "aaa" を Search aa したとき、最初（1文字目～2文字目）しか検出されない。-> 重なっているセクションは無い。
 
 			{
 				FILE *fp = fileOpen(file, "rb");
