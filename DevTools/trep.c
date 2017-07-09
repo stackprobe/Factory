@@ -166,8 +166,11 @@ readArgs:
 			errorCase_m(!existFile(file), "対象ファイルがありません。");
 			errorCase_m(endPos < bgnPos, "始点より終点が前になっています。");
 
-			// memo:
-			// "aaa" を Search aa したとき、最初（1文字目～2文字目）しか検出されない。-> 重なっているセクションは無い。
+			/*
+			memo:
+				ファイル内容 "aaa" を Search aa したとき、最初（1文字目～2文字目）しか検出されない。
+				-> 重なっているセクションは無い。
+			*/
 
 			{
 				FILE *fp = fileOpen(file, "rb");
@@ -176,6 +179,7 @@ readArgs:
 				errorCase_m(getFileSize(file) < endPos, "終点がファイルサイズより後になっています。");
 
 				fileSeek(fp, SEEK_SET, bgnPos);
+				cout("< \"");
 
 				while(getSeekPos(fp) < endPos)
 				{
@@ -184,9 +188,10 @@ readArgs:
 					cout("%c", chr);
 				}
 				fileClose(fp);
-				cout("\n");
+				cout("\"\n");
 			}
 		}
+		cout("> \"%s\"\n", DestPtn);
 	}
 	if(!ForceMode)
 	{

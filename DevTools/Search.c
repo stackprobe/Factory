@@ -149,6 +149,12 @@ static void SearchFile(char *file)
 				DispRange(fp, ndx2b, ndx2e, (sint64)fileSize);
 				cout("\n");
 
+				/*
+					ファイル名 + \t + 開始位置 + \t + 終了位置
+
+						開始位置 ... このバイトを含む。
+						終了位置 ... このバイトを含まない。
+				*/
 				addElement(Sections, (uint)xcout("%s\t%I64u\t%I64u", file, ndx1e + 1, ndx2b));
 
 				FSeek(fp, rIndex);
