@@ -247,7 +247,7 @@ readArgs:
 		localPath = nextArg();
 
 		if(localPath[0] == '*')
-			localPath = dropPath(); // g
+			localPath = dropDirFile(); // g
 
 		if(hasArgs(1))
 			serverPath = nextArg();
