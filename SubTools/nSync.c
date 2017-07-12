@@ -314,6 +314,8 @@ endFunc:
 }
 int main(int argc, char **argv)
 {
+	int errorLevel = 0;
+
 readArgs:
 	if(argIs("/T"))
 	{
@@ -405,8 +407,12 @@ readArgs:
 		cout("+--------------------------+\n");
 		cout("| “¯Šú‚ÉŽ¸”s‚µ‚Ü‚µ‚½‚í!!!! |\n");
 		cout("+--------------------------+\n");
-		sleep(5000);
+		sleep(3000);
 #endif
+		errorLevel = 1;
 	}
 	cmdTitle(NS_AppTitle);
+
+	cout("errorLevel: %u\n", errorLevel);
+	termination(errorLevel);
 }
