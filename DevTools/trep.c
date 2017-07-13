@@ -143,6 +143,8 @@ readArgs:
 		autoList_t *lines = readLines(SECTIONLISTFILE);
 		char *line;
 		uint index;
+		char *knownSrcPtn = NULL;
+		int multiSrcPtn = 0;
 
 		errorCase_m(!getCount(lines), "対象ファイルが１つもありません。");
 
@@ -175,6 +177,7 @@ readArgs:
 			{
 				FILE *fp = fileOpen(file, "rb");
 				uint64 pos;
+				char *srcPtn = strx("");
 
 				errorCase_m(getFileSize(file) < endPos, "終点がファイルサイズより後になっています。");
 
@@ -185,13 +188,30 @@ readArgs:
 				{
 					int chr = readChar(fp);
 					m_toHalf(chr);
+					srcPtn = addChar(srcPtn, chr);
 					cout("%c", chr);
 				}
 				fileClose(fp);
 				cout("\"\n");
+
+				if(knownSrcPtn)
+				{
+					multiSrcPtn |= mbs_stricmp(knownSrcPtn, srcPtn);
+					memFree(srcPtn);
+				}
+				else
+					knownSrcPtn = srcPtn;
 			}
 		}
 		cout("> \"%s\"\n", DestPtn);
+
+		if(multiSrcPtn)
+		{
+			cout("##########################\n");
+			cout("## 複数のパタンがあるよ ##\n");
+			cout("##########################\n");
+		}
+		memFree(knownSrcPtn);
 	}
 	if(!ForceMode)
 	{
