@@ -147,12 +147,21 @@ void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint))
 			{
 				faridx--;
 			}
-#else
+#elif 0 // 同じ要素を比較することがある。想定されない？ @ 2017.7.13
 			while(funcComp(getElement(list, nearidx), pivot) < 0)
 			{
 				nearidx++;
 			}
 			while(funcComp(pivot, getElement(list, faridx)) < 0)
+			{
+				faridx--;
+			}
+#else
+			while(nearidx < pivotidx && funcComp(getElement(list, nearidx), pivot) < 0)
+			{
+				nearidx++;
+			}
+			while(pivotidx < faridx && funcComp(pivot, getElement(list, faridx)) < 0)
 			{
 				faridx--;
 			}

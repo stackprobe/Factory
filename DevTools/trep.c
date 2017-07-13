@@ -145,6 +145,7 @@ readArgs:
 		uint index;
 		char *knownSrcPtn = NULL;
 		int multiSrcPtn = 0;
+		int multiSrcPtnICase = 0;
 
 		errorCase_m(!getCount(lines), "対象ファイルが１つもありません。");
 
@@ -196,7 +197,8 @@ readArgs:
 
 				if(knownSrcPtn)
 				{
-					multiSrcPtn |= mbs_stricmp(knownSrcPtn, srcPtn);
+					multiSrcPtn      |=      strcmp(knownSrcPtn, srcPtn);
+					multiSrcPtnICase |= mbs_stricmp(knownSrcPtn, srcPtn);
 					memFree(srcPtn);
 				}
 				else
@@ -205,19 +207,22 @@ readArgs:
 		}
 		cout("> \"%s\"\n", DestPtn);
 
-		if(multiSrcPtn)
+		if(multiSrcPtnICase)
 		{
 			cout("##########################\n");
 			cout("## 複数のパタンがあるよ ##\n");
 			cout("##########################\n");
 		}
+		else if(multiSrcPtn)
+			cout("Ignore case かな？\n");
+
 		memFree(knownSrcPtn);
 	}
 	if(!ForceMode)
 	{
-		cout("続行？\n");
+		cout("続行するには R を押して下さい。\n");
 
-		if(getKey() == 0x1b)
+		if(getKey() != 'R')
 			termination(0);
 
 		cout("続行します。\n");
