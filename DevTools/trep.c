@@ -146,6 +146,8 @@ readArgs:
 		char *knownSrcPtn = NULL;
 		int multiSrcPtn = 0;
 		int multiSrcPtnICase = 0;
+		char *currDir = getCwd();
+		int foundOuterPath = 0;
 
 		errorCase_m(!getCount(lines), "対象ファイルが１つもありません。");
 
@@ -204,6 +206,9 @@ readArgs:
 				else
 					knownSrcPtn = srcPtn;
 			}
+
+			if(!isChangeableRoot(file, currDir))
+				foundOuterPath = 1;
 		}
 		cout("> \"%s\"\n", DestPtn);
 
@@ -216,7 +221,11 @@ readArgs:
 		else if(multiSrcPtn)
 			cout("Ignore case かな？\n");
 
+		if(foundOuterPath)
+			cout("カレントの配下じゃないのもあるよ。\n");
+
 		memFree(knownSrcPtn);
+		memFree(currDir);
 	}
 	if(!ForceMode)
 	{

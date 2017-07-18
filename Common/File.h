@@ -69,6 +69,7 @@ void eraseRoots(autoList_t *pathList, char *root);
 char *changeRoot(char *path, char *root, char *newRoot);
 void changeRoots(autoList_t *pathList, char *root, char *newRoot);
 void changeRootsAbs(autoList_t *pathList, char *root, char *newRoot);
+int isChangeableRoot(char *path, char *root);
 void eraseParent(char *path);
 void eraseParents(autoList_t *pathList);
 

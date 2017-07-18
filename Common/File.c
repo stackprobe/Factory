@@ -660,6 +660,24 @@ void changeRootsAbs(autoList_t *pathList, char *root, char *newRoot)
 	memFree(root);
 	memFree(newRoot);
 }
+int isChangeableRoot(char *path, char *root)
+{
+	uint rootlen;
+	int ret;
+
+	root = strx(root);
+	root = addChar(root, '\\');
+	trimPath(root);
+
+	rootlen = strlen(root);
+
+	ret = rootlen < strlen(path) &&
+		!mbs_strnicmp(path, root, rootlen);
+
+	memFree(root);
+
+	return ret;
+}
 void eraseParent(char *path)
 {
 	copyLine(path, getLocal(path));
