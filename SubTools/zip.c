@@ -233,7 +233,10 @@ static void ReplaceVersion(char *dir, uint version) // version: 1 Å` 999, VER_BE
 
 	foreach(files, file, index)
 	{
-		if(!_stricmp("Manual.txt", getLocal(file)))
+		if(
+			!_stricmp("Manual.txt", getLocal(file)) ||
+			!_stricmp("É}ÉjÉÖÉAÉã.txt", getLocal(file))
+			)
 //		if(!_stricmp("txt", getExt(file))) // old @ 2017.8.5
 		{
 			char *text = readText(file);
