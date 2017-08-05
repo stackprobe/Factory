@@ -1,4 +1,5 @@
 #include "C:\Factory\Common\all.h"
+#include "libs\GitResourceMask.h"
 
 #define IGNORE_FILE "_gitignore"
 
@@ -144,6 +145,8 @@ static void GitFactory(char *rDir, char *wDir, int allowOverwrite)
 		}
 		memFree(dir);
 	}
+
+	GitResourceMask(wDir);
 
 	memFree(rDir);
 	memFree(wDir);

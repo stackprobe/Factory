@@ -318,6 +318,23 @@ autoList_t *autoDistinctJLinesICase(autoList_t *lines) // lines: ŠJ•ú‚·‚éB
 	}
 }
 
+void distinct2(autoList_t *list, sint (*funcComp)(uint, uint), void (*funcRelease)(uint))
+{
+	uint index;
+	uint wi = 0;
+
+	rapidSort(list, funcComp);
+
+	for(index = 1; index < getCount(list); index++)
+	{
+		if(!funcComp(getElement(list, index), getElement(list, index - 1)))
+			funcRelease(getElement(list, index));
+		else
+			setElement(list, wi++, getElement(list, index));
+	}
+	setCount(list, wi);
+}
+
 // _x
 autoList_t *selectLines_x(autoList_t *lines)
 {

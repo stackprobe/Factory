@@ -16,5 +16,7 @@ void distinctJLinesICase(autoList_t *lines, autoList_t *result, autoList_t *othe
 autoList_t *autoDistinctLines(autoList_t *lines);
 autoList_t *autoDistinctJLinesICase(autoList_t *lines);
 
+void distinct2(autoList_t *list, sint (*funcComp)(uint, uint), void (*funcRelease)(uint));
+
 autoList_t *selectLines_x(autoList_t *lines);
 char *selectLine_x(autoList_t *lines);
