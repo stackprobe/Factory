@@ -2,22 +2,144 @@
 
 #define FLAG_FILE "_gitresmsk"
 
-static void MaskResImage(char *file, char *fType)
+// ---- Image ----
+
+static void MaskResImage(char *file)
 {
 	createFile(file); // TODO
 }
-static void MaskResSound(char *file, char *fType)
+
+// ---- Sound ----
+
+#define WAV_HZ 8000
+//#define WAV_HZ 44100
+
+static uint MRS_GetSoundLength(char *file)
 {
-	createFile(file); // TODO
+	char *repFile = makeTempPath(NULL);
+	autoList_t *lines;
+	char *line;
+	uint index;
+	uint ret;
+
+	coExecute_x(xcout("START \"\" /B /WAIT \"%s\" \"%s\" 2> \"%s\"", FILE_FFPROBE_EXE, file, repFile));
+
+	lines = readLines(repFile);
+
+	foreach(lines, line, index)
+	{
+		char *p = strstr(line, "Duration:");
+		char *q;
+
+		// sample:
+		// ... Duration: 00:01:12.96, start: 0.000000, ...
+
+		if(p)
+		{
+			p = strchr(p, ' ');
+			errorCase(!p);
+			p++;
+
+			// 行の最後かも？？？
+
+			if(q = strchr(p, ','))
+				*q = '\0';
+
+			if(q = strchr(p, ' ')) // ブランクで終わるかも？？？
+				*q = '\0';
+
+			errorCase(!lineExp("<2,09>:<2,09>:<2,09>.<2,09>", p));
+
+			p[2] = '\0';
+			p[5] = '\0';
+			p[8] = '\0';
+
+			ret =
+				(uint)d2i(
+				(
+					toValue(p) * 360000 +
+					toValue(p + 3) * 6000 +
+					toValue(p + 6) * 100 +
+					toValue(p + 9)
+				) / 100.0 * WAV_HZ);
+
+			goto endLoop;
+		}
+	}
+	error(); // ? not found "Duration:"
+endLoop:
+
+	releaseDim(lines, 1);
+	removeFile(repFile);
+	memFree(repFile);
+	return ret;
 }
+static void MRS_MakeWavFile(char *file, uint length)
+{
+	char *csvFile = makeTempPath(NULL);
+	FILE *fp;
+	uint count;
+
+	LOGPOS();
+	fp = fileOpen(csvFile, "wt");
+
+	for(count = 0; count < length; count++)
+	{
+		writeLine(fp, "32768,32768"); // 無音！
+	}
+	fileClose(fp);
+	LOGPOS();
+
+	writeWAVFileFromCSVFile(csvFile, file, WAV_HZ);
+	LOGPOS();
+
+	removeFile(csvFile);
+	memFree(csvFile);
+}
+static void MRS_MakeSoundFile(char *rFile, char *wFile)
+{
+	if(!_stricmp("wav", getExt(wFile)))
+	{
+		moveFile(rFile, wFile);
+		createFile(rFile);
+	}
+	else
+	{
+		coExecute_x(xcout("START \"\" /B /WAIT \"%s\" -i \"%s\" \"%s\"", FILE_FFMPEG_EXE, rFile, wFile));
+	}
+}
+static void MaskResSound(char *file)
+{
+	char *tmpFile = makeTempPath(getExt(file));
+	char *wavFile = makeTempPath("wav");
+	char *outFile = makeTempPath(getExt(file));
+
+	moveFile(file, tmpFile);
+
+	MRS_MakeWavFile(wavFile, MRS_GetSoundLength(tmpFile));
+	MRS_MakeSoundFile(wavFile, outFile);
+
+	moveFile(outFile, file);
+
+	removeFile(tmpFile);
+	removeFile(wavFile);
+	memFree(tmpFile);
+	memFree(wavFile);
+	memFree(outFile);
+}
+
+// ----
+
 static void MaskResourceFile(char *file)
 {
 	char *ext = getExt(file);
 
-	     if(!_stricmp(ext, "bmp")) MaskResImage(file, "BMP");
-	else if(!_stricmp(ext, "png")) MaskResImage(file, "PNG");
-	else if(!_stricmp(ext, "mp3")) MaskResSound(file, "MP3");
-	else if(!_stricmp(ext, "wav")) MaskResSound(file, "WAV");
+	cout("* %s\n", file);
+
+	     if(!_stricmp(ext, "bmp")) MaskResImage(file);
+	else if(!_stricmp(ext, "png")) MaskResImage(file);
+	else if(!_stricmp(ext, "mp3")) MaskResSound(file);
+	else if(!_stricmp(ext, "wav")) MaskResSound(file);
 }
 void GitResourceMask(char *rootDir)
 {
