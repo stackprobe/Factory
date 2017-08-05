@@ -6,7 +6,22 @@
 
 static void MaskResImage(char *file)
 {
-	createFile(file); // TODO
+	char *midFile = makeTempPath("png");
+
+	coExecute_x(xcout("START \"\" /B /WAIT \"%s\" /MASK-RESOURCE-IMAGE \"%s\" \"%s\"", FILE_TOOLKIT_EXE, file, midFile));
+
+	if(!_stricmp("png", getExt(file)))
+	{
+		removeFile(file);
+		moveFile(midFile, file);
+		createFile(midFile);
+	}
+	else
+	{
+		coExecute_x(xcout("START \"\" /B /WAIT \"%s\" \"%s\" \"%s\"", FILE_BMPTOCSV_EXE, midFile, file));
+	}
+	removeFile(midFile);
+	memFree(midFile);
 }
 
 // ---- Sound ----
@@ -147,6 +162,14 @@ void GitResourceMask(char *rootDir)
 	char *file;
 	uint index;
 	autoList_t *targets = newList();
+
+	// 外部コマンド存在確認
+	{
+		errorCase(!existFile(FILE_FFMPEG_EXE));
+		errorCase(!existFile(FILE_FFPROBE_EXE));
+		errorCase(!existFile(FILE_BMPTOCSV_EXE));
+		errorCase(!existFile(FILE_TOOLKIT_EXE));
+	}
 
 	foreach(files, file, index)
 	{

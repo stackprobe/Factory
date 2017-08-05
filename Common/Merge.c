@@ -321,7 +321,7 @@ autoList_t *autoDistinctJLinesICase(autoList_t *lines) // lines: ŠJ•ú‚·‚éB
 void distinct2(autoList_t *list, sint (*funcComp)(uint, uint), void (*funcRelease)(uint))
 {
 	uint index;
-	uint wi = 0;
+	uint wi = getCount(list) ? 1 : 0;
 
 	rapidSort(list, funcComp);
 
