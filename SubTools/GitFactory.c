@@ -74,6 +74,27 @@ restart:
 	}
 }
 
+static void SolveEmptyDir(char *rootDir)
+{
+	autoList_t *dirs = lssDirs(rootDir);
+	char *dir;
+	uint index;
+
+	foreach(dirs, dir, index)
+	{
+		if(!lsCount(dir)) // ? ‹ó‚ÌDIR
+		{
+			char *dmyfile = combine(dir, "_this-folder-is-empty");
+
+			cout("SED_dmyfile: %s\n", dmyfile);
+
+			createFile(dmyfile);
+			memFree(dmyfile);
+		}
+	}
+	releaseDim(dirs, 1);
+}
+
 static void GitFactory(char *rDir, char *wDir, int allowOverwrite)
 {
 	autoList_t *files;
@@ -147,6 +168,7 @@ static void GitFactory(char *rDir, char *wDir, int allowOverwrite)
 	}
 
 	GitResourceMask(wDir);
+	SolveEmptyDir(wDir);
 
 	memFree(rDir);
 	memFree(wDir);
