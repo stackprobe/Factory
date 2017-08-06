@@ -155,6 +155,7 @@ static void GitFactory(char *rDir, char *wDir, int allowOverwrite)
 		memFree(wFile);
 	}
 
+#if 0 // SolveEmptyDir Ç™Ç†ÇÈÇ©ÇÁóvÇÁÇ»Ç¢ÅB
 	{
 		char *dir = combine(wDir, "tmp");
 
@@ -166,6 +167,7 @@ static void GitFactory(char *rDir, char *wDir, int allowOverwrite)
 		}
 		memFree(dir);
 	}
+#endif
 
 	GitResourceMask(wDir);
 	SolveEmptyDir(wDir);
