@@ -6,6 +6,12 @@ static uint MtxCmn;
 
 void BlueFish_Lock(void)
 {
+	if(!IsBlueFishComputer())
+	{
+		LOGPOS();
+		return;
+	}
+
 	LOGPOS();
 
 	errorCase(MtxCmn);
@@ -15,6 +21,12 @@ void BlueFish_Lock(void)
 }
 void BlueFish_Unlock(void)
 {
+	if(!IsBlueFishComputer())
+	{
+		LOGPOS();
+		return;
+	}
+
 	LOGPOS();
 
 	errorCase(!MtxCmn);
