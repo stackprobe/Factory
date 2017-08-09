@@ -83,6 +83,12 @@ static void SolveEmptyDir(char *rootDir)
 
 	foreach(dirs, dir, index)
 	{
+		if(mbs_stristr(dir, "\\.git")) // ignore git dir
+		{
+cout("GIT_DIR: %s\n", dir); // test
+			continue;
+		}
+
 		if(!lsCount(dir)) // ? ‹ó‚ÌDIR
 		{
 			char *dmyfile = combine(dir, "_this-folder-is-empty");
