@@ -1,5 +1,6 @@
 #include "C:\Factory\Common\all.h"
 #include "libs\GitResourceMask.h"
+#include "libs\GitSourceFilter.h"
 
 #define IGNORE_FILE "_gitignore"
 
@@ -170,6 +171,7 @@ static void GitFactory(char *rDir, char *wDir, int allowOverwrite)
 #endif
 
 	GitResourceMask(wDir);
+	GitSourceFilter(wDir);
 	SolveEmptyDir(wDir);
 
 	memFree(rDir);

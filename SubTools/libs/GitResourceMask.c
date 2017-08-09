@@ -165,6 +165,8 @@ void GitResourceMask(char *rootDir)
 	uint index;
 	autoList_t *targets = newList();
 
+	LOGPOS();
+
 	// 外部コマンド存在確認
 	{
 		errorCase(!existFile(FILE_FFMPEG_EXE));
@@ -196,4 +198,6 @@ void GitResourceMask(char *rootDir)
 	}
 	releaseDim(files, 1);
 	releaseAutoList(targets);
+
+	LOGPOS();
 }
