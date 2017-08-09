@@ -18,7 +18,9 @@ static void MaskResImage(char *file)
 	}
 	else
 	{
-		coExecute_x(xcout("START \"\" /B /WAIT \"%s\" \"%s\" \"%s\"", FILE_BMPTOCSV_EXE, midFile, file));
+		coExecute_x(xcout("START \"\" /B /WAIT \"%s\" /IMG-TO-IMG \"%s\" \"%s\" 0", FILE_TOOLKIT_EXE, midFile, file));
+//		coExecute_x(xcout("START \"\" /B /WAIT \"%s\" /IMG-TO-IMG \"%s\" \"%s\"", FILE_TOOLKIT_EXE, midFile, file));
+//		coExecute_x(xcout("START \"\" /B /WAIT \"%s\" \"%s\" \"%s\"", FILE_BMPTOCSV_EXE, midFile, file));
 	}
 	removeFile(midFile);
 	memFree(midFile);
