@@ -4,14 +4,18 @@
 #define COMMAND_SECRET "secret"
 #define COMMAND_SECRET_BEGIN "secretBegin"
 #define COMMAND_SECRET_END "secretEnd"
-#define CHR_SECRET '*'
+#define CHR_SECRET '/'
 
-static char *FindUnspc(char *p)
+static void MaskLine(char *p, char *q)
 {
-	while(*p && *p <= ' ')
+	while(p < q && *p <= ' ')
 		p++;
 
-	return p;
+	while(p < q && q[-1] <= ' ')
+		q--;
+
+	while(p < q)
+		*p++ = CHR_SECRET;
 }
 static FilterSourceFile(char *file)
 {
@@ -25,7 +29,7 @@ static FilterSourceFile(char *file)
 	foreach(lines, line, index)
 	{
 		char *p = strstr(line, COMMAND_PREFIX);
-		int onSecretMask = 0;
+		int onSecretLater = 0;
 
 		if(p)
 		{
@@ -40,12 +44,11 @@ static FilterSourceFile(char *file)
 
 			if(!strcmp(command, COMMAND_SECRET))
 			{
-				for(q = FindUnspc(line); q < p; q++)
-					*q = CHR_SECRET;
+				MaskLine(line, p);
 			}
 			else if(!strcmp(command, COMMAND_SECRET_BEGIN))
 			{
-				onSecretMask = 1;
+				onSecretLater = 1;
 			}
 			else if(!strcmp(command, COMMAND_SECRET_END))
 			{
@@ -59,10 +62,9 @@ static FilterSourceFile(char *file)
 		}
 		if(onSecret)
 		{
-			for(p = FindUnspc(line); *p; p++)
-				*p = CHR_SECRET;
+			MaskLine(line, strchr(line, '\0'));
 		}
-		onSecret |= onSecretMask;
+		onSecret |= onSecretLater;
 	}
 	writeLines_cx(file, lines);
 
