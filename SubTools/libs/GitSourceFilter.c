@@ -25,6 +25,7 @@ static FilterSourceFile(char *file)
 	foreach(lines, line, index)
 	{
 		char *p = strstr(line, COMMAND_PREFIX);
+		int onSecretMask = 0;
 
 		if(p)
 		{
@@ -44,7 +45,7 @@ static FilterSourceFile(char *file)
 			}
 			else if(!strcmp(command, COMMAND_SECRET_BEGIN))
 			{
-				onSecret = 1;
+				onSecretMask = 1;
 			}
 			else if(!strcmp(command, COMMAND_SECRET_END))
 			{
@@ -61,8 +62,11 @@ static FilterSourceFile(char *file)
 			for(p = FindUnspc(line); *p; p++)
 				*p = CHR_SECRET;
 		}
+		onSecret |= onSecretMask;
 	}
 	writeLines_cx(file, lines);
+
+	errorCase_m(onSecret, "secret is not closed !");
 }
 void GitSourceFilter(char *rootDir)
 {
