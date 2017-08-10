@@ -78,6 +78,8 @@ void GitSourceFilter(char *rootDir)
 
 	LOGPOS();
 
+	RemoveGitPaths(files);
+
 	foreach(files, file, index)
 	{
 		char *ext = getExt(file);

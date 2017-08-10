@@ -177,6 +177,8 @@ void GitResourceMask(char *rootDir)
 		errorCase(!existFile(FILE_TOOLKIT_EXE));
 	}
 
+	RemoveGitPaths(files);
+
 	foreach(files, file, index)
 	{
 		if(!_stricmp(FLAG_FILE, getLocal(file)))

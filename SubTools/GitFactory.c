@@ -1,4 +1,5 @@
 #include "C:\Factory\Common\all.h"
+#include "libs\GitCommon.h"
 #include "libs\GitResourceMask.h"
 #include "libs\GitSourceFilter.h"
 #include "libs\GitSourceMask.h"
@@ -82,14 +83,10 @@ static void SolveEmptyDir(char *rootDir)
 	char *dir;
 	uint index;
 
+	RemoveGitPaths(dirs);
+
 	foreach(dirs, dir, index)
 	{
-		if(mbs_stristr(dir, "\\.git")) // ignore .git* dir
-		{
-cout("GIT_DIR: %s\n", dir); // test
-			continue;
-		}
-
 		if(!lsCount(dir)) // ? ‹ó‚ÌDIR
 		{
 			char *dmyfile = combine(dir, "_this-folder-is-empty");
