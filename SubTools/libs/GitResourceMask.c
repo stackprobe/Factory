@@ -173,7 +173,7 @@ void GitResourceMask(char *rootDir)
 	{
 		errorCase(!existFile(FILE_FFMPEG_EXE));
 		errorCase(!existFile(FILE_FFPROBE_EXE));
-		errorCase(!existFile(FILE_BMPTOCSV_EXE));
+//		errorCase(!existFile(FILE_BMPTOCSV_EXE));
 		errorCase(!existFile(FILE_TOOLKIT_EXE));
 	}
 

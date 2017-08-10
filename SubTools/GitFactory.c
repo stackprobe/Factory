@@ -1,6 +1,7 @@
 #include "C:\Factory\Common\all.h"
 #include "libs\GitResourceMask.h"
 #include "libs\GitSourceFilter.h"
+#include "libs\GitSourceMask.h"
 
 #define IGNORE_FILE "_gitignore"
 
@@ -83,7 +84,7 @@ static void SolveEmptyDir(char *rootDir)
 
 	foreach(dirs, dir, index)
 	{
-		if(mbs_stristr(dir, "\\.git")) // ignore git dir
+		if(mbs_stristr(dir, "\\.git")) // ignore .git* dir
 		{
 cout("GIT_DIR: %s\n", dir); // test
 			continue;
@@ -178,6 +179,7 @@ static void GitFactory(char *rDir, char *wDir, int allowOverwrite)
 
 	GitResourceMask(wDir);
 	GitSourceFilter(wDir);
+	GitSourceMask(wDir);
 	SolveEmptyDir(wDir);
 
 	memFree(rDir);
