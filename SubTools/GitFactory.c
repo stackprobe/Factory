@@ -90,9 +90,11 @@ static void SolveEncoding(char *rootDir)
 
 	foreach(files, file, index)
 	{
+		char *lFile = getLocal(file);
+
 		if(
-			!mbs_stristr(file, "\\doc\\") &&
-			!_stricmp("Readme.txt", getLocal(file))
+			!_stricmp("Readme.txt",  lFile) && !mbs_stristr(file, "\\doc\\") ||
+			!_stricmp("_source.txt", lFile)
 			)
 		{
 			cout("SE_file: %s\n", file);
