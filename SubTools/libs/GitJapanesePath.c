@@ -48,11 +48,13 @@ static void SolveJpnPath(char *rootDir, char *realRootDir)
 
 			movePath(path, dest);
 
-			dest    = PutDq(dest);
+			lPath = strx(lPath);
+			lPath = PutDq(lPath);
 			relDest = PutDq(relDest);
 
 			addElement(RBLines, (uint)xcout("REN %s %s", relDest, lPath));
 
+			memFree(lPath);
 			memFree(dest);
 			memFree(relDest);
 		}
