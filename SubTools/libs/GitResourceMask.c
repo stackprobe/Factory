@@ -145,6 +145,13 @@ static void MaskResSound(char *file)
 	memFree(outFile);
 }
 
+// ---- Other ----
+
+static void MaskResOther(char *file)
+{
+	writeOneLine(file, "//// dummy data ////");
+}
+
 // ----
 
 static void MaskResourceFile(char *file)
@@ -159,6 +166,8 @@ static void MaskResourceFile(char *file)
 	else if(!_stricmp(ext, "png"  )) MaskResImage(file);
 	else if(!_stricmp(ext, "mp3"  )) MaskResSound(file);
 	else if(!_stricmp(ext, "wav"  )) MaskResSound(file);
+	else if(!_stricmp(ext, "csv"  )) MaskResOther(file);
+	else if(!_stricmp(ext, "otf"  )) MaskResOther(file);
 }
 void GitResourceMask(char *rootDir)
 {
