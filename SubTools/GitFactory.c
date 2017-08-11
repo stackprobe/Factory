@@ -1,4 +1,5 @@
 #include "C:\Factory\Common\all.h"
+#include "C:\Factory\Common\Options\UTF.h"
 #include "libs\GitCommon.h"
 #include "libs\GitResourceMask.h"
 #include "libs\GitSourceFilter.h"
@@ -77,11 +78,40 @@ restart:
 	}
 }
 
+static void SolveEncoding(char *rootDir)
+{
+	autoList_t *files = lssFiles(rootDir);
+	char *file;
+	uint index;
+
+	LOGPOS();
+
+	RemoveGitPaths(files);
+
+	foreach(files, file, index)
+	{
+		if(
+			!mbs_stristr(file, "\\doc\\") &&
+			!_stricmp("Readme.txt", getLocal(file))
+			)
+		{
+			cout("SE_file: %s\n", file);
+
+			SJISToUTF8File(file, file);
+		}
+	}
+	releaseDim(files, 1);
+
+	LOGPOS();
+}
+
 static void SolveEmptyDir(char *rootDir)
 {
 	autoList_t *dirs = lssDirs(rootDir);
 	char *dir;
 	uint index;
+
+	LOGPOS();
 
 	RemoveGitPaths(dirs);
 
@@ -98,6 +128,8 @@ static void SolveEmptyDir(char *rootDir)
 		}
 	}
 	releaseDim(dirs, 1);
+
+	LOGPOS();
 }
 
 static void GitFactory(char *rDir, char *wDir, int allowOverwrite)
@@ -177,6 +209,7 @@ static void GitFactory(char *rDir, char *wDir, int allowOverwrite)
 	GitResourceMask(wDir);
 	GitSourceFilter(wDir);
 	GitSourceMask(wDir);
+	SolveEncoding(wDir);
 	SolveEmptyDir(wDir);
 
 	memFree(rDir);
