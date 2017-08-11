@@ -1,9 +1,9 @@
 /*
 	> lss
-	> lssExt
+	> lssLocal
 
 	> lss
-	> lssExt | TypeGroupBy
+	> lssLocal | TypeGroupBy
 */
 
 #include "C:\Factory\Common\all.h"
@@ -16,7 +16,7 @@ int main(int argc, char **argv)
 
 	foreach(files, file, index)
 	{
-		cout("%s\n", getExt(file));
+		cout("%s\n", getLocal(file));
 	}
 	releaseDim(files, 1);
 }
