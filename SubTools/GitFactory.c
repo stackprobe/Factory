@@ -4,6 +4,7 @@
 #include "libs\GitResourceMask.h"
 #include "libs\GitSourceFilter.h"
 #include "libs\GitSourceMask.h"
+#include "libs\GitJapanesePath.h"
 
 #define IGNORE_FILE "_gitignore"
 
@@ -212,6 +213,7 @@ static void GitFactory(char *rDir, char *wDir, int allowOverwrite)
 	GitSourceFilter(wDir);
 	GitSourceMask(wDir);
 	SolveEncoding(wDir);
+	SolveJapanesePath(wDir);
 	SolveEmptyDir(wDir);
 
 	memFree(rDir);
