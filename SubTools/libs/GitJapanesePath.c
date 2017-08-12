@@ -74,7 +74,7 @@ static void SolveJpnPath(char *rootDir, char *realRootDir)
 }
 void SolveJapanesePath(char *rootDir)
 {
-	char *batFile = combine(rootDir, "_run_me_for_restore.bat_");
+	char *batFile = combine(rootDir, "_run_me_for_restore_japanese_path_name.bat_");
 
 	LOGPOS();
 

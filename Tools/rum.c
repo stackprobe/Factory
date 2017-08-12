@@ -1196,6 +1196,7 @@ readArgs:
 	if(argIs("/C-"))
 	{
 		removeFileIfExist(AUTO_COMMENT_FILE);
+		cout("©“®ƒRƒƒ“ƒg‚ğíœ‚µ‚Ü‚µ‚½B\n");
 		goto endProc;
 	}
 	Rum(hasArgs(1) ? nextArg() : c_dropDir());
