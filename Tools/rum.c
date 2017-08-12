@@ -19,6 +19,10 @@
 		/R  ... 最後のリビジョンが修正無し且つコメント無しであれば削除する。
 		/D  ... 常に C:\NNN にリストアする。(NNN は 1～999)
 
+	rum.exe (/C | /C-)
+
+		自動コメント編集｜クリア
+
 	----
 	使い方
 
@@ -64,8 +68,28 @@
 
 #define DEFAULT_COMMENT "コメント無し"
 
+#define AUTO_COMMENT_FILE "C:\\Factory\\tmp\\auto-comment.txt"
+
 static uint ErrorLevel;
 
+static char *GetAutoComment(void) // ret: NULL == 未登録
+{
+	char *comment = NULL;
+
+	if(existFile(AUTO_COMMENT_FILE))
+	{
+		comment = readText(AUTO_COMMENT_FILE);
+		line2JLine(comment, 1, 0, 0, 1);
+		trim(comment, ' ');
+
+		if(!*comment)
+		{
+			memFree(comment);
+			comment = NULL;
+		}
+	}
+	return comment;
+}
 static char *GetComment(char *storeDir, char *stamp)
 {
 	char *comment;
@@ -834,8 +858,12 @@ endNestingCheck:
 			comment = addLine(comment, DEFAULT_COMMENT);
 	}
 	else
-		comment = strx(DEFAULT_COMMENT);
+	{
+		comment = GetAutoComment();
 
+		if(!comment)
+			comment = strx(DEFAULT_COMMENT);
+	}
 	cout("コメント: %s\n", comment);
 
 	if(!existDir(storeDir))
@@ -1076,6 +1104,12 @@ readArgs:
 		EditCommentMode = 1;
 		goto readArgs;
 	}
+	if(argIs("/EE")) // erum 用
+	{
+		EditCommentMode = 1;
+		InputDirExt = "rum";
+		goto readArgs;
+	}
 	if(argIs("/F")) // without .exe and .obj (Factory mode)
 	{
 		WithoutExeObjMode = 1;
@@ -1148,7 +1182,24 @@ readArgs:
 		NoNestingCheck = 1;
 		goto readArgs;
 	}
+	if(argIs("/C"))
+	{
+		char *comment;
+
+		editTextFile(AUTO_COMMENT_FILE);
+		comment = GetAutoComment();
+
+		cout("自動コメント: %s\n", comment ? comment : "<NULL>");
+
+		goto endProc;
+	}
+	if(argIs("/C-"))
+	{
+		removeFileIfExist(AUTO_COMMENT_FILE);
+		goto endProc;
+	}
 	Rum(hasArgs(1) ? nextArg() : c_dropDir());
 
+endProc:
 	termination(ErrorLevel);
 }
