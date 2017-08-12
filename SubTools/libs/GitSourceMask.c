@@ -1,6 +1,7 @@
 #include "GitSourceMask.h"
 
 #define FLAG_FILE      "_gitsrcmsk"
+#define FLAG_TXT_FILE  "_gittxtmsk"
 #define RES_FILES_FILE "_gitsrcmsk_files"
 
 static void MskSrcFile(char *file)
@@ -32,6 +33,14 @@ static void MaskSourceFile(char *file)
 	else if(!_stricmp(ext, "cs"   )) MskSrcFile(file);
 	else if(!_stricmp(ext, "cpp"  )) MskSrcFile(file);
 	else if(!_stricmp(ext, "java" )) MskSrcFile(file);
+}
+static void MaskTextFile(char *file)
+{
+	char *ext = getExt(file);
+
+	cout("# %s\n", file);
+
+    if(!_stricmp(ext, "txt")) MskSrcFile(file);
 }
 static void MaskSourceByResFile(autoList_t *files)
 {
@@ -71,20 +80,15 @@ static void MaskSourceByResFile(autoList_t *files)
 	}
 	LOGPOS();
 }
-void GitSourceMask(char *rootDir)
+static void GitSourceMask_Sub(autoList_t *files, char *flagFile, void (*maskFunc)(char *))
 {
-	autoList_t *files = lssFiles(rootDir);
 	char *file;
 	uint index;
 	autoList_t *targets = newList();
 
-	LOGPOS();
-
-	RemoveGitPaths(files);
-
 	foreach(files, file, index)
 	{
-		if(!_stricmp(FLAG_FILE, getLocal(file)))
+		if(!_stricmp(flagFile, getLocal(file)))
 		{
 			char *prefix = addChar(changeLocal(file, ""), '\\');
 			char *subfile;
@@ -101,13 +105,24 @@ void GitSourceMask(char *rootDir)
 	}
 	foreach(targets, file, index)
 	{
-		MaskSourceFile(file);
+		maskFunc(file);
 	}
+	releaseAutoList(targets);
+}
+void GitSourceMask(char *rootDir)
+{
+	autoList_t *files = lssFiles(rootDir);
+
+	LOGPOS();
+
+	RemoveGitPaths(files);
+
+	GitSourceMask_Sub(files, FLAG_FILE, MaskSourceFile);
+	GitSourceMask_Sub(files, FLAG_TXT_FILE, MaskTextFile);
 
 	MaskSourceByResFile(files);
 
 	releaseDim(files, 1);
-	releaseAutoList(targets);
 
 	LOGPOS();
 }
