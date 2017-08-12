@@ -164,6 +164,7 @@ static void MaskResourceFile(char *file)
 	else if(!_stricmp(ext, "jpeg" )) MaskResImage(file);
 	else if(!_stricmp(ext, "jpg"  )) MaskResImage(file);
 	else if(!_stricmp(ext, "png"  )) MaskResImage(file);
+	else if(!_stricmp(ext, "gif"  )) MaskResImage(file);
 	else if(!_stricmp(ext, "mp3"  )) MaskResSound(file);
 	else if(!_stricmp(ext, "wav"  )) MaskResSound(file);
 	else if(!_stricmp(ext, "csv"  )) MaskResOther(file);
