@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 
 			addCwd(dir);
 			{
-				coExecute("qrum -- -q");
+				coExecute("qrum -- -qa");
 			}
 			unaddCwd();
 		}

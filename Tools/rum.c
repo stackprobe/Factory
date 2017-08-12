@@ -536,7 +536,7 @@ noSelStocks:
 	recurRemoveDir_x(outStockTestDir);
 	unaddCwd();
 }
-static void RemoveLastRevIfNoMod(char *storeDir, int quietFlag)
+static void RemoveLastRevIfNoMod(char *storeDir, int quietFlag, int ignoreMessage)
 {
 	autoList_t *revisions;
 	char *stamp1;
@@ -573,7 +573,7 @@ static void RemoveLastRevIfNoMod(char *storeDir, int quietFlag)
 	{
 		cout("最後のリビジョンは更新されています。\n");
 	}
-	else if(strcmp(DEFAULT_COMMENT, GetComment(storeDir, stamp2))) // ? != DEFAULT_COMMENT
+	else if(!ignoreMessage && strcmp(DEFAULT_COMMENT, GetComment(storeDir, stamp2))) // ? != DEFAULT_COMMENT
 	{
 		cout("最後のリビジョンは更新されていませんが、コメントが記述されています。\n");
 	}
@@ -581,6 +581,7 @@ static void RemoveLastRevIfNoMod(char *storeDir, int quietFlag)
 	{
 		char *removeTargetDir = makeFullPath(stamp2);
 
+if(ignoreMessage) cout("ignoreMessage\n"); // test
 		cout("+--------------------------------------+\n");
 		cout("| 最後のリビジョンは更新されていません |\n");
 		cout("+--------------------------------------+\n");
@@ -1051,6 +1052,7 @@ static int FileHistoryMode_FromLastRevision;
 static int FileHistoryMode_LastFileOnly;
 static int RemoveLastRevIfNoModMode;
 static int RemoveLastRevIfNoModMode_QuietMode;
+static int RemoveLastRevIfNoModMode_IgnoreMessage;
 static char *InputDirExt;
 
 static void Rum(char *dir)
@@ -1084,7 +1086,7 @@ static void Rum(char *dir)
 		}
 		else if(RemoveLastRevIfNoModMode)
 		{
-			RemoveLastRevIfNoMod(dir, RemoveLastRevIfNoModMode_QuietMode);
+			RemoveLastRevIfNoMod(dir, RemoveLastRevIfNoModMode_QuietMode, RemoveLastRevIfNoModMode_IgnoreMessage);
 		}
 		else
 		{
@@ -1159,6 +1161,14 @@ readArgs:
 	{
 		RemoveLastRevIfNoModMode = 1;
 		RemoveLastRevIfNoModMode_QuietMode = 1;
+		InputDirExt = "rum";
+		goto readArgs;
+	}
+	if(argIs("/RRRA")) // qrumall 用
+	{
+		RemoveLastRevIfNoModMode = 1;
+		RemoveLastRevIfNoModMode_QuietMode = 1;
+		RemoveLastRevIfNoModMode_IgnoreMessage = 1;
 		InputDirExt = "rum";
 		goto readArgs;
 	}
