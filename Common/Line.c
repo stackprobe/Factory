@@ -303,6 +303,24 @@ char *mbs_stristr(char *line, char *ptn)
 	return mbs_strstrCase(line, ptn, 1);
 }
 
+char *strstrNextCase(char *line, char *ptn, int ignoreCase) // mbs_
+{
+	char *p = mbs_strstrCase(line, ptn, ignoreCase);
+
+	if(p)
+		p += strlen(ptn);
+
+	return p;
+}
+char *strstrNext(char *line, char *ptn) // mbs_
+{
+	return strstrNextCase(line, ptn, 0);
+}
+char *stristrNext(char *line, char *ptn) // mbs_
+{
+	return strstrNextCase(line, ptn, 1);
+}
+
 static uint LastReplacedCount;
 
 char *replaceLine(char *line, char *ptn1, char *ptn2, int ignoreCase) // mbs_ ret: strr(line)
@@ -695,6 +713,84 @@ int isAsciiLine(char *str, int okRet, int okTab, int okSpc)
 	toAsciiLine(tmp, okRet, okTab, okSpc);
 	ret = !strcmp(tmp, str);
 	memFree(tmp);
+	return ret;
+}
+
+static char *TokPtr;
+static uchar *TokDelims;
+
+void tokinit(char *str, char *delims)
+{
+	if(str)
+	{
+		TokPtr = str;
+		memFree(TokDelims);
+		TokDelims = NULL;
+	}
+	if(delims)
+	{
+		char *p;
+
+		if(*delims)
+		{
+			if(!TokDelims)
+				TokDelims = memAlloc(32);
+
+			memset(TokDelims, 0x00, 32);
+
+			for(p = delims; ; p++)
+			{
+				uint delim = *p;
+
+				TokDelims[delim / 8] |= 1 << delim % 8;
+
+				if(!delim)
+					break;
+			}
+		}
+		else
+		{
+			memFree(TokDelims);
+			TokDelims = NULL;
+		}
+	}
+}
+char *toknext(char *str, char *delims)
+{
+	char *ret;
+
+	tokinit(str, delims);
+
+	if(!TokPtr)
+		return NULL;
+
+	ret = TokPtr;
+
+	if(TokDelims)
+	{
+		char *p;
+		uint upchr;
+
+		for(p = TokPtr; ; p++)
+		{
+			upchr = *p;
+
+			if(TokDelims[upchr / 8] & 1 << upchr % 8)
+				break;
+		}
+		if(upchr)
+		{
+			*p = '\0';
+			p++;
+		}
+		else
+			p = NULL;
+
+		TokPtr = p;
+	}
+	else
+		TokPtr = NULL;
+
 	return ret;
 }
 

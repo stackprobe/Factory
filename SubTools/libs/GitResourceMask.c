@@ -2,6 +2,85 @@
 
 #define FLAG_FILE "_gitresmsk"
 
+#define WAV_HZ 8000
+//#define WAV_HZ 44100
+#define MOVIE_FPS 30
+
+typedef struct MediaInfo_st
+{
+	uint Centisec;
+	uint Width;
+	uint Height;
+}
+MediaInfo_t;
+
+static MediaInfo_t GetMediaInfo(char *file)
+{
+	char *repFile = makeTempPath(NULL);
+	autoList_t *lines;
+	char *line;
+	uint index;
+	MediaInfo_t ret = { 0 };
+
+	coExecute_x(xcout("START \"\" /B /WAIT \"%s\" \"%s\" 2> \"%s\"", FILE_FFPROBE_EXE, file, repFile));
+
+	lines = readLines(repFile);
+
+	foreach(lines, line, index)
+	{
+		char *p;
+		char *q;
+
+		ucTrim(line);
+
+		// sample:
+		// ... Duration: 00:01:12.96, start: 0.000000, ...
+		// Stream #0:0(und): Video: h264 ... v420p, 512x384, 361 kb/s, ...
+
+		if(p = strstrNext(line, "Duration: "))
+		{
+			p = toknext(p, " ,");
+			errorCase(!p);
+
+			errorCase(!lineExp("<2,09>:<2,09>:<2,09>.<2,09>", p));
+
+			p[2] = '\0';
+			p[5] = '\0';
+			p[8] = '\0';
+
+			ret.Centisec =
+				toValue(p) * 360000 +
+				toValue(p + 3) * 6000 +
+				toValue(p + 6) * 100 +
+				toValue(p + 9);
+
+			errorCase(!m_isRange(ret.Centisec, 1, IMAX));
+		}
+		else if(startsWith(line, "Stream") && (p = strstrNext(line, "Video:")))
+		{
+			tokinit(p, " ,");
+
+			while(p = toknext(NULL, NULL))
+			{
+				if(lineExp("<1,,09>x<1,,09>", p))
+				{
+					ret.Width  = toValue(toknext(p, "x"));
+					ret.Height = toValue(toknext(NULL, ""));
+
+					errorCase(!m_isRange(ret.Width,  1, IMAX));
+					errorCase(!m_isRange(ret.Height, 1, IMAX));
+
+					break;
+				}
+			}
+		}
+	}
+	releaseDim(lines, 1);
+	removeFile(repFile);
+	memFree(repFile);
+	return ret;
+}
+
 // ---- Image ----
 
 static void MaskResImage(char *file)
@@ -28,68 +107,15 @@ static void MaskResImage(char *file)
 
 // ---- Sound ----
 
-#define WAV_HZ 8000
-//#define WAV_HZ 44100
-
 static uint MRS_GetSoundLength(char *file)
 {
-	char *repFile = makeTempPath(NULL);
-	autoList_t *lines;
-	char *line;
-	uint index;
-	uint ret;
+	MediaInfo_t mi = GetMediaInfo(file);
 
-	coExecute_x(xcout("START \"\" /B /WAIT \"%s\" \"%s\" 2> \"%s\"", FILE_FFPROBE_EXE, file, repFile));
+	errorCase(!mi.Centisec); // ? no data
 
-	lines = readLines(repFile);
+	m_range(mi.Centisec, 1, 60000); // 0s <, <= 10m
 
-	foreach(lines, line, index)
-	{
-		char *p = strstr(line, "Duration:");
-		char *q;
-
-		// sample:
-		// ... Duration: 00:01:12.96, start: 0.000000, ...
-
-		if(p)
-		{
-			p = strchr(p, ' ');
-			errorCase(!p);
-			p++;
-
-			// 行の最後かも？？？
-
-			if(q = strchr(p, ','))
-				*q = '\0';
-
-			if(q = strchr(p, ' ')) // ブランクで終わるかも？？？
-				*q = '\0';
-
-			errorCase(!lineExp("<2,09>:<2,09>:<2,09>.<2,09>", p));
-
-			p[2] = '\0';
-			p[5] = '\0';
-			p[8] = '\0';
-
-			ret =
-				(uint)d2i(
-				(
-					toValue(p) * 360000 +
-					toValue(p + 3) * 6000 +
-					toValue(p + 6) * 100 +
-					toValue(p + 9)
-				) / 100.0 * WAV_HZ);
-
-			goto endLoop;
-		}
-	}
-	error(); // ? not found "Duration:"
-endLoop:
-
-	releaseDim(lines, 1);
-	removeFile(repFile);
-	memFree(repFile);
-	return ret;
+	return (uint)d2i(mi.Centisec / 100.0 * WAV_HZ);
 }
 static void MRS_MakeWavFile(char *file, uint length)
 {
@@ -102,7 +128,7 @@ static void MRS_MakeWavFile(char *file, uint length)
 
 	for(count = 0; count < length; count++)
 	{
-		writeLine(fp, "32768,32768"); // 無音！
+		writeLine(fp, "32768,32768"); // 無音
 	}
 	fileClose(fp);
 	LOGPOS();
@@ -145,11 +171,66 @@ static void MaskResSound(char *file)
 	memFree(outFile);
 }
 
-// ---- Other ----
+// ---- Movie ----
 
+static char *MRM_GetKomaFile(char *dir, uint index)
+{
+	return combine_cx(dir, xcout("%u.png", index));
+}
+static void MRM_GenKoma(char *komaDir, char *file)
+{
+	MediaInfo_t mi = GetMediaInfo(file);
+	uint length;
+	uint index;
+	char *komaFile_0 = MRM_GetKomaFile(komaDir, 0);
+	char *komaFile_1 = MRM_GetKomaFile(komaDir, 1);
+
+	// ? no data
+	errorCase(!mi.Centisec);
+	errorCase(!mi.Width);
+	errorCase(!mi.Height);
+
+	m_range(mi.Centisec, 300, 60000); // 3s ～ 10m
+	m_range(mi.Width,  100, 1000);
+	m_range(mi.Height, 100, 1000);
+
+	length = d2i(mi.Centisec / 100.0 * MOVIE_FPS);
+
+	coExecute_x(xcout("START \"\" /B /WAIT \"%s\" /WF \"%s\" /PLAIN %u %u", FILE_IMGTOOLS_EXE, komaFile_0, mi.Width, mi.Height));
+	coExecute_x(xcout("START \"\" /B /WAIT \"%s\" /MASK-RESOURCE-IMAGE \"%s\" \"%s\"", FILE_TOOLKIT_EXE, komaFile_0, komaFile_1));
+
+	removeFile(komaFile_0);
+	moveFile(komaFile_1, komaFile_0);
+
+	for(index = 1; index < length; index++)
+	{
+		char *komaFile_index = MRM_GetKomaFile(komaDir, index);
+
+		copyFile(komaFile_0, komaFile_index);
+
+		memFree(komaFile_index);
+	}
+	memFree(komaFile_0);
+	memFree(komaFile_1);
+}
 static void MaskResMovie(char *file)
 {
-	writeOneLine(file, "//// dummy data ////"); // TODO
+	char *komaDir = makeTempDir(NULL);
+
+	file = makeFullPath(file);
+
+	MRM_GenKoma(komaDir, file);
+	removeFile(file);
+
+	addCwd(komaDir);
+	{
+		coExecute_x(xcout("START \"\" /B /WAIT \"%s\" -r %u -i %%d.png \"%s\"", FILE_FFMPEG_EXE, MOVIE_FPS, file));
+	}
+	unaddCwd();
+
+	recurRemoveDir(komaDir);
+	memFree(komaDir);
+	memFree(file);
 }
 
 // ---- Other ----
@@ -193,6 +274,7 @@ void GitResourceMask(char *rootDir)
 		errorCase(!existFile(FILE_FFMPEG_EXE));
 		errorCase(!existFile(FILE_FFPROBE_EXE));
 //		errorCase(!existFile(FILE_BMPTOCSV_EXE));
+		errorCase(!existFile(FILE_IMGTOOLS_EXE));
 		errorCase(!existFile(FILE_TOOLKIT_EXE));
 	}
 

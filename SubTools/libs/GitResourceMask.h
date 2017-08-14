@@ -4,6 +4,7 @@
 #include "C:\Factory\SubTools\libs\wavFile.h"
 #include "C:\Factory\Meteor\ffmpeg.h"
 #include "C:\Factory\Meteor\BmpToCsv.h"
+#include "C:\Factory\Meteor\ImgTools.h"
 #include "C:\Factory\Meteor\Toolkit.h"
 #include "GitCommon.h"
 

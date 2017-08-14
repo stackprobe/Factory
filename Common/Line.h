@@ -76,6 +76,9 @@ int endsWith(char *line1, char *line2);
 char *mbs_strstrCase(char *line, char *ptn, int ignoreCase);
 char *mbs_strstr(char *line, char *ptn);
 char *mbs_stristr(char *line, char *ptn);
+char *strstrNextCase(char *line, char *ptn, int ignoreCase);
+char *strstrNext(char *line, char *ptn);
+char *stristrNext(char *line, char *ptn);
 char *replaceLine(char *line, char *ptn1, char *ptn2, int ignoreCase);
 char *replaceLineLoop(char *line, char *ptn1, char *ptn2, int ignoreCase, uint loopMax);
 uint replaceLine_getLastReplacedCount(void);
@@ -110,6 +113,9 @@ char *setStrLenMin(char *str, uint lenmin, int defchr);
 void setStrLenMax(char *str, uint lenmax);
 void toAsciiLine(char *str, int okRet, int okTab, int okSpc);
 int isAsciiLine(char *str, int okRet, int okTab, int okSpc);
+
+void tokinit(char *str, char *delims);
+char *toknext(char *str, char *delims);
 
 // c_
 char *c_thousandComma(char *line);
