@@ -18,6 +18,10 @@ static void MskSrcFile(char *file)
 			if(' ' < *p)
 				*p = '/';
 
+	p = md5_makeHexHashFile(file);
+	insertElement(lines, 0, (uint)xcout("//// _git source mask md5:%s ////", p));
+	memFree(p);
+
 	writeLines_cx(file, lines);
 
 	LOGPOS();
