@@ -216,28 +216,35 @@ static void MRM_GenKoma(char *komaDir, char *file)
 static void MaskResMovie(char *file)
 {
 	char *komaDir = makeTempDir(NULL);
+	char *midFile;
 
-	file = makeFullPath(file);
+	midFile = combine_cx(komaDir, xcout("1.%s", getExt(file)));
 
 	MRM_GenKoma(komaDir, file);
-	removeFile(file);
 
 	addCwd(komaDir);
 	{
-		coExecute_x(xcout("START \"\" /B /WAIT \"%s\" -r %u -i %%d.png \"%s\"", FILE_FFMPEG_EXE, MOVIE_FPS, file));
+		coExecute_x(xcout("START \"\" /B /WAIT \"%s\" -r %u -i %%d.png %s", FILE_FFMPEG_EXE, MOVIE_FPS, getLocal(midFile)));
 	}
 	unaddCwd();
 
+	removeFile(file);
+	moveFile(midFile, file);
+
 	recurRemoveDir(komaDir);
 	memFree(komaDir);
-	memFree(file);
+	memFree(midFile);
 }
 
 // ---- Other ----
 
 static void MaskResOther(char *file)
 {
-	writeOneLine(file, "//// dummy data ////");
+	char *hash = md5_makeHexHashFile(file);
+
+	writeOneLine_cx(file, xcout("//// dummy data md5:%s ////", hash));
+
+	memFree(hash);
 }
 
 // ----
