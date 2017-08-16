@@ -22,7 +22,8 @@ void RemoveGitPaths(autoList_t *paths)
 */
 void EscapeUnusableResPath(char *path)
 {
-	char *destPath = changeExt(path, "_git-escape");
+	char *destPath = addExt(strx(path), "_git-escape");
+//	char *destPath = changeExt(path, "_git-escape");
 //	char *destPath = changeExt_cx(path, xcout("_git-escape.%s", getExt(path))); // Šg’£q‚ğ¶‚©‚µ‚Ä‚¨‚­•K—v‚Í–³‚¢..
 
 	cout("EURP\n");
