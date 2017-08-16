@@ -1095,6 +1095,12 @@ char *changeExt_xc(char *path, char *newExt)
 	memFree(path);
 	return out;
 }
+char *changeExt_cx(char *path, char *newExt)
+{
+	char *out = changeExt(path, newExt);
+	memFree(newExt);
+	return out;
+}
 char *combine_cx(char *dir, char *file)
 {
 	char *out = combine(dir, file);

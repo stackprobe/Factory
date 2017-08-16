@@ -4,7 +4,7 @@
 #define FLAG_TXT_FILE  "_gittxtmsk"
 #define RES_FILES_FILE "_gitsrcmsk_files"
 
-static void MskSrcFile(char *file)
+static void MskSrcFile(char *file, int eurpFlag)
 {
 	autoList_t *lines = readLines(file);
 	char *line;
@@ -25,6 +25,9 @@ static void MskSrcFile(char *file)
 	writeLines_cx(file, lines);
 
 	LOGPOS();
+
+	if(eurpFlag)
+		EscapeUnusableResPath(file);
 }
 static void MaskSourceFile(char *file)
 {
@@ -32,11 +35,11 @@ static void MaskSourceFile(char *file)
 
 	cout("* %s\n", file);
 
-	     if(!_stricmp(ext, "c"    )) MskSrcFile(file);
-	else if(!_stricmp(ext, "h"    )) MskSrcFile(file);
-	else if(!_stricmp(ext, "cs"   )) MskSrcFile(file);
-	else if(!_stricmp(ext, "cpp"  )) MskSrcFile(file);
-	else if(!_stricmp(ext, "java" )) MskSrcFile(file);
+	     if(!_stricmp(ext, "c"    )) MskSrcFile(file, 0);
+	else if(!_stricmp(ext, "h"    )) MskSrcFile(file, 0);
+	else if(!_stricmp(ext, "cs"   )) MskSrcFile(file, 0);
+	else if(!_stricmp(ext, "cpp"  )) MskSrcFile(file, 0);
+	else if(!_stricmp(ext, "java" )) MskSrcFile(file, 0);
 }
 static void MaskTextFile(char *file)
 {
@@ -44,7 +47,7 @@ static void MaskTextFile(char *file)
 
 	cout("# %s\n", file);
 
-    if(!_stricmp(ext, "txt")) MskSrcFile(file);
+    if(!_stricmp(ext, "txt")) MskSrcFile(file, 1);
 }
 static void MaskSourceByResFile(autoList_t *files)
 {
@@ -73,7 +76,7 @@ static void MaskSourceByResFile(autoList_t *files)
 				mskfile = changeLocal(file, mskfile);
 				errorCase(!existFile(mskfile));
 
-				MskSrcFile(mskfile);
+				MskSrcFile(mskfile, 1);
 
 				memFree(mskfile);
 			}

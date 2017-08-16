@@ -243,8 +243,9 @@ static void MaskResOther(char *file)
 	char *hash = md5_makeHexHashFile(file);
 
 	writeOneLine_cx(file, xcout("//// dummy data md5:%s ////", hash));
-
 	memFree(hash);
+
+	EscapeUnusableResPath(file);
 }
 
 // ----

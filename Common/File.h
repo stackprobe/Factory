@@ -111,6 +111,7 @@ char *changeLocal_xc(char *path, char *newLocal);
 char *changeLocal_cx(char *path, char *newLocal);
 void changeRoots_xc(autoList_t *pathList, char *root, char *newRoot);
 char *changeExt_xc(char *path, char *newExt);
+char *changeExt_cx(char *path, char *newExt);
 char *combine_cx(char *dir, char *file);
 char *combine_xc(char *dir, char *file);
 char *combine_xx(char *dir, char *file);

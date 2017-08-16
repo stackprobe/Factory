@@ -8,6 +8,11 @@
 
 static void MaskLine(char *p, char *q)
 {
+#if 1
+	for(; p < q; p++)
+		if(' ' < *p)
+			*p = CHR_SECRET;
+#else // old
 	while(p < q && *p <= ' ')
 		p++;
 
@@ -16,6 +21,7 @@ static void MaskLine(char *p, char *q)
 
 	while(p < q)
 		*p++ = CHR_SECRET;
+#endif
 }
 static FilterSourceFile(char *file)
 {
@@ -88,6 +94,7 @@ void GitSourceFilter(char *rootDir)
 			!_stricmp(ext, "c") ||
 			!_stricmp(ext, "h") ||
 			!_stricmp(ext, "cs") ||
+			!_stricmp(ext, "cpp") ||
 			!_stricmp(ext, "java")
 			)
 			FilterSourceFile(file);
