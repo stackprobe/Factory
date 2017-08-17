@@ -4,7 +4,7 @@ static int ChrEnumOpen  = '{';
 static int ChrEnumClose = '}';
 static int ChrEnumDlmtr = ',';
 
-static char *OutBasePath = "C:\\Factory\\tmp\\unsummer_";
+static char *OutBasePath = "C:\\Factory\\tmp\\unsummarize_";
 static uint OutPathCount = 1;
 static uint TmpPathCount = 1;
 
