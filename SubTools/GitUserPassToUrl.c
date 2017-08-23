@@ -55,9 +55,9 @@ static void FoundCfgFile(char *cfgFile)
 						}
 						else
 						{
-							q = strx(q);
+							q = strx(q); // p == q Ç∆Ç¢Ç§Ç±Ç∆Ç‡Ç†ÇÈÇÊÅB
 							*p = '\0';
-							p = xcout("%s%s%s", value, InsertPtn, q);
+							p = xcout("%s=%s%s%s", key, value, InsertPtn, q);
 
 							cout("< %s\n", line);
 
@@ -79,8 +79,7 @@ static void FoundCfgFile(char *cfgFile)
 	cout("mod: %d\n", mod);
 
 	if(mod)
-		1; // test
-//		writeLines_b_cx(cfgFile, lines); // .git\config ÇÃâ¸çsÇÕ LF
+		writeLines_b_cx(cfgFile, lines); // .git\config ÇÃâ¸çsÇÕ LF
 	else
 		releaseDim(lines, 1);
 }
