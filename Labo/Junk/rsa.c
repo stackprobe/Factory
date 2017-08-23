@@ -12,7 +12,7 @@ static uint MakePrime(void)
 retry:
 	p = mt19937_range(2, PrimeMax);
 
-	for(d = 2; d * d <= p; d++)
+	for(d = 2; d * d <= p; d = (d + 1) | 1)
 	{
 		if(p % d == 0)
 		{
@@ -26,7 +26,7 @@ static uint GetLCD(uint x, uint y)
 	uint c = 1;
 	uint d;
 
-	for(d = 2; d < x && d < y; d++)
+	for(d = 2; d <= m_min(x, y); d = (d + 1) | 1)
 	{
 		while(x % d == 0 && y % d == 0)
 		{

@@ -449,6 +449,13 @@ void writeLines(char *file, autoList_t *lines)
 	writeLines2Stream(fp, lines);
 	fileClose(fp);
 }
+void writeLines_b(char *file, autoList_t *lines)
+{
+	FILE *fp = fileOpen(file, "wb");
+
+	writeLines2Stream(fp, lines);
+	fileClose(fp);
+}
 void addLines2File(char *file, autoList_t *lines)
 {
 	FILE *fp = fileOpen(file, "at");
@@ -739,6 +746,11 @@ void writeLines_xx(char *file, autoList_t *lines)
 {
 	writeLines_cx(file, lines);
 	memFree(file);
+}
+void writeLines_b_cx(char *file, autoList_t *lines)
+{
+	writeLines_b(file, lines);
+	releaseDim(lines, 1);
 }
 void addLines2File_cx(char *file, autoList_t *lines)
 {

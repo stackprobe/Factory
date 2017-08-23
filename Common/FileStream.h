@@ -41,6 +41,7 @@ void writeToken(FILE *fp, char *line);
 void writeLine(FILE *fp, char *line);
 void writeLines2Stream(FILE *fp, autoList_t *lines);
 void writeLines(char *file, autoList_t *lines);
+void writeLines_b(char *file, autoList_t *lines);
 void addLines2File(char *file, autoList_t *lines);
 
 char *readFirstLine(char *file);
@@ -95,6 +96,7 @@ void writeLines2Stream_x(FILE *fp, autoList_t *lines);
 void writeLines_cx(char *file, autoList_t *lines);
 void writeLines_xc(char *file, autoList_t *lines);
 void writeLines_xx(char *file, autoList_t *lines);
+void writeLines_b_cx(char *file, autoList_t *lines);
 void addLines2File_cx(char *file, autoList_t *lines);
 void writeBinaryBlock_x(FILE *fp, autoBlock_t *block);
 void writeBinary_cx(char *file, autoBlock_t *block);

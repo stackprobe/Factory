@@ -6,8 +6,9 @@ static char *User = "user01";
 static char *Pass = "9999";
 static char *InsertPtn;
 
-#define BEFORE_TARGET "\turl = https://"
-#define POST_TARGET_A "@github.com/"
+#define TARGET_KEY "url"
+#define TARGET_VALUE_PREFIX "https://"
+#define TARGET_VALUE_SUFFIX_A "@github.com/"
 
 static void FoundCfgFile(char *cfgFile)
 {
@@ -20,43 +21,66 @@ static void FoundCfgFile(char *cfgFile)
 
 	foreach(lines, line, index)
 	{
-		if(startsWith(line, BEFORE_TARGET))
+		char *tmpLine = strx(line);
+		char *key;
+		char *value;
+
+		key = toknext(tmpLine, "=");
+		value = toknext(NULL, "");
+
+		if(value)
 		{
-			char *p = line + strlen(BEFORE_TARGET);
-			char *q;
+			char *tKey = strx(key);
 
-			q = strstr(p, POST_TARGET_A);
+			ucTrim(tKey);
 
-			if(q)
-				q++;
-			else
-				q = strstr(p, POST_TARGET_A + 1);
-
-			if(q)
+			if(!strcmp(tKey, TARGET_KEY))
 			{
-				if(!memcmp(p, InsertPtn, strlen(InsertPtn)) && p + strlen(InsertPtn) == q)
-				{
-					cout("no-mod\n");
-				}
-				else
-				{
-					q = strx(q);
-					*p = '\0';
-					p = xcout("%s%s%s", line, InsertPtn, q);
+				char *p = strstrNext(value, TARGET_VALUE_PREFIX);
 
-					memFree(line);
-					setElement(lines, index, (uint)p);
-					mod = 1;
+				if(p)
+				{
+					char *q = strstr(p, TARGET_VALUE_SUFFIX_A);
 
-					cout("* %s\n", getElement(lines, index));
+					if(q)
+						q++;
+					else
+						q = strstr(p, TARGET_VALUE_SUFFIX_A + 1);
+
+					if(q)
+					{
+						if(p + strlen(InsertPtn) == q && !memcmp(p, InsertPtn, strlen(InsertPtn)))
+						{
+							cout("ïœçXÇ≥ÇÍÇƒÇ¢Ç‹ÇπÇÒÅB\n");
+						}
+						else
+						{
+							q = strx(q);
+							*p = '\0';
+							p = xcout("%s%s%s", value, InsertPtn, q);
+
+							cout("< %s\n", line);
+
+							memFree(line);
+							setElement(lines, index, (uint)p);
+							mod = 1;
+
+							cout("> %s\n", getElement(lines, index)); // show p
+
+							memFree(q);
+						}
+					}
 				}
 			}
+			memFree(tKey);
 		}
+		memFree(tmpLine);
 	}
 	cout("mod: %d\n", mod);
 
 	if(mod)
-		writeLines_cx(cfgFile, lines);
+		1; // test
+//		writeLines_b_cx(cfgFile, lines); // .git\config ÇÃâ¸çsÇÕ LF
 	else
 		releaseDim(lines, 1);
 }
