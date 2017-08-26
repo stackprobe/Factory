@@ -1,21 +1,39 @@
+/*
+	qrumall [/D] [ROOT-DIR]
+
+		/D ... Daily-Release mode
+*/
+
 #include "C:\Factory\Common\all.h"
 
 int main(int argc, char **argv)
 {
-	autoList_t *dirs = lssDirs(hasArgs(1) ? nextArg() : c_dropDir());
+	int dailymode = argIs("/D");
+	autoList_t *dirs;
 	char *dir;
 	uint index;
 
-	coExecute("rum /c");
+	dirs = lssDirs(hasArgs(1) ? nextArg() : c_dropDir());
 
-	// confirm
+	if(dailymode)
 	{
-		cout("続行？\n");
+		coExecute("rum /c Daily");
 
-		if(clearGetKey() == 0x1b)
-			termination(0);
+		coExecute("frum -qa");
+	}
+	else
+	{
+		coExecute("rum /c");
 
-		cout("続行します。\n");
+		// confirm
+		{
+			cout("続行？\n");
+
+			if(clearGetKey() == 0x1b)
+				termination(0);
+
+			cout("続行します。\n");
+		}
 	}
 
 	foreach(dirs, dir, index)

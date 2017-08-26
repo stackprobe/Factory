@@ -19,7 +19,7 @@
 		/R  ... 最後のリビジョンが修正無し且つコメント無しであれば削除する。
 		/D  ... 常に C:\NNN にリストアする。(NNN は 1～999)
 
-	rum.exe (/C | /C-)
+	rum.exe (/C [COMMENT] | /C-)
 
 		自動コメント編集｜クリア
 
@@ -68,7 +68,8 @@
 
 #define DEFAULT_COMMENT "コメント無し"
 
-#define AUTO_COMMENT_FILE "C:\\Factory\\tmp\\auto-comment.txt"
+#define AUTO_COMMENT_FILE "C:\\appdata\\rum-auto-comment.txt"
+//#define AUTO_COMMENT_FILE "C:\\Factory\\tmp\\auto-comment.txt" // qrumall /D で消される。
 
 static uint ErrorLevel;
 
@@ -1196,9 +1197,12 @@ readArgs:
 	{
 		char *comment;
 
-		editTextFile(AUTO_COMMENT_FILE);
-		comment = GetAutoComment();
+		if(hasArgs(1))
+			writeOneLineNoRet_b(AUTO_COMMENT_FILE, nextArg());
+		else
+			editTextFile(AUTO_COMMENT_FILE);
 
+		comment = GetAutoComment();
 		cout("自動コメント: %s\n", comment ? comment : "<NULL>");
 
 		goto endProc;
