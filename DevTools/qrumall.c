@@ -1,5 +1,5 @@
 /*
-	qrumall [/D] [ROOT-DIR]
+	qrumall [/D [COMMENT] | ROOT-DIR]
 
 		/D ... Daily-Release mode
 */
@@ -13,16 +13,22 @@ int main(int argc, char **argv)
 	char *dir;
 	uint index;
 
-	dirs = lssDirs(hasArgs(1) ? nextArg() : c_dropDir());
-
 	if(dailymode)
 	{
-		coExecute("rum /c Daily");
+		char *comment = hasArgs(1) ? nextArg() : "Daily";
+
+		dirs = lssDirs("C:\\Dev");
+
+		coExecute_x(xcout("rum /c \"%s\"", comment));
 
 		coExecute("frum -qa");
 	}
 	else
 	{
+		char *rootDir = hasArgs(1) ? nextArg() : c_dropDir();
+
+		dirs = lssDirs(rootDir);
+
 		coExecute("rum /c");
 
 		// confirm
