@@ -1,16 +1,14 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\CRandom.h"
 
-static void RareErrorCase(int state)
+static void RareErrorCase(int state, int *p_w)
 {
-	static uint w;
-
 	if(state)
-		w += 10;
-	else if(w)
-		w--;
+		*p_w += 10;
+	else
+		*p_w && --*p_w;
 
-	errorCase(100 < w);
+	errorCase(100 < *p_w);
 }
 
 // ---- kokokara
@@ -40,22 +38,22 @@ static uint ModPow(uint v, uint e, uint m)
 }
 static void TestMain(void)
 {
-	static char ps[0x10000];
+	static char tp[0x8000];
 	uint c, p, q, m, e, d; // 32bit
 
-memset(ps, 0x00, 0x10000); // not needed
-	ps[0] = 1;
-	ps[1] = 1;
+memset(tp, 0x00, 0x8000); // not needed
 
-	for(c = 2; c < 0x100; c++)
-		if(!ps[c])
-			for(d = c * 2; d < 0x10000; d += c)
-				ps[d] = 1;
+	tp[0] = 1;
+
+	for(c = 3; c < 0x100; c += 2)
+		if(!tp[c / 2])
+			for(d = c * c; d < 0x10000; d += c * 2)
+				tp[d / 2] = 1;
 
 genPQ:
 	do {
-		do p = CRnd16(); while(ps[p]);
-		do q = CRnd16(); while(ps[q]);
+		do p = CRnd16() | 1; while(tp[p / 2]);
+		do q = CRnd16() | 1; while(tp[q / 2]);
 	}
 	while(p == q || p * q < 0x10000);
 
@@ -63,14 +61,14 @@ genPQ:
 	p--;
 	q--;
 
-	for(c = 2; c < 0x100; c++)
-		if(!ps[c] && !(p % c) && !(q % c))
+	for(c = 3; c < 0x100; c += 2)
+		if(!tp[c / 2] && !(p % c) && !(q % c))
 			q /= c;
 
-	p *= q; // LCD -> p
+	p *= q / 2; // LCD -> p
 	p++;
 
-	for(e = 2; ps[e] || p % e; e++)
+	for(e = 3; tp[e / 2] || p % e; e += 2)
 		if(p / e < e)
 			goto genPQ;
 
@@ -86,7 +84,7 @@ genPQ:
 
 	// ----
 
-	RareErrorCase(p == c);
+	{ static int w; RareErrorCase(p == c, &w); }
 	errorCase(p != q);
 }
 
