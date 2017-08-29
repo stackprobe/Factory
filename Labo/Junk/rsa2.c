@@ -15,6 +15,9 @@ static void RareErrorCase(int state, int *p_w)
 
 uint16 CRnd16(void); // cryptographically random number generator
 
+static uint GetLCD(uint a, uint b)
+{
+}
 static uint ModPow(uint v, uint e, uint m)
 {
 	uint64 r;
@@ -60,11 +63,9 @@ genPQ:
 	p--;
 	q--;
 
-	for(c = 3; c < 0x100; c += 2)
-		if(!op(c) && !(p % c) && !(q % c))
-			q /= c;
+	for(e = p, d = q; e != d; e < d ? (d -= e) : (e -= d));
 
-	p *= q / 2; // LCD -> p
+	p *= q / e;
 	p++;
 
 	for(e = 3; op(e) || p % e; e += 2)
