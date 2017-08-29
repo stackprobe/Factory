@@ -1,7 +1,7 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\CRandom.h"
 
-static void RareErrorCase(int state, int *p_w)
+static void RareErrorCase(int state, uint *p_w)
 {
 	if(state)
 		*p_w += 10;
@@ -15,9 +15,6 @@ static void RareErrorCase(int state, int *p_w)
 
 uint16 CRnd16(void); // cryptographically random number generator
 
-static uint GetLCD(uint a, uint b)
-{
-}
 static uint ModPow(uint v, uint e, uint m)
 {
 	uint64 r;
@@ -29,8 +26,7 @@ static uint ModPow(uint v, uint e, uint m)
 	r *= r;
 	r %= m;
 
-	if(e & 1)
-	{
+	if(e & 1) {
 		r *= v;
 		r %= m;
 	}
@@ -41,21 +37,21 @@ static void TestMain(void)
 	static uchar ops[0x1000];
 	uint c, p, q, m, e, d; // 32bit
 
-memset(ops, 0x00, 0x1000); // not needed
-
 #define op(p) (ops[(p) / 16] & 1 << (p) / 2 % 8)
 
-	ops[0] = 1;
+	if(!ops[0]) {
+		ops[0] = 1;
 
-	for(c = 3; c < 0x100; c += 2)
-		if(!op(c))
-			for(d = c * c; d < 0x10000; d += c * 2)
-				ops[d / 16] |= 1 << d / 2 % 8;
+		for(c = 3; c < 0x100; c += 2)
+			if(!op(c))
+				for(d = c * c; d < 0x10000; d += c * 2)
+					ops[d / 16] |= 1 << d / 2 % 8;
+	}
 
 genPQ:
 	do {
-		do p = CRnd16() | 1; while(op(p));
-		do q = CRnd16() | 1; while(op(q));
+		do p = CRnd16() | 1; while(op(p)); // odd prime -> p
+		do q = CRnd16() | 1; while(op(q)); // odd prime -> q
 	}
 	while(p == q || p * q < 0x10000);
 
@@ -76,7 +72,7 @@ genPQ:
 
 	printf("m=%u e=%u d=%u\n", m, e, d);
 
-	p = CRnd16();
+	do p = CRnd16(); while(p <= 1);
 	c = ModPow(p, e, m);
 	q = ModPow(c, d, m);
 
@@ -84,7 +80,7 @@ genPQ:
 
 	// ----
 
-	{ static int w; RareErrorCase(p == c, &w); }
+	{ static uint w; RareErrorCase(2 <= p && p == c, &w); } // レアケースでした... m=155977231 e=13 d=399877 p,c,q=43323
 	errorCase(p != q);
 }
 
