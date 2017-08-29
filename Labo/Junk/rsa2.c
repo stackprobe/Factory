@@ -13,7 +13,7 @@ static void RareErrorCase(int state, int *p_w)
 
 // ---- kokokara
 
-uint16 CRnd16(void);
+uint16 CRnd16(void); // cryptographically random number generator
 
 static uint ModPow(uint v, uint e, uint m)
 {
@@ -21,9 +21,6 @@ static uint ModPow(uint v, uint e, uint m)
 
 	if(!e)
 		return 1;
-
-	if(e == 1)
-		return v;
 
 	r = ModPow(v, e / 2, m);
 	r *= r;
@@ -38,22 +35,24 @@ static uint ModPow(uint v, uint e, uint m)
 }
 static void TestMain(void)
 {
-	static char tp[0x8000];
+	static uchar ops[0x1000];
 	uint c, p, q, m, e, d; // 32bit
 
-memset(tp, 0x00, 0x8000); // not needed
+memset(ops, 0x00, 0x1000); // not needed
 
-	tp[0] = 1;
+#define op(p) (ops[(p) / 16] & 1 << (p) / 2 % 8)
+
+	ops[0] = 1;
 
 	for(c = 3; c < 0x100; c += 2)
-		if(!tp[c / 2])
+		if(!op(c))
 			for(d = c * c; d < 0x10000; d += c * 2)
-				tp[d / 2] = 1;
+				ops[d / 16] |= 1 << d / 2 % 8;
 
 genPQ:
 	do {
-		do p = CRnd16() | 1; while(tp[p / 2]);
-		do q = CRnd16() | 1; while(tp[q / 2]);
+		do p = CRnd16() | 1; while(op(p));
+		do q = CRnd16() | 1; while(op(q));
 	}
 	while(p == q || p * q < 0x10000);
 
@@ -62,13 +61,13 @@ genPQ:
 	q--;
 
 	for(c = 3; c < 0x100; c += 2)
-		if(!tp[c / 2] && !(p % c) && !(q % c))
+		if(!op(c) && !(p % c) && !(q % c))
 			q /= c;
 
 	p *= q / 2; // LCD -> p
 	p++;
 
-	for(e = 3; tp[e / 2] || p % e; e += 2)
+	for(e = 3; op(e) || p % e; e += 2)
 		if(p / e < e)
 			goto genPQ;
 
