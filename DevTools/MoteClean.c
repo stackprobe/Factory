@@ -47,7 +47,7 @@ static void MoteClean(char *dir)
 	{
 		cout("íœH\n");
 
-		if(clearGetKey() == 0x1b)
+		if(clearCoWaitKey(15000) == 0x1b)
 			termination(0);
 
 		cout("íœ‚·‚éB\n");

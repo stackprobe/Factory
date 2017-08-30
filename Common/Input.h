@@ -7,10 +7,11 @@ void ungetKey(int key);
 int hasKey(void);
 void clearKey(void);
 int clearGetKey(void);
+int clearWaitKey(uint millis);
+int clearCoWaitKey(uint millis);
 int checkKey(int key);
 int waitKey(uint millis);
 int coWaitKey(uint millis);
-int clearWaitKey(uint millis);
 
 autoList_t *editLines(autoList_t *lines);
 autoList_t *editLines_x(autoList_t *lines);

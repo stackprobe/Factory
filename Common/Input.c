@@ -132,6 +132,16 @@ int clearGetKey(void)
 	clearKey();
 	return getKey();
 }
+int clearWaitKey(uint millis)
+{
+	clearKey();
+	return waitKey(millis);
+}
+int clearCoWaitKey(uint millis)
+{
+	clearKey();
+	return coWaitKey(millis);
+}
 int checkKey(int key)
 {
 	while(hasKey())
@@ -186,11 +196,6 @@ int coWaitKey(uint millis)
 	}
 	cout("ƒL[“ü—Í–³‚µB\n");
 	return 0;
-}
-int clearWaitKey(uint millis)
-{
-	clearKey();
-	return waitKey(millis);
 }
 
 autoList_t *editLines(autoList_t *lines) // ret: newList(), not NULL
