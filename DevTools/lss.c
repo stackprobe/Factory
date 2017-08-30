@@ -1,8 +1,13 @@
+/*
+	lss.exe [/D | /F] [/SVN] [/D+] [/-S] [/B] [SEARCH-PTN | TARGET-DIR SEARCH-PTN...]
+*/
+
 #include "C:\Factory\Common\all.h"
 
 static int DirFileMode;
 static int AddDirToFilesMode; // ? ディレクトリも Files.txt に追加する。
 static int IgnoreSubDir;
+static int NoParentMode;
 
 static void DispList(char *targetDir, autoList_t *searchPtns)
 {
@@ -10,6 +15,7 @@ static void DispList(char *targetDir, autoList_t *searchPtns)
 	autoList_t *paths;
 	char *path;
 	uint index;
+	uint coPathBgnPos;
 
 	if(IgnoreSubDir)
 	{
@@ -24,6 +30,16 @@ static void DispList(char *targetDir, autoList_t *searchPtns)
 		else                        paths = lss(targetDir);
 	}
 	sortJLinesICase(paths);
+
+	if(NoParentMode)
+	{
+		path = makeFullPath(targetDir);
+		path = putYen(path);
+		coPathBgnPos = strlen(path);
+		memFree(path);
+	}
+	else
+		coPathBgnPos = 0;
 
 	foreach(paths, path, index)
 	{
@@ -52,7 +68,7 @@ static void DispList(char *targetDir, autoList_t *searchPtns)
 
 		if(found)
 		{
-			cout("%s\n", path);
+			cout("%s\n", path + coPathBgnPos);
 
 			if(AddDirToFilesMode || existFile(path))
 			{
@@ -95,6 +111,11 @@ readArgs:
 	if(argIs("/-S"))
 	{
 		IgnoreSubDir = 1;
+		goto readArgs;
+	}
+	if(argIs("/B"))
+	{
+		NoParentMode = 1;
 		goto readArgs;
 	}
 

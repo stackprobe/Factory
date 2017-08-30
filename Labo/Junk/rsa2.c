@@ -44,8 +44,16 @@ static void TestMain(void)
 
 		for(c = 3; c < 0x100; c += 2)
 			if(!op(c))
-				for(d = c * c; d < 0x10000; d += c * 2)
-					ops[d / 16] |= 1 << d / 2 % 8;
+				for(d = c * c / 2; d < 0x10000 / 2; d += c)
+					ops[d / 8] |= 1 << d % 8;
+
+#if 0 // test
+		for(c = 3; c < 0x10000; c += 2)
+			if(!op(c))
+				printf("%u\n", c);
+
+		exit(0);
+#endif
 	}
 
 genPQ:
@@ -77,6 +85,8 @@ genPQ:
 	q = ModPow(c, d, m);
 
 	printf("p=%u c=%u q=%u\n", p, c, q); // always p == q
+
+#undef op
 
 	// ----
 

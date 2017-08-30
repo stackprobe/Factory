@@ -27,13 +27,20 @@ Visual C++ 2010 Express Edition (たぶん Visual C++ 2008 Express Edition で�
 	★ビルド手順中の fcrlf がこのパスを生成し、zz がこれらのパスを削除します。
 
 
-習慣的に以下のディレクトリを使用します。
+習慣的に以下のディレクトリを使用します。(参考まで)
 
 	C:\app       = フリーソフト等、外部アプリ置き場
 	C:\app\Kit   = https://github.com/stackprobe/Kit/tree/master/
 	C:\appdata   = APP_DATA
+	C:\Dev       = いろいろな開発環境
+	C:\etc       = 物置1
+	C:\Factory   = ここ
+	C:\home      = 物置3
+	C:\prv       = subst S: C:\prv
 	C:\temp      = 一時ファイル用、ログオン時に空にする。
 	C:\tmp       = 一時ファイル用、クリアしない。
+	C:\var       = 物置2
+	S:\          = 物置4 (元はネットワークドライブ、使わなくなって形骸化)
 
 
 ビルド手順
