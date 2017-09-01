@@ -80,7 +80,7 @@ genPQ:
 
 	printf("m=%u e=%u d=%u\n", m, e, d);
 
-	do p = CRnd16(); while(p <= 1);
+	p = CRnd16();
 	c = ModPow(p, e, m);
 	q = ModPow(c, d, m);
 

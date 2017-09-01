@@ -14,8 +14,7 @@ static uint ModPow(uint v, uint e, uint m)
 	r *= r;
 	r %= m;
 
-	if(e & 1)
-	{
+	if(e & 1) {
 		r *= v;
 		r %= m;
 	}
@@ -26,10 +25,10 @@ TestMain(uint16 (*crand16)(void))
 	uchar ops[0x1000];
 	uint c, p, q, m, e, d; // 32bit
 
-#define op(p) (ops[(p) / 16] & 1 << (p) / 2 % 8)
-
 	memset(ops, 0x00, 0x1000);
 	ops[0] = 1;
+
+#define op(p) (ops[(p) / 16] & 1 << (p) / 2 % 8)
 
 	for(c = 3; c < 0x100; c += 2)
 		if(!op(c))
@@ -38,12 +37,12 @@ TestMain(uint16 (*crand16)(void))
 
 genPQ:
 	do {
-		do p = crand16() | 1; while(op(p)); // odd prime -> p
-		do q = crand16() | 1; while(op(q)); // odd prime -> q
+		do p = crand16() | 1; while(op(p));
+		do q = crand16() | 1; while(op(q) && p == q);
 	}
-	while(p == q || p * q < 0x10000);
+	while(p * q < 0x10000);
 
-	m = p * q;
+	m = p * q; // max are 65519, 65521
 	p--;
 	q--;
 
@@ -56,17 +55,17 @@ genPQ:
 		if(p / e < e)
 			goto genPQ;
 
+#undef op
+
 	d = p / e;
 
 	printf("m=%u e=%u d=%u\n", m, e, d);
 
-	do p = crand16(); while(p <= 1);
+	p = crand16();
 	c = ModPow(p, e, m);
 	q = ModPow(c, d, m);
 
 	printf("p=%u c=%u q=%u\n", p, c, q); // always p == q
-
-#undef op
 }
 
 // ---- ‚±‚±‚Ü‚Å

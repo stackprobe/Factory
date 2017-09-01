@@ -32,10 +32,12 @@ Visual C++ 2010 Express Edition (たぶん Visual C++ 2008 Express Edition で�
 	C:\app       = フリーソフト等、外部アプリ置き場
 	C:\app\Kit   = https://github.com/stackprobe/Kit/tree/master/
 	C:\appdata   = APP_DATA
+	C:\Dat       = C:\Devで使う共通データ
 	C:\Dev       = いろいろな開発環境
 	C:\etc       = 物置1
 	C:\Factory   = ここ
 	C:\home      = 物置3
+	C:\huge      = 物置5 (でかいもの専用)
 	C:\prv       = subst S: C:\prv
 	C:\temp      = 一時ファイル用、ログオン時に空にする。
 	C:\tmp       = 一時ファイル用、クリアしない。
