@@ -3,7 +3,7 @@
 
 // ---- ‚±‚±‚©‚ç
 
-static uint ModPow(uint v, uint e, uint m)
+uint ModPow(uint v, uint e, uint m)
 {
 	uint64 r;
 
@@ -37,8 +37,8 @@ TestMain(uint16 (*crand16)(void))
 
 genPQ:
 	do {
-		do p = crand16() | 1; while(op(p));
-		do q = crand16() | 1; while(op(q) && p == q);
+		do p = crand16() | 1; while(op(p)); // odd prime -> p
+		do q = crand16() | 1; while(op(q) && p == q); // non p odd prime -> q
 	}
 	while(p * q < 0x10000);
 
