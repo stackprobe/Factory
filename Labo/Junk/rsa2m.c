@@ -3,8 +3,7 @@
 
 // ---- ‚±‚±‚©‚ç
 
-uint ModPow(uint v, uint e, uint m)
-{
+uint ModPow(uint v, uint e, uint m) {
 	uint64 r;
 
 	if(!e)
@@ -20,8 +19,10 @@ uint ModPow(uint v, uint e, uint m)
 	}
 	return r;
 }
-TestMain(uint16 (*crand16)(void))
-{
+
+uint16 CRnd16(void);
+
+TestMain() {
 	uchar ops[0x1000];
 	uint c, p, q, m, e, d; // 32bit
 
@@ -37,12 +38,12 @@ TestMain(uint16 (*crand16)(void))
 
 genPQ:
 	do {
-		do p = crand16() | 1; while(op(p)); // odd prime -> p
-		do q = crand16() | 1; while(op(q) && p == q); // non p odd prime -> q
+		do p = CRnd16() | 1; while(op(p));
+		do q = CRnd16() | 1; while(op(q) && p == q);
 	}
 	while(p * q < 0x10000);
 
-	m = p * q; // max are 65519, 65521
+	m = p * q;
 	p--;
 	q--;
 
@@ -61,7 +62,7 @@ genPQ:
 
 	printf("m=%u e=%u d=%u\n", m, e, d);
 
-	p = crand16();
+	p = CRnd16();
 	c = ModPow(p, e, m);
 	q = ModPow(c, d, m);
 
@@ -78,6 +79,6 @@ int main(int argc, char **argv)
 {
 	for(; ; )
 	{
-		TestMain(CRnd16);
+		TestMain();
 	}
 }
