@@ -46,6 +46,12 @@ void NS_SendFile(SockStream_t *ss, char *file)
 		{
 			uint64 count = getSeekPos(fp);
 			cmdTitle_x(xcout("%s Send %I64u / %I64u = %.3fPct", NS_AppTitle, count, fileSize, count * 100.0 / fileSize));
+
+			if(IsEOFSockStream(ss))
+			{
+				cout("ê⁄ë±Ç™éÄÇÒÇ≈ÇÈÇ∏ÇÁÅBSF\n");
+				break;
+			}
 		}
 		SockSendBlock(ss, directGetBuffer(buff), getSize(buff));
 		releaseAutoBlock(buff);
@@ -88,8 +94,15 @@ void NS_RecvFile(SockStream_t *ss, char *file)
 	for(count = 0; count < fileSize; count++)
 	{
 		if(eqIntPulseSec(1, NULL))
+		{
 			cmdTitle_x(xcout("%s Recv %I64u / %I64u = %.3fPct", NS_AppTitle, count, fileSize, count * 100.0 / fileSize));
 
+			if(IsEOFSockStream(ss))
+			{
+				cout("ê⁄ë±Ç™éÄÇÒÇ≈ÇÈÇ∏ÇÁÅBRF\n");
+				break;
+			}
+		}
 		writeChar(fp, SockRecvChar(ss));
 	}
 	fileClose(fp);
