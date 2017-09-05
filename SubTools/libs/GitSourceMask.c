@@ -3,6 +3,7 @@
 #define FLAG_FILE      "_gitsrcmsk"
 #define FLAG_TXT_FILE  "_gittxtmsk"
 #define RES_FILES_FILE "_gitsrcmsk_files"
+#define IGN_FILES_FILE "_gitignore_files"
 
 static void MskSrcFile(char *file, int eurpFlag)
 {
@@ -81,6 +82,30 @@ static void MaskSourceByResFile(autoList_t *files)
 				memFree(mskfile);
 			}
 			releaseDim(mskfiles, 1);
+
+			LOGPOS();
+		}
+		else if(!_stricmp(IGN_FILES_FILE, getLocal(file)))
+		{
+			autoList_t *ignfiles = readResourceLines(file);
+			char *ignfile;
+			uint ignfile_index;
+
+			LOGPOS();
+
+			foreach(ignfiles, ignfile, ignfile_index)
+			{
+				cout("*! %s\n", ignfile);
+
+				errorCase(!isFairRelPath(ignfile, 0));
+				ignfile = changeLocal(file, ignfile);
+				errorCase(!existFile(ignfile));
+
+				removeFile(ignfile);
+
+				memFree(ignfile);
+			}
+			releaseDim(ignfiles, 1);
 
 			LOGPOS();
 		}
