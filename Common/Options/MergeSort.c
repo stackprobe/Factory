@@ -41,7 +41,9 @@ static void CommitPart(
 	autoList_t *elements
 	)
 {
+LOGPOS();
 	rapidSort(elements, compElement);
+LOGPOS();
 
 	{
 		FILE *fp = fileOpen(GetPartFile(partsDir, partIndex), wMode);

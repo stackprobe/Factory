@@ -20,7 +20,28 @@ uint ModPow(uint v, uint e, uint m) {
 	return r;
 }
 
-uint16 CRnd16(void);
+#define CRBUFFSIZE 1024
+
+uint16 CRnd16(void) {
+	static uint16 buff[CRBUFFSIZE];
+	static uint i = CRBUFFSIZE;
+
+	if(CRBUFFSIZE <= i) {
+		HCRYPTPROV hp;
+
+		if(!CryptAcquireContext(&hp, 0, 0, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
+			exit(1); // fatal
+
+		if(!CryptGenRandom(hp, sizeof(buff), (uchar *)buff))
+			exit(1); // fatal
+
+		CryptReleaseContext(hp, 0);
+		i = 0;
+	}
+	return buff[i++];
+}
+
+// ---- ‹æØ‚è
 
 TestMain() {
 	uchar ops[0x1000];
@@ -39,7 +60,7 @@ TestMain() {
 genPQ:
 	do {
 		do p = CRnd16() | 1; while(op(p));
-		do q = CRnd16() | 1; while(op(q) && p == q);
+		do q = CRnd16() | 1; while(op(q) || p == q);
 	}
 	while(p * q < 0x10000);
 
@@ -71,14 +92,17 @@ genPQ:
 
 // ---- ‚±‚±‚Ü‚Å
 
+/*
 static uint16 CRnd16(void)
 {
 	return (uint16)getCryptoRand16();
 }
+*/
 int main(int argc, char **argv)
 {
 	for(; ; )
 	{
 		TestMain();
+//		cout("%04x\n", CRnd16()); // test
 	}
 }
