@@ -61,10 +61,10 @@ genPQ:
 	do {
 		do p = CRnd16() | 1; while(op(p));
 		do q = CRnd16() | 1; while(op(q) || p == q);
+		m = p * q;
 	}
-	while(p * q < 0x10000);
+	while(m < 0x10000);
 
-	m = p * q;
 	p--;
 	q--;
 
