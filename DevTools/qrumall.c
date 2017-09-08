@@ -21,7 +21,11 @@ int main(int argc, char **argv)
 
 		coExecute_x(xcout("rum /c \"%s\"", comment));
 
-		coExecute("frum -qa");
+		addCwd("C:\\Factory\\DevTools");
+		{
+			coExecute("qrumall_extra.bat");
+		}
+		unaddCwd();
 	}
 	else
 	{
