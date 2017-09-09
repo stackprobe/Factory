@@ -56,7 +56,6 @@ TestMain() {
 		if(!op(c))
 			for(d = c * c / 2; d < 0x10000 / 2; d += c)
 				ops[d / 8] |= 1 << d % 8;
-
 genPQ:
 	do {
 		do p = CRnd16() | 1; while(op(p));
