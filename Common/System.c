@@ -40,20 +40,22 @@ void cmdTitle_x(char *title)
 }
 static void ContextSwitching(void) // ts_
 {
-	// fixme: どうやんの？
-
+#if 0
+	SwitchToThread(); // 効かないよ？ @ 2017.9.16
+#else
 	static uint count;
 
 	count++; // どんな値になっても構わない。
 
 	Sleep((count & 0x0f) / 0x0f);
+#endif
 }
 void sleep(uint millis) // ts_
 {
 	if(millis)
 		Sleep(millis);
 	else
-		ContextSwitching(); // sleep(0); のときは、単にコンテキストスイッチの切り替えを行う。
+		ContextSwitching(); // sleep(0); のときは、単にコンテキストスイッチを行う。
 }
 void coSleep(uint millis)
 {
