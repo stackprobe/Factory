@@ -41,7 +41,7 @@ void cmdTitle_x(char *title)
 static void ContextSwitching(void) // ts_
 {
 #if 0
-	SwitchToThread(); // 効かないよ？ @ 2017.9.16
+	SwitchToThread(); // 確実にスイッチされるわけではない。基準がよく分からん。@ 2017.9.16
 #else
 	static uint count;
 

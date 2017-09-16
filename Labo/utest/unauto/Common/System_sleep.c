@@ -4,46 +4,35 @@
 static int KeepTh;
 static CRITICAL_SECTION CrSec;
 
-static void Th_01(void *dmy)
+static void HeavyProc(void)
 {
 	uint c;
 
-	EnterCriticalSection(&CrSec);
+	for(c = 10000000; c; c--)
 	{
-		for(c = 0; c < 1000 && KeepTh; c++)
-		{
-			cout(".");
-			Sleep(10);
-
-			LeaveCriticalSection(&CrSec);
-			{
-				Sleep(0); // MSDN
-			}
-			EnterCriticalSection(&CrSec);
-		}
+		noop();
 	}
-	LeaveCriticalSection(&CrSec);
 }
-static void Th_02(void *dmy)
-{
-	uint c;
 
-	EnterCriticalSection(&CrSec);
-	{
-		for(c = 0; c < 1000 && KeepTh; c++)
-		{
-			cout(".");
-			Sleep(10);
-
-			LeaveCriticalSection(&CrSec);
-			{
-				sleep(0); // my sleep(), will be context switching
-			}
-			EnterCriticalSection(&CrSec);
-		}
+#define FUNC(funcname, sleep_op) \
+	static void funcname(void *dmy) { \
+		uint c, d; \
+		EnterCriticalSection(&CrSec); \
+		for(c = 1000; c && KeepTh; c--) { \
+			cout("."); \
+			HeavyProc(); \
+			LeaveCriticalSection(&CrSec); \
+			sleep_op; \
+			EnterCriticalSection(&CrSec); \
+		} \
+		LeaveCriticalSection(&CrSec); \
 	}
-	LeaveCriticalSection(&CrSec);
-}
+
+FUNC(Th_01, Sleep(0)) // MSDN
+FUNC(Th_02, sleep(0)) // my sleep, will be context switching
+
+#undef FUNC
+
 static void Test01(void (*funcTh)(void *))
 {
 	uint th;
@@ -76,9 +65,9 @@ int main(int argc, char **argv)
 {
 	InitializeCriticalSection(&CrSec);
 
-	cout("Th_01 -- MSDN Sleep();\n");
+	cout("MSDN\n");
 	Test01(Th_01);
-	cout("Th_02 -- my sleep(); will be context swigching\n");
+	cout("My sleep(), will be context switching\n");
 	Test01(Th_02);
 
 	DeleteCriticalSection(&CrSec);
