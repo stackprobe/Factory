@@ -197,7 +197,7 @@ static void MRM_GenKoma(char *komaDir, char *file)
 	length = d2i(mi.Centisec / 100.0 * MOVIE_FPS);
 
 	coExecute_x(xcout("START \"\" /B /WAIT \"%s\" /WF \"%s\" /PLAIN %u %u", FILE_IMGTOOLS_EXE, komaFile_0, mi.Width, mi.Height));
-	coExecute_x(xcout("START \"\" /B /WAIT \"%s\" /MASK-RESOURCE-IMAGE \"%s\" \"%s\"", FILE_TOOLKIT_EXE, komaFile_0, komaFile_1));
+	coExecute_x(xcout("START \"\" /B /WAIT \"%s\" /MASK-RESOURCE-IMAGE \"%s\" \"%s\" \"%s\"", FILE_TOOLKIT_EXE, komaFile_0, komaFile_1, file));
 
 	removeFile(komaFile_0);
 	moveFile(komaFile_1, komaFile_0);
