@@ -257,16 +257,22 @@ static void MaskResourceFile(char *file)
 	cout("* %s\n", file);
 
 	     if(!_stricmp(ext, "bmp"  )) MaskResImage(file);
+	else if(!_stricmp(ext, "gif"  )) MaskResImage(file);
 	else if(!_stricmp(ext, "jpeg" )) MaskResImage(file);
 	else if(!_stricmp(ext, "jpg"  )) MaskResImage(file);
 	else if(!_stricmp(ext, "png"  )) MaskResImage(file);
-	else if(!_stricmp(ext, "gif"  )) MaskResImage(file);
+	//--
 	else if(!_stricmp(ext, "mp3"  )) MaskResSound(file);
+	else if(!_stricmp(ext, "ogg"  )) MaskResSound(file);
 	else if(!_stricmp(ext, "wav"  )) MaskResSound(file);
+	//--
+	else if(!_stricmp(ext, "mp4"  )) MaskResMovie(file);
 	else if(!_stricmp(ext, "mpeg" )) MaskResMovie(file);
 	else if(!_stricmp(ext, "mpg"  )) MaskResMovie(file);
+	else if(!_stricmp(ext, "ogv"  )) MaskResMovie(file);
+	//--
 	else if(!_stricmp(ext, "csv"  )) MaskResOther(file);
-	else if(!_stricmp(ext, "otf"  )) MaskResOther(file);
+	else if(!_stricmp(ext, "otf"  )) MaskResOther(file); // open-type font
 }
 void GitResourceMask(char *rootDir)
 {
