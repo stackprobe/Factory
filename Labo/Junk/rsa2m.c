@@ -87,7 +87,7 @@ genPQ:
 	c = ModPow(p, e, m);
 	q = ModPow(c, d, m);
 
-	printf("p=%u c=%u q=%u\n", p, c, q); // always p == q
+	printf("p=%u c=%u p'=%u\n", p, c, q);
 }
 
 // ---- ‚±‚±‚Ü‚Å
