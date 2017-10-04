@@ -269,9 +269,10 @@ static void MaskResourceFile(char *file)
 	else if(!_stricmp(ext, "mpeg" )) MaskResMovie(file);
 	else if(!_stricmp(ext, "mpg"  )) MaskResMovie(file);
 	//--
+	else if(!_stricmp(ext, "avi"  )) MaskResOther(file); // movie
 	else if(!_stricmp(ext, "csv"  )) MaskResOther(file);
-	else if(!_stricmp(ext, "ogg"  )) MaskResOther(file);
-	else if(!_stricmp(ext, "ogv"  )) MaskResOther(file);
+	else if(!_stricmp(ext, "ogg"  )) MaskResOther(file); // audio
+	else if(!_stricmp(ext, "ogv"  )) MaskResOther(file); // movie
 	else if(!_stricmp(ext, "otf"  )) MaskResOther(file); // open-type font
 }
 void GitResourceMask(char *rootDir)
