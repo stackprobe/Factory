@@ -111,6 +111,19 @@ int main(int argc, char **argv)
 			ForgetDir(nextArg());
 			return;
 		}
+
+		// confirm
+		{
+			cout("全て忘れます。\n"
+				"続行？\n"
+				);
+
+			if(getKey() == 0x1b)
+				termination(0);
+
+			cout("続行！\n");
+		}
+
 		removeFile(SAVE_FILE);
 		return;
 	}

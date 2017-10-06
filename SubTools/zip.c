@@ -207,6 +207,8 @@ static void DestroyFindVersionPtn(autoBlock_t *text, uint startPos, uint count)
 		int chr;
 
 #if 1
+		chr = "Coffee"[index % 6];
+#elif 1
 		do
 		{
 			chr = '\x21' + getCryptoByte() % ('\x7e' + 1 - '\x21');
