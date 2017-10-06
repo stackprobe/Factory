@@ -1,3 +1,5 @@
-fndbrknuuid.exe C:\Factory C:\Dev C:\pleiades\workspace\Test02\src
+@set @dirs=C:\Factory C:\Dev C:\pleiades\workspace\Test02\src C:\pleiades\workspace\Test03\src-03
+fndbrknuuid.exe %@dirs%
 IF ERRORLEVEL 1 PAUSE
-chkuuidcoll.exe C:\Factory C:\Dev C:\pleiades\workspace\Test02\src
+chkuuidcoll.exe %@dirs%
+@set @dirs=

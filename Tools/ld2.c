@@ -19,6 +19,11 @@
 
 		保存されているディレクトリを開く。
 
+	> ldzz
+	> ld /cz
+
+		適当な番号で保存されたディレクトリ 0 ～ 999 をクリアする。
+
 	----
 
 	ディレクトリは sd [NAME] [DIR] で保存する。
@@ -130,6 +135,20 @@ int main(int argc, char **argv)
 	if(argIs("/O")) // Open
 	{
 		OpenDir(nextArg());
+		return;
+	}
+	if(argIs("/CZ")) // Clear 0 ～ 999
+	{
+		uint n;
+
+		for(n = 0; n <= 999; n++)
+		{
+			char sn[4];
+
+			sprintf(sn, "%u", n);
+
+			ForgetDir(sn);
+		}
 		return;
 	}
 
