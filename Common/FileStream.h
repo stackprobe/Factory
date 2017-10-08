@@ -100,6 +100,7 @@ void writeLines_b_cx(char *file, autoList_t *lines);
 void addLines2File_cx(char *file, autoList_t *lines);
 void writeBinaryBlock_x(FILE *fp, autoBlock_t *block);
 void writeBinary_cx(char *file, autoBlock_t *block);
+void writeBinary_xx(char *file, autoBlock_t *block);
 void writeJoinBinary_cx(char *file, autoBlock_t *block);
 void writeOneLineNoRet_cx(char *file, char *line);
 void writeOneLineNoRet_b_cx(char *file, char *line);

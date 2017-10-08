@@ -767,6 +767,11 @@ void writeBinary_cx(char *file, autoBlock_t *block)
 	writeBinary(file, block);
 	releaseAutoBlock(block);
 }
+void writeBinary_xx(char *file, autoBlock_t *block)
+{
+	writeBinary_cx(file, block);
+	memFree(file);
+}
 void writeJoinBinary_cx(char *file, autoBlock_t *block)
 {
 	writeJoinBinary(file, block);
