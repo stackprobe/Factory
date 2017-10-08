@@ -1,5 +1,5 @@
 /*
-	KomajoStageSelect.exe [/D ゲームDIR] ステージ番号
+	KoumajouStageSelect.exe [/D ゲームDIR] ステージ番号
 
 	- - -
 

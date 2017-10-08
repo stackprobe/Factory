@@ -1,11 +1,10 @@
 /*
-	KoumajouSaveDataEdit.exe [/D ゲームDIR] [/S ステージ番号] [/H ハイスコア] [/E+ | /E-] [/V]
+	KoumajouSaveDataEdit.exe [/D ゲームDIR] [/S ステージ番号] [/H ハイスコア] [/E+ | /E-]
 
 		ステージ番号 ... 1 ～ 8         --  範囲外は最初からになるっぽい。
 		ハイスコア   ... 0 ～ 99999999  --  範囲外は上位桁が捨てられるっぽい。
 		/E+          ... エクストラ開放
 		/E-          ... エクストラ未開放
-		/V           ... 表示のみ
 
 	- - -
 	例
@@ -13,8 +12,6 @@
 		KoumajouSaveDataEdit.exe /D C:\game\koumajou /S 8 /E+
 
 		KoumajouSaveDataEdit.exe /H 13413983
-
-		KoumajouSaveDataEdit.exe /V
 
 	- - -
 
@@ -89,6 +86,8 @@ static void OutputSaveData(void)
 }
 int main(int argc, char **argv)
 {
+	int changed = 0;
+
 	if(argIs("/D"))
 	{
 		GameDir = nextArg();
@@ -117,30 +116,33 @@ readArgs:
 	if(argIs("/S"))
 	{
 		StageNo = toValue(nextArg());
+		changed = 1;
 		goto readArgs;
 	}
 	if(argIs("/H"))
 	{
 		HiScore = toValue(nextArg());
+		changed = 1;
 		goto readArgs;
 	}
 	if(argIs("/E+"))
 	{
 		ExtraOpened = 1;
+		changed = 1;
 		goto readArgs;
 	}
 	if(argIs("/E-"))
 	{
 		ExtraOpened = 0;
+		changed = 1;
 		goto readArgs;
 	}
-	if(argIs("/V"))
+
+	if(changed)
 	{
-		termination(0);
+		cout(">\n");
+
+		ShowSaveData();
+		OutputSaveData();
 	}
-
-	cout(">\n");
-
-	ShowSaveData();
-	OutputSaveData();
 }
