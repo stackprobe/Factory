@@ -56,6 +56,8 @@ int main()
 
 	MkOdPs();
 
+	printf("MkOdPs done!\n");
+
 	for(n = 1; n <= PRIME_MAX; n++)
 		if(IsPrime(n))
 			c++;

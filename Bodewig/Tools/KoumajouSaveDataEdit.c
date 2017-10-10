@@ -21,8 +21,9 @@
 #include "C:\Factory\Common\all.h"
 
 #define S_MASK "055b2d160639034d010b"
-#define PREFIX_SIGNATURE "This file is save data of Scarlet Symphony.\r\n"
-#define SUFFIX_EXTRA_OPENED "\r\nextramode_enable"
+#define SIGNATURE "This file is save data of Scarlet Symphony."
+#define EXTRA_OPENED "extramode_enable"
+#define NEW_LINE "\r\n"
 
 static char *GameDir = "C:\\etc\\Game\\çgñÇèÈì`ê‡";
 
@@ -59,26 +60,32 @@ static void LoadSaveData(void)
 	{
 		autoBlock_t *fileData = readBinary(file);
 		char *fileText;
+		autoList_t *lines;
+		autoList_t *sVals;
 
 		DoMask(fileData);
 		fileText = unbindBlock2Line(fileData);
-		toknext(fileText, "\n");
-		StageNo = toValue(toknext(NULL, ","));
-		HiScore = toValue(toknext(NULL, "\r"));
-		ExtraOpened = (int)toknext(NULL, "");
+		fileText = replaceLine(fileText, "\r\n", "\n", 0);
+		lines = tokenize(fileText, '\n');
+		sVals = tokenize(getLine(lines, 1), ',');
+		StageNo = toValue(refLine(sVals, 0));
+		HiScore = toValue(refLine(sVals, 1));
+		ExtraOpened = getCount(lines) == 3;
 		memFree(fileText);
+		releaseDim(lines, 1);
+		releaseDim(sVals, 1);
 	}
 	memFree(file);
 }
 static void OutputSaveData(void)
 {
-	char *fileText = strx(PREFIX_SIGNATURE);
+	char *fileText = strx(SIGNATURE NEW_LINE);
 	autoBlock_t *fileData;
 
 	fileText = addLine_x(fileText, xcout("%u,%u", StageNo, HiScore));
 
 	if(ExtraOpened)
-		fileText = addLine(fileText, SUFFIX_EXTRA_OPENED);
+		fileText = addLine(fileText, NEW_LINE EXTRA_OPENED);
 
 	fileData = ab_makeBlockLine_x(fileText);
 	DoMask(fileData);
