@@ -102,38 +102,20 @@ static char *GetIdent(char *name, char *ip)
 {
 	return xcout("%s @ %s", name, ip);
 }
-static uint GetNextRemarkIndex(uint64 knownStamp)
+static sint RemarkStampComp(uint v1, uint v2)
 {
-	uint n = 0;
-	uint f = getCount(Remarks);
+	Remark_t *a = (Remark_t *)v1;
+	Remark_t *b = (Remark_t *)v2;
 
-	while(n < f)
-	{
-		uint m = (n + f) / 2;
-		Remark_t *i;
-
-		i = (Remark_t *)getElement(Remarks, m);
-
-		if(i->Stamp == knownStamp)
-			return m + 1;
-
-		if(i->Stamp < knownStamp)
-			n = m + 1;
-		else
-			f = m;
-	}
-	return n;
+	return m_simpleComp(a->Stamp, b->Stamp);
 }
-static uint GetNextRemarkIndex_Test(uint64 knownStamp) // test
+static uint GetKnownNextRemarkIndex(uint64 knownStamp)
 {
-	Remark_t *i;
-	uint index;
+	Remark_t ferret;
 
-	foreach(Remarks, i, index)
-		if(knownStamp < i->Stamp)
-			break;
+	ferret.Stamp = knownStamp;
 
-	return index;
+	return findBoundLeftestRight(Remarks, (uint)&ferret, RemarkStampComp);
 }
 static uint64 GetStamp(void)
 {
@@ -179,9 +161,11 @@ static void PerformTh(int sock, char *ip)
 		cout("ident: %s\n", ident);
 		cout("stamp: %I64u\n", stamp);
 
-errorCase(GetNextRemarkIndex(stamp) != GetNextRemarkIndex_Test(stamp)); // test
+		index = GetKnownNextRemarkIndex(stamp);
 
-		for(index = GetNextRemarkIndex(stamp); index < getCount(Remarks); index++)
+		cout("range: %u - %u\n", index, getCount(Remarks));
+
+		for(; index < getCount(Remarks); index++)
 		{
 			Remark_t *i = (Remark_t *)getElement(Remarks, index);
 

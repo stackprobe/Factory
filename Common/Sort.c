@@ -360,59 +360,75 @@ uint binSearchLines(autoList_t *lines, char *lineFind)
 	return binSearch(lines, (uint)lineFind, (sint (*)(uint, uint))strcmp);
 }
 
-static autoList_t *GB_List;
-static uint GBL_Start;
-static uint GBL_Count;
-static sint GBL_Step;
-
-static uint GBL_ToIndex(uint index)
+// list はソート済みであること。
+uint findBoundLeftestMatch(autoList_t *list, uint target, sint (*funcComp)(uint, uint)) // ? ret: targetより小さい最後の位置の次, targetより小さい要素が無ければ 0
 {
-	return GBL_Start + (sint)(index) * GBL_Step;
-}
-static uint GBL_GetFarthest(uint target, sint (*funcComp)(uint, uint))
-{
-	uint p = 0;
-	uint q = GBL_Count;
+	uint l = 0;
+	uint r = getCount(list);
 
-	while(p + 1 < q)
+	while(l < r)
 	{
-		uint mid = (p + q) / 2;
+		int m = (l + r) / 2;
+		sint comp;
 
-		if(funcComp(target, getElement(GB_List, GBL_ToIndex(mid)))) // ? not same
+		comp = funcComp(target, getElement(list, m));
+
+		if(0 < comp) // list[m] < target
 		{
-			q = mid;
+			l = m + 1;
 		}
-		else
+		else // target <= list[m]
 		{
-			p = mid;
+			r = m;
 		}
 	}
-	return GBL_ToIndex(p);
+	return l;
+}
+// list はソート済みであること。
+uint findBoundLeftestRight(autoList_t *list, uint target, sint (*funcComp)(uint, uint)) // ? ret: targetより大きい最初の位置, targetより大きい要素が無ければlistの長さ
+{
+	uint l = 0;
+	uint r = getCount(list);
+
+	while(l < r)
+	{
+		int m = (l + r) / 2;
+		sint comp;
+
+		comp = funcComp(target, getElement(list, m));
+
+		if(0 <= comp) // list[m] <= target
+		{
+			l = m + 1;
+		}
+		else // target < list[m]
+		{
+			r = m;
+		}
+	}
+	return l;
+}
+// list はソート済みであること。
+void findBound(autoList_t *list, uint target, sint (*funcComp)(uint, uint), uint bound[2])
+{
+	bound[0] = findBoundLeftestMatch(list, target, funcComp);
+	bound[1] = findBoundLeftestRight(list, target, funcComp);
 }
 
 // list はソート済みであること。
-int getBound(autoList_t *list, uint target, sint (*funcComp)(uint, uint), uint bound[2]) // ret: ? found, 見つからないとき bound を変更しない。
+int getBound(autoList_t *list, uint target, sint (*funcComp)(uint, uint), uint bound[2]) // ret: ? 見つかった。-- 見つからないとき bound を変更しない。
 {
-	uint mid = binSearch(list, target, funcComp);
+	uint wkBound[2];
 
-	if(mid == getCount(list))
-		return 0;
+	findBound(list, target, funcComp, wkBound);
 
-	GB_List = list;
-	GBL_Start = mid;
-	GBL_Count = mid + 1;
-	GBL_Step = -1;
-
-	bound[0] = GBL_GetFarthest(target, funcComp);
-
-//	GB_List = list;
-//	GBL_Start = mid;
-	GBL_Count = getCount(list) - mid;
-	GBL_Step = 1;
-
-	bound[1] = GBL_GetFarthest(target, funcComp);
-
-	return 1;
+	if(wkBound[0] < wkBound[1])
+	{
+		bound[0] = wkBound[0];
+		bound[1] = wkBound[1] - 1;
+		return 1;
+	}
+	return 0;
 }
 int getBoundLines(autoList_t *lines, char *lineFind, uint bound[2])
 {

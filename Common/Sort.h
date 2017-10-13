@@ -20,5 +20,8 @@ sint pSimpleComp2(uint v1, uint v2);
 
 uint binSearch(autoList_t *list, uint target, sint (*funcComp)(uint, uint));
 uint binSearchLines(autoList_t *lines, char *lineFind);
+uint findBoundLeftestMatch(autoList_t *list, uint target, sint (*funcComp)(uint, uint));
+uint findBoundLeftestRight(autoList_t *list, uint target, sint (*funcComp)(uint, uint));
+void findBound(autoList_t *list, uint target, sint (*funcComp)(uint, uint), uint bound[2]);
 int getBound(autoList_t *list, uint target, sint (*funcComp)(uint, uint), uint bound[2]);
 int getBoundLines(autoList_t *lines, char *lineFind, uint bound[2]);

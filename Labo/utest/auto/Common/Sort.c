@@ -154,6 +154,85 @@ static void Test_rapidSort(void)
 	SortTest(rapidSort);
 }
 
+// ---- findBound tests ----
+
+static autoList_t *FB_MakeList(uint count, uint minval, uint maxval)
+{
+	autoList_t *list = newList();
+
+	while(count)
+	{
+		addElement(list, mt19937_range(minval, maxval));
+		count--;
+	}
+	rapidSort(list, simpleComp);
+	return list;
+}
+static void FB_Test(autoList_t *list, uint target, uint bound[2])
+{
+	uint element;
+	uint index;
+
+#if 0
+	foreach(list, element, index)
+		if(target <= element)
+			break;
+
+	bound[0] = index;
+#else
+	bound[0] = 0;
+
+	foreach(list, element, index)
+		if(element < target)
+			bound[0] = index + 1;
+#endif
+
+	foreach(list, element, index)
+		if(target < element)
+			break;
+
+	bound[1] = index;
+}
+static void FB_DoTest(uint count, uint minval, uint maxval)
+{
+	autoList_t *list = FB_MakeList(count, minval, maxval);
+	uint target;
+	uint bound1[2];
+	uint bound2[2];
+
+	cout("FB_DoTest: %u %u %u\n", count, minval, maxval);
+
+	for(target = minval; target <= maxval; target++)
+	{
+		cout("target: %u\n", target);
+
+		FB_Test(list, target, bound1);
+		findBound(list, target, simpleComp, bound2);
+
+		cout("bounds: %u %u %u %u\n", bound1[0], bound1[1], bound2[0], bound2[1]);
+
+		errorCase(bound1[0] != bound2[0]);
+		errorCase(bound1[1] != bound2[1]);
+	}
+	releaseAutoList(list);
+}
+static void Test_findBound(void)
+{
+	uint testcnt;
+
+	for(testcnt = 0; testcnt < 1000; testcnt++)
+	{
+		uint c = mt19937_rnd(10000);
+		uint n = mt19937_rnd(1000);
+		uint x = mt19937_rnd(1000);
+
+		FB_DoTest(c, n, n + x);
+	}
+	cout("OK\n");
+}
+
+// ---- getBound tests ----
+
 static autoList_t *GB_MakeList(uint count, uint minval, uint maxval)
 {
 	autoList_t *list = newList();
@@ -199,13 +278,19 @@ static void GB_DoTest(uint count, uint minval, uint maxval)
 
 	for(target = minval; target <= maxval; target++)
 	{
-		cout("target: %u\n", target);
+		uint bnd2Dmy1 = mt19937_rnd(256);
+		uint bnd2Dmy2 = mt19937_rnd(256);
+
+		cout("target: %u, bnd2Dmys: %u %u\n", target, bnd2Dmy1, bnd2Dmy2);
+
+		bound2[0] = bnd2Dmy1;
+		bound2[1] = bnd2Dmy2;
 
 		ret1 = GB_Test(list, target, bound1);
 		ret2 = getBound(list, target, simpleComp, bound2);
 
-		ret1 = ret1 ? 1 : 0;
-		ret2 = ret2 ? 1 : 0;
+		ret1 = m_01(ret1);
+		ret2 = m_01(ret2);
 
 		errorCase(ret1 != ret2);
 
@@ -215,6 +300,13 @@ static void GB_DoTest(uint count, uint minval, uint maxval)
 
 			errorCase(bound1[0] != bound2[0]);
 			errorCase(bound1[1] != bound2[1]);
+		}
+		else
+		{
+			cout("bound2: %u %u\n", bound2[0], bound2[1]);
+
+			errorCase(bnd2Dmy1 != bound2[0]);
+			errorCase(bnd2Dmy2 != bound2[1]);
 		}
 	}
 	releaseAutoList(list);
@@ -234,13 +326,16 @@ static void Test_getBound(void)
 	cout("OK\n");
 }
 
+// ----
+
 int main(int argc, char **argv)
 {
 	mt19937_initRnd((uint)time(NULL));
 
-	Test_gnomeSort();
-	Test_combSort();
-	Test_insertSort();
-	Test_rapidSort();
+//	Test_gnomeSort();
+//	Test_combSort();
+//	Test_insertSort();
+//	Test_rapidSort();
+	Test_findBound();
 	Test_getBound();
 }
