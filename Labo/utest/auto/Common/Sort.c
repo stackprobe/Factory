@@ -193,7 +193,7 @@ static void FB_Test(autoList_t *list, uint target, uint bound[2])
 
 	bound[1] = index;
 }
-static void FB_DoTest(uint count, uint minval, uint maxval)
+static void FB_DoTest(uint count, uint minval, uint maxval) // 1 <= minval <= maxval < UINTMAX
 {
 	autoList_t *list = FB_MakeList(count, minval, maxval);
 	uint target;
@@ -202,7 +202,7 @@ static void FB_DoTest(uint count, uint minval, uint maxval)
 
 	cout("FB_DoTest: %u %u %u\n", count, minval, maxval);
 
-	for(target = minval; target <= maxval; target++)
+	for(target = minval - 1; target <= maxval + 1; target++)
 	{
 		cout("target: %u\n", target);
 
@@ -222,11 +222,21 @@ static void Test_findBound(void)
 
 	for(testcnt = 0; testcnt < 1000; testcnt++)
 	{
-		uint c = mt19937_rnd(10000);
-		uint n = mt19937_rnd(1000);
-		uint x = mt19937_rnd(1000);
+		{
+			uint c = mt19937_rnd(100);
+			uint n = mt19937_rnd(1000);
+			uint x = mt19937_rnd(1000);
 
-		FB_DoTest(c, n, n + x);
+			FB_DoTest(c, n, n + x);
+		}
+
+		{
+			uint c = mt19937_rnd(10000);
+			uint n = mt19937_rnd(1000);
+			uint x = mt19937_rnd(1000);
+
+			FB_DoTest(c, n, n + x);
+		}
 	}
 	cout("OK\n");
 }
@@ -265,7 +275,7 @@ static int GB_Test(autoList_t *list, uint target, uint bound[2])
 	bound[1] = index - 1;
 	return 1;
 }
-static void GB_DoTest(uint count, uint minval, uint maxval)
+static void GB_DoTest(uint count, uint minval, uint maxval) // 1 <= minval <= maxval < UINTMAX
 {
 	autoList_t *list = GB_MakeList(count, minval, maxval);
 	uint target;
@@ -276,7 +286,7 @@ static void GB_DoTest(uint count, uint minval, uint maxval)
 
 	cout("GB_DoTest: %u %u %u\n", count, minval, maxval);
 
-	for(target = minval; target <= maxval; target++)
+	for(target = minval - 1; target <= maxval + 1; target++)
 	{
 		uint bnd2Dmy1 = mt19937_rnd(256);
 		uint bnd2Dmy2 = mt19937_rnd(256);
@@ -317,11 +327,21 @@ static void Test_getBound(void)
 
 	for(testcnt = 0; testcnt < 1000; testcnt++)
 	{
-		uint c = mt19937_rnd(10000);
-		uint n = mt19937_rnd(1000);
-		uint x = mt19937_rnd(1000);
+		{
+			uint c = mt19937_rnd(100);
+			uint n = mt19937_rnd(1000);
+			uint x = mt19937_rnd(1000);
 
-		GB_DoTest(c, n, n + x);
+			GB_DoTest(c, n, n + x);
+		}
+
+		{
+			uint c = mt19937_rnd(10000);
+			uint n = mt19937_rnd(1000);
+			uint x = mt19937_rnd(1000);
+
+			GB_DoTest(c, n, n + x);
+		}
 	}
 	cout("OK\n");
 }
