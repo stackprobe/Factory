@@ -10,9 +10,12 @@
 #include "C:\Factory\Common\Options\SockServerTh.h"
 #include "C:\Factory\Common\Options\SockStream.h"
 
+#define REMARKS_SAVE_FILE "C:\\appdata\\HechimaServerRemarks.txt"
+
 #define COMMAND_LENMAX 50
 #define SVAL64_LENMAX 30
 #define NAME_LENMAX 100
+#define IDENT_LENMAX (NAME_LENMAX + 30)
 #define MESSAGE_LENMAX 1024
 
 #define REMARK_MAX 1000
@@ -34,6 +37,66 @@ static void ReleaseRemark(Remark_t *i)
 	memFree(i->Ident);
 	memFree(i->Message);
 	memFree(i);
+}
+static void SaveRemarks(void)
+{
+	FILE *fp = fileOpen(REMARKS_SAVE_FILE, "wt");
+	Remark_t *i;
+	uint index;
+
+	foreach(Remarks, i, index)
+	{
+		writeLine_x(fp, xcout("%I64u", i->Stamp));
+		writeLine(fp, i->Ident);
+		writeLine(fp, i->Message);
+	}
+	fileClose(fp);
+}
+static void LoadRemarks(void)
+{
+	if(existFile(REMARKS_SAVE_FILE))
+	{
+		FILE *fp = fileOpen(REMARKS_SAVE_FILE, "rt");
+
+		for(; ; )
+		{
+			char *line = readLine(fp);
+			Remark_t *i;
+
+			if(!line)
+				break;
+
+			errorCase(REMARK_MAX + 10 < getCount(Remarks)); // + margin <
+
+			i = nb(Remark_t);
+			i->Stamp = toValue64_x(line);
+			i->Ident = nnReadLine(fp);
+			i->Message = nnReadLine(fp);
+
+			// adjust {
+
+			m_range(i->Stamp, 10000101000000ui64, 99991231235959ui64);
+
+			if(getCount(Remarks))
+			{
+				uint64 nxtLwStmp = ((Remark_t *)getLastElement(Remarks))->Stamp + 1ui64;
+
+				m_maxim(i->Stamp, nxtLwStmp);
+			}
+
+			setStrLenMax(i->Ident, IDENT_LENMAX);
+			line2JLine(i->Ident, 1, 0, 0, 0);
+
+			setStrLenMax(i->Message, MESSAGE_LENMAX);
+			line2JLine(i->Message, 1, 0, 0, 1);
+			trimEdge(i->Message, ' ');
+
+			// }
+
+			addElement(Remarks, (uint)i);
+		}
+		fileClose(fp);
+	}
 }
 static char *GetIdent(char *name, char *ip)
 {
@@ -61,6 +124,17 @@ static uint GetNextRemarkIndex(uint64 knownStamp)
 	}
 	return n;
 }
+static uint GetNextRemarkIndex_Test(uint64 knownStamp) // test
+{
+	Remark_t *i;
+	uint index;
+
+	foreach(Remarks, i, index)
+		if(knownStamp < i->Stamp)
+			break;
+
+	return index;
+}
 static uint64 GetStamp(void)
 {
 	return toValue64_x(makeCompactStamp(NULL));
@@ -71,9 +145,9 @@ static uint64 GetNextStamp(void)
 
 	if(getCount(Remarks))
 	{
-		uint64 stamp2 = ((Remark_t *)getElement(Remarks, getCount(Remarks) - 1))->Stamp + 1ui64;
+		uint64 nxtLwStmp = ((Remark_t *)getLastElement(Remarks))->Stamp + 1ui64;
 
-		m_maxim(stamp, stamp2);
+		m_maxim(stamp, nxtLwStmp);
 	}
 	return stamp;
 }
@@ -104,6 +178,8 @@ static void PerformTh(int sock, char *ip)
 
 		cout("ident: %s\n", ident);
 		cout("stamp: %I64u\n", stamp);
+
+errorCase(GetNextRemarkIndex(stamp) != GetNextRemarkIndex_Test(stamp)); // test
 
 		for(index = GetNextRemarkIndex(stamp); index < getCount(Remarks); index++)
 		{
@@ -190,7 +266,11 @@ int main(int argc, char **argv)
 	LOGPOS();
 	Remarks = newList();
 	LOGPOS();
+	LoadRemarks();
+	LOGPOS();
 	sockServerTh(PerformTh, portNo, 10, IdleTh);
+	LOGPOS();
+	SaveRemarks();
 	LOGPOS();
 	releaseDim_BR(Remarks, 1, ReleaseRemark);
 	LOGPOS();
