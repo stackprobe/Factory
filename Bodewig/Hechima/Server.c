@@ -173,6 +173,9 @@ static void PerformTh(int sock, char *ip)
 			addElement(lines, (uint)strx(i->Ident));
 			addElement(lines, (uint)strx(i->Message));
 		}
+
+		// Remarks 読み込み中にスレッドが切り替わらないように、全て読み込んでから SockSend* する。
+
 		foreach(lines, line, index)
 			SockSendLine(ss, line);
 
