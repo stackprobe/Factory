@@ -48,6 +48,12 @@ static autoList_t *RecvMail(SockStream_t *ss, uint mailno)
 
 	for(; ; )
 	{
+		if(IsEOFSockStream(ss))
+		{
+			cout("RecvMail_EOFSockStream\n");
+			overCount = 1;
+			break;
+		}
 		line = RecvBinLineDisp(ss);
 
 		if(!strcmp(line, ".")) // ? ƒ[ƒ‹–{‘Ì‚ÌI—¹
