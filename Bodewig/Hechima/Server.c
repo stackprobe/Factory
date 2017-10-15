@@ -2,7 +2,7 @@
 	使い方
 
 		Server.exe 52525
-		crypTunnel.exe 52255 localhost 52525 aa9999[x22]
+		crypTunnel.exe 52255 localhost 52525 /C 10 aa9999[x22]
 
 		クライアント側は、サーバーの 52255 ポートに、パスワード aa9999[x22] で接続する。
 */
@@ -173,6 +173,7 @@ static void PerformTh(int sock, char *ip)
 			addElement(lines, (uint)strx(i->Ident));
 			addElement(lines, (uint)strx(i->Message));
 		}
+		addElement(lines, (uint)strx("End"));
 
 		// Remarks 読み込み中にスレッドが切り替わらないように、全て読み込んでから SockSend* する。
 
