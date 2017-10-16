@@ -2,7 +2,7 @@
 	使い方
 
 		Server.exe 52525
-		crypTunnel.exe 52255 localhost 52525 /C 10 aa9999[x22]
+		crypTunnel.exe 52255 localhost 52525 /C 10 /R *aa9999[x22]
 
 		クライアント側は、サーバーの 52255 ポートに、パスワード aa9999[x22] で接続する。
 */
@@ -85,7 +85,7 @@ static void LoadRemarks(void)
 			}
 
 			setStrLenMax(i->Ident, IDENT_LENMAX);
-			line2JLine(i->Ident, 1, 0, 0, 0);
+			line2JLine(i->Ident, 1, 0, 0, 1); // " @ " があるので、okSpc == 1
 
 			setStrLenMax(i->Message, MESSAGE_LENMAX);
 			line2JLine(i->Message, 1, 0, 0, 1);
@@ -172,13 +172,20 @@ static void PerformTh(int sock, char *ip)
 			addElement(lines, (uint)xcout("%I64u", i->Stamp));
 			addElement(lines, (uint)strx(i->Ident));
 			addElement(lines, (uint)strx(i->Message));
+			addElement(lines, 0); // Ender
 		}
-		addElement(lines, (uint)strx("End"));
+		addElement(lines, 0); // Ender x2
 
 		// Remarks 読み込み中にスレッドが切り替わらないように、全て読み込んでから SockSend* する。
 
 		foreach(lines, line, index)
-			SockSendLine(ss, line);
+		{
+			if(line)
+				SockSendLine(ss, line);
+			else
+				SockSendChar(ss, 0xff); // Ender
+		}
+		SockFlush(ss);
 
 		memFree(name);
 		memFree(ident);
