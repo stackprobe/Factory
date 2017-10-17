@@ -119,24 +119,18 @@ char *xcout(char *format, ...)
 
 	va_start(marker, format);
 
-	for(size = strlen(format) + 128; ; size *= 2)
+	for(size = strlen(format) + 100; ; size *= 2)
 	{
-		sint retval;
+		sint ret;
 
-		buffer = (char *)memAlloc(size + 20);
-		retval = _vsnprintf(buffer, size + 10, format, marker);
-		buffer[size + 10] = '\0'; // ã≠êßìIÇ…ï¬Ç∂ÇÈÅB
+		buffer = (char *)memAlloc(size + 20); // size + margin
+		ret = _vsnprintf(buffer, size + 10, format, marker); // size + margin
 
-		if(0 <= retval && retval <= size)
-		{
+		if(0 <= ret && ret <= size)
 			break;
-		}
-		memFree(buffer);
 
-		if(128 * 1024 * 1024 < size) // ANTI OVER-FLOW
-		{
-			error();
-		}
+		memFree(buffer);
+		errorCase(UINTMAX / 4 < size); // ANTI OVER-FLOW
 	}
 	va_end(marker);
 

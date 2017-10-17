@@ -776,6 +776,8 @@ void moveFile(char *srcFile, char *destFile)
 {
 	if(rename(srcFile, destFile))
 	{
+cout("< %s\n", srcFile);
+cout("> %s\n", destFile);
 		error();
 	}
 }

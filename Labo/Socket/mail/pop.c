@@ -50,7 +50,7 @@ static autoList_t *RecvMail(SockStream_t *ss, uint mailno)
 	{
 		if(IsEOFSockStream(ss))
 		{
-			cout("RecvMail_EOFSockStream\n");
+			cout("endStream\n");
 			overCount = 1;
 			break;
 		}
