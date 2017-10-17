@@ -123,8 +123,12 @@ char *xcout(char *format, ...)
 	{
 		sint ret;
 
-		buffer = (char *)memAlloc(size + 20); // size + margin
-		ret = _vsnprintf(buffer, size + 10, format, marker); // size + margin
+#define MARGIN 10
+
+		buffer = (char *)memAlloc(size + MARGIN * 2);
+		ret = _vsnprintf(buffer, size + MARGIN, format, marker);
+
+#undef MARGIN
 
 		if(0 <= ret && ret <= size)
 			break;
