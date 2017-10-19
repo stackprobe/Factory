@@ -2,9 +2,11 @@
 	使い方
 
 		Server.exe 52525
-		crypTunnel.exe 52255 localhost 52525 /C 10 /R *aa9999[x22]
+		crypTunnel.exe 52255 localhost 52525 /C 10 /R *aa9999x22x-PASSWORD_TRAILER
 
-		クライアント側は、サーバーの 52255 ポートに、パスワード aa9999[x22] で接続する。
+		クライアント側は、サーバーの 52255 ポートに、パスワード aa9999x22x で接続する。
+
+		"-PASSWORD_TRAILER" の部分は、HechimaClient の Consts.cs の PASSWORD_TRAILER と同じであること。
 */
 
 #include "C:\Factory\Common\Options\SockServerTh.h"
