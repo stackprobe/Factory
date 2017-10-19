@@ -158,7 +158,7 @@ static void PerformTh(int sock, char *ip)
 
 	command = SockRecvLine(ss, COMMAND_LENMAX);
 	line2JLine(command, 0, 0, 0, 0);
-	cout("command: %s\n", command);
+	cout("command: %s @ %u\n", command, now());
 
 	if(!strcmp(command, "GET-REMARKS"))
 	{
