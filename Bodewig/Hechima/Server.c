@@ -100,9 +100,25 @@ static void LoadRemarks(void)
 		fileClose(fp);
 	}
 }
+static char *GetPseudoIP(char *name)
+{
+	static char buff[16];
+
+	if(4 <= strlen(name))
+	{
+		char *p = strchr(name, '\0') - 4;
+
+		sprintf(buff, "%u.%u.%u.%u", (uint)p[0], (uint)p[1], (uint)p[2], (uint)p[3]);
+	}
+	else
+		strcpy(buff, "255.255.255.255");
+
+	return buff;
+}
 static char *GetIdent(char *name, char *ip)
 {
-	return xcout("%s @ %s", name, ip);
+//	return xcout("%s @ %s", name, ip); // crypTunnel‚ð’†Œp‚µ‚½‚çIP‚Íí‚É“¯‚¶‚É‚È‚é‚¶‚á‚ñ...
+	return xcout("%s @ %s", name, GetPseudoIP(name)); // ...‚Æ‚è‚ ‚¦‚¸name‚©‚çs‘¢I
 }
 static sint RemarkStampComp(uint v1, uint v2)
 {
