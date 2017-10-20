@@ -105,6 +105,7 @@ static void CleanSolution(char *file) // file - ソリューションファイル
 	char *suoFile = changeExt(getLocal(file), "suo"); // 2008, 2010
 	char *sdfFile = changeExt(getLocal(file), "sdf"); // 2010
 	char *opensdfFile = changeExt(getLocal(file), "opensdf"); // 2010 (tmp)
+	char *vcdbFile = changeExt(getLocal(file), "VC.db"); // vc2015
 
 	cout("CleanSolution: %s\n", file);
 
@@ -125,6 +126,10 @@ static void CleanSolution(char *file) // file - ソリューションファイル
 	RemoveFileEx(sdfFile);
 	RemoveFileEx(opensdfFile);
 
+	// vs2015
+	RemoveDirEx(".vs");
+	RemoveFileEx(vcdbFile); // vc2015
+
 	unaddCwd();
 
 	FindCleanProjects(dir);
@@ -133,6 +138,7 @@ static void CleanSolution(char *file) // file - ソリューションファイル
 	memFree(ncbFile);
 	memFree(suoFile);
 	memFree(sdfFile);
+	memFree(vcdbFile);
 }
 static void FindClean(char *dir) // dir - 検索ルートDIR
 {
