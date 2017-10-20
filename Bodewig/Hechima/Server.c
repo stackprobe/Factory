@@ -2,7 +2,7 @@
 	使い方
 
 		Server.exe 52525
-		crypTunnel.exe 52255 localhost 52525 /C 10 /R *aa9999x22x-PASSWORD_TRAILER
+		crypTunnel.exe 52255 localhost 52525 /C 25 /R *aa9999x22x-PASSWORD_TRAILER
 
 		クライアント側は、サーバーの 52255 ポートに、パスワード aa9999x22x で接続する。
 
@@ -281,7 +281,7 @@ int main(int argc, char **argv)
 	LOGPOS();
 	LoadRemarks();
 	LOGPOS();
-	sockServerTh(PerformTh, portNo, 10, IdleTh);
+	sockServerTh(PerformTh, portNo, 25, IdleTh);
 	LOGPOS();
 	SaveRemarks();
 	LOGPOS();
