@@ -100,15 +100,28 @@ static void LoadRemarks(void)
 		fileClose(fp);
 	}
 }
+static char *GetNowStr(void)
+{
+	static char buff[12]; // maxlen: "71582788:15" <- now() == 0xffffffff のとき
+	uint m;
+	uint s = now();
+
+	m = s / 60;
+	s %= 60;
+
+	sprintf(buff, "%u:%02u", m, s);
+
+	return buff;
+}
 static char *GetPseudoIP(char *name)
 {
-	static char buff[16];
+	static char buff[16]; // maxlen: "255.255.255.255"
 
 	if(4 <= strlen(name))
 	{
-		char *p = strchr(name, '\0') - 4;
+		uchar *p = strchr(name, '\0') - 4; // /Jオプションがあるけど、いちおうu付けておく...
 
-		sprintf(buff, "%u.%u.%u.%u", (uint)p[0], (uint)p[1], (uint)p[2], (uint)p[3]);
+		sprintf(buff, "%u.%u.%u.%u", p[0], p[1], p[2], p[3]);
 	}
 	else
 		strcpy(buff, "255.255.255.255");
@@ -158,7 +171,7 @@ static void PerformTh(int sock, char *ip)
 
 	command = SockRecvLine(ss, COMMAND_LENMAX);
 	line2JLine(command, 0, 0, 0, 0);
-	cout("command: %s @ %u\n", command, now());
+	cout("command: %s @ %s\n", command, GetNowStr());
 
 	if(!strcmp(command, "GET-REMARKS"))
 	{
