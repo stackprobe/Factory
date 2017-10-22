@@ -24,6 +24,8 @@
 #define REMARK_CLEAR_PCT 20
 #define REMARK_CLEAR_NUM ((REMARK_MAX * REMARK_CLEAR_PCT) / 100)
 
+#define MEMBER_MAX 25
+
 typedef struct Remark_st
 {
 	uint64 Stamp;
@@ -32,12 +34,25 @@ typedef struct Remark_st
 }
 Remark_t;
 
+typedef struct Member_st
+{
+	uint LastAccessTime;
+	char *Ident;
+}
+Member_t;
+
 static autoList_t *Remarks;
+static autoList_t *Members;
 
 static void ReleaseRemark(Remark_t *i)
 {
 	memFree(i->Ident);
 	memFree(i->Message);
+	memFree(i);
+}
+static void ReleaseMember(Member_t *i)
+{
+	memFree(i->Ident);
 	memFree(i);
 }
 static void SaveRemarks(void)
@@ -164,6 +179,39 @@ static uint64 GetNextStamp(void)
 	}
 	return stamp;
 }
+static sint MemberLATComp_Desc(uint v1, uint v2)
+{
+	Member_t *a = (Member_t *)v1;
+	Member_t *b = (Member_t *)v2;
+
+	return m_simpleComp(b->LastAccessTime, a->LastAccessTime); // 降順なので b, a
+}
+static void UpdateMember(char *ident)
+{
+	Member_t *i;
+	uint index;
+
+	foreach(Members, i, index)
+		if(!strcmp(i->Ident, ident))
+			break;
+
+	if(i)
+	{
+		i->LastAccessTime = now();
+	}
+	else
+	{
+		i = (Member_t *)memAlloc(sizeof(Member_t));
+		i->LastAccessTime = now();
+		i->Ident = strx(ident);
+
+		addElement(Members, (uint)i);
+	}
+	rapidSort(Members, MemberLATComp_Desc);
+
+	if(MEMBER_MAX < getCount(Members))
+		ReleaseMember((Member_t *)unaddElement(Members));
+}
 static void PerformTh(int sock, char *ip)
 {
 	SockStream_t *ss = CreateSockStream(sock, 15);
@@ -192,6 +240,8 @@ static void PerformTh(int sock, char *ip)
 		cout("ident: %s\n", ident);
 		cout("stamp: %I64u\n", stamp);
 
+		UpdateMember(ident);
+
 		index = GetKnownNextRemarkIndex(stamp);
 
 		cout("range: %u - %u\n", index, getCount(Remarks));
@@ -212,7 +262,7 @@ static void PerformTh(int sock, char *ip)
 		foreach(lines, line, index)
 		{
 			if(line)
-				SockSendLine(ss, line);
+				SockSendLine_NF(ss, line);
 			else
 				SockSendChar(ss, 0xff); // Ender
 		}
@@ -246,6 +296,8 @@ static void PerformTh(int sock, char *ip)
 		cout("stamp: %I64u\n", stamp);
 		cout("message: %s\n", message);
 
+		UpdateMember(ident);
+
 		i = (Remark_t *)memAlloc(sizeof(Remark_t));
 		i->Ident = ident;
 		i->Stamp = stamp;
@@ -265,6 +317,31 @@ static void PerformTh(int sock, char *ip)
 		memFree(name);
 
 		cout("REMARK.2\n");
+	}
+	else if(!strcmp(command, "GET-MEMBERS"))
+	{
+		uint nowTime = now();
+		Member_t *i;
+		uint index;
+		autoList_t *lines = newList();
+		char *line;
+
+		cout("GET-MEMBERS.1\n");
+
+		foreach(Members, i, index)
+			addElement(lines, (uint)xcout("%u %s", nowTime - i->LastAccessTime, i->Ident));
+
+		// Members 読み込み中にスレッドが切り替わらないように、全て読み込んでから SockSend* する。
+
+		foreach(lines, line, index)
+			SockSendLine_NF(ss, line);
+
+		SockSendLine_NF(ss, ""); // Ender
+		SockFlush(ss);
+
+		releaseDim(lines, 1);
+
+		cout("GET-MEMBERS.2\n");
 	}
 	else
 		cout("Unknown command!\n");
@@ -289,8 +366,8 @@ int main(int argc, char **argv)
 
 	cout("へちまサーバー★ポート＝%u\n", portNo);
 
-	LOGPOS();
 	Remarks = newList();
+	Members = newList();
 	LOGPOS();
 	LoadRemarks();
 	LOGPOS();
@@ -299,5 +376,7 @@ int main(int argc, char **argv)
 	SaveRemarks();
 	LOGPOS();
 	releaseDim_BR(Remarks, 1, ReleaseRemark);
+	LOGPOS();
+	releaseDim_BR(Members, 1, ReleaseMember);
 	LOGPOS();
 }
