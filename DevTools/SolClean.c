@@ -72,6 +72,9 @@ static void CleanProject(char *file) // file - プロジェクトファイル
 	RemoveDirEx("Release");
 //	execute_x(xcout("DEL \"%s\"", userWCard)); // 実行時のカレントなどの情報が入っているので消さない。
 
+	// vs2015
+	RemoveDirEx("x64"); // vc2015
+
 	unaddCwd();
 
 	memFree(dir);
@@ -106,6 +109,7 @@ static void CleanSolution(char *file) // file - ソリューションファイル
 	char *sdfFile = changeExt(getLocal(file), "sdf"); // 2010
 	char *opensdfFile = changeExt(getLocal(file), "opensdf"); // 2010 (tmp)
 	char *vcdbFile = changeExt(getLocal(file), "VC.db"); // vc2015
+	char *vcvcopendfFile = changeExt(getLocal(file), "VC.VC.opendf"); // vc2015
 
 	cout("CleanSolution: %s\n", file);
 
@@ -128,7 +132,9 @@ static void CleanSolution(char *file) // file - ソリューションファイル
 
 	// vs2015
 	RemoveDirEx(".vs");
+	RemoveDirEx("x64"); // vc2015
 	RemoveFileEx(vcdbFile); // vc2015
+	RemoveFileEx(vcvcopendfFile); // vc2015
 
 	unaddCwd();
 
@@ -139,6 +145,7 @@ static void CleanSolution(char *file) // file - ソリューションファイル
 	memFree(suoFile);
 	memFree(sdfFile);
 	memFree(vcdbFile);
+	memFree(vcvcopendfFile);
 }
 static void FindClean(char *dir) // dir - 検索ルートDIR
 {
