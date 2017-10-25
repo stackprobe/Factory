@@ -13,8 +13,14 @@ static void RemoveDirEx(char *dir)
 static void ClearDirEx(char *dir)
 {
 	cout("clearDir: %s\n", dir);
+
 	execute_x(xcout("RD /S /Q \"%s\"", dir));
 	execute_x(xcout("MD \"%s\"", dir));
+}
+static void ClearDirExIfExist(char *dir)
+{
+	if(existDir(dir))
+		ClearDirEx(dir);
 }
 
 // ---- Java ----
@@ -109,7 +115,7 @@ static void CleanSolution(char *file) // file - ソリューションファイル
 	char *sdfFile = changeExt(getLocal(file), "sdf"); // 2010
 	char *opensdfFile = changeExt(getLocal(file), "opensdf"); // 2010 (tmp)
 	char *vcdbFile = changeExt(getLocal(file), "VC.db"); // vc2015
-	char *vcvcopendfFile = changeExt(getLocal(file), "VC.VC.opendf"); // vc2015
+	char *vcvcopendbFile = changeExt(getLocal(file), "VC.VC.opendb"); // vc2015
 
 	cout("CleanSolution: %s\n", file);
 
@@ -131,10 +137,10 @@ static void CleanSolution(char *file) // file - ソリューションファイル
 	RemoveFileEx(opensdfFile);
 
 	// vs2015
-	RemoveDirEx(".vs");
+	ClearDirExIfExist(".vs"); // これごと消すとソリューション開くときにエラーになる。
 	RemoveDirEx("x64"); // vc2015
 	RemoveFileEx(vcdbFile); // vc2015
-	RemoveFileEx(vcvcopendfFile); // vc2015
+	RemoveFileEx(vcvcopendbFile); // vc2015
 
 	unaddCwd();
 
@@ -145,7 +151,7 @@ static void CleanSolution(char *file) // file - ソリューションファイル
 	memFree(suoFile);
 	memFree(sdfFile);
 	memFree(vcdbFile);
-	memFree(vcvcopendfFile);
+	memFree(vcvcopendbFile);
 }
 static void FindClean(char *dir) // dir - 検索ルートDIR
 {
