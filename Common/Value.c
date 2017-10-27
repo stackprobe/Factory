@@ -236,6 +236,26 @@ uint64 revEndian64(uint64 value)
 		value << 56 & 0xff00000000000000ui64;
 }
 
+char *zPad64(uint64 value, char *digits, uint minlen)
+{
+	autoBlock_t *buff = newBlock();
+	uint radix = strlen(digits);
+
+	errorCase(radix < 2);
+
+	while(value != 0 || getSize(buff) < minlen)
+	{
+		addByte(buff, digits[value % radix]);
+		value /= radix;
+	}
+	reverseBytes(buff);
+	return unbindBlock2Line(buff);
+}
+char *zPad(uint64 value, char *digits, uint minlen)
+{
+	return zPad64((uint64)value, digits, minlen);
+}
+
 // _x
 uint64 toValue64Digits_xc(char *line, char *digits)
 {

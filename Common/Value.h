@@ -47,6 +47,9 @@ sint64 divRndOff64Rate(sint64 numer, sint64 denom, sint rndOffRateNumer, sint rn
 uint revEndian(uint value);
 uint64 revEndian64(uint64 value);
 
+char *zPad64(uint64 value, char *digits, uint minlen);
+char *zPad(uint64 value, char *digits, uint minlen);
+
 // _x
 uint64 toValue64Digits_xc(char *line, char *digits);
 uint toValueDigits_xc(char *line, char *digits);
