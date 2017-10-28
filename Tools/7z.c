@@ -113,6 +113,9 @@ static void Extract7z(char *file7z)
 		addCwd(dir);
 		coExecute_x(xcout("%s x \"%s\"", Get7zExeFile(), file7z));
 		unaddCwd();
+
+		if(TrimOneDir)
+			DoTrimOneDir(dir);
 	}
 	else
 	{
@@ -126,9 +129,6 @@ static void Extract7z(char *file7z)
 		dir = Unlittering(dir, file7z);
 		execute_x(xcout("START %s", dir));
 	}
-	if(TrimOneDir)
-		DoTrimOneDir(dir);
-
 	if(OutputAndDelete)
 	{
 		LOGPOS();

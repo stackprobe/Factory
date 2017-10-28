@@ -224,22 +224,14 @@ static void Test_findBound(void)
 	{
 		{
 			uint c = mt19937_rnd(100);
-			uint n = mt19937_rnd(10);
-			uint x = mt19937_rnd(10);
+			uint n = mt19937_rnd(100);
+			uint x = mt19937_rnd(100);
 
 			FB_DoTest(c, n, n + x);
 		}
 
 		{
-			uint c = mt19937_rnd(100);
-			uint n = mt19937_rnd(1000);
-			uint x = mt19937_rnd(1000);
-
-			FB_DoTest(c, n, n + x);
-		}
-
-		{
-			uint c = mt19937_rnd(10000);
+			uint c = mt19937_rnd(1000);
 			uint n = mt19937_rnd(1000);
 			uint x = mt19937_rnd(1000);
 
@@ -337,22 +329,14 @@ static void Test_getBound(void)
 	{
 		{
 			uint c = mt19937_rnd(100);
-			uint n = mt19937_rnd(10);
-			uint x = mt19937_rnd(10);
+			uint n = mt19937_rnd(100);
+			uint x = mt19937_rnd(100);
 
 			GB_DoTest(c, n, n + x);
 		}
 
 		{
-			uint c = mt19937_rnd(100);
-			uint n = mt19937_rnd(1000);
-			uint x = mt19937_rnd(1000);
-
-			GB_DoTest(c, n, n + x);
-		}
-
-		{
-			uint c = mt19937_rnd(10000);
+			uint c = mt19937_rnd(1000);
 			uint n = mt19937_rnd(1000);
 			uint x = mt19937_rnd(1000);
 
@@ -368,10 +352,10 @@ int main(int argc, char **argv)
 {
 	mt19937_initRnd((uint)time(NULL));
 
-	Test_gnomeSort();
-	Test_combSort();
-	Test_insertSort();
-	Test_rapidSort();
+//	Test_gnomeSort();
+//	Test_combSort();
+//	Test_insertSort();
+//	Test_rapidSort();
 	Test_findBound();
 	Test_getBound();
 }
