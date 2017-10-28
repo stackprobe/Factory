@@ -165,9 +165,86 @@ int GS_TrySend(void) // ret: ? 成功
 	char *successfulFile = makeTempPath("gsSF.tmp");
 	char *errorLogFile = makeTempPath("gsELF.tmp");
 	int retval;
+	char *prmFile;
+	FILE *prmFp;
 
 	INIT();
 
+#if 1
+	prmFile = makeTempPath("gsPrm.tmp");
+	prmFp = fileOpen(prmFile, "wt");
+
+	foreach(ToList, line, index)
+	{
+		writeLine(prmFp, "/To");
+		writeLine(prmFp, line);
+	}
+	foreach(CCList, line, index)
+	{
+		writeLine(prmFp, "/CC");
+		writeLine(prmFp, line);
+	}
+	foreach(BCCList, line, index)
+	{
+		writeLine(prmFp, "/BCC");
+		writeLine(prmFp, line);
+	}
+	foreach(Attachments, line, index)
+	{
+		writeLine(prmFp, "/A");
+		writeLine(prmFp, line);
+	}
+	if(From)
+	{
+		writeLine(prmFp, "/F");
+		writeLine(prmFp, From);
+	}
+	if(Subject)
+	{
+		writeLine(prmFp, "/S");
+		writeLine(prmFp, Subject);
+	}
+	if(Body)
+	{
+		bodyFile = makeTempPath("gsBody.tmp");
+		writeOneLineNoRet_b(bodyFile, Body);
+
+		writeLine(prmFp, "/B");
+		writeLine(prmFp, bodyFile);
+	}
+	if(User && Password)
+	{
+		writeLine(prmFp, "/C");
+		writeLine(prmFp, User);
+		writeLine(prmFp, Password);
+	}
+	if(Host)
+	{
+		writeLine(prmFp, "/Host");
+		writeLine(prmFp, Host);
+	}
+	if(Port)
+	{
+		writeLine(prmFp, "/Port");
+		writeLine_x(prmFp, xcout("%u", Port));
+	}
+	if(SSLDisabled)
+		writeLine(prmFp, "/-SSL");
+
+	writeLine(prmFp, "/SF");
+	writeLine(prmFp, successfulFile);
+	writeLine(prmFp, "/ELF");
+	writeLine(prmFp, errorLogFile);
+
+	fileClose(prmFp);
+
+	cmdLine = addLine_x(cmdLine, xcout(" //R \"%s\"", prmFile));
+
+	coExecute(cmdLine);
+
+	removeFile(prmFile);
+	memFree(prmFile);
+#else // コマンド引数に指定する版 -- 問題有り -> コマンドラインの長さ青天井。(")のエスケープをしていない。
 	foreach(ToList, line, index)
 		cmdLine = addLine_x(cmdLine, xcout(" /To \"%s\"", line));
 
@@ -208,6 +285,7 @@ int GS_TrySend(void) // ret: ? 成功
 	cmdLine = addLine_x(cmdLine, xcout(" /ELF \"%s\"", errorLogFile));
 
 	coExecute(cmdLine);
+#endif
 
 	if(existFile(successfulFile))
 	{
