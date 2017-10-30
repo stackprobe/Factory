@@ -37,6 +37,7 @@ static autoBlock_t *KeyBundle;
 static autoList_t *KeyTableList;
 static uint BlockSizeLimit;
 static uint BlockSizeMin = 1;
+static autoBlock_t *CliVerifyPtn;
 
 static uint GetNegotiationTimeoutMillis(void)
 {
@@ -215,6 +216,30 @@ static void PerformTh(int sock, char *strip)
 	uchar decCounter[COUNTER_SIZE];
 	uchar encCounter[COUNTER_SIZE];
 
+	if(CliVerifyPtn)
+	{
+		static autoBlock_t *rvBlock;
+
+		LOGPOS();
+
+		if(!rvBlock)
+			rvBlock = newBlock();
+
+		setSize(rvBlock, 0);
+
+		if(SockRecvSequLoop(sock, rvBlock, 2000, getSize(CliVerifyPtn)) != getSize(CliVerifyPtn))
+		{
+			LOGPOS();
+			return;
+		}
+		if(!isSameBlock(CliVerifyPtn, rvBlock))
+		{
+			LOGPOS();
+			return;
+		}
+		LOGPOS();
+	}
+
 	if(ReverseMode)
 	{
 		encSock = sock;
@@ -346,6 +371,11 @@ static int ReadArgs(void)
 	{
 		BlockSizeLimit = 60000;
 		BlockSizeMin   = 50000;
+		return 1;
+	}
+	if(argIs("/CVP")) // for Hechima etc.
+	{
+		CliVerifyPtn = ab_makeBlockLine(nextArg());
 		return 1;
 	}
 	KeyBundleFile = nextArg();
