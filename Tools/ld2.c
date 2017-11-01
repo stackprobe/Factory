@@ -56,7 +56,7 @@ static void LoadDir(char *name)
 
 	if(index < getCount(lines))
 	{
-		writeOneLine_cx(BATCH_FILE, xcout("CD \"%s\"", getLine(lines, index + 1)));
+		writeOneLine_cx(BATCH_FILE, xcout("CD /D \"%s\"", getLine(lines, index + 1)));
 	}
 	else
 	{

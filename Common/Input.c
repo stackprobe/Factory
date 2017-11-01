@@ -164,7 +164,7 @@ int waitKey(uint millis)
 		{
 			break;
 		}
-		ms = m_min(millis, 300);
+		ms = m_min(millis, 250);
 		sleep(ms);
 		millis -= ms;
 	}
@@ -189,7 +189,7 @@ int coWaitKey(uint millis)
 		if(elapse == millis)
 			break;
 
-		m = m_min(millis - elapse, 300);
+		m = m_min(millis - elapse, 250);
 		sleep(m);
 		elapse += m;
 		cout("\r%uƒ~ƒŠ•bŒo‚¿‚Ü‚µ‚½B", elapse);

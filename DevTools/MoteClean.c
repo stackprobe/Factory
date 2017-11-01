@@ -47,7 +47,7 @@ static void MoteClean(char *dir)
 	{
 		cout("íœH\n");
 
-		if(clearCoWaitKey(15000) == 0x1b) // GitReleaseAll.bat ‚Ì‚Æ‚«~‚Ü‚ç‚È‚¢‚æ‚¤‚ÉA
+		if(clearCoWaitKey(60000) == 0x1b) // GitReleaseAll.bat ‚Ì‚Æ‚«~‚Ü‚ç‚È‚¢‚æ‚¤‚ÉA
 //		if(clearGetKey() == 0x1b)
 			termination(0);
 
