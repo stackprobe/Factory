@@ -366,6 +366,8 @@ int main(int argc, char **argv)
 
 	cout("へちまサーバー★ポート＝%u\n", portNo);
 
+	cmdTitle_x(xcout("Hechima - %u", portNo));
+
 	Remarks = newList();
 	Members = newList();
 	LOGPOS();
@@ -379,4 +381,6 @@ int main(int argc, char **argv)
 	LOGPOS();
 	releaseDim_BR(Members, 1, ReleaseMember);
 	LOGPOS();
+
+	cmdTitle("Hechima");
 }
