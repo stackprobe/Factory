@@ -435,7 +435,7 @@ static void CD_ExecBatch(char *dir, char *trailOpts, char *outFile)
 
 	execute_x(xcout("CMD /C \"%s\"", batFile));
 
-	dir = makeFullPath(dir);
+//	dir = makeFullPath(dir); // ネットワークパス対応 @ 2017.11.2
 
 	rfp = fileOpen(midFile, "rt");
 	wfp = fileOpen(outFile, "at");
@@ -459,7 +459,10 @@ static void CD_ExecBatch(char *dir, char *trailOpts, char *outFile)
 			memFree(line);
 			continue;
 		}
-		path = combine(dir, line);
+
+//		path = combine(dir, line);
+		path = xcout("%s\\%s", dir, line); // ネットワークパス対応 @ 2017.11.2
+
 		writeLine(wfp, path);
 		memFree(line);
 		memFree(path);
@@ -471,7 +474,7 @@ static void CD_ExecBatch(char *dir, char *trailOpts, char *outFile)
 	removeFile_x(midFile);
 	removeFile_x(erroutFile);
 
-	memFree(dir);
+//	memFree(dir); // ネットワークパス対応 @ 2017.11.2
 }
 void cmdDir_ls2File_noClear(char *dir, char *dirsFile, char *filesFile)
 {

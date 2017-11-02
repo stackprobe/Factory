@@ -312,9 +312,28 @@ endFunc:
 
 	return ret;
 }
-int main(int argc, char **argv)
+
+static uint ProcMtx;
+
+static void UnlockProcMtx(void)
+{
+	LOGPOS();
+	mutexUnlock(ProcMtx);
+	LOGPOS();
+}
+static void LockProcMtx(void)
+{
+	LOGPOS();
+	ProcMtx = mutexLock("{8f16d7a8-fe3e-4450-9322-db05b58903aa}");
+	LOGPOS();
+	addFinalizer(UnlockProcMtx);
+	LOGPOS();
+}
+static void Main2(void)
 {
 	int errorLevel = 0;
+
+	LockProcMtx(); // ÇΩÇ‹Ç…ìØéûÇ…ìÆÇ©ÇµÇƒÇµÇ‹Ç§Ç±Ç∆Ç™Ç†ÇÈÇÃÇ≈ÅAÉçÉbÉN
 
 readArgs:
 	if(argIs("/T"))
@@ -415,4 +434,9 @@ readArgs:
 
 	cout("errorLevel: %u\n", errorLevel);
 	termination(errorLevel);
+}
+int main(int argc, char **argv)
+{
+	Main2();
+	termination(0); // 2bs
 }
