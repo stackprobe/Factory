@@ -312,7 +312,7 @@ static void EraseLostEntries(char *storeDir)
 	releaseDim(stockFiles, 1);
 	releaseDim(revisions, 1);
 }
-static void TrimStoreDir(char *storeDir)
+static void TrimStoreDir(char *storeDir, int quietFlag)
 {
 	autoList_t *stockFiles;
 	autoList_t *revisions;
@@ -375,7 +375,7 @@ static void TrimStoreDir(char *storeDir)
 		}
 		cout("çÌèúÅH\n");
 
-		if(clearGetKey() != 0x1b)
+		if(quietFlag || clearGetKey() != 0x1b)
 		{
 			cout("çÌèúÇµÇ‹Ç∑ÅB\n");
 
@@ -1048,6 +1048,7 @@ cancelled:
 
 static int EditCommentMode;
 static int TrimStoreDirMode;
+static int TrimStoreDirMode_QuietMode;
 static int FileHistoryMode;
 static int FileHistoryMode_FromLastRevision;
 static int FileHistoryMode_LastFileOnly;
@@ -1079,7 +1080,7 @@ static void Rum(char *dir)
 		}
 		else if(TrimStoreDirMode)
 		{
-			TrimStoreDir(dir);
+			TrimStoreDir(dir, TrimStoreDirMode_QuietMode);
 		}
 		else if(FileHistoryMode)
 		{
@@ -1121,6 +1122,12 @@ readArgs:
 	if(argIs("/T")) // Trim store-dir
 	{
 		TrimStoreDirMode = 1;
+		goto readArgs;
+	}
+	if(argIs("/TT")) // MatomeMaker óp
+	{
+		TrimStoreDirMode = 1;
+		TrimStoreDirMode_QuietMode = 1;
 		goto readArgs;
 	}
 	if(argIs("/HA")) // file History from All revision
