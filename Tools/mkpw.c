@@ -1,7 +1,7 @@
 /*
 	mkpw -> 62 P 22 L 2 = 130.*
 	mkpu -> 36 P 25 L 2 = 129.*
-	mkpd -> 10 P 40 L 2 = 132.*
+	mkpd -> 10 P 39 L 2 = 129.*
 */
 
 #include "C:\Factory\Common\all.h"
@@ -47,7 +47,7 @@ int main(int argc, char **argv)
 	if(argIs("/9"))
 	{
 		pwChrNum = 10;
-		pwLen = 40;
+		pwLen = 39;
 	}
 	if(argIs("/9U"))
 	{

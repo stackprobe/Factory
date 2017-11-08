@@ -1,6 +1,6 @@
 #include "C:\Factory\Common\all.h"
 
-#define FILE_SIZE_LIMIT 16400 // 16384 == 1024 * 16
+#define FILE_SIZE_LIMIT 1050000 // 1048576 == 1024 * 1024
 
 static char *RDir;
 
@@ -127,7 +127,7 @@ int main(int argc, char **argv)
 
 	errorCase(!existDir(RDir));
 
-	removeDirIfExist(W_DIR);
+	recurRemoveDirIfExist(W_DIR);
 	createDir(W_DIR);
 
 	CpRums();
