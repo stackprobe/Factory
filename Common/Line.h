@@ -3,8 +3,13 @@
 
 int isEmptyJTkn(char *token);
 
+#define isMbc1(c) ( \
+	'\x81' <= (c) && (c) <= '\x9f' || \
+	'\xe0' <= (c) && (c) <= '\xfc')
+
 #define isMbc(p) \
-	(_ismbblead((p)[0]) && (p)[1])
+	(isMbc1((p)[0]) && (p)[1])
+//	(_ismbblead((p)[0]) && (p)[1])
 //	(_ismbblead((p)[0]) && _ismbbtrail((p)[1]))
 
 #define mbsNext(p) \
