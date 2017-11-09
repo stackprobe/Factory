@@ -38,8 +38,17 @@
 #define SEED_DIR "C:\\Factory\\tmp"
 #define SEED_FILE SEED_DIR "\\CSeed.dat"
 
-#define SEEDSIZE 65536 // 2017.1.12～
-//#define SEEDSIZE 4096
+/*
+	SHA512 の内部状態は 512 bit らしい？
+	sizeof(SHA512_CTX) == 216 ？？？ -> 多分冗長なんだろう。。。
+	仮に 256 バイトと見なす。
+	クラスタサイズ 4096 に合わせたい。-> 4096 / 256 == 16
+	1/e == 0.36787944*
+	1/e ^ 16 == 0.000000112535*
+	内部状態の 16 倍もあれば、内部状態をほぼ網羅できるだろう。
+	256 * 16 == 4096
+*/
+#define SEEDSIZE 4096
 
 static void GetCryptoSeed(uchar *seed)
 {
