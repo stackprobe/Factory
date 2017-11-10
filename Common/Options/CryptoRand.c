@@ -210,7 +210,7 @@ uint getCryptoByte(void)
 	static uchar buffer[BUFFERSIZE];
 	static uint index = BUFFERSIZE;
 
-	if(BUFFERSIZE <= index)
+	if(index == BUFFERSIZE)
 	{
 		GetCryptoBlock(buffer);
 		index = 0;

@@ -112,12 +112,15 @@ static void DoTest_01(void)
 {
 	uint c;
 
+	LOGPOS();
+
 	for(c = 0; c < 1000; c++)
 	{
 		cout("%u\n", c);
 
 		DoTest_01_2();
 	}
+	LOGPOS();
 }
 static void AddToCr2(autoBlock_t *cr2, autoBlock_t *seeds[16], uint v1, uint v1_on, uint v2, uint v2_on)
 {
@@ -145,6 +148,22 @@ static void DoTest_02(void)
 	autoBlock_t *cr2;
 	uint val;
 
+	LOGPOS();
+
+#define CR_FILE "C:\\Factory\\tmp\\cr.tmp"
+
+	removeFileIfExist(CR_FILE);
+	coExecute(CRAND_B_EXE " 13000 " CR_FILE);
+	cr1 = readBinary(CR_FILE);
+	removeFile(CR_FILE);
+
+#undef CR_FILE
+
+	cr2 = newBlock();
+
+	// seed の読み込みは、読み込み -> increment -> 書き出し -> 使う
+	// なので後から読み込まないとダメ
+
 	seeds[0] = readBinary("C:\\Factory\\tmp\\CSeed.dat");
 	seeds[1] = readBinary("C:\\Factory\\tmp\\CSeedEx_0.dat");
 	seeds[2] = readBinary("C:\\Factory\\tmp\\CSeedEx_1.dat");
@@ -162,17 +181,6 @@ static void DoTest_02(void)
 	seeds[14] = readBinary("C:\\Factory\\tmp\\CSeedEx_13.dat");
 	seeds[15] = readBinary("C:\\Factory\\tmp\\CSeedEx_14.dat");
 
-#define CR_FILE "C:\\Factory\\tmp\\cr.tmp"
-
-	removeFileIfExist(CR_FILE);
-	coExecute(CRAND_B_EXE " 13000 " CR_FILE);
-	cr1 = readBinary(CR_FILE);
-	removeFile(CR_FILE);
-
-#undef CR_FILE
-
-	cr2 = newBlock();
-
 	AddToCr2(cr2, seeds, 0x00, 0, 0x00, 0);
 
 	for(val = 0x00; val <= 0xff; val++)
@@ -183,19 +191,21 @@ static void DoTest_02(void)
 	AddToCr2(cr2, seeds, 0x01, 1, 0x00, 1);
 	AddToCr2(cr2, seeds, 0x02, 1, 0x00, 1);
 
-writeBinary("1.bin", cr1); // test
-writeBinary("2.bin", cr2); // test
+//writeBinary("1.bin", cr1); // test
+//writeBinary("2.bin", cr2); // test
 
-	errorCase(!isSameBlock(cr1, cr2)); // TODO ng
+	errorCase(!isSameBlock(cr1, cr2));
 
 	releaseAutoBlock(cr1);
 	releaseAutoBlock(cr2);
+
+	LOGPOS();
 }
 static void DoTest(void)
 {
 	coExecute(CRAND_B_EXE " 1");
 
-//	DoTest_01();
+	DoTest_01();
 	DoTest_02();
 }
 int main(int argc, char **argv)
