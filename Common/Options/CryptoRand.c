@@ -1,36 +1,47 @@
 /*
 	getCryptoByte()のバイト列:
 
-		sha-512(b[0]){0 -> 63} + sha-512(b[1]){0 -> 63} + sha-512(b[2]){0 -> 63} ...
+		sha-512(b[0]){0 -> 50} + sha-512(b[1]){0 -> 50} + sha-512(b[2]){0 -> 50} + ...
 
 	b:
-		b[0] = GetCryptoSeed(){0 -> 4095}
-		b[1] = b[0] + c[0]
-		b[2] = b[0] + c[1]
-		b[3] = b[0] + c[2]
-		b[4] = b[0] + c[3]
+		b[0] = s + c[0] + x[0] + c[0] + x[1] + c[0] + x[2] + ... c[0] + x[14]
+		b[1] = s + c[1] + x[0] + c[1] + x[1] + c[1] + x[2] + ... c[1] + x[14]
+		b[2] = s + c[2] + x[0] + c[2] + x[1] + c[2] + x[2] + ... c[2] + x[14]
 		...
 
 	c:
-		c[0] = 0x00
-		c[1] = 0x01
-		c[2] = 0x02
-		c[3] = 0x03
+		c[0] = ""
+		c[1] = 0x00
+		c[2] = 0x01
+		c[3] = 0x02
 		...
-		c[255] = 0xff
-		c[256] = 0x00, 0x00
-		c[257] = 0x01, 0x00
+		c[256] = 0xff
+		c[257] = 0x00, 0x00
+		c[258] = 0x01, 0x00
+		c[259] = 0x02, 0x00
 		...
-		c[511] = 0xff, 0x00
-		c[512] = 0x00, 0x01
-		c[513] = 0x01, 0x01
+		c[512] = 0xff, 0x00
+		c[513] = 0x00, 0x01
+		c[514] = 0x01, 0x01
+		c[515] = 0x02, 0x01
 		...
-		c[65791] = 0xff, 0xff
-		c[65792] = 0x00, 0x00, 0x00
-		c[65793] = 0x01, 0x00, 0x00
+		c[65792] = 0xff, 0xff
+		c[65793] = 0x00, 0x00, 0x00
+		c[65794] = 0x01, 0x00, 0x00
+		c[65795] = 0x02, 0x00, 0x00
 		...
 
-		★ {} = バイト列の並び方
+	s:
+		GetCryptoSeed(){0 -> 4096}
+
+	x:
+		x[0] = GetCryptoSeedEx(){4096 * 0 -> 4096 * 1}
+		x[1] = GetCryptoSeedEx(){4096 * 1 -> 4096 * 2}
+		x[2] = GetCryptoSeedEx(){4096 * 2 -> 4096 * 3}
+		...
+		x[14] = GetCryptoSeedEx(){4096 * 14 -> 4096 * 15}
+
+		★ {a -> b} = 添字 a から b の直前まで
 */
 
 #include "CryptoRand.h"
@@ -50,7 +61,11 @@
 */
 #define SEEDSIZE 4096
 
-static void GetCryptoSeed(uchar *seed)
+#define SEEDEX_FILE_FMT SEED_DIR "\\CSeedEx_%u.dat"
+#define SEEDEX_PART_NUM 15
+#define SEEDEXSIZE (SEEDSIZE * SEEDEX_PART_NUM)
+
+static void GetCryptoSeed(uchar *seed, uint seed_size, char *seed_file)
 {
 	if(isFactoryDirEnabled() && existDir(SEED_DIR))
 	{
@@ -60,27 +75,27 @@ static void GetCryptoSeed(uchar *seed)
 
 		// zantei >
 
-		if(existFile(SEED_FILE) && getFileSize(SEED_FILE) != (uint64)SEEDSIZE)
+		if(existFile(seed_file) && getFileSize(seed_file) != (uint64)seed_size)
 		{
 			cout("#########################################################\n");
 			cout("## SEED_FILE SIZE ERROR -- どっかに古い exe があるで！ ##\n");
 			cout("#########################################################\n");
 
-			removeFile(SEED_FILE);
+			removeFile(seed_file);
 		}
 
 		// < zantei
 
-		if(existFile(SEED_FILE))
+		if(existFile(seed_file))
 		{
 			FILE *fp;
 			uint index;
 
-			fp = fileOpen(SEED_FILE, "rb");
-			fileRead(fp, gndBlockVar(seed, SEEDSIZE, gab));
+			fp = fileOpen(seed_file, "rb");
+			fileRead(fp, gndBlockVar(seed, seed_size, gab));
 			fileClose(fp);
 
-			for(index = 0; index < SEEDSIZE; index++)
+			for(index = 0; index < seed_size; index++)
 			{
 				if(seed[index] < 0xff)
 				{
@@ -91,16 +106,38 @@ static void GetCryptoSeed(uchar *seed)
 			}
 		}
 		else
-			getCryptoBlock_MS(seed, SEEDSIZE);
+			getCryptoBlock_MS(seed, seed_size);
 
-		writeBinary(SEED_FILE, gndBlockVar(seed, SEEDSIZE, gab));
+		writeBinary(seed_file, gndBlockVar(seed, seed_size, gab));
 		unmutex();
 	}
 	else
-		getCryptoBlock_MS(seed, SEEDSIZE);
+		getCryptoBlock_MS(seed, seed_size);
+}
+static autoBlock_t *GetCryptoSeedEx(void)
+{
+	static autoBlock_t *seedEx;
+
+	if(!seedEx)
+	{
+		uint index;
+
+		seedEx = nobCreateBlock(SEEDEXSIZE);
+
+		for(index = 0; index < SEEDEX_PART_NUM; index++)
+		{
+			char *partFile = xcout(SEEDEX_FILE_FMT, index);
+
+			GetCryptoSeed(directGetBlock(seedEx, index * SEEDSIZE, SEEDSIZE), SEEDSIZE, partFile);
+
+			memFree(partFile);
+		}
+	}
+	return seedEx;
 }
 
-#define BUFFERSIZE 64 // == sha512 hash size
+//#define BUFFERSIZE 64 // == sha512 hash size
+#define BUFFERSIZE 50
 
 static void GetCryptoBlock(uchar *buffer)
 {
@@ -113,24 +150,31 @@ static void GetCryptoBlock(uchar *buffer)
 		uchar seed[SEEDSIZE];
 		autoBlock_t gab;
 
-		GetCryptoSeed(seed);
+		GetCryptoSeed(seed, SEEDSIZE, SEED_FILE);
 
 		ctx = sha512_create();
 		sha512_update(ctx, gndBlockVar(seed, SEEDSIZE, gab));
-		sha512_makeHash(ctx);
+//		sha512_makeHash(ctx);
+
+		{
+			sha512_t *ictx = sha512_copy(ctx);
+
+			sha512_update(ictx, GetCryptoSeedEx());
+			sha512_makeHash(ictx);
+			sha512_release(ictx);
+		}
 	}
 	else
 	{
 		static autoBlock_t *tremor;
 		sha512_t *ictx = sha512_copy(ctx);
+		uint index;
 
 		if(!tremor)
 			tremor = newBlock();
 
 		// tremor更新
 		{
-			uint index;
-
 			for(index = 0; index < getSize(tremor); index++)
 			{
 				uint byteVal = getByte(tremor, index);
@@ -148,7 +192,13 @@ static void GetCryptoBlock(uchar *buffer)
 			}
 		}
 
-		sha512_update(ictx, tremor);
+		for(index = 0; index < SEEDEX_PART_NUM; index++)
+		{
+			autoBlock_t gab;
+
+			sha512_update(ictx, tremor);
+			sha512_update(ictx, gndSubBytesVar(GetCryptoSeedEx(), index * SEEDSIZE, SEEDSIZE, gab));
+		}
 		sha512_makeHash(ictx);
 		sha512_release(ictx);
 	}
