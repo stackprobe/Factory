@@ -114,7 +114,7 @@ static void DoTest_01(void)
 
 	LOGPOS();
 
-	for(c = 0; c < 1000; c++)
+	for(c = 0; c < 550; c++)
 	{
 		cout("%u\n", c);
 
@@ -122,7 +122,7 @@ static void DoTest_01(void)
 	}
 	LOGPOS();
 }
-static void AddToCr2(autoBlock_t *cr2, autoBlock_t *seeds[16], uint v1, uint v1_on, uint v2, uint v2_on)
+static void AddToCr2(autoBlock_t *cr2, autoBlock_t *seeds[16], uint v1, uint v2, uint v_num)
 {
 	autoBlock_t *text = newBlock();
 	uint index;
@@ -131,17 +131,17 @@ static void AddToCr2(autoBlock_t *cr2, autoBlock_t *seeds[16], uint v1, uint v1_
 	{
 		if(index)
 		{
-			if(v1_on) addByte(text, v1);
-			if(v2_on) addByte(text, v2);
+			if(1 <= v_num) addByte(text, v1);
+			if(2 <= v_num) addByte(text, v2);
 		}
 		ab_addBytes(text, seeds[index]);
 	}
 	sha512_makeHashBlock(text);
 	releaseAutoBlock(text);
 
-	ab_addBlock(cr2, sha512_hash, 50);
+	ab_addBlock(cr2, sha512_hash, 30);
 }
-static void DoTest_02(void)
+static void DoTest_02_2(void)
 {
 	autoBlock_t *seeds[16];
 	autoBlock_t *cr1;
@@ -153,7 +153,7 @@ static void DoTest_02(void)
 #define CR_FILE "C:\\Factory\\tmp\\cr.tmp"
 
 	removeFileIfExist(CR_FILE);
-	coExecute(CRAND_B_EXE " 13000 " CR_FILE);
+	coExecute(CRAND_B_EXE " 7800 " CR_FILE);
 	cr1 = readBinary(CR_FILE);
 	removeFile(CR_FILE);
 
@@ -181,15 +181,15 @@ static void DoTest_02(void)
 	seeds[14] = readBinary("C:\\Factory\\tmp\\CSeedEx_13.dat");
 	seeds[15] = readBinary("C:\\Factory\\tmp\\CSeedEx_14.dat");
 
-	AddToCr2(cr2, seeds, 0x00, 0, 0x00, 0);
+	AddToCr2(cr2, seeds, 0x00, 0x00, 0);
 
 	for(val = 0x00; val <= 0xff; val++)
 	{
-		AddToCr2(cr2, seeds, val, 1, 0x00, 0);
+		AddToCr2(cr2, seeds, val, 0x00, 1);
 	}
-	AddToCr2(cr2, seeds, 0x00, 1, 0x00, 1);
-	AddToCr2(cr2, seeds, 0x01, 1, 0x00, 1);
-	AddToCr2(cr2, seeds, 0x02, 1, 0x00, 1);
+	AddToCr2(cr2, seeds, 0x00, 0x00, 2);
+	AddToCr2(cr2, seeds, 0x01, 0x00, 2);
+	AddToCr2(cr2, seeds, 0x02, 0x00, 2);
 
 //writeBinary("1.bin", cr1); // test
 //writeBinary("2.bin", cr2); // test
@@ -199,6 +199,20 @@ static void DoTest_02(void)
 	releaseAutoBlock(cr1);
 	releaseAutoBlock(cr2);
 
+	LOGPOS();
+}
+static void DoTest_02(void)
+{
+	uint c;
+
+	LOGPOS();
+
+	for(c = 0; c < 10; c++)
+	{
+		cout("%u\n", c);
+
+		DoTest_02_2();
+	}
 	LOGPOS();
 }
 static void DoTest(void)

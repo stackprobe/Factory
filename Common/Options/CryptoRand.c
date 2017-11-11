@@ -1,7 +1,7 @@
 /*
 	getCryptoByte()‚ÌƒoƒCƒg—ñ:
 
-		sha-512(b[0]){0 -> 50} + sha-512(b[1]){0 -> 50} + sha-512(b[2]){0 -> 50} + ...
+		sha-512(b[0]){0 -> 30} + sha-512(b[1]){0 -> 30} + sha-512(b[2]){0 -> 30} + ...
 
 	b:
 		b[0] = s + c[0] + x[0] + c[0] + x[1] + c[0] + x[2] + ... c[0] + x[14]
@@ -137,7 +137,8 @@ static autoBlock_t *GetCryptoSeedEx(void)
 }
 
 //#define BUFFERSIZE 64 // == sha512 hash size
-#define BUFFERSIZE 50
+//#define BUFFERSIZE 50
+#define BUFFERSIZE 30
 
 static void GetCryptoBlock(uchar *buffer)
 {
