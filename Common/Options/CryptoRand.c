@@ -4,10 +4,10 @@
 		sha-512(b[0]){0 -> 32} + sha-512(b[1]){0 -> 32} + sha-512(b[2]){0 -> 32} + ...
 
 	b:
-		b[0] = GetCryptoSeed(){0 -> 4096}
-		b[1] = GetCryptoSeed(){0 -> 4096} + c[0]
-		b[2] = GetCryptoSeed(){0 -> 4096} + c[1]
-		b[3] = GetCryptoSeed(){0 -> 4096} + c[2]
+		b[0] = s + x
+		b[1] = s + c[0] + x
+		b[2] = s + c[1] + x
+		b[3] = s + c[2] + x
 		...
 
 	c:
@@ -31,6 +31,12 @@
 		c[65794] = 0x02, 0x00, 0x00
 		...
 
+	s:
+		GetCryptoSeed(){0 -> 4096}
+
+	x:
+		GetCryptoSeedEx(){0 -> 65536}
+
 		★ {a -> b} = 添字 a から b の直前まで
 */
 
@@ -38,6 +44,7 @@
 
 #define SEED_DIR "C:\\Factory\\tmp"
 #define SEED_FILE SEED_DIR "\\CSeed.dat"
+#define SEEDEX_FILE SEED_DIR "\\CSeedEx.dat"
 
 /*
 	SHA512 の内部状態は 512 bit らしい？
@@ -51,7 +58,17 @@
 */
 #define SEEDSIZE 4096
 
-static void GetCryptoSeed(uchar *seed)
+/*
+	ある内部状態から予測可能な短いカウンタを読ませて連続してダイジェストを生成したとき、
+	そのダイジェスト列から内部状態を予測出来る？？？
+	少なくとも、最初のダイジェストとそれ以降全てのダイジェストの組み合わせは一つしかない。
+	内部状態は 2 ^ 512 しかない。-> ダイジェスト列は 2 ^ 512 通りしかない。
+	tremorの後に追加のシードを読ませてダイジェスト列のパターン数を稼ぐ。
+	ダイジェスト列は 2 ^ (512 + SEEDEXSIZE * 8) 通りになる。・・・はず。
+*/
+#define SEEDEXSIZE 65536
+
+static void GetCryptoSeed(uchar *seed, uint seed_size, char *seed_file)
 {
 	if(isFactoryDirEnabled())
 	{
@@ -61,27 +78,27 @@ static void GetCryptoSeed(uchar *seed)
 
 		// zantei >
 
-		if(existFile(SEED_FILE) && getFileSize(SEED_FILE) != (uint64)SEEDSIZE)
+		if(existFile(seed_file) && getFileSize(seed_file) != (uint64)seed_size)
 		{
 			cout("#########################################################\n");
 			cout("## SEED_FILE SIZE ERROR -- どっかに古い exe があるで！ ##\n");
 			cout("#########################################################\n");
 
-			removeFile(SEED_FILE);
+			removeFile(seed_file);
 		}
 
 		// < zantei
 
-		if(existFile(SEED_FILE))
+		if(existFile(seed_file))
 		{
 			FILE *fp;
 			uint index;
 
-			fp = fileOpen(SEED_FILE, "rb");
-			fileRead(fp, gndBlockVar(seed, SEEDSIZE, gab));
+			fp = fileOpen(seed_file, "rb");
+			fileRead(fp, gndBlockVar(seed, seed_size, gab));
 			fileClose(fp);
 
-			for(index = 0; index < SEEDSIZE; index++)
+			for(index = 0; index < seed_size; index++)
 			{
 				if(seed[index] < 0xff)
 				{
@@ -92,17 +109,34 @@ static void GetCryptoSeed(uchar *seed)
 			}
 		}
 		else
-			getCryptoBlock_MS(seed, SEEDSIZE);
+			getCryptoBlock_MS(seed, seed_size);
 
-		writeBinary(SEED_FILE, gndBlockVar(seed, SEEDSIZE, gab));
+		writeBinary(seed_file, gndBlockVar(seed, seed_size, gab));
 		unmutex();
 	}
 	else
-		getCryptoBlock_MS(seed, SEEDSIZE);
+		getCryptoBlock_MS(seed, seed_size);
+}
+static autoBlock_t *GetCryptoSeedEx(void)
+{
+	static autoBlock_t *seedEx;
+
+	if(!seedEx)
+	{
+		seedEx = nobCreateBlock(SEEDEXSIZE);
+		GetCryptoSeed((uchar *)directGetBuffer(seedEx), SEEDEXSIZE, SEEDEX_FILE);
+	}
+	return seedEx;
 }
 
 //#define BUFFERSIZE 64 // == sha512 hash size
-#define BUFFERSIZE 32
+
+/*
+	1/e == 0.36787944*
+	1/e ^ 8 == 0.0003354626*
+	なので、1バイト(8ビット)削る。
+*/
+#define BUFFERSIZE 63
 
 static void GetCryptoBlock(uchar *buffer)
 {
@@ -115,11 +149,19 @@ static void GetCryptoBlock(uchar *buffer)
 		uchar seed[SEEDSIZE];
 		autoBlock_t gab;
 
-		GetCryptoSeed(seed);
+		GetCryptoSeed(seed, SEEDSIZE, SEED_FILE);
 
 		ctx = sha512_create();
 		sha512_update(ctx, gndBlockVar(seed, SEEDSIZE, gab));
-		sha512_makeHash(ctx);
+//		sha512_makeHash(ctx);
+
+		{
+			sha512_t *ictx = sha512_copy(ctx);
+
+			sha512_update(ictx, GetCryptoSeedEx());
+			sha512_makeHash(ictx);
+			sha512_release(ictx);
+		}
 	}
 	else
 	{
@@ -151,6 +193,7 @@ static void GetCryptoBlock(uchar *buffer)
 		}
 
 		sha512_update(ictx, tremor);
+		sha512_update(ictx, GetCryptoSeedEx());
 		sha512_makeHash(ictx);
 		sha512_release(ictx);
 	}
