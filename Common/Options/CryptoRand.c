@@ -1,14 +1,17 @@
 /*
 	getCryptoByte()のバイト列:
 
-		sha-512(b[0]){0 -> 32} + sha-512(b[1]){0 -> 32} + sha-512(b[2]){0 -> 32} + ...
+		sha-512(b[0]){0 -> 64} + sha-512(b[1]){0 -> 64} + sha-512(b[2]){0 -> 64} + ...
 
 	b:
-		b[0] = s + x
-		b[1] = s + c[0] + x
-		b[2] = s + c[1] + x
-		b[3] = s + c[2] + x
+		b[0] = s
+		b[1] = s + c[0]
+		b[2] = s + c[1]
+		b[3] = s + c[2]
 		...
+
+	s:
+		GetCryptoSeed(){0 -> 65536}
 
 	c:
 		c[0] = 0x00
@@ -31,12 +34,6 @@
 		c[65794] = 0x02, 0x00, 0x00
 		...
 
-	s:
-		GetCryptoSeed(){0 -> 4096}
-
-	x:
-		GetCryptoSeedEx(){0 -> 65536}
-
 		★ {a -> b} = 添字 a から b の直前まで
 */
 
@@ -44,33 +41,8 @@
 
 #define SEED_DIR "C:\\Factory\\tmp"
 #define SEED_FILE SEED_DIR "\\CSeed.dat"
-#define SEEDEX_FILE SEED_DIR "\\CSeedEx.dat"
 
-/*
-	SHA512 の内部状態は 512 bit らしい？
-	sizeof(SHA512_CTX) == 216 ？？？ -> 多分冗長なんだろう。。。
-	仮に 256 バイトと見なす。
-	クラスタサイズ 4096 に合わせたい。-> 4096 / 256 == 16
-	1/e == 0.36787944*
-	1/e ^ 16 == 0.000000112535*
-	内部状態の 16 倍もあれば、内部状態をほぼ網羅できるだろう。
-	256 * 16 == 4096
-*/
 #define SEEDSIZE 4096
-
-/*
-	ある内部状態から予測可能な短いカウンタを読ませて連続してダイジェストを生成したとき、
-	そのダイジェスト列から内部状態を予測出来る？？？
-	少なくとも、最初のダイジェストとそれ以降全てのダイジェストの組み合わせは一つしかない。
-	内部状態は 2 ^ 512 しかない。-> ダイジェスト列は 2 ^ 512 通りしかない。
-	tremorの後に追加のシードを読ませてダイジェスト列のパターン数を稼ぐ。
-	ダイジェスト列は 2 ^ (512 + SEEDEXSIZE * 8) 通りになる・・・はず？
-	- - -
-	n 番目のダイジェストに対してtremor追加前の内部状態は 2 ^ (SEEDEXSIZE * 8) 通り？？？
-	内部状態程度あれば良い。-> 2 ^ (64 * 8) -> 64
-	複数のダイジェストの組み合わせから予測されることまでは考慮しない。<- 良いのか？？？
-*/
-#define SEEDEXSIZE 64
 
 static void GetCryptoSeed(uchar *seed, uint seed_size, char *seed_file)
 {
@@ -121,26 +93,8 @@ static void GetCryptoSeed(uchar *seed, uint seed_size, char *seed_file)
 	else
 		getCryptoBlock_MS(seed, seed_size);
 }
-static autoBlock_t *GetCryptoSeedEx(void)
-{
-	static autoBlock_t *seedEx;
 
-	if(!seedEx)
-	{
-		seedEx = nobCreateBlock(SEEDEXSIZE);
-		GetCryptoSeed((uchar *)directGetBuffer(seedEx), SEEDEXSIZE, SEEDEX_FILE);
-	}
-	return seedEx;
-}
-
-//#define BUFFERSIZE 64 // == sha512 hash size
-
-/*
-	1/e == 0.36787944*
-	1/e ^ 8 == 0.0003354626*
-	なので、1バイト(8ビット)削る。
-*/
-#define BUFFERSIZE 63
+#define BUFFERSIZE 64 // == sha512 hash size
 
 static void GetCryptoBlock(uchar *buffer)
 {
@@ -157,15 +111,7 @@ static void GetCryptoBlock(uchar *buffer)
 
 		ctx = sha512_create();
 		sha512_update(ctx, gndBlockVar(seed, SEEDSIZE, gab));
-//		sha512_makeHash(ctx);
-
-		{
-			sha512_t *ictx = sha512_copy(ctx);
-
-			sha512_update(ictx, GetCryptoSeedEx());
-			sha512_makeHash(ictx);
-			sha512_release(ictx);
-		}
+		sha512_makeHash(ctx);
 	}
 	else
 	{
@@ -197,7 +143,6 @@ static void GetCryptoBlock(uchar *buffer)
 		}
 
 		sha512_update(ictx, tremor);
-		sha512_update(ictx, GetCryptoSeedEx());
 		sha512_makeHash(ictx);
 		sha512_release(ictx);
 	}
