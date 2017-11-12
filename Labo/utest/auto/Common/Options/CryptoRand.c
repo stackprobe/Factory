@@ -27,7 +27,7 @@ static void DoTest_01_2(void)
 	seed2 = readBinary("C:\\Factory\\tmp\\CSeedEx.dat");
 
 	errorCase(getSize(seed)  != 4096);
-	errorCase(getSize(seed2) != 65536);
+	errorCase(getSize(seed2) != 64);
 
 	coExecute(CRAND_B_EXE " 1");
 
