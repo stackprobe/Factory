@@ -1,5 +1,6 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\CryptoRand.h"
+#include "C:\Factory\OpenSource\camellia.h"
 #include "C:\Factory\OpenSource\sha512.h"
 
 #define CRAND_B_EXE "C:\\Factory\\Labo\\Tools\\CryptoRand_B.exe"
@@ -19,16 +20,40 @@ static void IncrementSeed(autoBlock_t *seed)
 static void DoTest_01_2(void)
 {
 	autoBlock_t *seed;
+	autoBlock_t *seedCa;
+	autoBlock_t *seedCa2;
 	autoBlock_t *rSeed;
+	autoBlock_t *rSeedCa;
+	autoBlock_t *rSeedCa2;
 
-	seed = readBinary("C:\\Factory\\tmp\\CSeed.dat");
+	seed    = readBinary("C:\\Factory\\tmp\\CSeed.dat");
+	seedCa  = readBinary("C:\\Factory\\tmp\\CSeedCa.dat");
+	seedCa2 = readBinary("C:\\Factory\\tmp\\CSeedCa2.dat");
+
 	errorCase(getSize(seed) != 4096);
+	errorCase(getSize(seedCa) != 32);
+	errorCase(getSize(seedCa2) != 32);
+
 	coExecute(CRAND_B_EXE " 1");
+
 	IncrementSeed(seed);
-	rSeed = readBinary("C:\\Factory\\tmp\\CSeed.dat");
-	errorCase(!isSameBlock(seed, rSeed));
+	IncrementSeed(seedCa);
+	IncrementSeed(seedCa2);
+
+	rSeed    = readBinary("C:\\Factory\\tmp\\CSeed.dat");
+	rSeedCa  = readBinary("C:\\Factory\\tmp\\CSeedCa.dat");
+	rSeedCa2 = readBinary("C:\\Factory\\tmp\\CSeedCa2.dat");
+
+	errorCase(!isSameBlock(seed,    rSeed));
+	errorCase(!isSameBlock(seedCa,  rSeedCa));
+	errorCase(!isSameBlock(seedCa2, rSeedCa2));
+
 	releaseAutoBlock(seed);
+	releaseAutoBlock(seedCa);
+	releaseAutoBlock(seedCa2);
 	releaseAutoBlock(rSeed);
+	releaseAutoBlock(rSeedCa);
+	releaseAutoBlock(rSeedCa2);
 }
 static void DoTest_01(void)
 {
@@ -61,11 +86,41 @@ static void AddToCr2(autoBlock_t *cr2, autoBlock_t *seed, uint v1, uint v2, uint
 
 	ab_addBlock(cr2, sha512_hash, 64);
 }
+static void AddToCr2_ca(autoBlock_t *cr2_ca, uint val, uint hiVal, char *seedFile)
+{
+	autoBlock_t *seed = readBinary(seedFile);
+	camellia_keyTable_t *kt;
+	uchar buff[16];
+	uint index;
+
+	kt = camellia_createKeyTable(seed);
+
+	for(index = 0; index < 15; index++)
+	{
+		buff[index] = val & 0xff;
+		val >>= 8;
+	}
+	buff[15] = hiVal;
+	camellia_encrypt(kt, buff, buff, 1);
+	camellia_releaseKeyTable(kt);
+
+	ab_addBlock(cr2_ca, buff, 16);
+}
+static void MaskCr2(autoBlock_t *cr2, autoBlock_t *cr2_ca)
+{
+	uint index;
+
+	for(index = 0; index < getSize(cr2); index++)
+	{
+		b(cr2)[index] ^= b(cr2_ca)[index];
+	}
+}
 static void DoTest_02_2(void)
 {
 	autoBlock_t *seed;
 	autoBlock_t *cr1;
 	autoBlock_t *cr2;
+	autoBlock_t *cr2_ca;
 	uint val;
 
 	LOGPOS();
@@ -95,6 +150,26 @@ static void DoTest_02_2(void)
 	AddToCr2(cr2, seed, 0x01, 0x00, 2);
 	AddToCr2(cr2, seed, 0x02, 0x00, 2);
 
+	cr2_ca  = newBlock();
+
+	for(val = 0x00; getSize(cr2_ca) < getSize(cr2); val++)
+	{
+		AddToCr2_ca(cr2_ca, val, 0x00, "C:\\Factory\\tmp\\CSeedCa.dat");
+	}
+	MaskCr2(cr2, cr2_ca);
+
+	// ca2 >
+
+	setSize(cr2_ca, 0);
+
+	for(val = 0x00; getSize(cr2_ca) < getSize(cr2); val++)
+	{
+		AddToCr2_ca(cr2_ca, val, 0x80, "C:\\Factory\\tmp\\CSeedCa2.dat");
+	}
+	MaskCr2(cr2, cr2_ca);
+
+	// < ca2
+
 //writeBinary("1.bin", cr1); // test
 //writeBinary("2.bin", cr2); // test
 
@@ -102,6 +177,7 @@ static void DoTest_02_2(void)
 
 	releaseAutoBlock(cr1);
 	releaseAutoBlock(cr2);
+	releaseAutoBlock(cr2_ca);
 
 	LOGPOS();
 }
