@@ -2,6 +2,7 @@
 
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\OpenSource\sha512.h"
+#include "C:\Factory\OpenSource\camellia.h"
 #include "CryptoRand_MS.h"
 
 uint getCryptoByte(void);

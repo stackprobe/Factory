@@ -1,6 +1,9 @@
 /*
 	getCryptoByte()のバイト列:
 
+		xor(a, ca)
+
+	a:
 		sha-512(b[0]){0 -> 64} + sha-512(b[1]){0 -> 64} + sha-512(b[2]){0 -> 64} + ...
 
 	b:
@@ -11,7 +14,7 @@
 		...
 
 	s:
-		GetCryptoSeed(){0 -> 65536}
+		GetCryptoSeed(){0 -> 4096}
 
 	c:
 		c[0] = 0x00
@@ -34,13 +37,35 @@
 		c[65794] = 0x02, 0x00, 0x00
 		...
 
-		★ {a -> b} = 添字 a から b の直前まで
+	ca:
+		camellia(cb[0], cs){0 -> 16} + camellia(cb[1], cs){0 -> 16} + camellia(cb[2], cs){0 -> 16} + ...
+
+	cb:
+		cb[0] = 0x00, 0x00, 0x00, ... 0x00 // 16 バイト
+		cb[1] = 0x01, 0x00, 0x00, ... 0x00
+		cb[2] = 0x02, 0x00, 0x00, ... 0x00
+		...
+		cb[255] = 0xff, 0x00, 0x00, ... 0x00
+		cb[256] = 0x00, 0x01, 0x00, ... 0x00
+		cb[257] = 0x01, 0x01, 0x00, ... 0x00
+		cb[258] = 0x02, 0x01, 0x00, ... 0x00
+		...
+
+	cs:
+		Ca_GetCryptoSeed(){0 -> 32}
+
+	- - -
+
+	{a -> b} = 添字 a から b の直前まで
+
+	camellia(plain, raw-key) = 鍵長 256 bit の camellia によるブロックの暗号化
 */
 
 #include "CryptoRand.h"
 
 #define SEED_DIR "C:\\Factory\\tmp"
 #define SEED_FILE SEED_DIR "\\CSeed.dat"
+#define CA_SEED_FILE SEED_DIR "\\CSeedCa.dat"
 
 #define SEEDSIZE 4096
 
@@ -149,6 +174,54 @@ static void GetCryptoBlock(uchar *buffer)
 	memcpy(buffer, sha512_hash, BUFFERSIZE);
 	sha512_unlocalize();
 }
+static uchar *Ca_GetCryptoBlock(void)
+{
+	static camellia_keyTable_t *cam_kt;
+	static uchar counter[16];
+	static uchar dest[16];
+
+	if(!cam_kt)
+	{
+		uchar cam_seed[32];
+		autoBlock_t gab;
+
+		GetCryptoSeed(cam_seed, 32, CA_SEED_FILE);
+
+		cam_kt = camellia_createKeyTable(gndBlockVar(cam_seed, 32, gab));
+	}
+	camellia_encrypt(cam_kt, counter, dest, 1);
+
+	// counter更新
+	{
+		uint index;
+
+		for(index = 0; index < 16; index++)
+		{
+			if(counter[index] < 0xff)
+			{
+				counter[index]++;
+				break;
+			}
+			counter[index] = 0x00;
+		}
+	}
+
+	return dest;
+}
+static void Ca_Xor(uchar *b1, uchar *b2)
+{
+	((uint *)b1)[0] ^= ((uint *)b2)[0];
+	((uint *)b1)[1] ^= ((uint *)b2)[1];
+	((uint *)b1)[2] ^= ((uint *)b2)[2];
+	((uint *)b1)[3] ^= ((uint *)b2)[3];
+}
+static void Ca_XorCryptoBlock(uchar buffer[64])
+{
+	Ca_Xor(buffer +  0, Ca_GetCryptoBlock());
+	Ca_Xor(buffer + 16, Ca_GetCryptoBlock());
+	Ca_Xor(buffer + 32, Ca_GetCryptoBlock());
+	Ca_Xor(buffer + 48, Ca_GetCryptoBlock());
+}
 uint getCryptoByte(void)
 {
 	static uchar buffer[BUFFERSIZE];
@@ -157,6 +230,7 @@ uint getCryptoByte(void)
 	if(index == BUFFERSIZE)
 	{
 		GetCryptoBlock(buffer);
+		Ca_XorCryptoBlock(buffer);
 		index = 0;
 	}
 	return buffer[index++];
