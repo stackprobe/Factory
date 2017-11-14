@@ -4,7 +4,7 @@
 		xor(a, ca, ca2)
 
 	a:
-		SHA512(b[0]){0 -> 64} + SHA512(b[1]){0 -> 64} + SHA512(b[2]){0 -> 64} + ...
+		SHA512(b[0]) + SHA512(b[1]) + SHA512(b[2]) + ...
 
 	b:
 		b[0] = s
@@ -14,7 +14,7 @@
 		...
 
 	s:
-		GetCryptoSeed(, , SEED_FILE){0 -> 4096} // 1プロセス中1度だけ呼ばれる。
+		GetCryptoSeed(, 4096, SEED_FILE) // 1プロセス中1度だけ呼ばれる。
 
 	c:
 		c[0] = 0x00
@@ -38,7 +38,7 @@
 		...
 
 	ca:
-		Camellia(cb[0], cs){0 -> 16} + Camellia(cb[1], cs){0 -> 16} + Camellia(cb[2], cs){0 -> 16} + ...
+		Camellia(cb[0], cs) + Camellia(cb[1], cs) + Camellia(cb[2], cs) + ...
 
 	cb:
 		cb[0] = 0x00, 0x00, 0x00, ... 0x00 // 16 バイト
@@ -57,10 +57,10 @@
 		...
 
 	cs:
-		Ca_GetCryptoSeed(, , CA_SEED_FILE){0 -> 32} // 1プロセス中1度だけ呼ばれる。
+		GetCryptoSeed(, 32, CA_SEED_FILE) // 1プロセス中1度だけ呼ばれる。
 
 	ca2:
-		Camellia(cb2[0], cs2){0 -> 16} + Camellia(cb2[1], cs2){0 -> 16} + Camellia(cb2[2], cs2){0 -> 16} + ...
+		Camellia(cb2[0], cs2) + Camellia(cb2[1], cs2) + Camellia(cb2[2], cs2) + ...
 
 	cb2:
 		cb[0] = 0x00, 0x00, 0x00, ... 0x80 // 16 バイト
@@ -79,11 +79,9 @@
 		...
 
 	cs2:
-		Ca_GetCryptoSeedCa2(, , CA2_SEED_FILE){0 -> 32} // 1プロセス中1度だけ呼ばれる。
+		GetCryptoSeed(, 32, CA2_SEED_FILE) // 1プロセス中1度だけ呼ばれる。
 
 	- - -
-
-	{a -> b} = 添字 a から b の直前まで
 
 	Camellia(plain, raw-key) = 鍵長 256 bit の Camellia ブロックの暗号化
 */
