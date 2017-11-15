@@ -239,6 +239,7 @@ int IsFairFileStamp(uint64 stamp)
 {
 	return stamp == MillisToFileStamp(FileStampToMillis(stamp));
 }
+
 /*
 	DateToDay.java
 */
@@ -277,4 +278,50 @@ uint Day2IDate(uint day)
 		return 10000101; // dummy date
 
 	return y * 10000 + m * 100 + d;
+}
+
+#define DAY_10000101 364877
+#define DAY_99991231 3652058
+
+#define SEC_10000101000000 ( DAY_10000101      * 86400ui64    )
+#define SEC_99991231235959 ((DAY_99991231 + 1) * 86400ui64 - 1)
+
+/*
+	DateTimeToSec.java
+*/
+uint64 IDateTime2Sec(uint64 dateTime)
+{
+	uint h;
+	uint m;
+	uint s;
+
+	if(!m_isRange(dateTime, 10000101000000ui64, 99991231235959ui64))
+		return 0ui64;
+
+	s = dateTime % 100;
+	dateTime /= 100;
+	m = dateTime % 100;
+	dateTime /= 100;
+	h = dateTime % 100;
+	dateTime /= 100;
+
+	return IDate2Day((uint)dateTime) * 86400ui64 + h * 3600 + m * 60 + s;
+}
+uint64 Sec2IDateTime(uint64 sec)
+{
+	uint h;
+	uint m;
+	uint s;
+
+	if(!m_isRange(sec, SEC_10000101000000, SEC_99991231235959))
+		return 10000101000000ui64;
+
+	s = sec % 60;
+	sec /= 60;
+	m = sec % 60;
+	sec /= 60;
+	h = sec % 24;
+	sec /= 24;
+
+	return Day2IDate((uint)sec) * 1000000ui64 + h * 10000 + m * 100 + s;
 }
