@@ -1,3 +1,31 @@
+/*
+	PwOnTime.exe [/POS PW-OFF-SEC] ...
+
+		PW-OFF-SEC ... 電源オフと見なすイベントの間隔（秒数）
+
+	PwOnTime.exe ...
+
+		今月の稼働状況を表示
+
+	PwOnTime.exe ... /L
+
+		先月の稼働状況を表示
+
+	PwOnTime.exe ... YYYYMM
+
+		指定された月の稼働状況を表示
+
+		ex.
+			PwOnTime 199907
+
+	PwOnTime.exe ... YYYYMM yyyymm
+
+		指定された範囲（月単位）の稼働状況を表示
+
+		ex.
+			PwOnTime 201601 201612
+*/
+
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Date2Day.h"
 #include "C:\Factory\Meteor\Toolkit.h"
@@ -9,6 +37,10 @@ static uint MMin;
 static uint YMax;
 static uint MMax;
 
+static char *ToPrStamp(char *stamp)
+{
+	return makeJStamp(getStampDataTime(compactStampToTime(stamp)), 0);
+}
 static void ShowPwOnTime(void)
 {
 	char *file = makeTempPath(NULL);
@@ -74,15 +106,23 @@ static void ShowPwOnTime(void)
 
 	for(index = 0; index < getCount(pwOnSpans); index += 2)
 	{
-		cout("%s から %s まで電源オンでした。\n",
+		cout("%s から%s まで電源オンでした。\n",
 			getLine(pwOnSpans, index + 0),
 			getLine(pwOnSpans, index + 1)
 			);
 	}
 	cout("----\n");
 
-	// TODO
-
+	for(index = 0; index < getCount(pwOnSpans); index += 2)
+	{
+		cout(
+			"\n"
+			"%s から\n"
+			"%s まで電源オンでした。\n",
+			ToPrStamp(getLine(pwOnSpans, index + 0)), // g
+			ToPrStamp(getLine(pwOnSpans, index + 1))  // g
+			);
+	}
 	releaseDim(lines, 1);
 	removeFile(file);
 	memFree(file);
