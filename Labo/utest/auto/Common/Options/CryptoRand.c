@@ -31,8 +31,8 @@ static void DoTest_01_2(void)
 	seedCa2 = readBinary("C:\\Factory\\tmp\\CSeedCa2.dat");
 
 	errorCase(getSize(seed) != 4096);
-	errorCase(getSize(seedCa) != 32);
-	errorCase(getSize(seedCa2) != 32);
+	errorCase(getSize(seedCa) != 4096);
+	errorCase(getSize(seedCa2) != 4096);
 
 	coExecute(CRAND_B_EXE " 1");
 
@@ -89,11 +89,14 @@ static void AddToCr2(autoBlock_t *cr2, autoBlock_t *seed, uint v1, uint v2, uint
 static void AddToCr2_ca(autoBlock_t *cr2_ca, uint val, uint hiVal, char *seedFile)
 {
 	autoBlock_t *seed = readBinary(seedFile);
+	autoBlock_t *rawKey;
 	camellia_keyTable_t *kt;
 	uchar buff[16];
 	uint index;
 
-	kt = camellia_createKeyTable(seed);
+	sha512_makeHashBlock(seed);
+	rawKey = recreateBlock(sha512_hash, 32);
+	kt = camellia_createKeyTable(rawKey);
 
 	for(index = 0; index < 15; index++)
 	{
@@ -103,6 +106,8 @@ static void AddToCr2_ca(autoBlock_t *cr2_ca, uint val, uint hiVal, char *seedFil
 	buff[15] = hiVal;
 	camellia_encrypt(kt, buff, buff, 1);
 	camellia_releaseKeyTable(kt);
+	releaseAutoBlock(rawKey);
+	releaseAutoBlock(seed);
 
 	ab_addBlock(cr2_ca, buff, 16);
 }

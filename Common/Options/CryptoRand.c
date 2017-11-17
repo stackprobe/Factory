@@ -38,7 +38,7 @@
 		...
 
 	ca:
-		Camellia(cb[0], cs) + Camellia(cb[1], cs) + Camellia(cb[2], cs) + ...
+		Camellia(cb[0], ck) + Camellia(cb[1], ck) + Camellia(cb[2], ck) + ...
 
 	cb:
 		cb[0] = 0x00, 0x00, 0x00, ... 0x00, 0x00, 0x00 // 16 バイト
@@ -56,11 +56,14 @@
 		cb[2^128+2] = 0x02, 0x00, 0x00, ... 0x00, 0x00, 0x00
 		...
 
+	ck:
+		SHA512(cs)の前半256bit
+
 	cs:
-		GetCryptoSeed(, 32, CA_SEED_FILE) // 1プロセス中1度だけ呼ばれる。
+		GetCryptoSeed(, 4096, CA_SEED_FILE) // 1プロセス中1度だけ呼ばれる。
 
 	ca2:
-		Camellia(cb2[0], cs2) + Camellia(cb2[1], cs2) + Camellia(cb2[2], cs2) + ...
+		Camellia(cb2[0], ck2) + Camellia(cb2[1], ck2) + Camellia(cb2[2], ck2) + ...
 
 	cb2:
 		cb[0] = 0x00, 0x00, 0x00, ... 0x00, 0x00, 0x80 // 16 バイト
@@ -78,8 +81,11 @@
 		cb[2^127+2] = 0x02, 0x00, 0x00, ... 0x00, 0x00, 0x00
 		...
 
+	ck2:
+		SHA512(cs2)の前半256bit
+
 	cs2:
-		GetCryptoSeed(, 32, CA2_SEED_FILE) // 1プロセス中1度だけ呼ばれる。
+		GetCryptoSeed(, 4096, CA2_SEED_FILE) // 1プロセス中1度だけ呼ばれる。
 
 	- - -
 
@@ -215,11 +221,20 @@ static uchar *Ca_GetCryptoBlock(void)
 
 	if(!cam_kt[0])
 	{
-		uchar cam_seed[2][32];
+		uchar cam_seed[2][SEEDSIZE];
 		autoBlock_t gab;
 
-		GetCryptoSeed(cam_seed[0], 32, CA_SEED_FILE);
-		GetCryptoSeed(cam_seed[1], 32, CA2_SEED_FILE);
+		GetCryptoSeed(cam_seed[0], SEEDSIZE, CA_SEED_FILE);
+		GetCryptoSeed(cam_seed[1], SEEDSIZE, CA2_SEED_FILE);
+
+		sha512_localize();
+
+		sha512_makeHashBlock(gndBlockVar(cam_seed[0], SEEDSIZE, gab));
+		memcpy(cam_seed[0], sha512_hash, 32);
+		sha512_makeHashBlock(gndBlockVar(cam_seed[1], SEEDSIZE, gab));
+		memcpy(cam_seed[1], sha512_hash, 32);
+
+		sha512_unlocalize();
 
 		cam_kt[0] = camellia_createKeyTable(gndBlockVar(cam_seed[0], 32, gab));
 		cam_kt[1] = camellia_createKeyTable(gndBlockVar(cam_seed[1], 32, gab));
