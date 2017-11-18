@@ -5,6 +5,8 @@ extern int noErrorDlgMode;
 
 // ----
 
+#define SLEEP_NICK_MILLIS 250
+
 extern int lastSystemRet;
 
 void execute(char *commandLine);

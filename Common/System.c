@@ -65,7 +65,7 @@ void coSleep(uint millis)
 
 	while(elapse < millis)
 	{
-		uint m = m_min(millis - elapse, 300);
+		uint m = m_min(millis - elapse, SLEEP_NICK_MILLIS);
 
 		sleep(m);
 		elapse += m;
