@@ -169,6 +169,8 @@ static void GetCryptoBlock(uchar *buffer)
 			cam_kt[index] = camellia_createKeyTable(gndBlockVar(cam_seed[index], 32, gab));
 		}
 		sha512_unlocalize();
+
+		memFree(cam_seed);
 	}
 	else // カウンタ更新
 	{
