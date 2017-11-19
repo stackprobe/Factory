@@ -3,7 +3,7 @@
 #include "C:\Factory\OpenSource\camellia.h"
 #include "C:\Factory\OpenSource\sha512.h"
 
-#define CRAND_B_EXE "C:\\Factory\\Labo\\Tools\\CryptoRand_B.exe"
+#define CRAND_B_EXE "C:\\Factory\\Labo\\Tools\\CryptoRand_B_v1.exe"
 
 static void IncrementSeed(autoBlock_t *seed)
 {
@@ -22,47 +22,38 @@ static void DoTest_01_2(void)
 	autoBlock_t *seed;
 	autoBlock_t *seedCa;
 	autoBlock_t *seedCa2;
-	autoBlock_t *seedCa3;
 	autoBlock_t *rSeed;
 	autoBlock_t *rSeedCa;
 	autoBlock_t *rSeedCa2;
-	autoBlock_t *rSeedCa3;
 
-	seed    = readBinary("C:\\Factory\\tmp\\CSeed.dat");
-	seedCa  = readBinary("C:\\Factory\\tmp\\CSeedCa.dat");
-	seedCa2 = readBinary("C:\\Factory\\tmp\\CSeedCa2.dat");
-	seedCa3 = readBinary("C:\\Factory\\tmp\\CSeedCa3.dat");
+	seed    = readBinary("C:\\Factory\\tmp\\CSeed_v1.dat");
+	seedCa  = readBinary("C:\\Factory\\tmp\\CSeedCa_v1.dat");
+	seedCa2 = readBinary("C:\\Factory\\tmp\\CSeedCa2_v1.dat");
 
 	errorCase(getSize(seed) != 4096);
 	errorCase(getSize(seedCa) != 4096);
 	errorCase(getSize(seedCa2) != 4096);
-	errorCase(getSize(seedCa3) != 4096);
 
 	coExecute(CRAND_B_EXE " 1");
 
 	IncrementSeed(seed);
 	IncrementSeed(seedCa);
 	IncrementSeed(seedCa2);
-	IncrementSeed(seedCa3);
 
-	rSeed    = readBinary("C:\\Factory\\tmp\\CSeed.dat");
-	rSeedCa  = readBinary("C:\\Factory\\tmp\\CSeedCa.dat");
-	rSeedCa2 = readBinary("C:\\Factory\\tmp\\CSeedCa2.dat");
-	rSeedCa3 = readBinary("C:\\Factory\\tmp\\CSeedCa3.dat");
+	rSeed    = readBinary("C:\\Factory\\tmp\\CSeed_v1.dat");
+	rSeedCa  = readBinary("C:\\Factory\\tmp\\CSeedCa_v1.dat");
+	rSeedCa2 = readBinary("C:\\Factory\\tmp\\CSeedCa2_v1.dat");
 
 	errorCase(!isSameBlock(seed,    rSeed));
 	errorCase(!isSameBlock(seedCa,  rSeedCa));
 	errorCase(!isSameBlock(seedCa2, rSeedCa2));
-	errorCase(!isSameBlock(seedCa3, rSeedCa3));
 
 	releaseAutoBlock(seed);
 	releaseAutoBlock(seedCa);
 	releaseAutoBlock(seedCa2);
-	releaseAutoBlock(seedCa3);
 	releaseAutoBlock(rSeed);
 	releaseAutoBlock(rSeedCa);
 	releaseAutoBlock(rSeedCa2);
-	releaseAutoBlock(rSeedCa3);
 }
 static void DoTest_01(void)
 {
@@ -78,7 +69,24 @@ static void DoTest_01(void)
 	}
 	LOGPOS();
 }
-static void AddToCr2_Ca(autoBlock_t *cr2_ca, uint val, uint hiVal, char *seedFile)
+static void AddToCr2(autoBlock_t *cr2, autoBlock_t *seed, uint v1, uint v2, uint v_num)
+{
+	autoBlock_t *text = newBlock();
+
+	ab_addBytes(text, seed);
+
+	if(1 <= v_num)
+		addByte(text, v1);
+
+	if(2 <= v_num)
+		addByte(text, v2);
+
+	sha512_makeHashBlock(text);
+	releaseAutoBlock(text);
+
+	ab_addBlock(cr2, sha512_hash, 64);
+}
+static void AddToCr2_ca(autoBlock_t *cr2_ca, uint val, uint hiVal, char *seedFile)
 {
 	autoBlock_t *seed = readBinary(seedFile);
 	autoBlock_t *rawKey;
@@ -103,22 +111,9 @@ static void AddToCr2_Ca(autoBlock_t *cr2_ca, uint val, uint hiVal, char *seedFil
 
 	ab_addBlock(cr2_ca, buff, 16);
 }
-static autoBlock_t *GetCr2_Ca(uint hiVal, char *seedFile)
-{
-	autoBlock_t *cr2_ca = newBlock();
-	uint val;
-
-	for(val = 0; getSize(cr2_ca) < 16640; val++)
-	{
-		AddToCr2_Ca(cr2_ca, val, hiVal, seedFile);
-	}
-	return cr2_ca;
-}
 static void MaskCr2(autoBlock_t *cr2, autoBlock_t *cr2_ca)
 {
 	uint index;
-
-	errorCase(getSize(cr2) != getSize(cr2_ca));
 
 	for(index = 0; index < getSize(cr2); index++)
 	{
@@ -130,10 +125,7 @@ static void DoTest_02_2(void)
 	autoBlock_t *seed;
 	autoBlock_t *cr1;
 	autoBlock_t *cr2;
-	autoBlock_t *cr2_c1;
-	autoBlock_t *cr2_c2;
-	autoBlock_t *cr2_c3;
-	autoBlock_t *cr2_c4;
+	autoBlock_t *cr2_ca;
 	uint val;
 
 	LOGPOS();
@@ -147,21 +139,41 @@ static void DoTest_02_2(void)
 
 #undef CR_FILE
 
+	cr2 = newBlock();
+
 	// seed の読み込みは、読み込み -> increment -> 書き出し -> 使う
 	// なので後から読み込まないとダメ
+	seed = readBinary("C:\\Factory\\tmp\\CSeed_v1.dat");
 
-	cr2_c1 = GetCr2_Ca(0x00, "C:\\Factory\\tmp\\CSeed.dat");
-	cr2_c2 = GetCr2_Ca(0x40, "C:\\Factory\\tmp\\CSeedCa.dat");
-	cr2_c3 = GetCr2_Ca(0x80, "C:\\Factory\\tmp\\CSeedCa2.dat");
-	cr2_c4 = GetCr2_Ca(0xc0, "C:\\Factory\\tmp\\CSeedCa3.dat");
+	AddToCr2(cr2, seed, 0x00, 0x00, 0);
 
-	cr2 = createBlock(16640);
-	setSize(cr2, 16640);
+	for(val = 0x00; val <= 0xff; val++)
+	{
+		AddToCr2(cr2, seed, val, 0x00, 1);
+	}
+	AddToCr2(cr2, seed, 0x00, 0x00, 2);
+	AddToCr2(cr2, seed, 0x01, 0x00, 2);
+	AddToCr2(cr2, seed, 0x02, 0x00, 2);
 
-	MaskCr2(cr2, cr2_c1);
-	MaskCr2(cr2, cr2_c2);
-	MaskCr2(cr2, cr2_c3);
-	MaskCr2(cr2, cr2_c4);
+	cr2_ca  = newBlock();
+
+	for(val = 0x00; getSize(cr2_ca) < getSize(cr2); val++)
+	{
+		AddToCr2_ca(cr2_ca, val, 0x00, "C:\\Factory\\tmp\\CSeedCa_v1.dat");
+	}
+	MaskCr2(cr2, cr2_ca);
+
+	// ca2 >
+
+	setSize(cr2_ca, 0);
+
+	for(val = 0x00; getSize(cr2_ca) < getSize(cr2); val++)
+	{
+		AddToCr2_ca(cr2_ca, val, 0x80, "C:\\Factory\\tmp\\CSeedCa2_v1.dat");
+	}
+	MaskCr2(cr2, cr2_ca);
+
+	// < ca2
 
 //writeBinary("1.bin", cr1); // test
 //writeBinary("2.bin", cr2); // test
@@ -170,10 +182,7 @@ static void DoTest_02_2(void)
 
 	releaseAutoBlock(cr1);
 	releaseAutoBlock(cr2);
-	releaseAutoBlock(cr2_c1);
-	releaseAutoBlock(cr2_c2);
-	releaseAutoBlock(cr2_c3);
-	releaseAutoBlock(cr2_c4);
+	releaseAutoBlock(cr2_ca);
 
 	LOGPOS();
 }
