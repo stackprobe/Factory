@@ -28,7 +28,7 @@ void getCryptoBlock_MS(uchar *buffer, uint size)
 {
 	HCRYPTPROV hp;
 
-	cout("Read sequence of %u bytes from 'CryptGenRandom' function.\n", size);
+//	cout("Read sequence of %u bytes from 'CryptGenRandom' function.\n", size);
 
 #if 1
 	if(!CryptAcquireContext(&hp, 0, 0, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
