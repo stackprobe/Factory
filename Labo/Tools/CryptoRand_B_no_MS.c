@@ -6,6 +6,29 @@
 //#define BUFFERSIZE (1024 * 256)
 //#define BUFFERSIZE (1024 * 1024)
 
+#if 1
+static uint GetCrByte(void)
+{
+	static uchar buffer[BUFFERSIZE];
+	static uint index = BUFFERSIZE;
+
+	if(index == BUFFERSIZE)
+	{
+		getCryptoBlock_MS(buffer, BUFFERSIZE);
+		index = 0;
+	}
+	return buffer[index++];
+}
+int main(int argc, char **argv)
+{
+	uint c;
+
+	for(c = toValue(nextArg()); c; c--)
+	{
+		GetCrByte();
+	}
+}
+#else
 int main(int argc, char **argv)
 {
 	static uchar buffer[BUFFERSIZE];
@@ -20,3 +43,4 @@ int main(int argc, char **argv)
 		c -= size;
 	}
 }
+#endif
