@@ -1,3 +1,9 @@
+/*
+	ds.exe [[/S] 入力ディレクトリ]
+
+		/S ... シンプルモード
+*/
+
 #include "C:\Factory\Common\all.h"
 
 static void DirSize(char *dir)
