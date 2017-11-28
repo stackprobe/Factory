@@ -71,7 +71,9 @@
 
 	Camellia(plain, raw-key) = 鍵長 256 bit の Camellia ブロックの暗号化
 
-	2^128 * 16 バイトの周期を持つが、量的に一周することは有り得ないだろう。
+	2^128 * 16 バイト（最悪でも k1 == k2 == k3 == k4 のときは 2^128 * 4 バイト）の周期を持つが、
+	量的に一周することは有り得ないだろう。
+
 */
 
 #include "CryptoRand.h"
@@ -174,7 +176,8 @@ static void GetCryptoBlock(uchar *buffer)
 	}
 	else // カウンタ更新
 	{
-		for(index = 0; index < 16; index++)
+		for(index = 0; ; index++)
+//		for(index = 0; index < 16; index++)
 		{
 			if(counter[index] < 0xff)
 			{

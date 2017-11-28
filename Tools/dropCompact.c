@@ -1,16 +1,33 @@
+/*
+	dropCompact.exe [/U]
+*/
+
 #include "C:\Factory\Common\all.h"
 
-#define COMPACT_FILE_SIZE_MAX 5000000000ui64 // 5GB
+//#define COMPACT_FILE_SIZE_MAX 1000000ui64 // 1MB -- test
+#define COMPACT_FILE_SIZE_MAX 10000000000ui64 // 10GB
 
+static int IsUncompactExt_File(char *file)
+{
+	char *ext = getExt(file);
+
+	return
+		!_stricmp(ext, "gz") ||
+		!_stricmp(ext, "zip");
+}
 static void CompactDirHasHugeFile(char *dir)
 {
 	autoList_t *paths = lss(dir);
 	char *path;
 	uint index;
 
+	addElement(paths, (uint)strx(dir));
+
 	foreach(paths, path, index)
 	{
-		if(existFile(path) && COMPACT_FILE_SIZE_MAX < getFileSize(path))
+		cmdTitle_x(xcout("dropCompact - %u / %u", index, getCount(paths)));
+
+		if(existFile(path) && (IsUncompactExt_File(path) || COMPACT_FILE_SIZE_MAX < getFileSize(path)))
 		{
 			coExecute_x(xcout("Compact.exe /U \"%s\"", path));
 		}
@@ -20,6 +37,8 @@ static void CompactDirHasHugeFile(char *dir)
 		}
 	}
 	releaseDim(paths, 1);
+
+	cmdTitle("dropCompact");
 }
 static int HasHugeFile(char *dir)
 {
@@ -32,9 +51,9 @@ static int HasHugeFile(char *dir)
 	{
 		cout("* %s\n", file);
 
-		if(COMPACT_FILE_SIZE_MAX < getFileSize(file))
+		if(IsUncompactExt_File(file) || COMPACT_FILE_SIZE_MAX < getFileSize(file))
 		{
-			cout("‚±‚ê‚Å‚©‚¢I\n");
+			cout("”ñˆ³kI\n");
 			ret = 1;
 			break;
 		}
@@ -44,11 +63,39 @@ static int HasHugeFile(char *dir)
 }
 int main(int argc, char **argv)
 {
+	char *path;
+
+	if(argIs("/U"))
+	{
+		for(; ; )
+		{
+			cout("+----------+\n");
+			cout("| ˆ³k‰ðœ |\n");
+			cout("+----------+\n");
+
+			path = dropDirFile();
+
+			if(existDir(path))
+			{
+				coExecute_x(xcout("Compact.exe /U /S:\"%s\"", path));
+			}
+			else // file
+			{
+				coExecute_x(xcout("Compact.exe /U \"%s\"", path));
+			}
+			cout("\n");
+		}
+	}
+
 	for(; ; )
 	{
-		char *path = dropDirFile();
+		cout("+------+\n");
+		cout("| ˆ³k |\n");
+		cout("+------+\n");
 
-		if(existFile(path))
+		path = dropDirFile();
+
+		if(existDir(path))
 		{
 			if(HasHugeFile(path))
 			{
@@ -63,5 +110,6 @@ int main(int argc, char **argv)
 		{
 			coExecute_x(xcout("Compact.exe /C \"%s\"", path));
 		}
+		cout("\n");
 	}
 }
