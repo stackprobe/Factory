@@ -1,13 +1,29 @@
 /*
 	乱数列に同じ乱数列をXORすると全部ゼロになるが、
-	乱数列に同じ乱数列をずらしてXORするのもマズいんじゃないか。
+	乱数列に同じ乱数列をずらして(ローテートして)XORするのもマズいんじゃないか。
 	-> マズいっぽい。
+
+	- - -
+
+	乱数列 b1, b2, b3, ... bn と bn, b1, b2, ... b(n-1) を XOR すると、
+
+	(b1 ^ bn), (b2 ^ b1), (b3 ^ b2), ... (bn, b(n-1))
+
+	// bx は x ビットの乱数列 (x == 1～)
+
+	んで、
+
+	(b1 ^ bn) ^ (b2 ^ b1) ^ (b3 ^ b2) ^ ... (b(n-1), b(n-2)) == (bn, b(n-1))
+
+	なので、x ビットずらして XOR すると最後の x ビット以外を知っていれば、最後の x ビットが分かる。
 */
 
 #include "C:\Factory\Common\all.h"
 
 //#define SHIFT_B 1
-#define SHIFT_B 2
+//#define SHIFT_B 2
+//#define SHIFT_B 3
+#define SHIFT_B 4
 
 static uint Counters[0x10000];
 
