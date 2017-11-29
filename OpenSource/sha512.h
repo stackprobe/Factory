@@ -30,3 +30,4 @@ void sha512_unlocalize(void);
 char *sha512_128Block(autoBlock_t *block);
 char *sha512_128Bytes(void *bytes, uint size);
 char *sha512_128Line(char *line);
+char *sha512_128File(char *file);

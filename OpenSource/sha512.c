@@ -120,3 +120,9 @@ char *sha512_128Line(char *line)
 
 	return sha512_128Block(gndBlockLineVar(line, gab));
 }
+char *sha512_128File(char *file)
+{
+	sha512_makeHashFile(file);
+	sha512_128_makeHexHash();
+	return sha512_hexHash;
+}
