@@ -48,7 +48,8 @@ static void MaskTextFile(char *file)
 
 	cout("# %s\n", file);
 
-    if(!_stricmp(ext, "txt")) MskSrcFile(file, 1);
+	     if(!_stricmp(ext, "txt")) MskSrcFile(file, 1);
+	else if(!_stricmp(ext, "csv")) MskSrcFile(file, 1);
 }
 static void MaskSourceByResFile(autoList_t *files)
 {
