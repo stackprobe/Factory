@@ -48,18 +48,20 @@ static void FoundIgnoreFile(autoList_t *files, char *ignFile)
 	foreach(files, file, index)
 	{
 		if(
+#if 0 // フォルダごと消す。
 			!_stricmp(file, ignPtn) ||
 			startsWithICase(file, ignPtnYen)
+#else // _gitignore だけ残す。
+			startsWithICase(file, ignPtnYen) &&
+			_stricmp(file, ignFile)
+#endif
 			)
 		{
 			cout("IGNORE: %s\n", file);
 
-			memFree(file);
-			setElement(files, index, 0);
+			file[0] = '\0';
 		}
 	}
-	removeZero(files);
-
 	memFree(ignPtn);
 	memFree(ignPtnYen);
 }
@@ -68,15 +70,11 @@ static void RemoveIgnoreFiles(autoList_t *files)
 	char *file;
 	uint index;
 
-restart:
 	foreach(files, file, index)
-	{
 		if(!_stricmp(getLocal(file), IGNORE_FILE))
-		{
 			FoundIgnoreFile(files, file);
-			goto restart;
-		}
-	}
+
+	trimLines(files);
 }
 
 static void SolveEncoding(char *rootDir)
