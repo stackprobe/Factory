@@ -39,7 +39,7 @@ static void CsvRowColCount(char *csvFile)
 		if(0 < ColCounts[index])
 			cout("%06u %I64u\n", index + 1, ColCounts[index]);
 
-	cout("----\n");
+	cout("------\n");
 	cout("%I64u\n", RowCount);
 
 	memFree(ColCounts);
