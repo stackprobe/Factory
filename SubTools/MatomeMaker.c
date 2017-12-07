@@ -1,3 +1,7 @@
+/*
+	MatomeMaker.exe C:\Dev\subdir
+*/
+
 #include "C:\Factory\Common\all.h"
 
 #define FILE_SIZE_LIMIT 1050000 // 1048576 == 1024 * 1024
@@ -5,6 +9,7 @@
 static char *RDir;
 
 #define W_DIR "C:\\temp\\Matome"
+#define LASTEXEC_DATETIME_FILE "C:\\appdata\\MatomeMaker_LastExecDateTime.txt"
 
 static int IsCollectExt(char *ext)
 {
@@ -38,6 +43,37 @@ static void TrmRum(char *rumDir)
 	errorCase(!existDir(rumDir));
 	errorCase(!existDir(entsDir));
 	errorCase(!existDir(revsDir));
+
+	// 既知のリビジョンを除外
+	{
+		char *lastExecDateTime;
+
+		if(existFile(LASTEXEC_DATETIME_FILE))
+			lastExecDateTime = readFirstLine(LASTEXEC_DATETIME_FILE);
+		else
+			lastExecDateTime = strx("00000000000000");
+			//                       YYYYMMDDhhmmss
+
+		revs = lsDirs(revsDir);
+
+		foreach(revs, rev, rev_index)
+		{
+			if(strcmp(getLocal(rev), lastExecDateTime) < 0) // ? rev < lastExecDateTime
+			{
+				cout("K %s\n", rev);
+				recurRemoveDir(rev);
+			}
+		}
+		releaseDim(revs, 1);
+		memFree(lastExecDateTime);
+
+		if(!lsCount(revsDir)) // リビジョンが無くなったら .rum ごと捨てる。
+		{
+			cout("E %s\n", rumDir);
+			recurRemoveDir(rumDir);
+			goto endFunc;
+		}
+	}
 
 	revs = lsDirs(revsDir);
 
@@ -82,11 +118,13 @@ static void TrmRum(char *rumDir)
 		memFree(filesFile);
 		releaseDim(lines, 1);
 	}
-	memFree(entsDir);
-	memFree(revsDir);
 	releaseDim(revs, 1);
 
 	coExecute_x(xcout("C:\\Factory\\Tools\\rum.exe /TT \"%s\"", rumDir));
+
+endFunc:
+	memFree(entsDir);
+	memFree(revsDir);
 }
 static void CpRums(void)
 {
@@ -130,7 +168,36 @@ int main(int argc, char **argv)
 	recurRemoveDirIfExist(W_DIR);
 	createDir(W_DIR);
 
+	if(existFile(LASTEXEC_DATETIME_FILE)) // 前回の実行日時を確認
+	{
+		char *lastExecDateTime = readFirstLine(LASTEXEC_DATETIME_FILE);
+		char *jStamp;
+
+		jStamp = makeJStamp(getStampDataTime(compactStampToTime(lastExecDateTime)), 0);
+
+		cout("前回の実行日時は %s (%s) です。\n", jStamp, lastExecDateTime);
+		cout("これより古いリビジョンは除外します。\n");
+		cout("続行？\n");
+
+		if(clearGetKey() == 0x1b)
+			termination(0);
+
+		cout("続行！\n");
+
+		memFree(lastExecDateTime);
+		memFree(jStamp);
+	}
+
 	CpRums();
+
+	// 今回の実行日時を保存
+	{
+		char *dateTime = makeCompactStamp(NULL);
+
+		writeOneLine(LASTEXEC_DATETIME_FILE, dateTime);
+
+		memFree(dateTime);
+	}
 
 	coExecute("START " W_DIR);
 }
