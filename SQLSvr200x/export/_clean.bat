@@ -1,2 +1,2 @@
 C:\Factory\Tools\RDMD.exe /RD out
-DEL *.tmp
+rem DEL *.tmp

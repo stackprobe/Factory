@@ -1,4 +1,4 @@
-rem _make.bat SERVER USER PASSWORD DB
+rem _makeDb.bat SERVER USER PASSWORD DB
 IF "%4" == "" GOTO END
 
 > tbl.rec.tmp sqlcmd -S %1 -U %2 -P %3 -Q "select schema_id, name from [%4].[sys].[tables]"
