@@ -819,3 +819,33 @@ uint getAppDataEnv32(char *name, uint defval)
 	memFree(sDefVal);
 	return value;
 }
+
+int isWindows10(void)
+{
+	uint ver[3];
+	getWindowsVer(ver);
+	return ver[0] == 10;
+}
+void getWindowsVer(uint ver[3])
+{
+	char *outFile = makeTempPath(NULL);
+	char *line;
+	char *sVer[3];
+
+	execute_x(xcout("> \"%s\" ver", outFile));
+
+	line = readText(outFile);
+
+	toknext(line, "[");
+	sVer[0] = toknext(NULL, ".");
+	sVer[1] = toknext(NULL, ".");
+	sVer[2] = toknext(NULL, "]");
+
+	errorCase(!sVer[2]);
+
+	ver[0] = toValue(sVer[0]);
+	ver[1] = toValue(sVer[1]);
+	ver[2] = toValue(sVer[2]);
+
+	memFree(line);
+}

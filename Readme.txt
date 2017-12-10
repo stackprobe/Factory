@@ -11,6 +11,7 @@ Cで書いたツールとライブラリの寄せ集めです。
 開発環境
 --------
 
+Windows 10 Pro
 Windows 7 Professional
 Visual C++ 2010 Express Edition (たぶん Visual C++ 2008 Express Edition でもOK)
 

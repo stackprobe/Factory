@@ -368,10 +368,62 @@ char *coInputLinePrn(void (*printFunc)(char *jbuffer))
 	return jbuffer;
 }
 
+#define WDROP_EXE_FILE "C:\\app\\Kit\\WDrop\\WDrop.exe"
+
+static char *DropPath_Win10(void)
+{
+	uint funcMtx;
+	char *mtxName;
+	uint mtxHdl;
+	char *outFile;
+	char *path;
+
+	errorCase(isFactoryDirDisabled());
+	errorCase(!existFile(WDROP_EXE_FILE));
+
+	funcMtx = mutexLock("{5396f16e-d695-4d3d-81a1-5b751d0d2068}");
+
+	mtxName = xcout("{73d84a3e-26dc-49dd-9630-fd730e4d3303}_%I64u", nextCommonCount());
+	mtxHdl = mutexLock(mtxName);
+	outFile = makeTempPath(NULL);
+
+	cout("ドロップ先ウィンドウを開きました。\n");
+
+	execute_x(xcout("START \"\" /B /WAIT %s \"%s\" %u \"%s\" %s", WDROP_EXE_FILE, getSelfFile(), GetCurrentThreadId(), mtxName, outFile));
+
+	mutexUnlock(mtxHdl);
+
+	if(existFile(outFile))
+	{
+		path = readText_b(outFile);
+		cout("<D>%s</D>\n", path);
+		removeFile(outFile);
+
+		// フルパスかどうか
+		errorCase(!m_isalpha(path[0]) ||
+			path[1] != ':' ||
+			path[2] != '\\');
+
+		errorCase(!existPath(path));
+	}
+	else
+	{
+		path =NULL;
+		cout("<D></D>\n");
+	}
+	mutexUnlock(funcMtx);
+	memFree(mtxName);
+	memFree(outFile);
+	return path;
+}
 char *dropPath(void)
 {
-	char *path = strx("");
+	char *path;
 
+	if(isWindows10())
+		return DropPath_Win10();
+
+	path = strx("");
 	clearKey();
 	cout("<D>");
 	ungetKey(getKey());

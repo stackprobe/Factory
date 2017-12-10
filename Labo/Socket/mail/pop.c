@@ -29,6 +29,7 @@ static void SendLineDisp_x(SockStream_t *ss, char *line)
 	SendLineDisp(ss, line);
 	memFree(line);
 }
+
 static char *UserName;
 static char *Passphrase;
 static uint RecvNumMax;
