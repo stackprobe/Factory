@@ -404,6 +404,15 @@ char *getSelfDir(void)
 
 	return dirBuff;
 }
+uint getSelfProcessId(void)
+{
+	static uint pid; // 0 ‚Í System Idle Process
+
+	if(!pid)
+		pid = (uint)_getpid();
+
+	return pid;
+}
 
 static char *GetOutDir(void)
 {

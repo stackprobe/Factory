@@ -387,9 +387,12 @@ static char *DropPath_Win10(void)
 	mtxHdl = mutexLock(mtxName);
 	outFile = makeTempPath(NULL);
 
-	cout("ドロップ先ウィンドウを開きました。\n");
+	cout("ドロップ先ウィンドウを開いています...\n");
+	cout("%s (%u)\n", getSelfFile(), getSelfProcessId());
 
-	execute_x(xcout("START \"\" /B /WAIT %s \"%s\" %u \"%s\" %s", WDROP_EXE_FILE, getSelfFile(), GetCurrentThreadId(), mtxName, outFile));
+	execute_x(xcout("START \"\" /B /WAIT %s \"%s\" %u \"%s\" %s", WDROP_EXE_FILE, getSelfFile(), getSelfProcessId(), mtxName, outFile));
+
+	cout("ドロップ先ウィンドウを閉じました。\n");
 
 	mutexUnlock(mtxHdl);
 
@@ -414,6 +417,7 @@ static char *DropPath_Win10(void)
 	mutexUnlock(funcMtx);
 	memFree(mtxName);
 	memFree(outFile);
+	clearKey();
 	return path;
 }
 char *dropPath(void)

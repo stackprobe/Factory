@@ -42,6 +42,7 @@ char *makeFreeDir(void);
 
 char *getSelfFile(void);
 char *getSelfDir(void);
+uint getSelfProcessId(void);
 
 char *getOutFile(char *localFile);
 char *c_getOutFile(char *localFile);
