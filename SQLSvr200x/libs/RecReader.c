@@ -1,6 +1,9 @@
 /*
 	改行を含むレコードを想定しない。
 	sqlcmd 実行時に -k2 を付けること！
+
+	ex.
+		sqlcmd -S SERVER -k2 -i SCRIPT.sql > OUT.txt
 */
 
 #include "RecReader.h"
