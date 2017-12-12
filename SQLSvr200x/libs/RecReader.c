@@ -1,3 +1,8 @@
+/*
+	改行を含むレコードを想定しない。
+	sqlcmd 実行時に -k2 を付けること！
+*/
+
 #include "RecReader.h"
 
 static autoList_t *GetColumnWidthList(char *bdrLine)
@@ -86,7 +91,8 @@ autoList_t *SqlRecReader(char *recFile)
 
 	recLines = readLines(recFile);
 
-	errorCase(getCount(recLines) < 4);
+	errorCase(getCount(recLines) < 2); // EXEC の場合、空行も無くいきなり終わる。
+//	errorCase(getCount(recLines) < 4);
 
 	cwList = GetColumnWidthList(getLine(recLines, 1));
 
@@ -96,8 +102,11 @@ autoList_t *SqlRecReader(char *recFile)
 			continue;
 
 		if(*recLine == '\0') // ? 空行
+		{
+			// EXEC の場合、空行も無くいきなり終わる。
+			errorCase(!lineExp("(<>)", getLine(recLines, rowidx + 1))); // "(n 行処理されました)"
 			break;
-
+		}
 		line2JLine(recLine, 1, 0, 0, 1);
 		row = SplitRow(recLine, cwList);
 
@@ -106,7 +115,7 @@ autoList_t *SqlRecReader(char *recFile)
 
 		addElement(table, (uint)row);
 	}
-	errorCase(!lineExp("(<>)", getLine(recLines, rowidx + 1))); // "(n 行処理されました)"
+//	errorCase(!lineExp("(<>)", getLine(recLines, rowidx + 1))); // "(n 行処理されました)" // moved
 
 	releaseDim(recLines, 1);
 	releaseAutoList(cwList);

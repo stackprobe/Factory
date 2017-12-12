@@ -19,8 +19,8 @@ FOR /F %%D IN (db.tmp) DO (
 		> hdr.out.tmp sqlcmd -S %1 -U %2 -P %3 -Q "select * from %%T where 1 = 2"
 		C:\Factory\SQLSvr200x\RecReader.exe hdr.out.tmp hdr.out.tmp
 
-		bcp %%T out tbl.out.tmp -S %1 -U %2 -P %3 -c -t "\t"
-		C:\Factory\SQLSvr200x\BcpReader.exe tbl.out.tmp tbl.out.tmp
+		bcp %%T out tbl.out.tmp -S %1 -U %2 -P %3 -c -t 0x01 -r 0x02
+		C:\Factory\SQLSvr200x\BcpReader.exe 01 02 tbl.out.tmp tbl.out.tmp
 
 		COPY /B hdr.out.tmp + tbl.out.tmp out\%%T.csv
 	)

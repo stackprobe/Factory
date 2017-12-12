@@ -1,23 +1,53 @@
 #include "BcpReader.h"
 
-autoList_t *SqlBcpReader(char *bcpFile)
+autoList_t *SqlBcpReader(char *bcpFile, int chrT, int chrR)
 {
-	autoList_t *lines;
-	char *line;
-	uint index;
 	autoList_t *table = newList();
 
 	errorCase(m_isEmpty(bcpFile));
+	errorCase(!m_isRange(chrT, 0x00, 0xff));
+	errorCase(!m_isRange(chrR, 0x00, 0xff));
+	errorCase(chrT == chrR);
 
-	lines = readLines(bcpFile);
-
-	foreach(lines, line, index)
+	// 読み込み
 	{
-		line2JLine(line, 1, 0, 1, 1);
+		FILE *fp = fileOpen(bcpFile, "rb");
+		autoList_t *row = newList();
+		autoBlock_t *buff = newBlock();
 
-		addElement(table, (uint)tokenize(line, '\t'));
+		for(; ; )
+		{
+			int chr = readChar(fp);
+
+			if(chr == EOF)
+				break;
+
+			if(chr == chrT || chr == chrR)
+			{
+				char *cell = unbindBlock2Line(buff);
+
+				line2JLine(cell, 1, 0, 1, 1); // fixme: 改行禁止
+
+				addElement(row, (uint)cell);
+				buff = newBlock();
+
+				if(chr == chrR)
+				{
+					addElement(table, (uint)row);
+					row = newList();
+				}
+			}
+			else
+				addByte(buff, chr);
+		}
+		fileClose(fp);
+
+		errorCase(getCount(row)); // ? chrR で終わっていない。
+		errorCase(getSize(buff)); // ? chrR で終わっていない。
+
+		releaseAutoList(row);
+		releaseAutoBlock(buff);
 	}
-	releaseDim(lines, 1);
 
 	// check
 	{
