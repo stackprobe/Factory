@@ -12,6 +12,7 @@ void MultiRun_Programs_Mode(autoList_t *progFiles, uint mode)
 	errorCase(!progFiles);
 	errorCase(!m_isRange(mode, 0, 2));
 
+	addElement(args, (uint)strx("/MULTI-RUN"));
 	addElement(args, (uint)xcout("%u", mode));
 
 	foreach(progFiles, progFile, index)
@@ -39,6 +40,7 @@ void MultiRun_Commands_Mode(autoList_t *commandTable, uint mode)
 	autoList_t *batFiles = newList();
 	autoList_t *commands;
 	uint index;
+	char *jStamp = makeJStamp(NULL, 1);
 
 	errorCase(!commandTable);
 
@@ -57,12 +59,28 @@ void MultiRun_Commands_Mode(autoList_t *commandTable, uint mode)
 //				errorCase(m_isEmpty(line));
 		}
 
-		writeLines(batFile, commands);
+		{
+			FILE *fp = fileOpen(batFile, "wt");
+
+			writeLine_x(fp, xcout("rem MULTI_RUN -- %s [%u]", jStamp, index));
+			writeLines2Stream(fp, commands);
+
+			fileClose(fp);
+		}
+
 		addElement(batFiles, (uint)batFile);
 	}
 	MultiRun_Programs_Mode(batFiles, mode);
 
+	{
+		char *batFile;
+
+		foreach(batFiles, batFile, index)
+			removeFile(batFile);
+	}
+
 	releaseDim(batFiles, 1);
+	memFree(jStamp);
 }
 void MultiRun_Commands(autoList_t *commandTable)
 {
