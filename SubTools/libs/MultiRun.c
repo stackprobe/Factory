@@ -1,5 +1,8 @@
 #include "MultiRun.h"
 
+/*
+	getCount(progFiles) == 0 ‚Å‚àok
+*/
 void MultiRun_Programs_Mode(autoList_t *progFiles, uint mode)
 {
 	autoList_t *args = newList();
