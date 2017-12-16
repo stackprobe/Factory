@@ -55,7 +55,7 @@ static autoList_t *GetTargetDirs(void)
 
 			dir[3] == '_' || m_isdecimal(dir[3]) || // _ 0～9 で始まるフォルダは対象外
 
-			!_stricmp(dir, "C:\\huge") || // 運用上
+//			!_stricmp(dir, "C:\\huge") || // del @ 2017.12.16
 
 			0
 			)
@@ -362,7 +362,7 @@ int main(int argc, char **argv)
 	addCwd(destDir);
 	BackupDirs(targetDirs);
 	unaddCwd();
-	BackupHugeDir(destDir);
+//	BackupHugeDir(destDir); // del @ 2017.12.16
 
 	memFree(strDestDrv);
 	memFree(destDir);
