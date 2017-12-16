@@ -56,6 +56,8 @@ static void Main2(char *regTextFile)
 {
 	RTLines = readLines(regTextFile);
 
+	LOGPOS_T();
+
 	cout("\n");
 	cout("---- ƒfƒUƒCƒ“ ----\n");
 	cout("\n");
