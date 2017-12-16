@@ -1,4 +1,12 @@
 /*
+	RegExpToText.exe 入力ファイル 出力ファイル
+
+	入力ファイル：
+
+		reg export レジストリのパス regファイル
+
+		...のregファイル
+
 	出力ファイルの内容：
 
 		Loop
@@ -67,7 +75,7 @@ static char *HKEY_xxxToHKxx(char *src)
 	if(!strcmp(src, "HKEY_CURRENT_CONFIG"))
 		return "HKCC";
 
-	error(); // never
+	error();
 	return NULL; // never
 }
 
@@ -76,13 +84,70 @@ static char *PV_Value;
 
 static void ParseValue(char *value)
 {
+	memFree(PV_Type);
+	memFree(PV_Value);
 
+	if(lineExp("\"<>\"", value))
+	{
+		char *r;
+		char *w;
 
-	// TODO
+		w = value;
 
+		for(r = value + 1; *r != '"'; r++)
+		{
+			errorCase(!*r);
 
-	PV_Type = "test";
-	PV_Value = value;
+			if(*r == '\\')
+			{
+				r++;
+				errorCase(!*r);
+			}
+			*w++ = *r;
+		}
+		errorCase(r[1]);
+
+		*w = '\0';
+
+		line2JLine(value, 1, 0, 1, 1);
+
+		PV_Type = strx("text");
+		PV_Value = strx(value);
+
+		return;
+	}
+	if(lineExp("dword:<8,09af>", value))
+	{
+		value += 6;
+
+		PV_Type = strx("dword");
+		PV_Value = xcout("%s %u", value, toValueDigits(value, hexadecimal));
+
+		return;
+	}
+	if(lineExp("hex:<>", value))
+	{
+		char *r;
+		char *w;
+
+		value += 4;
+
+		w = value;
+
+		for(r = value; *r; r++)
+			if(m_ishexadecimal(*r))
+				*w++ = *r;
+
+		*w = '\0';
+
+		errorCase(strlen(value) % 2 != 0);
+
+		PV_Type = strx("hex");
+		PV_Value = strx(value);
+
+		return;
+	}
+	error();
 }
 static void Main3(char *rFile, char *wFile)
 {
@@ -113,7 +178,7 @@ static void Main3(char *rFile, char *wFile)
 			errorCase(getCount(ptkns) < 2); // HKxx だけってことは無いだろう。
 
 			foreach(ptkns, ptkn, ptkn_index)
-				errorCase(!lineExp("<1,,09AZaz__%%..>", ptkn)); // パストークンはこれでいいのか？
+				errorCase(!lineExp("<1,,09AZaz__%%..>", ptkn)); // パストークンの書式チェック
 
 			ptkn = getLine(ptkns, 0);
 			ptkn_new = strx(HKEY_xxxToHKxx(ptkn));
@@ -144,7 +209,7 @@ static void Main3(char *rFile, char *wFile)
 
 			buff = ReadJoin();
 
-			errorCase(!lineExp("\"<1,,09AZaz__>\"=<>", buff)); // キーはこれでいいのか？
+			errorCase(!lineExp("\"<1,,09AZaz__>\"=<>", buff)); // キーの書式チェック
 
 			key   = toknext(buff + 1, "\"");
 			value = toknext(NULL, "") + 1;
