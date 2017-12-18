@@ -11,6 +11,7 @@ int lastSystemRet; // ? ! コマンドが正常に実行出来て 0 を返した。
 
 void execute(char *commandLine)
 {
+	fflush(stdout);
 	lastSystemRet = system(commandLine);
 }
 void execute_x(char *commandLine)
