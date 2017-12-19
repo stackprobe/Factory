@@ -222,6 +222,20 @@ void updateFindData(char *path)
 	}
 	_findclose(h);
 }
+/*
+	ルートディレクトリ無視
+	ネットワークパスはこちらを使ってね。
+*/
+int tryUpdateFindData(char *path)
+{
+	intptr_t h = _findfirst(path, &lastFindData);
+
+	if(h == -1)
+		return 0;
+
+	_findclose(h);
+	return 1;
+}
 
 time_t getFileAccessTime(char *file)
 {
