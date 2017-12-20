@@ -74,6 +74,7 @@ void releaseDim_BR(void *block, uint depth, void (*blockReleaser)(void *));
 void releaseDim(void *block, uint depth);
 void addElements(autoList_t *i, autoList_t *j);
 uint findElement(autoList_t *i, uint target, sint (*funcComp)(uint, uint));
+uint getCountElement(autoList_t *i, uint target, sint (*funcComp)(uint, uint));
 extern uint foundPairIndexes[2];
 uint findPair(autoList_t *list, sint (*funcComp)(uint, uint));
 

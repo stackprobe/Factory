@@ -25,6 +25,7 @@ autoList_t *ls(char *dir);
 autoList_t *lss(char *dir);
 
 void updateFindData(char *path);
+int tryUpdateFindData(char *path);
 
 time_t getFileAccessTime(char *file);
 time_t getFileCreateTime(char *file);

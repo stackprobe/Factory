@@ -476,6 +476,21 @@ uint findElement(autoList_t *i, uint target, sint (*funcComp)(uint, uint))
 	}
 	return index;
 }
+uint getCountElement(autoList_t *i, uint target, sint (*funcComp)(uint, uint))
+{
+	uint element;
+	uint index;
+	uint count = 0;
+
+	foreach(i, element, index)
+	{
+		if(!funcComp(element, target))
+		{
+			count++;
+		}
+	}
+	return count;
+}
 
 uint foundPairIndexes[2];
 
