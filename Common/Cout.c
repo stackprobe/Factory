@@ -138,7 +138,7 @@ char *xcout(char *format, ...)
 	}
 	va_end(marker);
 
-	return buffer;
+	return strr(buffer);
 }
 void coutJLine(char *line)
 {

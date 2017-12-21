@@ -50,6 +50,8 @@ static void ShowPwOnTime(void)
 	autoList_t *pwOffSpans = newList();
 	autoList_t *pwOnSpans = newList();
 
+	errorCase(!existFile(FILE_TOOLKIT_EXE)); // 外部コマンド存在確認
+
 	LOGPOS();
 	coExecute_x(xcout(FILE_TOOLKIT_EXE " /EVENT-LOG %u%u01000000 %u%u31235959 0 \"%s\"", YMin, MMin, YMax, MMax, file));
 	LOGPOS();

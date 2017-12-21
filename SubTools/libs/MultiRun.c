@@ -15,6 +15,8 @@ void MultiRun_Programs_Mode(autoList_t *progFiles, uint mode)
 	errorCase(!progFiles);
 	errorCase(!m_isRange(mode, 0, 2));
 
+	errorCase(!existFile(FILE_TOOLKIT_EXE)); // 外部コマンド存在確認
+
 	addElement(args, (uint)strx("/MULTI-RUN"));
 	addElement(args, (uint)xcout("%u", mode));
 
