@@ -218,6 +218,8 @@ static void GitFactory(char *rDir, char *wDir, int allowOverwrite)
 	memFree(rDir);
 	memFree(wDir);
 	releaseDim(files, 1);
+
+	GitResourceMask_ClearCache();
 }
 
 int main(int argc, char **argv)

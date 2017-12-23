@@ -15,9 +15,47 @@ static char *GetCachedFile(char *categoly, char *keyFile)
 	memFree(file);
 
 	createDirIfNotExist(CACHE_DIR);
-	file = combine_cx(CACHE_DIR, xcout("%s_%s.dat", categoly, md5_makeHexHashFile(keyFile)));
+	file = combine_cx(CACHE_DIR, xcout("%s_%s.dat", categoly, c_md5_makeHexHashFile(keyFile)));
 	cout("cached_file: %s\n", file);
 	return file;
+}
+static TouchFile(char *file)
+{
+	uint64 stamp = getFileStampByTime(0);
+
+	setFileStamp(file, 0ui64, stamp, stamp);
+}
+void GitResourceMask_ClearCache(void)
+{
+	autoList_t *files;
+	char *file;
+	uint index;
+	time_t tmout_t;
+
+	LOGPOS();
+
+	createDirIfNotExist(CACHE_DIR);
+	coExecute("compact /c /s:" CACHE_DIR); // Ç¬Ç¢Ç≈Ç…ÅAÅA
+	files = lsFiles(CACHE_DIR);
+	tmout_t = time(NULL) - 86400 * 7;
+
+	foreach(files, file, index)
+	{
+		uint64 stamp;
+		time_t t;
+
+		getFileStamp(file, NULL, NULL, &stamp);
+		t = getTimeByFileStamp(stamp);
+		cout("%s\n%I64d\n", file, t - tmout_t);
+
+		if(t < tmout_t)
+		{
+			LOGPOS();
+			removeFile(file);
+			LOGPOS();
+		}
+	}
+	LOGPOS();
 }
 
 typedef struct MediaInfo_st
@@ -134,6 +172,7 @@ static void MaskResImage(char *file)
 		MaskResImage_Main(file);
 		LOGPOS();
 		copyFile(file, cachedFile);
+		TouchFile(cachedFile);
 		LOGPOS();
 	}
 }
@@ -219,6 +258,7 @@ static void MaskResSound(char *file)
 		MaskResSound_Main(file);
 		LOGPOS();
 		copyFile(file, cachedFile);
+		TouchFile(cachedFile);
 		LOGPOS();
 	}
 }
@@ -303,6 +343,7 @@ static void MaskResMovie(char *file)
 		MaskResMovie_Main(file);
 		LOGPOS();
 		copyFile(file, cachedFile);
+		TouchFile(cachedFile);
 		LOGPOS();
 	}
 }
