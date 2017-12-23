@@ -9,5 +9,4 @@
 #include "C:\Factory\Meteor\Toolkit.h"
 #include "GitCommon.h"
 
-void GitResourceMask_ClearCache(void);
 void GitResourceMask(char *rootDir);

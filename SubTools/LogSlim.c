@@ -196,7 +196,7 @@ readArgs:
 		DirFileCountMax = toValue(nextArg());
 		goto readArgs;
 	}
-	RootDir = makeFullPath(nextArg()); // fixme: ネットワークフォルダに対応するかもしれないので、これ除去するかも！
+	RootDir = makeFullPath(nextArg());
 
 	cout("TotalSizeMax: %I64u\n", TotalSizeMax);
 	cout("DirSizeMax: %I64u\n", DirSizeMax);
