@@ -9,7 +9,7 @@
 static char *RDir;
 
 #define W_DIR "C:\\temp\\Matome"
-#define LASTEXEC_DATETIME_FILE "C:\\appdata\\MatomeMaker_LastExecDateTime.txt"
+//#define LASTEXEC_DATETIME_FILE "C:\\appdata\\MatomeMaker_LastExecDateTime.txt"
 
 static int IsCollectExt(char *ext)
 {
@@ -44,6 +44,7 @@ static void TrmRum(char *rumDir)
 	errorCase(!existDir(entsDir));
 	errorCase(!existDir(revsDir));
 
+#if 0
 	// 既知のリビジョンを除外
 	{
 		char *lastExecDateTime;
@@ -74,6 +75,7 @@ static void TrmRum(char *rumDir)
 			goto endFunc;
 		}
 	}
+#endif
 
 	revs = lsDirs(revsDir);
 
@@ -168,6 +170,7 @@ int main(int argc, char **argv)
 	recurRemoveDirIfExist(W_DIR);
 	createDir(W_DIR);
 
+#if 0
 	if(existFile(LASTEXEC_DATETIME_FILE)) // 前回の実行日時を確認
 	{
 		char *lastExecDateTime = readFirstLine(LASTEXEC_DATETIME_FILE);
@@ -187,9 +190,11 @@ int main(int argc, char **argv)
 		memFree(lastExecDateTime);
 		memFree(jStamp);
 	}
+#endif
 
 	CpRums();
 
+#if 0
 	// 今回の実行日時を保存
 	{
 		char *dateTime = makeCompactStamp(NULL);
@@ -198,6 +203,7 @@ int main(int argc, char **argv)
 
 		memFree(dateTime);
 	}
+#endif
 
 	coExecute("START " W_DIR);
 }
