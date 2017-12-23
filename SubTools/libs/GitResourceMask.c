@@ -6,6 +6,20 @@
 //#define WAV_HZ 44100
 #define MOVIE_FPS 30
 
+#define CACHE_DIR "C:\\tmp\\GitResourceMaskCache"
+
+static char *GetCachedFile(char *categoly, char *keyFile)
+{
+	static char *file;
+
+	memFree(file);
+
+	createDirIfNotExist(CACHE_DIR);
+	file = combine_cx(CACHE_DIR, xcout("%s_%s.dat", categoly, md5_makeHexHashFile(keyFile)));
+	cout("cached_file: %s\n", file);
+	return file;
+}
+
 typedef struct MediaInfo_st
 {
 	uint Centisec;
@@ -83,7 +97,7 @@ static MediaInfo_t GetMediaInfo(char *file)
 
 // ---- Image ----
 
-static void MaskResImage(char *file)
+static void MaskResImage_Main(char *file)
 {
 	char *midFile = makeTempPath("png");
 
@@ -103,6 +117,25 @@ static void MaskResImage(char *file)
 	}
 	removeFile(midFile);
 	memFree(midFile);
+}
+static void MaskResImage(char *file)
+{
+	char *cachedFile = GetCachedFile("image", file);
+
+	if(existFile(cachedFile))
+	{
+		LOGPOS();
+		copyFile(cachedFile, file);
+		LOGPOS();
+	}
+	else
+	{
+		LOGPOS();
+		MaskResImage_Main(file);
+		LOGPOS();
+		copyFile(file, cachedFile);
+		LOGPOS();
+	}
 }
 
 // ---- Sound ----
@@ -151,7 +184,7 @@ static void MRS_MakeSoundFile(char *rFile, char *wFile)
 		coExecute_x(xcout("START \"\" /B /WAIT \"%s\" -i \"%s\" \"%s\"", FILE_FFMPEG_EXE, rFile, wFile));
 	}
 }
-static void MaskResSound(char *file)
+static void MaskResSound_Main(char *file)
 {
 	char *tmpFile = makeTempPath(getExt(file));
 	char *wavFile = makeTempPath("wav");
@@ -169,6 +202,25 @@ static void MaskResSound(char *file)
 	memFree(tmpFile);
 	memFree(wavFile);
 	memFree(outFile);
+}
+static void MaskResSound(char *file)
+{
+	char *cachedFile = GetCachedFile("sound", file);
+
+	if(existFile(cachedFile))
+	{
+		LOGPOS();
+		copyFile(cachedFile, file);
+		LOGPOS();
+	}
+	else
+	{
+		LOGPOS();
+		MaskResSound_Main(file);
+		LOGPOS();
+		copyFile(file, cachedFile);
+		LOGPOS();
+	}
 }
 
 // ---- Movie ----
@@ -213,7 +265,7 @@ static void MRM_GenKoma(char *komaDir, char *file)
 	memFree(komaFile_0);
 	memFree(komaFile_1);
 }
-static void MaskResMovie(char *file)
+static void MaskResMovie_Main(char *file)
 {
 	char *komaDir = makeTempDir(NULL);
 	char *midFile;
@@ -234,6 +286,25 @@ static void MaskResMovie(char *file)
 	recurRemoveDir(komaDir);
 	memFree(komaDir);
 	memFree(midFile);
+}
+static void MaskResMovie(char *file)
+{
+	char *cachedFile = GetCachedFile("movie", file);
+
+	if(existFile(cachedFile))
+	{
+		LOGPOS();
+		copyFile(cachedFile, file);
+		LOGPOS();
+	}
+	else
+	{
+		LOGPOS();
+		MaskResMovie_Main(file);
+		LOGPOS();
+		copyFile(file, cachedFile);
+		LOGPOS();
+	}
 }
 
 // ---- Other ----
