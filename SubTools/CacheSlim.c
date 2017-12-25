@@ -79,7 +79,7 @@ static void SlimFile(FileInfo_t *i)
 	if(TimeoutSec <= timeOld)
 	{
 		cout("削除します。\n");
-//		removeFile(i->File);
+		removeFile(i->File);
 	}
 	else
 		cout("キープします。\n");
