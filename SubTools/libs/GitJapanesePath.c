@@ -17,7 +17,11 @@ static int HasJpn(char *str)
 }
 static char *PutDq(char *path)
 {
-	if(strchr(path, ' '))
+	/*
+		REN abc d=e     NG
+		REN abc "d=e"   OK
+	*/
+	if(strchr(path, ' ') || strchr(path, '='))
 	{
 		path = insertChar(path, 0, '"');
 		path = addChar(path, '"');
