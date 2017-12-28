@@ -20,12 +20,60 @@ static char *PutDq(char *path)
 	/*
 		REN abc d=e     NG
 		REN abc "d=e"   OK
+
+- - -
+
+m_isasciikana について、
+
+       COPY abc d<文字>e NG   COPY abc "d<文字>e" NG
+----------------------------------------------------
+\x20   NG
+&      NG
++      NG
+,      NG
+/      NG                NG
+:      NG ※1            NG ※1
+;      NG
+<      NG                NG
+=      NG
+>      NG                NG
+?      NG ※2            NG ※2
+\      NG ※1            NG ※1
+|      NG                NG
+
+※1 ドライブ・ディレクトリを指定したことになる。
+※2 "?" を "" に置き換えてコピーは成功する。
+
+- - -
+
+'%' について、
+
+d%tmp%f というファイルは（エクスプローラから）作成可能だが、
+COPY abc d%tmp%f
+COPY abc "d%tmp%f"
+は環境変数に置き換えられて NG
+COPY abc d%none%f
+のように定義されていない環境変数であれば OK ???
+
+execute (system) 関数から実行した場合、コマンドプロンプトに直接入力した場合と同じ結果。
+
+バッチファイルの中から % -> %% でエスケープしてやれば問題ないっぽい。
+
 	*/
-	if(strchr(path, ' ') || strchr(path, '='))
+	if(
+		strchr(path, ' ') ||
+		strchr(path, '&') ||
+		strchr(path, '+') ||
+		strchr(path, ',') ||
+		strchr(path, ';') ||
+		strchr(path, '=')
+		)
 	{
 		path = insertChar(path, 0, '"');
 		path = addChar(path, '"');
 	}
+	path = replaceLine(path, "%", "%%", 0);
+
 	return path;
 }
 static void SolveJpnPath(char *rootDir, char *realRootDir)

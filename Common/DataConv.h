@@ -33,6 +33,7 @@ void line2csym_ext(char *line, char *extra);
 void line2csym(char *line);
 void line2fsym(char *line);
 
+// m_isasciikana @ Line.h ‚Æ“¯‚¶
 #define m_isHalf(chr) \
 	(0x20 <= (chr) && (chr) <= 0x7e || 0xa1 <= (chr) && (chr) <= 0xdf)
 
