@@ -31,15 +31,15 @@ m_isasciikana について、
 &      NG
 +      NG
 ,      NG
-/      NG                NG
-:      NG ※1            NG ※1
+/      NG                     NG
+:      NG ※1                 NG ※1
 ;      NG
-<      NG                NG
+<      NG                     NG
 =      NG
->      NG                NG
-?      NG ※2            NG ※2
-\      NG ※1            NG ※1
-|      NG                NG
+>      NG                     NG
+?      NG ※2                 NG ※2
+\      NG ※1                 NG ※1
+|      NG                     NG
 
 ※1 ドライブ・ディレクトリを指定したことになる。
 ※2 "?" を "" に置き換えてコピーは成功する。
@@ -58,6 +58,11 @@ COPY abc d%none%f
 execute (system) 関数から実行した場合、コマンドプロンプトに直接入力した場合と同じ結果。
 
 バッチファイルの中から % -> %% でエスケープしてやれば問題ないっぽい。
+
+以下のバッチファイルを作成
+DIR > abc
+COPY abc d%%tmp%%f
+バッチを実行 -> d%tmp%f が作成される。
 
 	*/
 	if(
