@@ -1,7 +1,7 @@
 /*
 	/RD = rd
 	/MD = md
-	/CD = md + compact
+	/MC = md + compact
 	/RM = rd + md
 	/RC = rd + md + compact
 */
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
 			DoMD(nextArg());
 			continue;
 		}
-		if(argIs("/CD"))
+		if(argIs("/MC") || argIs("/CD"))
 		{
 			CompactMode = 1;
 			DoMD(nextArg());

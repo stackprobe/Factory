@@ -130,9 +130,8 @@ static void MaskResImage(char *file)
 
 	if(existFile(cachedFile))
 	{
-		LOGPOS();
 		copyFile(cachedFile, file);
-		LOGPOS();
+		TouchFile(cachedFile);
 	}
 	else
 	{
@@ -140,8 +139,6 @@ static void MaskResImage(char *file)
 		MaskResImage_Main(file);
 		LOGPOS();
 		copyFile(file, cachedFile);
-		TouchFile(cachedFile);
-		LOGPOS();
 	}
 }
 
@@ -216,9 +213,8 @@ static void MaskResSound(char *file)
 
 	if(existFile(cachedFile))
 	{
-		LOGPOS();
 		copyFile(cachedFile, file);
-		LOGPOS();
+		TouchFile(cachedFile);
 	}
 	else
 	{
@@ -226,8 +222,6 @@ static void MaskResSound(char *file)
 		MaskResSound_Main(file);
 		LOGPOS();
 		copyFile(file, cachedFile);
-		TouchFile(cachedFile);
-		LOGPOS();
 	}
 }
 
@@ -301,9 +295,8 @@ static void MaskResMovie(char *file)
 
 	if(existFile(cachedFile))
 	{
-		LOGPOS();
 		copyFile(cachedFile, file);
-		LOGPOS();
+		TouchFile(cachedFile);
 	}
 	else
 	{
@@ -311,8 +304,6 @@ static void MaskResMovie(char *file)
 		MaskResMovie_Main(file);
 		LOGPOS();
 		copyFile(file, cachedFile);
-		TouchFile(cachedFile);
-		LOGPOS();
 	}
 }
 
