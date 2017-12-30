@@ -60,6 +60,7 @@ static autoList_t *GetTargetDirs(void)
 			0
 			)
 		{
+			// noop
 		}
 		else
 		{
