@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 	resPrefix = nextArg();
 
 	if(existDir(destResFile))
-		destResFile = combine_xc(destResFile, getLocal(resFile));
+		destResFile = combine(destResFile, getLocal(resFile)); // g
 
 	SemiRelease(resFile, destResFile, outPrefix, resPrefix);
 }
