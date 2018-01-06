@@ -387,19 +387,21 @@ static char *DropPath_Win10(void)
 	mtxHdl = mutexLock(mtxName);
 	outFile = makeTempPath(NULL);
 
-	cout("ドロップ先ウィンドウを開いています...\n");
-	cout("%s (%u)\n", getSelfFile(), getSelfProcessId());
+	cout("<D>");
+//	cout("ドロップ先ウィンドウを開いています...\n");
+//	cout("%s (%u)\n", getSelfFile(), getSelfProcessId());
 
 	execute_x(xcout("START \"\" /B /WAIT %s \"%s\" %u \"%s\" %s", WDROP_EXE_FILE, getSelfFile(), getSelfProcessId(), mtxName, outFile));
 
-	cout("ドロップ先ウィンドウを閉じました。\n");
+//	cout("ドロップ先ウィンドウを閉じました。\n");
 
 	mutexUnlock(mtxHdl);
 
 	if(existFile(outFile))
 	{
 		path = readText_b(outFile);
-		cout("<D>%s</D>\n", path);
+		cout("%s</D>\n", path);
+//		cout("<D>%s</D>\n", path);
 		removeFile(outFile);
 
 		// フルパスかどうか
@@ -412,7 +414,8 @@ static char *DropPath_Win10(void)
 	else
 	{
 		path =NULL;
-		cout("<D></D>\n");
+		cout("</D>\n");
+//		cout("<D></D>\n");
 	}
 	mutexUnlock(funcMtx);
 	memFree(mtxName);
