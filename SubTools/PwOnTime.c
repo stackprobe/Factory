@@ -53,7 +53,7 @@ static void ShowPwOnTime(void)
 	errorCase(!existFile(FILE_TOOLKIT_EXE)); // 外部コマンド存在確認
 
 	LOGPOS();
-	coExecute_x(xcout(FILE_TOOLKIT_EXE " /EVENT-LOG %u%u01000000 %u%u31235959 0 \"%s\"", YMin, MMin, YMax, MMax, file));
+	coExecute_x(xcout(FILE_TOOLKIT_EXE " /EVENT-LOG %04u%02u01000000 %04u%02u31235959 0 \"%s\"", YMin, MMin, YMax, MMax, file));
 	LOGPOS();
 
 	lines = readLines(file);
