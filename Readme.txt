@@ -27,7 +27,7 @@ Visual C++ 2010 Express Edition
 	★ビルド手順中の fcrlf がこのパスを生成し、zz がこれらのパスを削除します。
 
 
-習慣的に以下のディレクトリを使用します。(参考まで)
+メインの開発環境では以下のディレクトリを使用していました。@ 2017.x.x
 
 	C:\app       = フリーソフト等、外部アプリ置き場
 	C:\app\Kit   = https://github.com/stackprobe/Kit/tree/master/
