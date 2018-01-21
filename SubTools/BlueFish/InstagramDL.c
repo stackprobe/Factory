@@ -122,7 +122,8 @@ static autoList_t *ParseUrls(char *resBodyFile)
 
 	for(; ; )
 	{
-		char *q = strstr(p, "thumbnail_src");
+//		char *q = strstr(p, "thumbnail_src"); // del @ 2018.1.21
+		char *q = strstr(p, "display_src");
 		char *r;
 		char *s;
 
@@ -195,7 +196,10 @@ static int Download(char *url) // ret: ? successful
 	int ret = 0;
 
 	url = strx(url);
-	url = replaceLine(url, "/s640x640/", "/", 0);
+//	url = replaceLine(url, "/s640x640/", "/", 0); // del @ 2018.1.21
+
+	line2JLine(url, 0, 0, 0, 0); // ï\é¶Ç∑ÇÈÇΩÇﬂÅB
+	cout("url: %s\n", url);
 
 	writeOneLineNoRet_b_cx(prmFile, xcout(
 		"/RSF\n"
