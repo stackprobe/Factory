@@ -3,8 +3,9 @@
 
 	- - -
 
-	7z.exe [/C] [/T] [/OAD] [7z-FILE | ZIP-FILE]
+	7z.exe [/ANO] [/C] [/T] [/OAD] [7z-FILE | ZIP-FILE]
 
+		/ANO ... 何も展開されなかった場合でもエラーにしない。
 		/C   ... 入力ファイルと同じ場所に展開する。
 		/T   ... 不要な上位階層を除去する。
 		/OAD ... 元ファイル自動削除
@@ -14,6 +15,7 @@
 #include "C:\Factory\Common\Options\Collabo.h"
 #include "C:\Factory\Meteor\7z.h"
 
+static int AllowNoOutput;
 static int ExtractSameDir;
 static int TrimOneDir;
 static int OutputAndDelete;
@@ -90,6 +92,17 @@ static void DoTrimOneDir(char *wDir)
 	}
 	memFree(rDir);
 }
+static void Post7z(char *dir)
+{
+	if(!AllowNoOutput)
+	{
+		/*
+			/OAD を指定してアーカイブではないファイルをドロップしてしまうと、
+			何も出力されない上、元ファイルが削除されてしまうので、その対策として。
+		*/
+		errorCase_m(!lsCount(dir), "何も展開されませんでした。");
+	}
+}
 static void Extract7z(char *file7z)
 {
 	char *dir;
@@ -113,6 +126,7 @@ static void Extract7z(char *file7z)
 		addCwd(dir);
 		coExecute_x(xcout("%s x \"%s\"", Get7zExeFile(), file7z));
 		unaddCwd();
+		Post7z(dir);
 
 		if(TrimOneDir)
 			DoTrimOneDir(dir);
@@ -126,6 +140,7 @@ static void Extract7z(char *file7z)
 		addCwd(dir);
 		coExecute_x(xcout("%s x \"%s\"", Get7zExeFile(), file7z));
 		unaddCwd();
+		Post7z(dir);
 		dir = Unlittering(dir, file7z);
 		execute_x(xcout("START %s", dir));
 	}
@@ -144,6 +159,13 @@ int main(int argc, char **argv)
 	cout("=======\n");
 
 readArgs:
+	if(argIs("/ANO"))
+	{
+		cout("ALLOW-NO-OUTPUT\n");
+
+		AllowNoOutput = 1;
+		goto readArgs;
+	}
 	if(argIs("/C"))
 	{
 		cout("+----------------+\n");

@@ -27,7 +27,7 @@ Visual C++ 2010 Express Edition
 	★ビルド手順中の fcrlf がこのパスを生成し、zz がこれらのパスを削除します。
 
 
-メインの開発環境では以下のディレクトリを使用していました。@ 2017.x.x
+参考までにメインの開発環境では以下のディレクトリを使用していました。@ 2017.x.x
 
 	C:\app       = フリーソフト等、外部アプリ置き場
 	C:\app\Kit   = https://github.com/stackprobe/Kit/tree/master/
@@ -38,6 +38,7 @@ Visual C++ 2010 Express Edition
 	C:\Factory   = ここ
 	C:\home      = 物置3
 	C:\huge      = 物置5 (でかいもの専用)
+	C:\pleiades  = Pleiades All in One 4.x Ultimate
 	C:\prv       = subst S: C:\prv
 	C:\temp      = 一時ファイル用、ログオン時に空にする。
 	C:\tmp       = 一時ファイル用、クリアしない。

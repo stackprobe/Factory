@@ -77,7 +77,7 @@ static void MkBatUndone(void)
 		{
 			copyFile("C:\\Factory\\Labo\\Tools\\Prime64\\sub\\Join.exe", "Join.exe");
 			coExecute("C:\\Factory\\SubTools\\EmbedConfig.exe --factory-dir-disabled Join.exe");
-			writeOneLine("_Join.bat", "Join.exe out out\\_Join.txt\nSTART out"); // でか過ぎて開けない。
+			writeOneLine("_Join.bat", "Join.exe out out\\_Join.txt\nSTART out"); // でか過ぎてエディタで開けないのでフォルダを開く。
 		}
 		createDir("out");
 		createDir("tmp");
