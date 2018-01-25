@@ -1,8 +1,8 @@
 rem šWindows”FØver
-rem _makeDb_w.bat SERVER DB
-IF "%2" == "" GOTO END
+rem _makeDbTable_w.bat SERVER DB TABLE
+IF "%3" == "" GOTO END
 
-> tbl.rec.tmp sqlcmd -S %1 -k2 -Q "select schema_id, name from [%2].[sys].[tables]"
+> tbl.rec.tmp sqlcmd -S %1 -k2 -Q "select schema_id, name from [%2].[sys].[tables] where name = '%3'"
 > sch.rec.tmp sqlcmd -S %1 -k2 -Q "select schema_id, name from [%2].[sys].[schemas]"
 
 C:\Factory\SQLSvr200x\export\MakeTableList.exe tbl.rec.tmp sch.rec.tmp %2 tbl.tmp

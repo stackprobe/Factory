@@ -1,7 +1,7 @@
-rem _makeDb.bat SERVER USER PASSWORD DB
-IF "%4" == "" GOTO END
+rem _makeDbTable.bat SERVER USER PASSWORD DB TABLE
+IF "%5" == "" GOTO END
 
-> tbl.rec.tmp sqlcmd -S %1 -U %2 -P %3 -k2 -Q "select schema_id, name from [%4].[sys].[tables]"
+> tbl.rec.tmp sqlcmd -S %1 -U %2 -P %3 -k2 -Q "select schema_id, name from [%4].[sys].[tables] where name = '%5'"
 > sch.rec.tmp sqlcmd -S %1 -U %2 -P %3 -k2 -Q "select schema_id, name from [%4].[sys].[schemas]"
 
 C:\Factory\SQLSvr200x\export\MakeTableList.exe tbl.rec.tmp sch.rec.tmp %4 tbl.tmp
