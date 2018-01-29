@@ -1,4 +1,5 @@
 #include "C:\Factory\Common\all.h"
+#include "C:\Factory\Meteor\Toolkit.h"
 
 static int NoShutdownFlag;
 
@@ -290,6 +291,11 @@ int main(int argc, char **argv)
 	char *cmdln;
 	int doShutdownFlag;
 
+	// 外部コマンド存在確認
+	{
+		errorCase(!existFile(FILE_TOOLKIT_EXE));
+	}
+
 	NoShutdownFlag = argIs("/-S");
 
 	if(!NoShutdownFlag)
@@ -302,6 +308,7 @@ int main(int argc, char **argv)
 	cout("| メーラーなど、動作中のアプリを閉じて下さい。|\n");
 	cout("+---------------------------------------------+\n");
 	cout("!! GREEN -> RED !!\n");
+	cout("バックアップ先ドライブをドロップして下さい。\n");
 
 	strDestDrv = dropPath();
 
@@ -317,6 +324,7 @@ int main(int argc, char **argv)
 
 	errorCase(!pcname);
 	errorCase(!pcname[0]);
+	errorCase(strchr(pcname, ' '));
 
 	pcname = strx(pcname);
 	ToDecAlphaOnly(pcname);
@@ -365,11 +373,18 @@ int main(int argc, char **argv)
 	unaddCwd();
 //	BackupHugeDir(destDir); // del @ 2017.12.16
 
-	// Extra
+	// _ 0～9 で始まる名前はバックアップ対象外なので、destDir の直下は _ 0～9 で始めておけば重複しないはず。
+
+	coExecute_x(xcout(FILE_TOOLKIT_EXE " /SHA-512 %s %s\\_Hash.txt", destDir, destDir));
+
+	coExecute_x(xcout("COPY /Y %s\\_Hash.txt C:\\tmp\\Backup_Hash.txt", destDir));
+	coExecute_x(xcout("COPY /Y %s\\_Hash.txt C:\\tmp\\Backup_Hash_old.txt", destBackDir)); // 無いかもしれない。
+
+	// Backup.bat との連携
 	{
 		if(existDir("C:\\888"))
 		{
-			writeOneLine_cx("C:\\888\\Extra_0001.bat", xcout("COPY /Y C:\\tmp\\Backup.log %s", destDir));
+			writeOneLine_cx("C:\\888\\Extra_0001.bat", xcout("COPY /Y C:\\tmp\\Backup.log %s\\_Backup.log", destDir));
 		}
 	}
 
