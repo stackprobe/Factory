@@ -20,4 +20,3 @@ FOR /F %%T IN (tbl.tmp) DO (
 )
 
 :END
-PAUSE

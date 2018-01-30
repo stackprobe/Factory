@@ -375,7 +375,7 @@ int main(int argc, char **argv)
 
 	// _ 0～9 で始まる名前はバックアップ対象外なので、destDir の直下は _ 0～9 で始めておけば重複しないはず。
 
-	coExecute_x(xcout(FILE_TOOLKIT_EXE " /SHA-512 %s %s\\_Hash.txt", destDir, destDir));
+	coExecute_x(xcout(FILE_TOOLKIT_EXE " /SHA-512-128 %s %s\\_Hash.txt", destDir, destDir));
 
 	coExecute_x(xcout("COPY /Y %s\\_Hash.txt C:\\tmp\\Backup_Hash.txt", destDir));
 	coExecute_x(xcout("COPY /Y %s\\_Hash.txt C:\\tmp\\Backup_Hash_old.txt", destBackDir)); // 無いかもしれない。

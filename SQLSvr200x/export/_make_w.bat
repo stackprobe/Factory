@@ -28,4 +28,3 @@ FOR /F %%D IN (db.tmp) DO (
 )
 
 :END
-PAUSE

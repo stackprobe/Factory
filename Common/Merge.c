@@ -327,7 +327,7 @@ void distinct2(autoList_t *list, sint (*funcComp)(uint, uint), void (*funcReleas
 
 	for(index = 1; index < getCount(list); index++)
 	{
-		if(!funcComp(getElement(list, index), getElement(list, index - 1)))
+		if(!funcComp(getElement(list, wi - 1), getElement(list, index)))
 			funcRelease(getElement(list, index));
 		else
 			setElement(list, wi++, getElement(list, index));
