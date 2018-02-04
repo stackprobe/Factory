@@ -5,6 +5,8 @@
 
 #define CLOPTIONS "/W2 /w24013 /WX /Oxt /J /GF"
 
+#define MSBUILDOPTIONS "/property:configuration=Release"
+
 #define BUILT_TIME_MARGIN 0
 
 enum
@@ -192,6 +194,7 @@ static void Build(char *module, uint remCount) // remCount: 0 == 無効
 	char *exefile = changeExt(module, "exe");
 	char *report = changeExt(module, "report");
 	char *response = changeExt(module, "response");
+	char *solution = changeExt(module, "sln");
 	char *exemanifest;
 	int objmode;
 
@@ -202,6 +205,25 @@ static void Build(char *module, uint remCount) // remCount: 0 == 無効
 
 	errorCase(mbs_strchr(module, '\\')); // ローカル名であること。
 	errorCase(strchr(module, ' ')); // コマンドラインに渡すため、空白を含まないこと。
+
+	if(existFile(solution))
+	{
+		if(OptimizeLevel != CLEANING_MODE)
+		{
+			execute_x(xcout("MSBUILD " MSBUILDOPTIONS " %s", solution));
+
+			if(lastSystemRet == 0) // ? Successful
+			{
+				// noop
+			}
+			else // ? Error
+			{
+				cout("%s\\%s", c_getCwd(), solution);
+				termination(1);
+			}
+		}
+		goto endfunc;
+	}
 	errorCase(!existFile(source));
 
 //	remove(objfile); // moved
@@ -331,6 +353,7 @@ endfunc:
 	memFree(exefile);
 	memFree(report);
 	memFree(response);
+	memFree(solution);
 	memFree(exemanifest);
 }
 static void DeepBuild(int shallowMode)
@@ -379,6 +402,10 @@ static void DeepBuild(int shallowMode)
 				addElement(exeSources, (uint)strx(file));
 			}
 			memFree(header);
+		}
+		else if(!_stricmp("sln", getExt(file)))
+		{
+			addElement(exeSources, (uint)strx(file));
 		}
 	}
 	releaseDim(files, 1);
