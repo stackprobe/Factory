@@ -45,7 +45,7 @@ char *strr(char *line)
 }
 char *strxl(char *line, uint count)
 {
-	errorCase(strlen(line) < count);
+	errorCase(strlen_max(line, count) < count);
 
 	line = memCloneWithBuff(line, count, 1);
 	line[count] = '\0';
@@ -228,6 +228,14 @@ char *ne_strstr(char *line, char *findPtn)
 
 	errorCase(!ret);
 	return ret;
+}
+uint strlen_max(char *str, uint retmax)
+{
+	uint count;
+
+	for(count = 0; str[count] && count < retmax; count++);
+
+	return count;
 }
 
 /*

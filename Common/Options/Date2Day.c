@@ -22,7 +22,7 @@ uint64 Date2Day(uint y, uint m, uint d)
 
 	y64 = y;
 
-	// 13ŒˆÈã -> 12ŒˆÈ‰º
+	// 13Œ` ‚ğ 1`12Œ‚É‚·‚éB
 	{
 		m--;
 		y64 += m / 12;
@@ -255,7 +255,8 @@ uint IDate2Day(uint date)
 	date /= 100;
 	y = date;
 
-	if(y < 1000 || 9999 < y ||
+	if(
+		y < 1000 || 9999 < y ||
 		m < 1 || 12 < m ||
 		d < 1 || 31 < d
 		)
@@ -271,11 +272,18 @@ uint Day2IDate(uint day)
 
 	Day2Date(day, &y, &m, &d);
 
-	if(y < 1000 || 9999 < y ||
+	if(y < 1000)
+		return 10000101; // dummy date
+
+	if(9999 < y)
+		return 99991231; // dummy date
+
+	// 2bs
+	errorCase(
+//		y < 1000 || 9999 < y ||
 		m < 1 || 12 < m ||
 		d < 1 || 31 < d
-		)
-		return 10000101; // dummy date
+		);
 
 	return y * 10000 + m * 100 + d;
 }
@@ -296,7 +304,7 @@ uint64 IDateTime2Sec(uint64 dateTime)
 	uint s;
 
 	if(!m_isRange(dateTime, 10000101000000ui64, 99991231235959ui64))
-		return 0ui64;
+		return 0ui64; // dummy sec
 
 	s = dateTime % 100;
 	dateTime /= 100;
@@ -313,8 +321,11 @@ uint64 Sec2IDateTime(uint64 sec)
 	uint m;
 	uint s;
 
-	if(!m_isRange(sec, SEC_10000101000000, SEC_99991231235959))
-		return 10000101000000ui64;
+	if(sec < SEC_10000101000000)
+		return 10000101000000ui64; // dummy date time
+
+	if(SEC_99991231235959 < sec)
+		return 99991231235959ui64; // dummy date time
 
 	s = sec % 60;
 	sec /= 60;

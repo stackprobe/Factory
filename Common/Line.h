@@ -70,6 +70,7 @@ char *strchrEnd(char *line, int findChr);
 char *strchrNext(char *line, int findChr);
 char *ne_strchr(char *line, int findChr);
 char *ne_strstr(char *line, char *findPtn);
+uint strlen_max(char *str, uint retmax);
 
 int mbsStartsWithICase(char *line1, char *line2);
 int startsWithICase(char *line1, char *line2);
