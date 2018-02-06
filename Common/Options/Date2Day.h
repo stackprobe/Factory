@@ -14,6 +14,8 @@ int IsFairFileStamp(uint64 stamp);
 
 uint IDate2Day(uint date);
 uint Day2IDate(uint day);
+int IsFairIDate(uint date);
 
 uint64 IDateTime2Sec(uint64 dateTime);
 uint64 Sec2IDateTime(uint64 sec);
+int IsFairIDateTime(uint64 dateTime);

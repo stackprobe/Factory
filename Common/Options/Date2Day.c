@@ -287,6 +287,10 @@ uint Day2IDate(uint day)
 
 	return y * 10000 + m * 100 + d;
 }
+int IsFairIDate(uint date)
+{
+	return Day2IDate(IDate2Day(date)) == date;
+}
 
 #define DAY_10000101 364877
 #define DAY_99991231 3652058
@@ -335,4 +339,8 @@ uint64 Sec2IDateTime(uint64 sec)
 	sec /= 24;
 
 	return Day2IDate((uint)sec) * 1000000ui64 + h * 10000 + m * 100 + s;
+}
+int IsFairIDateTime(uint64 dateTime)
+{
+	return Sec2IDateTime(IDateTime2Sec(dateTime)) == dateTime;
 }
