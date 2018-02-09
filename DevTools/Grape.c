@@ -7,6 +7,10 @@
 
 		lss .txt*
 		TypeAll /LSS | Grape AAA
+
+	カレントディレクトリ配下の \output\ (outputというディレクトリの配下) を含まないパスの一覧を C:\temp\1 にリダイレクトする。
+
+		dir /s /b | Grape /V \output\ > C:\temp\1
 */
 
 #include "C:\Factory\Common\all.h"
