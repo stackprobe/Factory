@@ -16,3 +16,19 @@ void MergeSort(
 void MergeSortTextComp(char *srcFile, char *destFile, sint (*funcComp)(char *, char *), uint partSize);
 void MergeSortText(char *srcFile, char *destFile, uint partSize);
 void MergeSortTextICase(char *srcFile, char *destFile, uint partSize);
+
+void MergeFile(
+	char *srcFile1,
+	int sorted1,
+	char *srcFile2,
+	int sorted2,
+	char *destFile1,
+	char *destFile2,
+	char *destFileBoth,
+	int textMode,
+	uint (*readElement)(FILE *fp),
+	void (*writeElement_x)(FILE *fp, uint element),
+	sint (*compElement)(uint element1, uint element2),
+	uint partSize,
+	uint recordConstWeightSize
+	);

@@ -260,6 +260,7 @@ void MergeSortTextComp(char *srcFile, char *destFile, sint (*funcComp)(char *, c
 	// 各行 0～2 バイトのとき、10 にしたら 1.8 GB くらい食った。100 で 180 MB くらい。100 が安全っぽい。@ 2016.3.18
 	// <- readLine の中で createBlock(128); してるせいだろ。readLine -> readLine_strr にした。100 -> 10 にした。@ 2016.4.8
 	// 数ギガの巨大ファイルについて、
+	// (多分 partSize == 128 MB くらいで)
 	// 全行 0 バイトでピーク時 220 MB くらい。
 	// 全行 0～2 バイト（平均 1 バイト）でピーク時 210 MB くらい。
 	// 全行 0～1000 バイト（平均 500 バイト）でピーク時 140 MB くらい。
@@ -272,4 +273,45 @@ void MergeSortTextICase(char *srcFile, char *destFile, uint partSize)
 {
 //	MergeSortTextComp(srcFile, destFile, strcmp3, partSize); // strcmp3 <- rapidSort() に渡すので mbs_stricmp じゃマズい。<- マズくない。@ 2016.6.8
 	MergeSortTextComp(srcFile, destFile, mbs_stricmp, partSize);
+}
+
+void MergeFile(
+	char *srcFile1,
+	int sorted1,
+	char *srcFile2,
+	int sorted2,
+	char *destFile1,
+	char *destFile2,
+	char *destFileBoth,
+	int textMode,
+	uint (*readElement)(FILE *fp),
+	void (*writeElement_x)(FILE *fp, uint element),
+	sint (*compElement)(uint element1, uint element2),
+	uint partSize,
+	uint recordConstWeightSize
+	)
+{
+	char *tmpFile1 = NULL;
+	char *tmpFile2 = NULL;
+
+	if(!sorted1)
+	{
+		tmpFile1 = makeTempPath(NULL);
+		MergeSort(srcFile1, tmpFile1, textMode, readElement, writeElement_x, compElement, partSize, recordConstWeightSize);
+		srcFile1 = tmpFile1;
+	}
+	if(!sorted2)
+	{
+		tmpFile2 = makeTempPath(NULL);
+		MergeSort(srcFile2, tmpFile2, textMode, readElement, writeElement_x, compElement, partSize, recordConstWeightSize);
+		srcFile2 = tmpFile2;
+	}
+
+	error(); // TODO
+
+	if(tmpFile1)
+		removeFile_x(tmpFile1);
+
+	if(tmpFile2)
+		removeFile_x(tmpFile2);
 }

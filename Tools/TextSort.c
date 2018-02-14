@@ -1,3 +1,5 @@
+// smpl
+
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\MergeSort.h"
 
