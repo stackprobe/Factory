@@ -1,5 +1,5 @@
 /*
-	lss.exe [/D | /F] [/SVN] [/D+] [/-S] [/B] [SEARCH-PTN | TARGET-DIR SEARCH-PTN...]
+	lss.exe [/D | /F] [/SVN] [/D+] [/-S] [/B] [/-U] [SEARCH-PTN | TARGET-DIR SEARCH-PTN...]
 */
 
 #include "C:\Factory\Common\all.h"
@@ -116,6 +116,11 @@ readArgs:
 	if(argIs("/B"))
 	{
 		NoParentMode = 1;
+		goto readArgs;
+	}
+	if(argIs("/-U"))
+	{
+		ignoreUtfPath = 1;
 		goto readArgs;
 	}
 
