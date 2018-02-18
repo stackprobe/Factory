@@ -76,4 +76,4 @@ Visual C++ 2010 Express Edition
 補足
 ----
 
-本リポジトリ内では /J コンパイラオプションにより char は unsigned char になります。
+/J コンパイラオプションにより char は unsigned char になります。
