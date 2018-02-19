@@ -10,6 +10,7 @@ typedef struct HttpDat_st
 	autoList_t *H_Values;
 	int Chunked;
 	uint ContentLength;
+	int Expect100Continue;
 	autoBlock_t *Body;
 	uint EndPos;
 }

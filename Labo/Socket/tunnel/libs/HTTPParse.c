@@ -173,10 +173,21 @@ static void CheckHeader(void)
 		{
 			HttpDat.ContentLength = toValue(value);
 		}
+		else if(!_stricmp(key, "expect"))
+		{
+			HttpDat.Expect100Continue = (int)mbs_stristr(value, "100-continue");
+cout("HttpDat.Expect100Continue: %d\n", HttpDat.Expect100Continue);
+		}
 	}
 }
 static int ReadBody(void)
 {
+	if(HttpDat.Expect100Continue)
+	{
+		HttpDat.Body = newBlock();
+LOGPOS();
+		return 1;
+	}
 	if(HttpDat.Chunked)
 	{
 		HttpDat.Body = newBlock();

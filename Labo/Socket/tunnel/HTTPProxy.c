@@ -204,6 +204,12 @@ static int RecvHTTPParse(Session_t *i, int sock, uint noDatTmoutSec, int oSSock)
 
 		if(HTTPParse(i->Buff))
 		{
+			if(HttpDat.Expect100Continue)
+			{
+				cout("Expect: 100-continue には対応していません。\n");
+				break;
+			}
+
 			// ProcHTTP(), MakeSendData() で HttpDat を触る。
 			// ここから MakeSendData() が終わるまでの間にスレッドが切り替わるとまずい。
 			// <- 別スレッドの HTTPParse() によって HttpDat が変更されるため
