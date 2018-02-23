@@ -21,6 +21,7 @@ static int ForceBuildMode;
 
 static uint BuiltObjCount;
 static uint BuiltExeCount;
+static uint BuiltSlnCount;
 static uint SkippedObjCount;
 static uint SkippedExeCount;
 static autoList_t *BuiltLines;
@@ -221,6 +222,9 @@ static void Build(char *module, uint remCount) // remCount: 0 == –³Œø
 				cout("%s\\%s", c_getCwd(), solution);
 				termination(1);
 			}
+
+			BuiltSlnCount++;
+			addElement(BuiltLines, (uint)xcout("BUILT_SLN %s", solution));
 		}
 		goto endfunc;
 	}
@@ -449,6 +453,9 @@ static void DeepBuild(int shallowMode)
 	cout("+------------+\n");
 	cout("BUILT_OBJ: %u (SKIPPED: %u)\n", BuiltObjCount, SkippedObjCount);
 	cout("BUILT_EXE: %u (SKIPPED: %u)\n", BuiltExeCount, SkippedExeCount);
+
+	if(BuiltSlnCount)
+		cout("BUILT_SLN: %u\n", BuiltSlnCount);
 
 	writeLines("C:\\Factory\\tmp\\Built.txt", BuiltLines);
 }
