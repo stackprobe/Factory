@@ -1,7 +1,22 @@
+/*
+	Template.exe /L
+
+		リスト表示
+
+	Template.exe テンプレート名 識別子
+
+		テンプレート作成
+
+	例：
+
+		template dc GoldBlend
+*/
+
 #include "C:\Factory\Common\all.h"
 
 #define TEMPLATE_DIR "C:\\Factory\\DevTools\\TemplateFiles"
 #define ESCAPE_PTN "\1"
+#define DESCRIPTION_PREFIX "/// "
 
 static char *GetAllUpper(char *userParam)
 {
@@ -27,6 +42,14 @@ static void MakeTemplate(char *templateName, char *userParam)
 
 	lines = readLines(templateFile);
 
+	if(getCount(lines) && startsWith(getLine(lines, 0), DESCRIPTION_PREFIX))
+	{
+		do
+		{
+			memFree((char *)desertElement(lines, 0));
+		}
+		while(getCount(lines) && !*getLine(lines, 0));
+	}
 	foreach(lines, line, index)
 	{
 		line = replaceLine(line, "$$", ESCAPE_PTN, 0);
@@ -50,7 +73,7 @@ int main(int argc, char **argv)
 		char *file;
 		uint index;
 
-		eraseParents(files);
+		//eraseParents(files); // del
 
 		foreach(files, file, index)
 			toUpperLine(file);
@@ -61,10 +84,17 @@ int main(int argc, char **argv)
 		{
 			if(!_stricmp("txt", getExt(file)))
 			{
-				char *templateName = changeExt(file, "");
+				char *templateName = changeExt(getLocal(file), "");
+				char *description = readFirstLine(file);
 
-				cout("%s\n", templateName);
+				if(startsWith(description, DESCRIPTION_PREFIX))
+					eraseLine(description, 4);
+				else
+					strzp(&description, "説明はありません。");
+
+				cout("%s\t%s\n", templateName, description);
 				memFree(templateName);
+				memFree(description);
 			}
 		}
 		releaseDim(files, 1);

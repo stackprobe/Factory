@@ -1,3 +1,5 @@
+/// テンプレートクラス
+
 //template <class Key_t, class Value_t>
 //template <class Element_t>
 class $P

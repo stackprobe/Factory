@@ -1,3 +1,5 @@
+/// DataCenter•t‚«Main DxLib_app—p
+
 typedef struct $UDc_st
 {
 	// Params {
@@ -28,7 +30,9 @@ void $PFnlz(void)
 }
 
 
-// <-- $P / $PMain -->
+
+// <-- $P.c.h / $PMain.c.h -->
+
 
 
 void $PMain(void);
