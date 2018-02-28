@@ -2,6 +2,9 @@
 
 static void ChangeColor(int color)
 {
+#if 1
+	cout("extinct: COLOR %02x\n", color);
+#else // îpé~ @ 2018.2.28
 	errorCase(!m_isRange(color, 0x00, 0xff));
 
 	if(isFactoryDirEnabled())
@@ -12,6 +15,7 @@ static void ChangeColor(int color)
 	{
 		cout("blocked: COLOR %02x\n", color);
 	}
+#endif
 }
 
 #define DEF_COLOR 0x0f
