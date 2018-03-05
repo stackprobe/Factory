@@ -2,6 +2,40 @@
 #include "C:\Factory\Satellite\libs\Flowertact\Fortewave.h"
 #include <tlhelp32.h>
 
+static int IsSameSelfExeFile(char *file1, char *file2)
+{
+	FILE *fp1 = fileOpen(file1, "rb");
+	FILE *fp2 = fileOpen(file2, "rb");
+	uint diffCnt = 0;
+
+	for(; ; )
+	{
+		int chr1 = readChar(fp1);
+		int chr2 = readChar(fp2);
+
+		if(chr1 == EOF)
+		{
+			if(chr2 != EOF)
+				diffCnt = UINTMAX;
+
+			break;
+		}
+		if(chr2 == EOF)
+		{
+			diffCnt = UINTMAX;
+			break;
+		}
+		if(chr1 != chr2)
+			diffCnt++;
+	}
+	fileClose(fp1);
+	fileClose(fp2);
+
+addLine2File_cx("C:\\temp\\WinAPITools_Debug.log", xcout("diffCnt: %u", diffCnt)); // test
+
+	return diffCnt <= 32;
+}
+
 // ---- Process ----
 
 static char *ParentProcMonitorName;
@@ -343,8 +377,9 @@ int main(int argc, char **argv)
 
 		hdl = mutexLock("{aed96b6d-8a77-40fb-9285-9b75405fc3b2}");
 		{
+			if(_access(wFile, 0) || !IsSameSelfExeFile(rFile, wFile))
 //			if(_access(wFile, 0) || !isSameFile(rFile, wFile)) // 没、実行ファイル内を書き換えているので、常に内容は一致しない。
-			if(_access(wFile, 0))
+//			if(_access(wFile, 0))
 //			if(!existFile(wFile))
 			{
 				createPath(wFile, 'X');

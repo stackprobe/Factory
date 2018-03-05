@@ -132,6 +132,7 @@ static void BackupDirs(autoList_t *targetDirs)
 		writeLine(fp, "SET COPYCMD=");
 		writeLine(fp, line = xcout("MD \"%s\"", destDir)); memFree(line);
 		writeLine(fp, line = xcout("ROBOCOPY.EXE \"%s\" \"%s\" /MIR", targetDir, destDir)); memFree(line);
+		writeLine(fp, "ECHO ERRORLEVEL=%ERRORLEVEL%");
 
 		fileClose(fp);
 
@@ -307,7 +308,9 @@ int main(int argc, char **argv)
 	cout("+---------------------------------------------+\n");
 	cout("| メーラーなど、動作中のアプリを閉じて下さい。|\n");
 	cout("+---------------------------------------------+\n");
-	cout("!! GREEN -> RED !!\n");
+	cout("+---------------------------------------+\n");
+	cout("| ウィルス対策ソフトを無効にして下さい。|\n");
+	cout("+---------------------------------------+\n");
 	cout("バックアップ先ドライブをドロップして下さい。\n");
 
 	strDestDrv = dropPath();
@@ -375,10 +378,24 @@ int main(int argc, char **argv)
 
 	// _ 0～9 で始まる名前はバックアップ対象外なので、destDir の直下は _ 0～9 で始めておけば重複しないはず。
 
+#if 1 // Toolkit が USB HDD への書き込みエラーを起こしたので、書き込み先をシステムドライブにして様子を見る。@ 2018.3.5
+	{
+	char *midDir = makeTempDir("Backup_Hash_txt_mid");
+
+	coExecute_x(xcout(FILE_TOOLKIT_EXE " /SHA-512-128 %s %s\\_Hash.txt", destDir, midDir));
+
+	coExecute_x(xcout("COPY /Y %s\\_Hash.txt %s\\_Hash.txt", midDir, destDir));
+	coExecute_x(xcout("COPY /Y %s\\_Hash.txt C:\\tmp\\Backup_Hash.txt", midDir));
+	coExecute_x(xcout("COPY /Y %s\\_Hash.txt C:\\tmp\\Backup_Hash_old.txt", destBackDir)); // 無いかもしれない。
+
+	recurRemoveDir_x(midDir);
+	}
+#else // del @ 2018.3.5
 	coExecute_x(xcout(FILE_TOOLKIT_EXE " /SHA-512-128 %s %s\\_Hash.txt", destDir, destDir));
 
 	coExecute_x(xcout("COPY /Y %s\\_Hash.txt C:\\tmp\\Backup_Hash.txt", destDir));
 	coExecute_x(xcout("COPY /Y %s\\_Hash.txt C:\\tmp\\Backup_Hash_old.txt", destBackDir)); // 無いかもしれない。
+#endif
 
 	// Backup.bat との連携
 	{
