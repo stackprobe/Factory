@@ -42,6 +42,7 @@ static autoList_t *GetTargetDirs(void)
 	{
 		if(
 			!_stricmp(dir, "C:\\Documents and Settings") ||
+			!_stricmp(dir, "C:\\PerfLogs") || // for 10
 			!_stricmp(dir, "C:\\ProgramData") || // for 7
 			!_stricmp(dir, "C:\\Program Files") ||
 			!_stricmp(dir, "C:\\Program Files (x86)") || // for 7 x64
