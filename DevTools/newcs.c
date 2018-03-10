@@ -55,10 +55,13 @@ static void Main2(char *tmplProject, char *tmplDir)
 
 		coExecute_x(xcout("Search.exe %s", tmplProject));
 		coExecute_x(xcout("trep.exe /F %s", project));
+
+//		execute("START .");
+
+		execute_x(xcout("%s.sln", project)); // zantei
+		execute("START /MAX C:\\Dev\\CSharp\\Module2\\Module2"); // zantei
 	}
 	unaddCwd();
-
-	execute_x(xcout("START %s", project));
 }
 int main(int argc, char **argv)
 {

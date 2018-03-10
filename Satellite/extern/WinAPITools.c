@@ -31,7 +31,7 @@ static int IsSameSelfExeFile(char *file1, char *file2)
 	fileClose(fp1);
 	fileClose(fp2);
 
-addLine2File_cx("C:\\temp\\WinAPITools_Debug.log", xcout("diffCnt: %u", diffCnt)); // test
+//addLine2File_cx("C:\\temp\\WinAPITools_Debug.log", xcout("diffCnt: %u", diffCnt)); // test
 
 	return diffCnt <= 32;
 }
