@@ -377,9 +377,9 @@ int main(int argc, char **argv)
 
 		hdl = mutexLock("{aed96b6d-8a77-40fb-9285-9b75405fc3b2}");
 		{
-			if(_access(wFile, 0) || !IsSameSelfExeFile(rFile, wFile))
+//			if(_access(wFile, 0) || !IsSameSelfExeFile(rFile, wFile))
 //			if(_access(wFile, 0) || !isSameFile(rFile, wFile)) // 没、実行ファイル内を書き換えているので、常に内容は一致しない。
-//			if(_access(wFile, 0))
+			if(_access(wFile, 0))
 //			if(!existFile(wFile))
 			{
 				createPath(wFile, 'X');
