@@ -360,6 +360,22 @@ endfunc:
 	memFree(solution);
 	memFree(exemanifest);
 }
+static void PostDeepBuild(int shallowMode)
+{
+	cout("PostDeepBuild start\n");
+
+	if(shallowMode)
+	{
+		coExecute("runsub.exe /-S Built");
+		coExecute("runsub.exe /-S _Built");
+	}
+	else
+	{
+		coExecute("runsub.exe Built");
+		coExecute("runsub.exe _Built");
+	}
+	cout("PostDeepBuild ended\n");
+}
 static void DeepBuild(int shallowMode)
 {
 	autoList_t *files;
@@ -448,6 +464,10 @@ static void DeepBuild(int shallowMode)
 	}
 	releaseDim(files, 1);
 
+	if(OptimizeLevel != CLEANING_MODE)
+	{
+		PostDeepBuild(shallowMode);
+	}
 	cout("+------------+\n");
 	cout("| SUCCESSFUL |\n");
 	cout("+------------+\n");
