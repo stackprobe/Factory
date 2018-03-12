@@ -129,6 +129,9 @@ static DWORD GetTickCount_TEST(void)
 #endif
 uint64 nowTick(void)
 {
+#if 1
+	return GetTickCount64();
+#else // old
 	uint currTick = GetTickCount();
 	static uint lastTick;
 	static uint64 baseTick;
@@ -155,6 +158,7 @@ uint64 nowTick(void)
 	errorCase(retTick < lastRetTick); // 2bs
 	lastRetTick = retTick;
 	return retTick;
+#endif
 }
 uint now(void)
 {

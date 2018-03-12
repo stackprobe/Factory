@@ -2,6 +2,9 @@
 #include "C:\Factory\Satellite\libs\Flowertact\Fortewave.h"
 #include <tlhelp32.h>
 
+#define BOOT_TIME_IDENT "{aed96b6d-8a77-40fb-9285-9b75405fc3b2}"
+#define BOOT_TIME_DELAY_SEC 10
+
 // ---- Process ----
 
 static char *ParentProcMonitorName;
@@ -224,10 +227,18 @@ int main(int argc, char **argv)
 	if(argIs("/DELETE-DELAY-UNTIL-REBOOT"))
 	{
 		char *targetPath;
+		char *delayFile;
+		uint hdl;
 
 		targetPath = nextArg();
+		delayFile = nextArg();
 
-		MoveFileEx(targetPath, NULL, MOVEFILE_DELAY_UNTIL_REBOOT);
+		hdl = mutexLock(BOOT_TIME_IDENT);
+		{
+			addLine2File(delayFile, targetPath);
+		}
+		mutexUnlock(hdl);
+//		MoveFileEx(targetPath, NULL, MOVEFILE_DELAY_UNTIL_REBOOT); // old
 		return;
 	}
 	if(argIs("/CHECK-PROCESS-ALIVE"))
@@ -336,31 +347,47 @@ int main(int argc, char **argv)
 	{
 		char *rFile;
 		char *wFile;
-		char *sigFile;
+		char *delayFile;
+		char *bootTimeFile;
 		uint hdl;
 
 		rFile = nextArg();
 		wFile = nextArg();
-		sigFile = xcout("%s.sig", wFile);
+		delayFile = nextArg();
+		bootTimeFile = xcout("%s.boot", delayFile);
 
-		hdl = mutexLock("{aed96b6d-8a77-40fb-9285-9b75405fc3b2}");
+		hdl = mutexLock(BOOT_TIME_IDENT);
 		{
-			if(_access(wFile, 0) || _access(sigFile, 0))
-//			if(_access(wFile, 0) || !isSameFile(rFile, wFile)) // 没、実行ファイル内を書き換えているので、常に内容は一致しない。
-//			if(_access(wFile, 0))
-//			if(!existFile(wFile))
+			uint64 bootTime = (uint64)time(NULL) - now();
+
+			if(_access(bootTimeFile, 0) || readFirstValue64(bootTimeFile) + BOOT_TIME_DELAY_SEC < bootTime)
 			{
 				createPath(wFile, 'X');
 				removeFileIfExist(wFile);
 				moveFile(rFile, wFile);
 
-				createFile(sigFile);
-				MoveFileEx(sigFile, NULL, MOVEFILE_DELAY_UNTIL_REBOOT);
+				if(existFile(delayFile)) // 次の再起動時まで待たされた削除を実行する。
+				{
+					FILE *fp = fileOpen(delayFile, "rt");
+
+					for(; ; )
+					{
+						char *targetPath = readLine(fp);
+
+						if(!targetPath)
+							break;
+
+						recurRemovePathIfExist_x(targetPath);
+					}
+					fileClose(fp);
+					removeFile(delayFile);
+				}
+				writeOneValue64(bootTimeFile, bootTime);
 			}
 		}
 		mutexUnlock(hdl);
 
-		memFree(sigFile);
+		memFree(bootTimeFile);
 		return;
 	}
 	if(argIs("/MONITOR"))
