@@ -117,6 +117,22 @@ HANDLE getWindowsHandleByFilePointer(FILE *fp) // ret: CreateFile() によって得ら
 	読み込むと EOF を返す。
 
 	ファイルの先頭より前にシークしようとするとエラーになる。(_fseeki64 が 0 以外を返す)
+
+	r+bでオープン時の問題
+
+		書き込む前にシークしなければならないっぽい。
+
+			...
+			readChar(fp);
+			writeChar(fp, c);            // <- 書き込まれない！
+			...
+
+			...
+			readChar(fp);
+			fileSeek(fp, SEEK_CUR, 0);
+			writeChar(fp, c);            // <- 書き込まれる。
+			...
+
 */
 void fileSeek(FILE *fp, int origin, sint64 offset) // origin, offset の並びは fseek() と逆
 {

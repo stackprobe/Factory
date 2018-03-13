@@ -2,8 +2,7 @@
 #include "C:\Factory\Satellite\libs\Flowertact\Fortewave.h"
 #include <tlhelp32.h>
 
-#define BOOT_TIME_IDENT "{aed96b6d-8a77-40fb-9285-9b75405fc3b2}"
-#define BOOT_TIME_DELAY_SEC 10
+#define MTX_EXTRACT "{aed96b6d-8a77-40fb-9285-9b75405fc3b2}"
 
 // ---- Process ----
 
@@ -233,7 +232,7 @@ int main(int argc, char **argv)
 		targetPath = nextArg();
 		delayFile = nextArg();
 
-		hdl = mutexLock(BOOT_TIME_IDENT);
+		hdl = mutexLock(MTX_EXTRACT);
 		{
 			addLine2File(delayFile, targetPath);
 		}
@@ -348,19 +347,28 @@ int main(int argc, char **argv)
 		char *rFile;
 		char *wFile;
 		char *delayFile;
-		char *bootTimeFile;
+		char *lastExtractedTimeFile;
 		uint hdl;
 
 		rFile = nextArg();
 		wFile = nextArg();
 		delayFile = nextArg();
-		bootTimeFile = xcout("%s.boot", delayFile);
+		lastExtractedTimeFile = xcout("%s.last-extracted-time", delayFile);
 
-		hdl = mutexLock(BOOT_TIME_IDENT);
+		hdl = mutexLock(MTX_EXTRACT);
 		{
-			uint64 bootTime = (uint64)time(NULL) - now();
+			time_t currTime = time(NULL);
+			time_t bootTime;
 
-			if(_access(bootTimeFile, 0) || readFirstValue64(bootTimeFile) + BOOT_TIME_DELAY_SEC < bootTime)
+			bootTime = currTime - now();
+
+			// ? PCを起動してから最初の /EXTRACT
+			// システム時刻を大幅に変更した場合は知らない。誤差が蓄積していってもマズいかも。
+			if(
+				!existFile(lastExtractedTimeFile) ||
+				getFileSize(lastExtractedTimeFile) != 8 ||
+				readFirstValue64(lastExtractedTimeFile) < bootTime
+				)
 			{
 				createPath(wFile, 'X');
 				removeFileIfExist(wFile);
@@ -382,12 +390,12 @@ int main(int argc, char **argv)
 					fileClose(fp);
 					removeFile(delayFile);
 				}
-				writeOneValue64(bootTimeFile, bootTime);
+				writeOneValue64(lastExtractedTimeFile, currTime);
 			}
 		}
 		mutexUnlock(hdl);
 
-		memFree(bootTimeFile);
+		memFree(lastExtractedTimeFile);
 		return;
 	}
 	if(argIs("/MONITOR"))

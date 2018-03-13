@@ -25,7 +25,7 @@ static char *ToPrms(autoList_t *args)
 static char *FP_Program;
 static autoList_t *FP_Founds;
 
-static void FindProgram_Check(char *trgDir)
+static void FindProgram_Collect(char *trgDir)
 {
 	char *batFile = xcout("%s\\%s.bat", trgDir, FP_Program);
 	char *exeFile = xcout("%s\\%s.exe", trgDir, FP_Program);
@@ -47,7 +47,7 @@ static void FindProgram_Main(char *trgDir)
 	char *dir;
 	uint dir_index;
 
-	FindProgram_Check(trgDir);
+	FindProgram_Collect(trgDir);
 
 	foreach(dirs, dir, dir_index)
 	{
@@ -64,12 +64,47 @@ static void FindProgram_Main(char *trgDir)
 	}
 	releaseDim(dirs, 1);
 }
+static uint GetProgramWeight(char *program)
+{
+	sint ret = 0;
+
+	if(mbs_stristr(program, "Release"))
+		ret += 100;
+
+	if(mbs_stristr(program, "Debug"))
+		ret -= 100;
+
+	if(mbs_stristr(program, "bin"))
+		ret += 100;
+
+	if(mbs_stristr(program, "obj"))
+		ret -= 100;
+
+	return ret;
+}
+static sint FP_Comp(uint v1, uint v2)
+{
+	char *a = (char *)v1;
+	char *b = (char *)v2;
+	sint wa;
+	sint wb;
+
+	wa = GetProgramWeight(a);
+	wb = GetProgramWeight(b);
+
+	if(wa != wb)
+		return wb - wa; // çÇÇ¢ï˚Ç™ëO
+
+	return strcmp(a, b);
+}
 static char *FindProgram(char *program)
 {
 	FP_Program = program;
 	FP_Founds = newList();
 
 	FindProgram_Main(".");
+
+	rapidSort(FP_Founds, FP_Comp);
 
 	// debug print
 	{
@@ -82,7 +117,7 @@ static char *FindProgram(char *program)
 		}
 	}
 
-	errorCase(getCount(FP_Founds) != 1);
+	errorCase(!getCount(FP_Founds));
 
 	program = getLine(FP_Founds, 0);
 

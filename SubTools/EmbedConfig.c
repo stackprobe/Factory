@@ -45,6 +45,40 @@ static void ChangeEmbedConfig_File(char *file, uint cfgPos, int cfgVal)
 	LOGPOS();
 	releaseAutoBlock(fileData);
 }
+static void ChangePETimeDateStamp(char *file, uint t)
+{
+	FILE *fp = fileOpen(file, "r+b");
+	uint peHedPos;
+
+	LOGPOS();
+
+	errorCase(readChar(fp) != 'M');
+	errorCase(readChar(fp) != 'Z');
+
+	fileSeek(fp, SEEK_SET, 0x3c);
+
+	peHedPos = readValue(fp);
+
+	fileSeek(fp, SEEK_SET, peHedPos);
+
+	errorCase(readChar(fp) != 'P');
+	errorCase(readChar(fp) != 'E');
+	errorCase(readChar(fp) != 0x00);
+	errorCase(readChar(fp) != 0x00);
+
+	readChar(fp); // skip
+	readChar(fp); // skip
+	readChar(fp); // skip
+	readChar(fp); // skip
+
+	fileSeek(fp, SEEK_CUR, 0); // 書き込み前のおまじないシーク
+
+	writeValue(fp, t);
+
+	fileClose(fp);
+
+	LOGPOS();
+}
 static void ChangeEmbedConfig(uint cfgPos, int cfgVal)
 {
 	char *file = makeFullPath(nextArg());
@@ -56,6 +90,8 @@ static void ChangeEmbedConfig(uint cfgPos, int cfgVal)
 //	errorCase(_stricmp("exe", getExt(file))); // ? 実行ファイルではない。
 
 	ChangeEmbedConfig_File(file, cfgPos, cfgVal);
+
+	ChangePETimeDateStamp(file, 0x5aaaaaaa); // 2018/03/16 02:17:30
 
 	memFree(file);
 }

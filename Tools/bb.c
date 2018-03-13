@@ -517,7 +517,7 @@ readArgs:
 		if(!size)
 			size = UINT64MAX;
 
-		fp = fileOpen(file, "r+b");
+		fp = fileOpen(file, "rb");
 		fileSeek(fp, SEEK_SET, start);
 
 		for(count = 0; count < size; count++)
