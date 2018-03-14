@@ -410,6 +410,10 @@ static void ChangePETimeDateStamp(char *file, uint t)
 
 	writeValue(fp, t);
 
+	fileSeek(fp, SEEK_CUR, 0x4c);
+
+	writeValue(fp, 0x00000000); // checksum
+
 	fileClose(fp);
 
 	LOGPOS();
@@ -433,7 +437,7 @@ static void ChangeAllPETimeDateStamp(char *dir, uint t)
 }
 static void AdjustAllPETimeDateStamp(char *dir)
 {
-	ChangeAllPETimeDateStamp(dir, 0x5aaaaaaa);
+	ChangeAllPETimeDateStamp(dir, 0x5aaaaaaa); // PEÉwÉbÉ_Ç…checksumÇ™Ç†Ç¡ÇΩÇÃÇ≈é~ÇﬂÅB
 }
 int main(int argc, char **argv)
 {

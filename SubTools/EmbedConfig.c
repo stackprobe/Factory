@@ -75,6 +75,10 @@ static void ChangePETimeDateStamp(char *file, uint t)
 
 	writeValue(fp, t);
 
+	fileSeek(fp, SEEK_CUR, 0x4c);
+
+	writeValue(fp, 0x00000000); // checksum
+
 	fileClose(fp);
 
 	LOGPOS();
