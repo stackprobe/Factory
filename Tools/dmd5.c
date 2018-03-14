@@ -16,13 +16,19 @@
 
 		DIR -> disp md5 + make CRED_FILE
 
+		★ CRED_FILE が既に存在した場合は上書き確認する。
+
 	dmd5.exe ... /O DIR
 
 		DIR -> disp md5 + make CRED_FILE(DIR + .cred)
 
+		★ CRED_FILE が既に存在した場合は上書き確認する。
+
 	dmd5.exe ... /O
 
 		LOOP { dropDir -> disp md5 + make CRED_FILE(DIR + .cred) }
+
+		★ CRED_FILE が既に存在した場合は上書き確認する。
 
 	dmd5.exe ... /P DIR CRED_FILE
 
@@ -161,7 +167,7 @@ static void MakeCredentialsCredFile(char *dir, char *credFile)
 	{
 		autoList_t *credHashes = readLines(credFile);
 
-		DispHashesDiff(hashes, credHashes);
+//		DispHashesDiff(hashes, credHashes); // del @ 2018.3.14
 		releaseDim(credHashes, 1);
 
 		cout("上書き？\n");

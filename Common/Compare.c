@@ -300,16 +300,16 @@ autoList_t *getDiffLinesReport(autoList_t *lines1, autoList_t *lines2, int ignor
 		end1 = FD.Index1;
 		end2 = FD.Index2;
 
-#if 1 // ŒğŒİ‚É
-		for(index = 0; begin1 + index < end1 || begin2 + index < end2; index++)
+		for(index = 0; begin1 + index < end1 && begin2 + index < end2; index++)
 		{
-			if(begin1 + index < end1) addElement(report, (uint)xcout("%u < %s", begin1 + index + 1, getElement(lines1, begin1 + index)));
-			if(begin2 + index < end2) addElement(report, (uint)xcout("%u > %s", begin2 + index + 1, getElement(lines2, begin2 + index)));
+			if(FD.LineComp(getLine(lines1, begin1 + index), getLine(lines2, begin2 + index)))
+			{
+				addElement(report, (uint)xcout("%u < %s", begin1 + index + 1, getElement(lines1, begin1 + index)));
+				addElement(report, (uint)xcout("%u > %s", begin2 + index + 1, getElement(lines2, begin2 + index)));
+			}
 		}
-#else // •ÊX‚É
-		for(index = begin1; index < end1; index++) addElement(report, (uint)xcout("%u < %s", index + 1, getElement(lines1, index)));
-		for(index = begin2; index < end2; index++) addElement(report, (uint)xcout("%u > %s", index + 1, getElement(lines2, index)));
-#endif
+		for(; begin1 + index < end1; index++) addElement(report, (uint)xcout("%u < %s", begin1 + index + 1, getElement(lines1, begin1 + index)));
+		for(; begin2 + index < end2; index++) addElement(report, (uint)xcout("%u > %s", begin2 + index + 1, getElement(lines2, begin2 + index)));
 	}
 	// output
 	{

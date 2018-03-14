@@ -380,6 +380,61 @@ static void RepackAllZipFile(char *rootDir)
 	}
 	releaseDim(files, 1);
 }
+static void ChangePETimeDateStamp(char *file, uint t)
+{
+	FILE *fp = fileOpen(file, "r+b");
+	uint peHedPos;
+
+	LOGPOS();
+
+	errorCase(readChar(fp) != 'M');
+	errorCase(readChar(fp) != 'Z');
+
+	fileSeek(fp, SEEK_SET, 0x3c);
+
+	peHedPos = readValue(fp);
+
+	fileSeek(fp, SEEK_SET, peHedPos);
+
+	errorCase(readChar(fp) != 'P');
+	errorCase(readChar(fp) != 'E');
+	errorCase(readChar(fp) != 0x00);
+	errorCase(readChar(fp) != 0x00);
+
+	readChar(fp); // skip
+	readChar(fp); // skip
+	readChar(fp); // skip
+	readChar(fp); // skip
+
+	fileSeek(fp, SEEK_CUR, 0); // 書き込み前のおまじないシーク
+
+	writeValue(fp, t);
+
+	fileClose(fp);
+
+	LOGPOS();
+}
+static void ChangeAllPETimeDateStamp(char *dir, uint t)
+{
+	autoList_t *files = lssFiles(dir);
+	char *file;
+	uint index;
+
+	foreach(files, file, index)
+	{
+		if(!_stricmp("EXE", getExt(file)))
+		{
+			cout("file: %s\n", file);
+
+			ChangePETimeDateStamp(file, t);
+		}
+	}
+	releaseDim(files, 1);
+}
+static void AdjustAllPETimeDateStamp(char *dir)
+{
+	ChangeAllPETimeDateStamp(dir, 0x5aaaaaaa);
+}
 int main(int argc, char **argv)
 {
 	errorCase_m(!existFile(ZIP7_LOCAL_FILE) && !existFile(ZIP7_FILE), "7zさんが居ません。");
@@ -500,6 +555,7 @@ int main(int argc, char **argv)
 		cout("destZipFile: %s\n", destZipFile);
 		cout("midZipFile: %s\n", midZipFile);
 
+		AdjustAllPETimeDateStamp(outDir);
 		PZF_DestZipFile = destZipFile;
 		PackZipFileEx(midZipFile, outDir, 1, projName, 0);
 		PZF_DestZipFile = NULL;
@@ -536,6 +592,7 @@ int main(int argc, char **argv)
 			cout("midZipFile: %s\n", midZipFile);
 			cout("version: %03u\n", version);
 
+			AdjustAllPETimeDateStamp(outDir);
 			PZF_DestZipFile = destZipFile;
 			PackZipFileEx(midZipFile, outDir, 1, projName, version);
 			PZF_DestZipFile = NULL;

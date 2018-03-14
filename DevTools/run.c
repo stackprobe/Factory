@@ -53,7 +53,7 @@ static void FindProgram_Main(char *trgDir)
 	{
 		char *lDir = getLocal(dir);
 
-		if(lineExp("<1,,__09AZaz>", lDir))
+		if(lineExp("<1,,__09AZaz>", lDir) && _stricmp(lDir, "obj") && _stricmp(lDir, "Debug"))
 		{
 			char *subDir = xcout("%s\\%s", trgDir, lDir);
 
@@ -64,47 +64,12 @@ static void FindProgram_Main(char *trgDir)
 	}
 	releaseDim(dirs, 1);
 }
-static uint GetProgramWeight(char *program)
-{
-	sint ret = 0;
-
-	if(mbs_stristr(program, "Release"))
-		ret += 100;
-
-	if(mbs_stristr(program, "Debug"))
-		ret -= 100;
-
-	if(mbs_stristr(program, "bin"))
-		ret += 100;
-
-	if(mbs_stristr(program, "obj"))
-		ret -= 100;
-
-	return ret;
-}
-static sint FP_Comp(uint v1, uint v2)
-{
-	char *a = (char *)v1;
-	char *b = (char *)v2;
-	sint wa;
-	sint wb;
-
-	wa = GetProgramWeight(a);
-	wb = GetProgramWeight(b);
-
-	if(wa != wb)
-		return wb - wa; // çÇÇ¢ï˚Ç™ëO
-
-	return strcmp(a, b);
-}
 static char *FindProgram(char *program)
 {
 	FP_Program = program;
 	FP_Founds = newList();
 
 	FindProgram_Main(".");
-
-	rapidSort(FP_Founds, FP_Comp);
 
 	// debug print
 	{
@@ -117,7 +82,7 @@ static char *FindProgram(char *program)
 		}
 	}
 
-	errorCase(!getCount(FP_Founds));
+	errorCase(getCount(FP_Founds) != 1);
 
 	program = getLine(FP_Founds, 0);
 
