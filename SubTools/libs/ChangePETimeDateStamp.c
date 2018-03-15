@@ -22,12 +22,7 @@ void ChangePETimeDateStamp(char *file, uint t)
 	errorCase(readChar(fp) != 0x00);
 	errorCase(readChar(fp) != 0x00);
 
-	readChar(fp); // skip
-	readChar(fp); // skip
-	readChar(fp); // skip
-	readChar(fp); // skip
-
-	fileSeek(fp, SEEK_CUR, 0); // 書き込み前のおまじないシーク
+	fileSeek(fp, SEEK_CUR, 0x04);
 
 	writeValue(fp, t);
 
