@@ -1,4 +1,5 @@
 #include "C:\Factory\Common\all.h"
+#include "libs\ChangePETimeDateStamp.h"
 
 #define HEADER "{fa2b2611-7ff1-4e17-a692-5d99b415aacc}" // shared_uuid:2
 
@@ -44,55 +45,6 @@ static void ChangeEmbedConfig_File(char *file, uint cfgPos, int cfgVal)
 	writeBinary(file, fileData);
 	LOGPOS();
 	releaseAutoBlock(fileData);
-}
-static void ChangePETimeDateStamp(char *file, uint t)
-{
-	FILE *fp = fileOpen(file, "r+b");
-	uint peHedPos;
-	uint optHedSize;
-
-	LOGPOS();
-
-	errorCase(readChar(fp) != 'M');
-	errorCase(readChar(fp) != 'Z');
-
-	fileSeek(fp, SEEK_SET, 0x3c);
-
-	peHedPos = readValue(fp);
-
-	fileSeek(fp, SEEK_SET, peHedPos);
-
-	errorCase(readChar(fp) != 'P');
-	errorCase(readChar(fp) != 'E');
-	errorCase(readChar(fp) != 0x00);
-	errorCase(readChar(fp) != 0x00);
-
-	readChar(fp); // skip
-	readChar(fp); // skip
-	readChar(fp); // skip
-	readChar(fp); // skip
-
-	fileSeek(fp, SEEK_CUR, 0); // 書き込み前のおまじないシーク
-
-	writeValue(fp, t);
-
-	fileSeek(fp, SEEK_CUR, 0x08);
-
-	optHedSize = readValueWidth(fp, 2);
-
-	cout("PE optional header size: %u\n", optHedSize);
-
-errorCase(optHedSize != 224); // zantei
-
-	if(0x44 <= optHedSize)
-	{
-		fileSeek(fp, SEEK_CUR, 0x42);
-
-		writeValue(fp, 0x00000000); // clear checksum
-	}
-	fileClose(fp);
-
-	LOGPOS();
 }
 static void ChangeEmbedConfig(uint cfgPos, int cfgVal)
 {
