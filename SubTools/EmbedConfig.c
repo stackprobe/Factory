@@ -49,6 +49,7 @@ static void ChangePETimeDateStamp(char *file, uint t)
 {
 	FILE *fp = fileOpen(file, "r+b");
 	uint peHedPos;
+	uint optHedSize;
 
 	LOGPOS();
 
@@ -75,10 +76,20 @@ static void ChangePETimeDateStamp(char *file, uint t)
 
 	writeValue(fp, t);
 
-	fileSeek(fp, SEEK_CUR, 0x4c);
+	fileSeek(fp, SEEK_CUR, 0x08);
 
-	writeValue(fp, 0x00000000); // checksum
+	optHedSize = readValueWidth(fp, 2);
 
+	cout("PE optional header size: %u\n", optHedSize);
+
+errorCase(optHedSize != 224); // zantei
+
+	if(0x44 <= optHedSize)
+	{
+		fileSeek(fp, SEEK_CUR, 0x42);
+
+		writeValue(fp, 0x00000000); // clear checksum
+	}
 	fileClose(fp);
 
 	LOGPOS();
