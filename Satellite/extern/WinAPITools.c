@@ -362,12 +362,12 @@ int main(int argc, char **argv)
 
 			bootTime = currTime - now();
 
-			// ? PCを起動してから最初の /EXTRACT
-			// システム時刻を大幅に変更した場合は知らない。誤差が蓄積していってもマズいかも。
+			// ? 最後に展開したときから1日以上経過してからPCを起動して最初にここへ到達した。-> 展開する。
+			// 時刻調整や誤差を考慮してマージンとしての1日
 			if(
 				!existFile(lastExtractedTimeFile) ||
 				getFileSize(lastExtractedTimeFile) != 8 ||
-				readFirstValue64(lastExtractedTimeFile) < bootTime
+				readFirstValue64(lastExtractedTimeFile) + 86400 < bootTime
 				)
 			{
 				createPath(wFile, 'X');
@@ -390,7 +390,7 @@ int main(int argc, char **argv)
 					fileClose(fp);
 					removeFile(delayFile);
 				}
-				writeOneValue64(lastExtractedTimeFile, currTime);
+				writeOneValue64(lastExtractedTimeFile, currTime); // 今回の展開時刻を保存する。
 			}
 		}
 		mutexUnlock(hdl);
