@@ -211,17 +211,29 @@ static void Build(char *module, uint remCount) // remCount: 0 == 無効
 	{
 		if(OptimizeLevel != CLEANING_MODE)
 		{
+			char *slncacheFile = addExt(strx(solution), "cache");
+			int successful;
+
 			execute_x(xcout("MSBUILD " MSBUILDOPTIONS " %s", solution));
 
-			if(lastSystemRet == 0) // ? Successful
+			successful = lastSystemRet == 0;
+
+			if(existFile(slncacheFile))
+			{
+				cout("%s\n", slncacheFile);
+				cout("sln.cacheファイルが存在します。ビルドは失敗しました。\n");
+				successful = 0;
+			}
+			if(successful) // ? ビルド成功
 			{
 				// noop
 			}
-			else // ? Error
+			else // ? ビルド失敗
 			{
 				cout("%s\\%s", c_getCwd(), solution);
 				termination(1);
 			}
+			memFree(slncacheFile);
 
 			BuiltSlnCount++;
 			addElement(BuiltLines, (uint)xcout("BUILT_SLN %s", solution));

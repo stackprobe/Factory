@@ -111,6 +111,7 @@ static void CleanSolution(char *file) // file - ソリューションファイル
 	char *opensdfFile = changeExt(getLocal(file), "opensdf"); // 2010 (tmp)
 	char *vcdbFile = changeExt(getLocal(file), "VC.db"); // vc2015
 	char *vcvcopendbFile = changeExt(getLocal(file), "VC.VC.opendb"); // vc2015
+	char *slncacheFile = addExt(strx(getLocal(file)), "cache"); // 2010, MSBuild 失敗時に出現する。
 
 	cout("CleanSolution: %s\n", file);
 
@@ -136,6 +137,9 @@ static void CleanSolution(char *file) // file - ソリューションファイル
 	RemoveDirEx("x64"); // vc2015
 	RemoveFileEx(vcdbFile); // vc2015
 	RemoveFileEx(vcvcopendbFile); // vc2015
+
+	// vs2010
+	RemoveFileEx(slncacheFile);
 
 	unaddCwd();
 

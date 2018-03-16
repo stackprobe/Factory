@@ -2,6 +2,7 @@
 	newcs c プロジェクト名
 	newcs f プロジェクト名
 	newcs t プロジェクト名
+	newcs tt プロジェクト名
 */
 
 #include "C:\Factory\Common\all.h"
@@ -82,6 +83,8 @@ static void Main2(char *tmplProject, char *tmplDir)
 		}
 		unaddCwd();
 
+		removeFileIfExist("C:\\Factory\\tmp\\Sections.txt"); // 意図しない検索結果を trep しないように、念のため検索結果をクリア
+
 		coExecute_x(xcout("Search.exe %s", tmplProject));
 		coExecute_x(xcout("trep.exe /F %s", project));
 
@@ -91,6 +94,36 @@ static void Main2(char *tmplProject, char *tmplDir)
 		execute("START /MAX C:\\Dev\\CSharp\\Module2\\Module2"); // zantei
 	}
 	unaddCwd();
+}
+static char *FindUserTemplate(void)
+{
+	char *dir = getCwd();
+
+	for(; ; )
+	{
+		char *tmplDir = combine(dir, "Template");
+		char *tmplSln;
+
+		tmplSln = combine(tmplDir, "TTTT.sln");
+
+		if(existFile(tmplSln))
+		{
+			memFree(dir);
+			memFree(tmplSln);
+
+			cout("User_Template: %s\n", tmplDir);
+
+			return tmplDir;
+		}
+		memFree(tmplDir);
+		memFree(tmplSln);
+
+		dir = changeLocal_xc(dir, "");
+
+		errorCase(strlen(dir) == 2);
+	}
+	error(); // never
+	return NULL;
 }
 int main(int argc, char **argv)
 {
@@ -109,5 +142,10 @@ int main(int argc, char **argv)
 		Main2("TTTT", "C:\\Dev\\CSharp\\Template\\TaskTrayTemplate");
 		return;
 	}
-	cout("usage: newcs (C｜F｜T) プロジェクト名\n");
+	if(argIs("TT"))
+	{
+		Main2("TTTT", FindUserTemplate()); // g
+		return;
+	}
+	cout("usage: newcs (C｜F｜T｜TT) プロジェクト名\n");
 }
