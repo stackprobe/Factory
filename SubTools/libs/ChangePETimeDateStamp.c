@@ -52,7 +52,10 @@ void ChangeAllPETimeDateStamp(char *dir, uint t)
 
 	foreach(files, file, index)
 	{
-		if(!_stricmp("EXE", getExt(file)))
+		if(
+			!_stricmp("EXE", getExt(file)) ||
+			!_stricmp("DLL", getExt(file))
+			)
 		{
 			cout("file: %s\n", file);
 
