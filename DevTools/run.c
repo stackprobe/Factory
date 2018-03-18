@@ -1,4 +1,10 @@
+/*
+	run.exe [/D] PROGRAM-NAME
+*/
+
 #include "C:\Factory\Common\all.h"
+
+static int DebugMode;
 
 static char *ToPrms(autoList_t *args)
 {
@@ -53,7 +59,7 @@ static void FindProgram_Main(char *trgDir)
 	{
 		char *lDir = getLocal(dir);
 
-		if(lineExp("<1,,__09AZaz>", lDir) && _stricmp(lDir, "obj") && _stricmp(lDir, "Debug"))
+		if(lineExp("<1,,__09AZaz>", lDir) && _stricmp(lDir, "obj") && _stricmp(lDir, DebugMode ? "Release" : "Debug"))
 		{
 			char *subDir = xcout("%s\\%s", trgDir, lDir);
 
@@ -94,8 +100,11 @@ static char *FindProgram(char *program)
 }
 int main(int argc, char **argv)
 {
-	char *program = nextArg();
+	char *program;
 	char *prms;
+
+	DebugMode = argIs("/D");
+	program = nextArg();
 
 	errorCase(!lineExp("<1,,__09AZaz>", program));
 
