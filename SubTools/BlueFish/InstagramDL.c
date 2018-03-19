@@ -110,6 +110,24 @@ static char *HGetExeFile(void)
 
 	return file;
 }
+static uint GetMinNotZero(uint p, uint q)
+{
+	cout("GMNZ < %08x, %08x\n", p, q);
+
+	if(!p)
+		p = UINTMAX;
+
+	if(!q)
+		q = UINTMAX;
+
+	p = m_min(p, q);
+
+	if(p == UINTMAX)
+		p = 0;
+
+	cout("GMNZ > %08x\n", p);
+	return p;
+}
 static autoList_t *ParseUrls(char *resBodyFile)
 {
 	char *resBody = readText_b(resBodyFile);
@@ -122,10 +140,12 @@ static autoList_t *ParseUrls(char *resBodyFile)
 
 	for(; ; )
 	{
-//		char *q = strstr(p, "thumbnail_src"); // del @ 2018.1.21
-		char *q = strstr(p, "display_src");
+		char *q  = strstr(p, "display_src");
+		char *q2 = strstr(p, "display_url");
 		char *r;
 		char *s;
+
+		q = (char *)GetMinNotZero((uint)q, (uint)q2);
 
 		if(!q)
 			break;
