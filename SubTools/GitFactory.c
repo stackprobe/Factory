@@ -81,6 +81,24 @@ static void RemoveIgnoreFiles(autoList_t *files)
 	trimLines(files);
 }
 
+static int GF_SE_IsSJISFile(char *file)
+{
+	char *text = readText(file);
+	char *text2;
+	int ret;
+
+	text2 = strx(text);
+	line2JLine(text2, 1, 1, 1, 1);
+
+	ret = !strcmp(text, text2);
+
+	memFree(text);
+	memFree(text2);
+
+	cout("GF_SE_IsSJISFile_ret: %d\n", ret);
+
+	return ret;
+}
 static void SolveEncoding(char *rootDir)
 {
 	autoList_t *files = lssFiles(rootDir);
@@ -102,7 +120,10 @@ static void SolveEncoding(char *rootDir)
 		{
 			cout("SE_file: %s\n", file);
 
-			SJISToUTF8File(file, file);
+			if(GF_SE_IsSJISFile(file))
+			{
+				SJISToUTF8File(file, file);
+			}
 		}
 	}
 	releaseDim(files, 1);

@@ -24,7 +24,7 @@
 		UTF16-NOBOM   ... UTF-16(LE)NoBOM
 		UTF16BE       ... UTF-16(BE)
 		UTF16BE-NOBOM ... UTF-16(BE)NoBOM
-		UTF-8         ... UTF-8
+		UTF8          ... UTF-8
 */
 
 #include "C:\Factory\Common\all.h"
@@ -170,6 +170,7 @@ static void DoConv_File(char *file)
 	autoList_t *files = newList();
 
 	addElement(files, (uint)file);
+	DoConv(files);
 	releaseAutoList(files);
 }
 static void DoConv_Path(char *path)
