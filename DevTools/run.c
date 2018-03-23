@@ -1,9 +1,12 @@
 /*
-	run.exe [/D] PROGRAM-NAME
+	run.exe [/D] [/-R] PROGRAM-NAME
+
+		/D ... プログラムの場所へ移動して実行する。
 */
 
 #include "C:\Factory\Common\all.h"
 
+static int IntoProgramDirMode;
 static int DebugMode;
 
 static char *ToPrms(autoList_t *args)
@@ -77,18 +80,19 @@ static char *FindProgram(char *program)
 
 	FindProgram_Main(".");
 
-	// debug print
+	errorCase_m(getCount(FP_Founds) == 0, "プログラムが見つかりません。");
+
+	if(getCount(FP_Founds) != 1)
 	{
 		char *found;
 		uint found_index;
 
 		foreach(FP_Founds, found, found_index)
 		{
-			cout("found: %s\n", found);
+			cout("見つかったプログラム：%s\n", found);
 		}
+		error_m("複数のプログラムが見つかりました。");
 	}
-
-	errorCase(getCount(FP_Founds) != 1);
 
 	program = getLine(FP_Founds, 0);
 
@@ -103,7 +107,8 @@ int main(int argc, char **argv)
 	char *program;
 	char *prms;
 
-	DebugMode = argIs("/D");
+	IntoProgramDirMode = argIs("/D");
+	DebugMode = argIs("/-R");
 	program = nextArg();
 
 	errorCase(!lineExp("<1,,__09AZaz>", program));
@@ -118,9 +123,22 @@ int main(int argc, char **argv)
 
 	program = FindProgram(program);
 
-	LOGPOS();
-	coExecute_x(xcout("%s%s", program, prms));
-	LOGPOS();
+	cout("%s%s\n", program, prms);
+
+	if(IntoProgramDirMode)
+	{
+		char *wd = changeLocal(program, "");
+
+		addCwd(wd);
+		{
+			execute_x(xcout("%s%s", getLocal(program), prms));
+		}
+		unaddCwd();
+
+		memFree(wd);
+	}
+	else
+		execute_x(xcout("%s%s", program, prms));
 
 	memFree(program);
 	memFree(prms);

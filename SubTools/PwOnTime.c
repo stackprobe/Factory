@@ -41,6 +41,16 @@ static char *ToPrStamp(char *stamp)
 {
 	return makeJStamp(getStampDataTime(compactStampToTime(stamp)), 0);
 }
+static char *ToPrStampSpan(char *stamp1, char *stamp2)
+{
+	time_t t1 = compactStampToTime(stamp1);
+	time_t t2 = compactStampToTime(stamp2);
+	uint t;
+
+	t = (uint)(t2 - t1);
+
+	return xcout("%u 時間 %02u 分 %02u 秒", t / 3600, (t / 60) % 60, t % 60);
+}
 static void ShowPwOnTime(void)
 {
 	char *file = makeTempPath(NULL);
@@ -120,9 +130,10 @@ static void ShowPwOnTime(void)
 		cout(
 			"\n"
 			"%s から\n"
-			"%s まで電源オンでした。\n",
+			"%s まで電源オンでした。===> %s\n",
 			ToPrStamp(getLine(pwOnSpans, index + 0)), // g
-			ToPrStamp(getLine(pwOnSpans, index + 1))  // g
+			ToPrStamp(getLine(pwOnSpans, index + 1)), // g
+			ToPrStampSpan(getLine(pwOnSpans, index + 0), getLine(pwOnSpans, index + 1)) // g
 			);
 	}
 	releaseDim(lines, 1);
