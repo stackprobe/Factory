@@ -157,11 +157,11 @@ static sint RemarkStampComp(uint v1, uint v2)
 }
 static uint GetKnownNextRemarkIndex(uint64 knownStamp)
 {
-	Remark_t ferret;
+	Remark_t target;
 
-	ferret.Stamp = knownStamp;
+	target.Stamp = knownStamp;
 
-	return findBoundLeftestRight(Remarks, (uint)&ferret, RemarkStampComp);
+	return findBoundLeftestRight(Remarks, (uint)&target, RemarkStampComp);
 }
 static uint64 GetStamp(void)
 {

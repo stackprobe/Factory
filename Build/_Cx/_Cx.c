@@ -186,6 +186,27 @@ static void MakeResponse(char *source, char *response, int buildFlag)
 
 	releaseDim(objfiles, 1);
 }
+static uint GetVSEditionYear(char *slnFile)
+{
+	FILE *fp = fileOpen(slnFile, "rt");
+	char *line;
+	uint ret;
+
+	memFree(neReadLine(fp));
+	memFree(neReadLine(fp));
+	line = neReadLine(fp);
+
+	     if(!strcmp(line, "# Visual C# Express 2008" )) ret = 2008;
+	else if(!strcmp(line, "# Visual C++ Express 2008")) ret = 2008;
+	else if(!strcmp(line, "# Visual C# Express 2010" )) ret = 2010;
+	else if(!strcmp(line, "# Visual C++ Express 2010")) ret = 2010;
+	else
+		error_m("Unknown VS Edition");
+
+	memFree(line);
+	fileClose(fp);
+	return ret;
+}
 
 static void Build(char *module, uint remCount) // remCount: 0 == 無効
 {
@@ -211,32 +232,39 @@ static void Build(char *module, uint remCount) // remCount: 0 == 無効
 	{
 		if(OptimizeLevel != CLEANING_MODE)
 		{
-			char *slncacheFile = addExt(strx(solution), "cache");
-			int successful;
+			uint vsEditionYear = GetVSEditionYear(solution);
 
-			execute_x(xcout("MSBUILD " MSBUILDOPTIONS " %s", solution));
+			cout("solution file's Visual Studio Editon (Year) == %u\n", vsEditionYear);
 
-			successful = lastSystemRet == 0;
-
-			if(existFile(slncacheFile))
+			if(vsEditionYear == 2010)
 			{
-				cout("%s\n", slncacheFile);
-				cout("sln.cacheファイルが存在します。ビルドは失敗しました。\n");
-				successful = 0;
-			}
-			if(successful) // ? ビルド成功
-			{
-				// noop
-			}
-			else // ? ビルド失敗
-			{
-				cout("%s\\%s", c_getCwd(), solution);
-				termination(1);
-			}
-			memFree(slncacheFile);
+				char *slncacheFile = addExt(strx(solution), "cache");
+				int successful;
 
-			BuiltSlnCount++;
-			addElement(BuiltLines, (uint)xcout("BUILT_SLN %s", solution));
+				execute_x(xcout("MSBUILD " MSBUILDOPTIONS " %s", solution));
+
+				successful = lastSystemRet == 0;
+
+				if(existFile(slncacheFile))
+				{
+					cout("%s\n", slncacheFile);
+					cout("sln.cacheファイルが存在します。ビルドは失敗しました。\n");
+					successful = 0;
+				}
+				if(successful) // ? ビルド成功
+				{
+					// noop
+				}
+				else // ? ビルド失敗
+				{
+					cout("%s\\%s", c_getCwd(), solution);
+					termination(1);
+				}
+				memFree(slncacheFile);
+
+				BuiltSlnCount++;
+				addElement(BuiltLines, (uint)xcout("BUILT_SLN %s", solution));
+			}
 		}
 		goto endfunc;
 	}

@@ -89,48 +89,48 @@ void rbtAddValue(rbTree_t *tree, uint key, uint value)
 	tree->Count++;
 }
 
-static rbtElement_t *GetFerret(uint key)
+static rbtElement_t *GetTarget(uint key)
 {
 	static rbtElement_t element;
 	element.Key = key;
 	return &element;
 }
-static int HasKey(rbTree_t *tree, rbtElement_t *ferret)
+static int HasKey(rbTree_t *tree, rbtElement_t *target)
 {
 	errorCase(!tree);
-	return rbtHasElement(tree->Tree, ferret);
+	return rbtHasElement(tree->Tree, target);
 }
 int rbtHasKey(rbTree_t *tree, uint key)
 {
-	return HasKey(tree, GetFerret(key));
+	return HasKey(tree, GetTarget(key));
 }
 int rbtHasLastAccessKey(rbTree_t *tree)
 {
 	return HasKey(tree, NULL);
 }
 
-static uint GetValue(rbTree_t *tree, rbtElement_t *ferret)
+static uint GetValue(rbTree_t *tree, rbtElement_t *target)
 {
 	errorCase(!tree);
-	return ((rbtElement_t *)rbtGetElement(tree->Tree, ferret))->Value;
+	return ((rbtElement_t *)rbtGetElement(tree->Tree, target))->Value;
 }
 uint rbtGetValue(rbTree_t *tree, uint key)
 {
-	return GetValue(tree, GetFerret(key));
+	return GetValue(tree, GetTarget(key));
 }
 uint rbtGetLastAccessValue(rbTree_t *tree)
 {
 	return GetValue(tree, NULL);
 }
 
-static uint UnaddValue(rbTree_t *tree, rbtElement_t *ferret)
+static uint UnaddValue(rbTree_t *tree, rbtElement_t *target)
 {
 	rbtElement_t *element;
 	uint value;
 
 	errorCase(!tree);
 
-	element = (rbtElement_t *)rbtGetElement(tree->Tree, ferret);
+	element = (rbtElement_t *)rbtGetElement(tree->Tree, target);
 	value = element->Value;
 
 	// Links ‚ÌXVAíœ
@@ -151,7 +151,7 @@ static uint UnaddValue(rbTree_t *tree, rbtElement_t *ferret)
 }
 uint rbtUnaddValue(rbTree_t *tree, uint key)
 {
-	return UnaddValue(tree, GetFerret(key));
+	return UnaddValue(tree, GetTarget(key));
 }
 uint rbtUnaddLastAccessValue(rbTree_t *tree)
 {
