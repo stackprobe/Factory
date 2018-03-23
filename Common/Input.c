@@ -10,7 +10,7 @@ static int InputJTextMode;
 
 	_kbhit() 互換性 Vista, 7 明記無し, XPでは再現せず -> Vista 以降で発生するのか?
 
-	この現象を回避するには sock_hasKey() を使用すること。
+	この現象を回避するには sock_hasKey() を使用すること。---> sock_hasKey() は押してないのに !0 を返すことがある。
 */
 static int TrueHasKey(void)
 {
