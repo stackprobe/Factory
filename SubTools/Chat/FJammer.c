@@ -2,9 +2,9 @@
 #include "C:\Factory\Common\Options\RingCipher2.h"
 #include "C:\Factory\OpenSource\sha512.h"
 
-#define ENCODE_PASSPHRASE "fkug " __DATE__ " " __TIME__
-#define EXT_ENCODED "fkug"
-#define EXT_MID "tmp_fkug"
+#define ENCODE_PASSPHRASE "fjam " __DATE__ " " __TIME__
+#define EXT_ENCODED "fjam"
+#define EXT_MID "tmp_fjam"
 
 static autoList_t *KeyTableList;
 static int OutputAndDelete;
