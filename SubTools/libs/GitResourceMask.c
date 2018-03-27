@@ -107,7 +107,7 @@ static void MaskResImage_Main(char *file)
 {
 	char *midFile = makeTempPath("png");
 
-	coExecute_x(xcout("START \"\" /B /WAIT \"%s\" /MASK-RESOURCE-IMAGE \"%s\" \"%s\"", FILE_TOOLKIT_EXE, file, midFile));
+	coExecute_x(xcout("START \"\" /B /WAIT \"%s\" /MASK-RESOURCE-IMAGE-NBC \"%s\" \"%s\"", FILE_TOOLKIT_EXE, file, midFile));
 
 	if(!_stricmp("png", getExt(file)))
 	{
