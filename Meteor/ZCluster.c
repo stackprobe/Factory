@@ -2,6 +2,8 @@
 
 // ---- cluster ----
 
+int ZC_WithoutInfo;
+
 static char *GetClusterExeFile(void)
 {
 	static char *file;
@@ -34,7 +36,7 @@ static void DoCluster(char *file, char *dir, int mode) // mode: "MR"
 		errorCase(!existFile(file));
 		errorCase_m(existPath(dir), "出力ディレクトリは既に存在します。@ ZC_DoCluster");
 	}
-	coExecute_x(xcout("start \"\" /b /wait \"%s\" /%c \"%s\" \"%s\"", GetClusterExeFile(), mode, file, dir));
+	coExecute_x(xcout("start \"\" /b /wait \"%s\" %s/%c \"%s\" \"%s\"", GetClusterExeFile(), ZC_WithoutInfo ? "" : "/I ", mode, file, dir));
 
 	if(mode == 'M')
 	{

@@ -27,6 +27,7 @@
 	/D   ... 復号  （KEY-BUNDLE 必須）
 	/E+  ... 暗号化（KEY-BUNDLE 必須）
 	/D+  ... 復号  （KEY-BUNDLE 必須）
+	/-I  ... クラスタファイルを生成するときファイル属性とタイムスタンプを保存しない。
 
 	★コマンドモード ... デフォで上書き禁止（上書きしようとするとエラー）
 	★自動判定モード ... デフォで上書きモード
@@ -508,6 +509,12 @@ readArgs:
 //		PostOutput(file); // 入出力ファイルなので..
 		termination(0);
 	}
+	if(argIs("/-I"))
+	{
+		ZC_WithoutInfo = 1;
+		goto readArgs;
+	}
+
 	if(hasArgs(1))
 	{
 		AutoAction(nextArg(), rawKey);

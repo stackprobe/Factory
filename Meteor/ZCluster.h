@@ -4,6 +4,8 @@
 #include "C:\Factory\Common\Options\Collabo.h"
 #include "C:\Factory\Common\Options\RingCipher2.h"
 
+extern int ZC_WithoutInfo;
+
 void ZC_Cluster(char *rDir, char *wFile);
 void ZC_Uncluster(char *rFile, char *wDir);
 
