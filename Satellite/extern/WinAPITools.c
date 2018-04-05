@@ -362,12 +362,12 @@ int main(int argc, char **argv)
 
 			bootTime = currTime - now();
 
-			// ? 最後に展開したときから1日以上経過してからPCを起動して最初にここへ到達した。-> 展開する。
-			// 時刻調整や誤差を考慮してマージンとしての1日
+			// ? 最後に展開したときから2日以上経過してからPCを起動して最初にここへ到達した。-> 展開する。
+			// 時刻調整や誤差を考慮してマージンとしての2日
 			if(
 				!existFile(lastExtractedTimeFile) ||
 				getFileSize(lastExtractedTimeFile) != 8 ||
-				readFirstValue64(lastExtractedTimeFile) + 86400 < bootTime
+				readFirstValue64(lastExtractedTimeFile) + 86400 * 2 < bootTime
 				)
 			{
 				createPath(wFile, 'X');
