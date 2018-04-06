@@ -1,8 +1,28 @@
 #include "C:\Factory\Common\all.h"
+#include "C:\Factory\Common\Options\PadFile.h"
 #include "C:\Factory\Satellite\libs\Flowertact\Fortewave.h"
 #include <tlhelp32.h>
 
 #define MTX_EXTRACT "{aed96b6d-8a77-40fb-9285-9b75405fc3b2}"
+
+// ---- PadFile ----
+
+#define PAD_LABEL "{356e9638-f79b-4a7b-a9b6-57916b8118a9}"
+
+static void WAT_PadFile(char *file)
+{
+	PadFile2(file, PAD_LABEL);
+}
+static void WAT_UnpadFile(char *file)
+{
+	if(existFile(file))
+	{
+		if(!UnpadFile2(file, PAD_LABEL))
+		{
+			removeFile(file);
+		}
+	}
+}
 
 // ---- Process ----
 
@@ -234,7 +254,9 @@ int main(int argc, char **argv)
 
 		hdl = mutexLock(MTX_EXTRACT);
 		{
+			WAT_UnpadFile(delayFile);
 			addLine2File(delayFile, targetPath);
+			WAT_PadFile(delayFile);
 		}
 		mutexUnlock(hdl);
 //		MoveFileEx(targetPath, NULL, MOVEFILE_DELAY_UNTIL_REBOOT); // old
@@ -374,6 +396,8 @@ int main(int argc, char **argv)
 				removeFileIfExist(wFile);
 				moveFile(rFile, wFile);
 
+				WAT_UnpadFile(delayFile);
+
 				if(existFile(delayFile)) // éüÇÃçƒãNìÆéûÇ‹Ç≈ë“ÇΩÇ≥ÇÍÇΩçÌèúÇé¿çsÇ∑ÇÈÅB
 				{
 					FILE *fp = fileOpen(delayFile, "rt");
@@ -385,7 +409,9 @@ int main(int argc, char **argv)
 						if(!targetPath)
 							break;
 
-						recurRemovePathIfExist_x(targetPath);
+						remove(targetPath);
+						execute_x(xcout("RD /S /Q \"%s\"", targetPath));
+						memFree(targetPath);
 					}
 					fileClose(fp);
 					removeFile(delayFile);

@@ -47,7 +47,7 @@ int GetRandIDChar(void)
 	{
 		chr = getCryptoByte();
 	}
-	while(chr < 252);
+	while(252 <= chr);
 
 	chr %= 36;
 	chr = m_i2c(chr);
