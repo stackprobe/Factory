@@ -10,10 +10,10 @@
 { h(g_1), h(g_2), ... h(g_n) } の合計を i(1) とする。
 
 
-少なくとも g_a1, g_a2, ... g_aY 全て話せる人の数を h(g_a1, g_a2, ... g_aY) とする。
+少なくとも g_a1, g_a2, ... g_aY 全て話せる人の数を H(g_a1, g_a2, ... g_aY) とする。
 
 あらゆる m 個の言語の組み合わせ k_1, k_2, ... k_Z について、※
-{ h(k_1), h(k_2), ... h(k_Z) } の合計を i(m) とする。
+{ H(k_1), H(k_2), ... H(k_Z) } の合計を i(m) とする。
 
 ※ n=3, m=2 の場合、{ (g_1, g_2), (g_1, g_3), (g_2, g_3) } の3つになる。
 
@@ -55,12 +55,12 @@ i(1) - i(2) + i(3) - i(4) + i(5) - ... - i(n - 2) + i(n - 1) - i(n)
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\CRRandom.h"
 
-#define K_MAX 16
+#define N_MAX 16
 #define T_MAX 100000
 
-static int Map[K_MAX][T_MAX];
-static int KK;
-static int TT;
+static int Map[N_MAX][T_MAX];   // [言語][人] == この人が、この言語を話せるか。
+static int NN;                  // 言語の数
+static int TT;                  // 人の数
 static double RR;
 
 static double GetDRand(void) // ret: 0.0 ～ 1.0
@@ -69,27 +69,27 @@ static double GetDRand(void) // ret: 0.0 ～ 1.0
 }
 static void MkMap(void)
 {
-	int k;
+	int n;
 	int t;
 
-	for(k = 0; k < KK; k++)
+	for(n = 0; n < NN; n++)
 	for(t = 0; t < TT; t++)
 	{
-		Map[k][t] = GetDRand() < RR;
+		Map[n][t] = GetDRand() < RR;
 	}
 }
 static void PrintMap(void)
 {
-	int k;
+	int n;
 	int t;
 
 	cout("---- Map ----\n");
 
-	for(k = 0; k < KK; k++)
+	for(n = 0; n < NN; n++)
 	{
 		for(t = 0; t < TT; t++)
 		{
-			cout("%c", Map[k][t] ? '1' : '0');
+			cout("%c", Map[n][t] ? '1' : '0');
 		}
 		cout("\n");
 	}
@@ -98,13 +98,13 @@ static void PrintMap(void)
 static int GetArea_1(void)
 {
 	int ret = 0;
-	int k;
+	int n;
 	int t;
 
 	for(t = 0; t < TT; t++)
-	for(k = 0; k < KK; k++)
+	for(n = 0; n < NN; n++)
 	{
-		if(Map[k][t])
+		if(Map[n][t])
 		{
 			ret++;
 			break; // next t
@@ -113,55 +113,55 @@ static int GetArea_1(void)
 	return ret;
 }
 
-static int ATbl[K_MAX + 1];
-static int KMap[K_MAX];
+static int ALst[N_MAX + 1];
+static int NMsk[N_MAX];
 
-static int GA_HasKMap(int t) // ret: ? Map[][t] について、KMap[k] == 1 なら Map[k][t] == 1 である。
+static int GA_AtLeastNMsk(int t) // ret: ? Map[][t] について、NMsk[n] == 1 なら Map[n][t] == 1 である。
 {
-	int k;
+	int n;
 
-	for(k = 0; k < KK; k++)
-		if(KMap[k] && !Map[k][t])
+	for(n = 0; n < NN; n++)
+		if(NMsk[n] && !Map[n][t])
 			return 0;
 
 	return 1;
 }
 static void GA_Main(void)
 {
-	int k;
+	int n;
 	int cnt = 0;
 	int t;
 
-	for(k = 0; k < KK; k++)
-		if(KMap[k])
+	for(n = 0; n < NN; n++)
+		if(NMsk[n])
 			cnt++;
 
 	for(t = 0; t < TT; t++)
-		if(GA_HasKMap(t))
-			ATbl[cnt]++;
+		if(GA_AtLeastNMsk(t))
+			ALst[cnt]++;
 }
 static int GA_Next(void)
 {
-	int k;
+	int n;
 
-	for(k = 0; k < KK; k++)
+	for(n = 0; n < NN; n++)
 	{
-		if(!KMap[k])
+		if(!NMsk[n])
 		{
-			KMap[k] = 1;
+			NMsk[n] = 1;
 			return 1;
 		}
-		KMap[k] = 0;
+		NMsk[n] = 0;
 	}
 	return 0;
 }
 static int GetArea_2(void)
 {
 	int ret;
-	int k;
+	int n;
 
-	zeroclear(ATbl);
-	zeroclear(KMap);
+	zeroclear(ALst);
+	zeroclear(NMsk);
 
 	do
 	{
@@ -171,16 +171,16 @@ static int GetArea_2(void)
 
 	ret = 0;
 
-	for(k = 1; k <= KK; k++)
+	for(n = 1; n <= NN; n++)
 	{
-		if(k % 2)
-			ret += ATbl[k];
+		if(n % 2)
+			ret += ALst[n];
 		else
-			ret -= ATbl[k];
+			ret -= ALst[n];
 	}
 	return ret;
 }
-static void DoTest_2(int k, int t, double r)
+static void DoTest_2(int n, int t, double r)
 {
 	int a1;
 	int a2;
@@ -190,11 +190,11 @@ static void DoTest_2(int k, int t, double r)
 	if(waitKey(0))
 		termination(0);
 
-	KK = k;
+	NN = n;
 	TT = t;
 	RR = r;
 
-	cout("DoTest_2: %d %d %f\n", KK, TT, RR);
+	cout("DoTest_2: %d %d %f\n", NN, TT, RR);
 
 	MkMap();
 //	PrintMap();
@@ -209,32 +209,32 @@ static void DoTest_2(int k, int t, double r)
 
 	LOGPOS();
 }
-static void DoTest(int k, int t)
+static void DoTest(int n, int t)
 {
-	DoTest_2(k, t, 0.01);
-	DoTest_2(k, t, 0.1);
-	DoTest_2(k, t, 0.5);
-	DoTest_2(k, t, 1.0 / k);
-	DoTest_2(k, t, 1.0 / t);
-	DoTest_2(k, t, 0.9);
-	DoTest_2(k, t, 0.99);
+	DoTest_2(n, t, 0.01);
+	DoTest_2(n, t, 0.1);
+	DoTest_2(n, t, 0.5);
+	DoTest_2(n, t, 1.0 / n);
+	DoTest_2(n, t, 1.0 / t);
+	DoTest_2(n, t, 0.9);
+	DoTest_2(n, t, 0.99);
 }
 int main(int argc, char **argv)
 {
-	int k;
+	int n;
 	int t;
 
 	mt19937_initCRnd();
 
-	for(k = 1; k <= K_MAX; k++)
+	for(n = 1; n <= N_MAX; n++)
 	for(t = 1; t <= T_MAX; t *= 10)
 	{
-		DoTest(k, t);
+		DoTest(n, t);
 	}
 	for(; ; )
 	{
 		DoTest_2(
-			mt19937_rnd(K_MAX) + 1,
+			mt19937_rnd(N_MAX) + 1,
 			mt19937_rnd(T_MAX) + 1,
 			GetDRand()
 			);
