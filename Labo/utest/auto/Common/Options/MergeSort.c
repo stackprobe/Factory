@@ -139,7 +139,6 @@ static void DoTest2(int d1, int d2, int db, int s1, int s2, uint rowcnt1, uint r
 			db ? file11B : NULL,
 			128000000
 			);
-LOGPOS();
 	MergeFileText_TestVer(
 			file201,
 			file202,
@@ -147,56 +146,32 @@ LOGPOS();
 			file212,
 			file21B
 			);
-LOGPOS();
 
 	errorCase(d1 && !isSameFile(file111, file211));
-LOGPOS();
 	errorCase(d2 && !isSameFile(file112, file212));
-LOGPOS();
 	errorCase(db && !isSameFile(file11B, file21B));
-LOGPOS();
 
 	removeFile(file101);
-LOGPOS();
 	removeFile(file102);
-LOGPOS();
 	removeFile(file201);
-LOGPOS();
 	removeFile(file202);
-LOGPOS();
 	if(d1) removeFile(file111);
-LOGPOS();
 	if(d2) removeFile(file112);
-LOGPOS();
 	if(db) removeFile(file11B);
-LOGPOS();
 	removeFile(file211);
-LOGPOS();
 	removeFile(file212);
-LOGPOS();
 	removeFile(file21B);
-LOGPOS();
 
 	memFree(file101);
-LOGPOS();
 	memFree(file102);
-LOGPOS();
 	memFree(file201);
-LOGPOS();
 	memFree(file202);
-LOGPOS();
 	memFree(file111);
-LOGPOS();
 	memFree(file112);
-LOGPOS();
 	memFree(file11B);
-LOGPOS();
 	memFree(file211);
-LOGPOS();
 	memFree(file212);
-LOGPOS();
 	memFree(file21B);
-LOGPOS();
 }
 static void Test_MergeFile(void)
 {

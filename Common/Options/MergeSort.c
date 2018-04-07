@@ -41,9 +41,7 @@ static void CommitPart(
 	autoList_t *elements
 	)
 {
-LOGPOS();
 	rapidSort(elements, compElement);
-LOGPOS();
 
 	{
 		FILE *fp = fileOpen(GetPartFile(partsDir, partIndex), wMode);
@@ -318,11 +316,8 @@ void MergeFile(
 	uint element1;
 	uint element2;
 
-LOGPOS();
 	MF_WriteElement = writeElement;
-LOGPOS();
 	MF_ReleaseElement = releaseElement;
-LOGPOS();
 
 	if(!sorted1)
 	{
@@ -336,12 +331,10 @@ LOGPOS();
 		MergeSort(srcFile2, tmpFile2, textMode, readElement, MF_WriteElement_x, compElement, partSize, recordConstWeightSize);
 		srcFile2 = tmpFile2;
 	}
-LOGPOS();
 
 	// clear
 	MF_WriteElement = NULL;
 	MF_ReleaseElement = NULL;
-LOGPOS();
 
 	if(textMode)
 	{
@@ -353,21 +346,13 @@ LOGPOS();
 		rMode = "rb";
 		wMode = "wb";
 	}
-LOGPOS();
 	rfp1 = fileOpen(srcFile1, rMode);
-LOGPOS();
 	rfp2 = fileOpen(srcFile2, rMode);
-LOGPOS();
 	wfp1 = destFile1 ? fileOpen(destFile1, wMode) : NULL;
-LOGPOS();
 	wfp2 = destFile2 ? fileOpen(destFile2, wMode) : NULL;
-LOGPOS();
 	wfpBoth = destFileBoth ? fileOpen(destFileBoth, wMode) : NULL;
-LOGPOS();
 	element1 = readElement(rfp1);
-LOGPOS();
 	element2 = readElement(rfp2);
-LOGPOS();
 
 	while(element1 || element2)
 	{
@@ -412,31 +397,23 @@ LOGPOS();
 			element2 = readElement(rfp2);
 		}
 	}
-LOGPOS();
 	fileClose(rfp1);
-LOGPOS();
 	fileClose(rfp2);
-LOGPOS();
 
 	if(wfp1)
 		fileClose(wfp1);
-LOGPOS();
 
 	if(wfp2)
 		fileClose(wfp2);
-LOGPOS();
 
 	if(wfpBoth)
 		fileClose(wfpBoth);
-LOGPOS();
 
 	if(tmpFile1)
 		removeFile_x(tmpFile1);
-LOGPOS();
 
 	if(tmpFile2)
 		removeFile_x(tmpFile2);
-LOGPOS();
 }
 
 void MergeFileTextComp(char *srcFile1, int sorted1, char *srcFile2, int sorted2, char *destFile1, char *destFile2, char *destFileBoth, sint (*funcComp)(char *, char *), uint partSize)
