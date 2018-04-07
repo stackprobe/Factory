@@ -275,6 +275,20 @@ void MergeSortTextICase(char *srcFile, char *destFile, uint partSize)
 	MergeSortTextComp(srcFile, destFile, mbs_stricmp, partSize);
 }
 
+static void (*MF_WriteElement)(FILE *fp, uint element);
+static void (*MF_ReleaseElement)(uint element);
+
+static void MF_WriteElement_x(FILE *fp, uint element)
+{
+	MF_WriteElement(fp, element);
+	MF_ReleaseElement(element);
+}
+
+/*
+	destFile1     --  NULL ok
+	destFile2     --  NULL ok
+	destFileBoth  --  NULL ok
+*/
 void MergeFile(
 	char *srcFile1,
 	int sorted1,
@@ -285,33 +299,155 @@ void MergeFile(
 	char *destFileBoth,
 	int textMode,
 	uint (*readElement)(FILE *fp),
-	void (*writeElement_x)(FILE *fp, uint element),
+	void (*writeElement)(FILE *fp, uint element),
 	sint (*compElement)(uint element1, uint element2),
+	void (*releaseElement)(uint element),
 	uint partSize,
 	uint recordConstWeightSize
 	)
 {
 	char *tmpFile1 = NULL;
 	char *tmpFile2 = NULL;
+	char *rMode;
+	char *wMode;
+	FILE *rfp1;
+	FILE *rfp2;
+	FILE *wfp1;
+	FILE *wfp2;
+	FILE *wfpBoth;
+	uint element1;
+	uint element2;
+
+LOGPOS();
+	MF_WriteElement = writeElement;
+LOGPOS();
+	MF_ReleaseElement = releaseElement;
+LOGPOS();
 
 	if(!sorted1)
 	{
 		tmpFile1 = makeTempPath(NULL);
-		MergeSort(srcFile1, tmpFile1, textMode, readElement, writeElement_x, compElement, partSize, recordConstWeightSize);
+		MergeSort(srcFile1, tmpFile1, textMode, readElement, MF_WriteElement_x, compElement, partSize, recordConstWeightSize);
 		srcFile1 = tmpFile1;
 	}
 	if(!sorted2)
 	{
 		tmpFile2 = makeTempPath(NULL);
-		MergeSort(srcFile2, tmpFile2, textMode, readElement, writeElement_x, compElement, partSize, recordConstWeightSize);
+		MergeSort(srcFile2, tmpFile2, textMode, readElement, MF_WriteElement_x, compElement, partSize, recordConstWeightSize);
 		srcFile2 = tmpFile2;
 	}
+LOGPOS();
 
-	error(); // TODO
+	// clear
+	MF_WriteElement = NULL;
+	MF_ReleaseElement = NULL;
+LOGPOS();
+
+	if(textMode)
+	{
+		rMode = "rt";
+		wMode = "wt";
+	}
+	else
+	{
+		rMode = "rb";
+		wMode = "wb";
+	}
+LOGPOS();
+	rfp1 = fileOpen(srcFile1, rMode);
+LOGPOS();
+	rfp2 = fileOpen(srcFile2, rMode);
+LOGPOS();
+	wfp1 = destFile1 ? fileOpen(destFile1, wMode) : NULL;
+LOGPOS();
+	wfp2 = destFile2 ? fileOpen(destFile2, wMode) : NULL;
+LOGPOS();
+	wfpBoth = destFileBoth ? fileOpen(destFileBoth, wMode) : NULL;
+LOGPOS();
+	element1 = readElement(rfp1);
+LOGPOS();
+	element2 = readElement(rfp2);
+LOGPOS();
+
+	while(element1 || element2)
+	{
+		int ret;
+
+		if(!element1)
+		{
+			ret = 1;
+		}
+		else if(!element2)
+		{
+			ret = -1;
+		}
+		else
+		{
+			ret = compElement(element1, element2);
+		}
+		if(ret < 0)
+		{
+			if(wfp1)
+				writeElement(wfp1, element1);
+
+			releaseElement(element1);
+			element1 = readElement(rfp1);
+		}
+		else if(0 < ret)
+		{
+			if(wfp2)
+				writeElement(wfp2, element2);
+
+			releaseElement(element2);
+			element2 = readElement(rfp2);
+		}
+		else
+		{
+			if(wfpBoth)
+				writeElement(wfpBoth, element1);
+
+			releaseElement(element1);
+			releaseElement(element2);
+			element1 = readElement(rfp1);
+			element2 = readElement(rfp2);
+		}
+	}
+LOGPOS();
+	fileClose(rfp1);
+LOGPOS();
+	fileClose(rfp2);
+LOGPOS();
+
+	if(wfp1)
+		fileClose(wfp1);
+LOGPOS();
+
+	if(wfp2)
+		fileClose(wfp2);
+LOGPOS();
+
+	if(wfpBoth)
+		fileClose(wfpBoth);
+LOGPOS();
 
 	if(tmpFile1)
 		removeFile_x(tmpFile1);
+LOGPOS();
 
 	if(tmpFile2)
 		removeFile_x(tmpFile2);
+LOGPOS();
+}
+
+void MergeFileTextComp(char *srcFile1, int sorted1, char *srcFile2, int sorted2, char *destFile1, char *destFile2, char *destFileBoth, sint (*funcComp)(char *, char *), uint partSize)
+{
+	MergeFile(srcFile1, sorted1, srcFile2, sorted2, destFile1, destFile2, destFileBoth, 1, (uint (*)(FILE *))readLine_strr, (void (*)(FILE *, uint))writeLine, (sint (*)(uint, uint))funcComp, (void (*)(uint))memFree, partSize, 10);
+}
+void MergeFileText(char *srcFile1, int sorted1, char *srcFile2, int sorted2, char *destFile1, char *destFile2, char *destFileBoth, uint partSize)
+{
+	MergeFileTextComp(srcFile1, sorted1, srcFile2, sorted2, destFile1, destFile2, destFileBoth, strcmp, partSize);
+}
+void MergeFileTextICase(char *srcFile1, int sorted1, char *srcFile2, int sorted2, char *destFile1, char *destFile2, char *destFileBoth, uint partSize)
+{
+	MergeFileTextComp(srcFile1, sorted1, srcFile2, sorted2, destFile1, destFile2, destFileBoth, mbs_stricmp, partSize);
 }
