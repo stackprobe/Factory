@@ -12,12 +12,26 @@ int main(int argc, char **argv)
 		partSize = toValue(nextArg());
 	}
 
-	if(argIs("/1"))
+	if(argIs("/I"))
 	{
-		MergeSortText(getArg(0), getArg(0), partSize);
+		if(argIs("/1"))
+		{
+			MergeSortTextICase(getArg(0), getArg(0), partSize);
+		}
+		else
+		{
+			MergeSortTextICase(getArg(0), getArg(1), partSize);
+		}
 	}
 	else
 	{
-		MergeSortText(getArg(0), getArg(1), partSize);
+		if(argIs("/1"))
+		{
+			MergeSortText(getArg(0), getArg(0), partSize);
+		}
+		else
+		{
+			MergeSortText(getArg(0), getArg(1), partSize);
+		}
 	}
 }

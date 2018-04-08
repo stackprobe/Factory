@@ -135,7 +135,7 @@ static void BackupFile(char *file)
 		}
 		for(; ; ) {
 			coExecute_x(xcout("REN \"%s\" \"%s\"", file, getLocal(oldFile)));
-			if(!existFile(file) && existFile(oldFile)) break;
+			if(!existFile(file)) break;
 			coSleep(2000);
 		}
 	}

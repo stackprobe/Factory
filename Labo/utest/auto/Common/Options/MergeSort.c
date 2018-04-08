@@ -187,7 +187,7 @@ static void Test_MergeFile(void)
 	for(db = 0; db <= 1; db++)
 	for(s1 = 0; s1 <= 1; s1++)
 	for(s2 = 0; s2 <= 1; s2++)
-	for(c = 0; c < 100; c++)
+	for(c = 0; c < 10; c++)
 	{
 		DoTest2(d1, d2, db, s1, s2, 100, 100, 0, 100);
 	}
@@ -202,6 +202,6 @@ int main(int argc, char **argv)
 {
 	mt19937_init();
 
-//	Test_MergeSort();
+	Test_MergeSort();
 	Test_MergeFile();
 }
