@@ -168,7 +168,8 @@ static void DistributeOne(autoList_t *mail, char *groupName, char *memberFrom, c
 		strstr(memberTo, ".vodafone.ne.jp") || // @?.vodafone.ne.jp
 		strstr(memberTo, "@gmail.com")
 		*/
-		strstr(memberTo, "@di.pdx.ne.jp")
+//		strstr(memberTo, "@di.pdx.ne.jp") // del @ 2018.4.8
+		0
 		)
 	{
 		addElement(sendData, (uint)xcout("From: %s", memberFrom));
