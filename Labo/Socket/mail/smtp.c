@@ -160,5 +160,5 @@ int sendMailEx(char *smtpServer, uint portno, char *sendFrom, char *sendTo, auto
 }
 int sendMailEx2(char *smtpServer, uint portno, char *sendFrom, char *sendTo, autoList_t *mail)
 {
-	return sendMailEx(smtpServer, portno, sendFrom, sendTo, mail, 6, 20000);
+	return sendMailEx(smtpServer, portno, sendFrom, sendTo, mail, 15, 20000);
 }

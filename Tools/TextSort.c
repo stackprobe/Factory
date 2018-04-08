@@ -1,5 +1,7 @@
 // smpl
-
+/*
+	TextSort.exe [/S PART-SIZE] [/I] (/1 INPUT-TEXT-FILE | INPUT-TEXT-FILE-1 INPUT-TEXT-FILE-2)
+*/
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\MergeSort.h"
 
