@@ -1220,6 +1220,11 @@ readArgs:
 		cout("自動コメントを削除しました。\n");
 		goto endProc;
 	}
+	if(argIs("/XR")) // rrum 用
+	{
+		InputDirExt = "rum";
+		goto readArgs;
+	}
 	Rum(hasArgs(1) ? nextArg() : c_dropDir());
 
 endProc:

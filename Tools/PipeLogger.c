@@ -109,7 +109,7 @@ int main(int argc, char **argv)
 	}
 
 	{
-		LogFile = getOutFile("PipeLog.txt");
+		LogFile = getOutFile_x(xcout("PipeLog_%s.txt", c_makeCompactStamp(NULL)));
 		PipeLogger();
 		openOutDir();
 		return;
