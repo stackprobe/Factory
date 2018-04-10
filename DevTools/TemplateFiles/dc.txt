@@ -47,7 +47,6 @@ void $PMain(void)
 {
 	SetCurtain();
 	FreezeInput();
-	ActFrame = 0;
 
 //	MusicPlay(MUS_XXX);
 
