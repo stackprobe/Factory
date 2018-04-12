@@ -8,6 +8,40 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\CRandom.h"
 
+static uint UTIntoParentStep;
+
+static char *FindUserTemplate(void)
+{
+	char *dir = getCwd();
+
+	for(; ; )
+	{
+		char *tmplDir = combine(dir, "Template");
+		char *tmplSln;
+
+		tmplSln = combine(tmplDir, "TTTT.sln");
+
+		if(existFile(tmplSln))
+		{
+			memFree(dir);
+			memFree(tmplSln);
+
+			cout("User_Template: %s\n", tmplDir);
+
+			return tmplDir;
+		}
+		memFree(tmplDir);
+		memFree(tmplSln);
+
+		dir = changeLocal_xc(dir, "");
+
+		errorCase(strlen(dir) == 2);
+
+		UTIntoParentStep++;
+	}
+	error(); // never
+	return NULL;
+}
 static void RenamePaths(char *fromPtn, char *toPtn)
 {
 	autoList_t *paths = ls(".");
@@ -59,7 +93,44 @@ static void ChangeAppIdent(char *srcFile)
 	memFree(src);
 	memFree(uuid);
 }
-static void Main2(char *tmplProject, char *tmplDir)
+static void ResolveRelHintPath(char *file)
+{
+	char *text = readText_b(file);
+	char *p;
+	int modified = 0;
+
+	text = strrm(text, 128000000); // XXX
+	p = text;
+
+	while(p = strstrNext(p, "<HintPath>"))
+	{
+		if(startsWith(p, "..\\"))
+		{
+			char *trailer = strx(p);
+			uint c;
+
+			for(c = 0; c < UTIntoParentStep; c++)
+			{
+				*p++ = '.';
+				*p++ = '.';
+				*p++ = '\\';
+			}
+			strcpy(p, trailer);
+
+			memFree(trailer);
+
+			p = strstrNext(p, "</HintPath>");
+			errorCase(!p);
+
+			modified = 1;
+		}
+	}
+	if(modified)
+		writeOneLineNoRet_b(file, text);
+
+	memFree(text);
+}
+static void Main2(char *tmplProject, char *tmplDir, int utFlag)
 {
 	char *project = nextArg();
 
@@ -80,6 +151,17 @@ static void Main2(char *tmplProject, char *tmplDir)
 		addCwd(project);
 		{
 			ChangeAppIdent("Program.cs");
+
+			if(utFlag)
+			{
+				char *csprojFile = xcout("%s.csproj", project);
+
+				if(existFile(csprojFile))
+				{
+					ResolveRelHintPath(csprojFile);
+				}
+				memFree(csprojFile);
+			}
 		}
 		unaddCwd();
 
@@ -95,56 +177,26 @@ static void Main2(char *tmplProject, char *tmplDir)
 	}
 	unaddCwd();
 }
-static char *FindUserTemplate(void)
-{
-	char *dir = getCwd();
-
-	for(; ; )
-	{
-		char *tmplDir = combine(dir, "Template");
-		char *tmplSln;
-
-		tmplSln = combine(tmplDir, "TTTT.sln");
-
-		if(existFile(tmplSln))
-		{
-			memFree(dir);
-			memFree(tmplSln);
-
-			cout("User_Template: %s\n", tmplDir);
-
-			return tmplDir;
-		}
-		memFree(tmplDir);
-		memFree(tmplSln);
-
-		dir = changeLocal_xc(dir, "");
-
-		errorCase(strlen(dir) == 2);
-	}
-	error(); // never
-	return NULL;
-}
 int main(int argc, char **argv)
 {
 	if(argIs("C"))
 	{
-		Main2("CCCC", "C:\\Dev\\CSharp\\Template\\CUIProgramTemplate");
+		Main2("CCCC", "C:\\Dev\\CSharp\\Template\\CUIProgramTemplate", 0);
 		return;
 	}
 	if(argIs("F"))
 	{
-		Main2("FFFF", "C:\\Dev\\CSharp\\Template\\FormApplicationTemplate");
+		Main2("FFFF", "C:\\Dev\\CSharp\\Template\\FormApplicationTemplate", 0);
 		return;
 	}
 	if(argIs("T"))
 	{
-		Main2("TTTT", "C:\\Dev\\CSharp\\Template\\TaskTrayTemplate");
+		Main2("TTTT", "C:\\Dev\\CSharp\\Template\\TaskTrayTemplate", 0);
 		return;
 	}
 	if(argIs("TT"))
 	{
-		Main2("TTTT", FindUserTemplate()); // g
+		Main2("TTTT", FindUserTemplate(), 1); // g
 		return;
 	}
 	cout("usage: newcs (CÅbFÅbTÅbTT) ÉvÉçÉWÉFÉNÉgñº\n");
