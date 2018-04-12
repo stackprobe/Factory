@@ -101,6 +101,13 @@ static void CpFiles(char *rRootDir, char *wRootDir, autoList_t *files)
 
 		copyFile(rFile, wFile);
 
+		{
+			uint64 timeW;
+
+			getFileStamp(rFile, NULL, NULL, &timeW);
+			setFileStamp(wFile, 0ui64, 0ui64, timeW);
+		}
+
 		memFree(rFile);
 		memFree(wFile);
 	}
