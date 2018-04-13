@@ -142,4 +142,6 @@ int main(int argc, char **argv)
 
 	memFree(program);
 	memFree(prms);
+
+	return lastSystemRet;
 }
