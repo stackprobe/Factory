@@ -5,6 +5,8 @@ autoList_t *mergeConstLines(autoList_t *lines1, autoList_t *lines2);
 autoList_t *selectLines(autoList_t *lines);
 char *selectLine(autoList_t *lines);
 
+extern autoList_t *merge2_bothExist2;
+
 void merge2(autoList_t *list1, autoList_t *list2, sint (*funcComp)(uint, uint), autoList_t *onlyExist1, autoList_t *bothExist, autoList_t *onlyExist2);
 void mergeLines2(autoList_t *list1, autoList_t *list2, autoList_t *onlyExist1, autoList_t *bothExist, autoList_t *onlyExist2);
 void mergeLines2ICase(autoList_t *lines1, autoList_t *lines2, autoList_t *onlyExist1, autoList_t *bothExist, autoList_t *onlyExist2);

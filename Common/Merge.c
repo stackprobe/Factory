@@ -181,6 +181,8 @@ char *selectLine(autoList_t *lines) // ret == NULL: ƒLƒƒƒ“ƒZƒ‹‚µ‚½B
 	return retLine;
 }
 
+autoList_t *merge2_bothExist2; // extra-prm
+
 /*
 	(list1, list2): sorted
 */
@@ -234,6 +236,10 @@ void merge2(autoList_t *list1, autoList_t *list2, sint (*funcComp)(uint, uint), 
 			if(bothExist)
 			{
 				addElement(bothExist, getElement(list1, p));
+			}
+			if(merge2_bothExist2)
+			{
+				addElement(merge2_bothExist2, getElement(list2, q));
 			}
 			p++;
 			q++;
