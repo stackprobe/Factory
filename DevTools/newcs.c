@@ -2,6 +2,9 @@
 	newcs c プロジェクト名
 	newcs f プロジェクト名
 	newcs t プロジェクト名
+	newcs c2 プロジェクト名
+	newcs f2 プロジェクト名
+	newcs t2 プロジェクト名
 	newcs tt プロジェクト名
 */
 
@@ -130,7 +133,7 @@ static void ResolveRelHintPath(char *file)
 
 	memFree(text);
 }
-static void Main2(char *tmplProject, char *tmplDir, int utFlag)
+static void Main2(char *tmplProject, char *tmplDir, int utFlag, int m2Flag)
 {
 	char *project = nextArg();
 
@@ -172,32 +175,61 @@ static void Main2(char *tmplProject, char *tmplDir, int utFlag)
 
 //		execute("START .");
 
-		execute_x(xcout("%s.sln", project)); // zantei
-		execute("START /MAX C:\\Dev\\CSharp\\Module2\\Module2"); // zantei
+		execute_x(xcout("%s.sln", project));
+
+		if(m2Flag)
+			execute("START /MAX C:\\Dev\\CSharp\\Module2\\Module2");
 	}
 	unaddCwd();
+
+	// zantei -- Chcolate.dll のビルド
+	{
+		if(!existFile("C:\\Dev\\CSharp\\Chocolate\\Chcolate\\bin\\Release\\Chcolate.dll"))
+		{
+			addCwd("C:\\Dev\\CSharp\\Chocolate");
+			{
+				coExecute("cx **");
+			}
+			unaddCwd();
+		}
+	}
 }
 int main(int argc, char **argv)
 {
 	if(argIs("C"))
 	{
-		Main2("CCCC", "C:\\Dev\\CSharp\\Template\\CUIProgramTemplate", 0);
+		Main2("CCCC", "C:\\Dev\\CSharp\\Template\\CUIProgramTemplate", 0, 1);
 		return;
 	}
 	if(argIs("F"))
 	{
-		Main2("FFFF", "C:\\Dev\\CSharp\\Template\\FormApplicationTemplate", 0);
+		Main2("FFFF", "C:\\Dev\\CSharp\\Template\\FormApplicationTemplate", 0, 1);
 		return;
 	}
 	if(argIs("T"))
 	{
-		Main2("TTTT", "C:\\Dev\\CSharp\\Template\\TaskTrayTemplate", 0);
+		Main2("TTTT", "C:\\Dev\\CSharp\\Template\\TaskTrayTemplate", 0, 1);
+		return;
+	}
+	if(argIs("C2"))
+	{
+		Main2("CCCC", "C:\\Dev\\CSharp\\Template2\\CUIProgramTemplate", 0, 0);
+		return;
+	}
+	if(argIs("F2"))
+	{
+		Main2("FFFF", "C:\\Dev\\CSharp\\Template2\\FormApplicationTemplate", 0, 0);
+		return;
+	}
+	if(argIs("T2"))
+	{
+		Main2("TTTT", "C:\\Dev\\CSharp\\Template2\\TaskTrayTemplate", 0, 0);
 		return;
 	}
 	if(argIs("TT"))
 	{
-		Main2("TTTT", FindUserTemplate(), 1); // g
+		Main2("TTTT", FindUserTemplate(), 1, 0); // g
 		return;
 	}
-	cout("usage: newcs (C｜F｜T｜TT) プロジェクト名\n");
+	cout("usage: newcs (C｜F｜T｜C2｜F2｜T2｜TT) プロジェクト名\n");
 }
