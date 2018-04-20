@@ -178,21 +178,9 @@ static void Main2(char *tmplProject, char *tmplDir, int utFlag, int m2Flag)
 		execute_x(xcout("%s.sln", project));
 
 		if(m2Flag)
-			execute("START /MAX C:\\Dev\\CSharp\\Module2\\Module2");
+			execute("START /MAX C:\\Dev\\CSharp\\Chocolate\\Chocolate");
 	}
 	unaddCwd();
-
-	// zantei -- Chcolate.dll ‚Ìƒrƒ‹ƒh
-	{
-		if(!existFile("C:\\Dev\\CSharp\\Chocolate\\Chcolate\\bin\\Release\\Chcolate.dll"))
-		{
-			addCwd("C:\\Dev\\CSharp\\Chocolate");
-			{
-				coExecute("cx **");
-			}
-			unaddCwd();
-		}
-	}
 }
 int main(int argc, char **argv)
 {
