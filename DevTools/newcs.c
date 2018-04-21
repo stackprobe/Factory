@@ -184,39 +184,51 @@ static void Main2(char *tmplProject, char *tmplDir, int utFlag, int m2Flag)
 }
 int main(int argc, char **argv)
 {
+	// zantei -- Chocolate.dll ÇÉrÉãÉhÇ∑ÇÈÅB
+	{
+		if(!existFile("C:\\Dev\\CSharp\\Chocolate\\Chocolate\\bin\\Release\\Chocolate.dll"))
+		{
+			addCwd("C:\\Dev\\CSharp\\Chocolate");
+			{
+				coExecute("cx Chocolate.sln");
+			}
+			unaddCwd();
+		}
+	}
+
 	if(argIs("C"))
 	{
-		Main2("CCCC", "C:\\Dev\\CSharp\\Template\\CUIProgramTemplate", 0, 1);
+		Main2("CCCCTMPL", "C:\\Dev\\CSharp\\Template\\CUIProgramTemplate", 0, 1);
 		return;
 	}
 	if(argIs("F"))
 	{
-		Main2("FFFF", "C:\\Dev\\CSharp\\Template\\FormApplicationTemplate", 0, 1);
+		Main2("FFFFTMPL", "C:\\Dev\\CSharp\\Template\\FormApplicationTemplate", 0, 1);
 		return;
 	}
 	if(argIs("T"))
 	{
-		Main2("TTTT", "C:\\Dev\\CSharp\\Template\\TaskTrayTemplate", 0, 1);
+		Main2("TTTTTMPL", "C:\\Dev\\CSharp\\Template\\TaskTrayTemplate", 0, 1);
 		return;
 	}
 	if(argIs("C2"))
 	{
-		Main2("CCCC", "C:\\Dev\\CSharp\\Template2\\CUIProgramTemplate", 0, 0);
+		Main2("CCCCTMPL", "C:\\Dev\\CSharp\\Template2\\CUIProgramTemplate", 0, 0);
 		return;
 	}
 	if(argIs("F2"))
 	{
-		Main2("FFFF", "C:\\Dev\\CSharp\\Template2\\FormApplicationTemplate", 0, 0);
+		Main2("FFFFTMPL", "C:\\Dev\\CSharp\\Template2\\FormApplicationTemplate", 0, 0);
 		return;
 	}
 	if(argIs("T2"))
 	{
-		Main2("TTTT", "C:\\Dev\\CSharp\\Template2\\TaskTrayTemplate", 0, 0);
+		Main2("TTTTTMPL", "C:\\Dev\\CSharp\\Template2\\TaskTrayTemplate", 0, 0);
 		return;
 	}
 	if(argIs("TT"))
 	{
-		Main2("TTTT", FindUserTemplate(), 1, 0); // g
+		Main2("UUUUTMPL", FindUserTemplate(), 1, 0); // g
 		return;
 	}
 	cout("usage: newcs (CÅbFÅbTÅbC2ÅbF2ÅbT2ÅbTT) ÉvÉçÉWÉFÉNÉgñº\n");
