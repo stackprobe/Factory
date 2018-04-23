@@ -22,7 +22,7 @@ static char *FindUserTemplate(void)
 		char *tmplDir = combine(dir, "Template");
 		char *tmplSln;
 
-		tmplSln = combine(tmplDir, "TTTT.sln");
+		tmplSln = combine(tmplDir, "UUUUTMPL.sln");
 
 		if(existFile(tmplSln))
 		{
