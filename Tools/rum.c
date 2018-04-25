@@ -56,6 +56,7 @@
 
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\OpenSource\md5.h"
+#include "C:\Factory\SubTools\libs\ChangePETimeDateStamp.h"
 
 #define EXT_STOREDIR "rum"
 
@@ -168,6 +169,29 @@ static autoList_t *SelectStamps(char *storeDir)
 	}
 	releaseDim(revisions, 1);
 	return stamps;
+}
+static void PostRestoreFile(char *wFile)
+{
+	char *wExt = getExt(wFile);
+
+	if(
+		!_stricmp(wExt, "DLL") ||
+		!_stricmp(wExt, "EXE") ||
+		!_stricmp(wExt, "LIB") ||
+		!_stricmp(wExt, "OBJ")
+		)
+	{
+		uint t = GetPETimeDateStamp(wFile);
+
+		if(t)
+		{
+			uint64 stamp = getFileStampByTime((time_t)t);
+
+			cout("%I64u > %s\n", stamp, wFile);
+
+			setFileStamp(wFile, 0ui64, 0ui64, stamp);
+		}
+	}
 }
 
 static void EditComment(char *storeDir)
@@ -520,6 +544,7 @@ static void FileHistory(char *storeDir, int fromLastRevisionFlag, int lastFileOn
 				restoreFile = combine_cx(restoreRootDir, xcout("%s_%s", stamp, outStock));
 
 			copyFile(getLine(histHashes, index), restoreFile);
+			PostRestoreFile(restoreFile);
 			memFree(restoreFile);
 		}
 		memFree(outStock);
@@ -654,6 +679,7 @@ static void OneRestore(char *storeDir, char *targetStamp, char *restoreDir) // s
 		cout("> %s\n", file);
 
 		copyFile(stockFile, file);
+		PostRestoreFile(file);
 
 		memFree(file);
 	}

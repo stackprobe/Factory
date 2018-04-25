@@ -64,3 +64,39 @@ void ChangeAllPETimeDateStamp(char *dir, uint t)
 	}
 	releaseDim(files, 1);
 }
+uint GetPETimeDateStamp(char *file) // ret: 0 == Žæ“¾Ž¸”s
+{
+	FILE *fp = fileOpen(file, "rb");
+	uint peHedPos;
+	uint t = 0;
+
+	LOGPOS();
+
+	if(
+		readChar(fp) != 'M' ||
+		readChar(fp) != 'Z'
+		)
+		goto endFunc;
+
+	fileSeek(fp, SEEK_SET, 0x3c);
+
+	peHedPos = readValue(fp);
+
+	fileSeek(fp, SEEK_SET, peHedPos);
+
+	if(
+		readChar(fp) != 'P' ||
+		readChar(fp) != 'E' ||
+		readChar(fp) != 0x00 ||
+		readChar(fp) != 0x00
+		)
+		goto endFunc;
+
+	fileSeek(fp, SEEK_CUR, 0x04);
+
+	t = readValue(fp);
+
+endFunc:
+	fileClose(fp);
+	return t;
+}
