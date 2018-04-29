@@ -136,10 +136,15 @@ static char *GetPseudoIP(char *name)
 	{
 		uchar *p = strchr(name, '\0') - 4; // /Jオプションがあるけど、いちおうu付けておく...
 
-		sprintf(buff, "%u.%u.%u.%u", p[0], p[1], p[2], p[3]);
+		sprintf(buff, "%u.%u.%u.%u"
+			,(p[0] + 10) % 90
+			,(p[1] + 10) % 90
+			,(p[2] + 10) % 90
+			,(p[3] + 10) % 90
+			);
 	}
 	else
-		strcpy(buff, "255.255.255.255");
+		strcpy(buff, "199.0.99.99");
 
 	return buff;
 }
