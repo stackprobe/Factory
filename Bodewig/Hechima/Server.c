@@ -128,9 +128,9 @@ static char *GetNowStr(void)
 
 	return buff;
 }
-static char *GetPseudoIP(char *name)
+static char *GetPseudoIP(char *name) // ‚È‚ñ‚¿‚á‚Á‚ÄIP‚ğ•Ô‚·B
 {
-	static char buff[16]; // maxlen: "255.255.255.255"
+	static char buff[16]; // maxlen: "255.255.255.255" <--- ÀÛ‚Í "99.99.99.99" -- ‚Ö‚¿‚Ü‰ü‚Ì‚½‚ß‚ÉIP‚Íí‚É11•¶š‚Å‚È‚¯‚ê‚Î‚È‚ç‚È‚¢B
 
 	if(4 <= strlen(name))
 	{
