@@ -77,4 +77,5 @@ char *getAppDataEnv(char *name, char *defval);
 uint getAppDataEnv32(char *name, uint defval);
 
 int isWindows10(void);
+int isWindows10orLater(void);
 void getWindowsVer(uint ver[3]);

@@ -697,6 +697,8 @@ void setArgIndex(uint index)
 
 // ---- innerResPathFltr ----
 
+// 主に C:\Factory の配下 との連携を想定する。
+
 static char *FPP_Path;
 
 static int FindPathParent(char *dir, char *localPath) // dir: abs_dir
@@ -845,6 +847,12 @@ int isWindows10(void)
 	uint ver[3];
 	getWindowsVer(ver);
 	return ver[0] == 10;
+}
+int isWindows10orLater(void)
+{
+	uint ver[3];
+	getWindowsVer(ver);
+	return ver[0] >= 10;
 }
 void getWindowsVer(uint ver[3])
 {

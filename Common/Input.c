@@ -427,7 +427,7 @@ char *dropPath(void)
 {
 	char *path;
 
-	if(isWindows10())
+	if(isWindows10orLater())
 		return DropPath_Win10();
 
 	path = strx("");
