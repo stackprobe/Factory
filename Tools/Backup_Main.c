@@ -49,6 +49,7 @@ static autoList_t *GetTargetDirs(void)
 			!_stricmp(dir, "C:\\RECYCLER") ||
 			!_stricmp(dir, "C:\\System Volume Information") ||
 			!_stricmp(dir, "C:\\WINDOWS") || // for XP, 7
+			!_stricmp(dir, "C:\\Windows.old") || // for 10
 			!_stricmp(dir, "C:\\WINNT") || // for 2000
 			!_stricmp(dir, "C:\\$Recycle.Bin") || // for 7
 			!_stricmp(dir, "C:\\Config.Msi") || // for 7
