@@ -30,6 +30,28 @@ int main(int argc, char **argv)
 
 		return;
 	}
+	if(argIs("/FF"))
+	{
+		uint64 value = toValue64(nextArg());
+		uint64 factors[64];
+		uint index;
+
+		Factorization(value, factors);
+
+		cout("%I64u factors are:\n", value);
+
+		for(index = 0; factors[index] != 0; )
+		{
+			uint x;
+
+			for(x = 1; factors[index] == factors[index + x]; x++);
+
+			cout("%I64u\t%u\n", factors[index], x);
+
+			index += x;
+		}
+		return;
+	}
 	if(argIs("/C"))
 	{
 		uint64 minval;
