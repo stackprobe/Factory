@@ -119,7 +119,7 @@ void resetTable(autoTable_t *i)
 
 void swapTableCell(autoTable_t *i, uint x1, uint y1, uint x2, uint y2)
 {
-	uint swap_e = getTableCell(i, x1, y2);
+	uint swap_e = getTableCell(i, x1, y1);
 
 	setTableCell(i, x1, y1, getTableCell(i, x2, y2));
 	setTableCell(i, x2, y2, swap_e);
@@ -129,10 +129,30 @@ void twistTable(autoTable_t *i) // [0][0] - [max][max] ‚ðŽ²‚É”½“]
 	uint x;
 	uint y;
 
-	for(x = 1; x < getTableWidth(i); x++)
-	for(y = 0; y < x; y++)
+	if(getTableWidth(i) == getTableHeight(i))
 	{
-		swapTableCell(i, x, y, y, x);
+		for(x = 1; x < getTableWidth(i); x++)
+		for(y = 0; y < x; y++)
+		{
+			swapTableCell(i, x, y, y, x);
+		}
+	}
+	else
+	{
+		autoList_t *rowsNew = newList();
+
+		for(x = 0; x < getTableWidth(i); x++)
+		{
+			autoList_t *rowNew = newList();
+
+			for(y = 0; y < getTableHeight(i); y++)
+			{
+				addElement(rowNew, getTableCell(i, x, y));
+			}
+			addElement(rowsNew, (uint)rowNew);
+		}
+		releaseDim_BR(i->Rows, 2, NULL);
+		i->Rows = rowsNew;
 	}
 }
 void vTurnTable(autoTable_t *i) // [0][mid] - [max][mid] ‚ðŽ²‚É”½“]
