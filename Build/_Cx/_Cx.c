@@ -400,21 +400,45 @@ endfunc:
 	memFree(solution);
 	memFree(exemanifest);
 }
-static void PostDeepBuild(int shallowMode)
+static void BeforeDeepBuild(int shallowMode)
 {
-	cout("PostDeepBuild start\n");
+#define PROG_NAME "BeforeBuild"
+
+	cout("BeforeDeepBuild start\n");
 
 	if(shallowMode)
 	{
-		coExecute("runsub.exe /-S Built");
-		coExecute("runsub.exe /-S _Built");
+		coExecute("runsub.exe /-S " PROG_NAME);
+		coExecute("runsub.exe /-S _" PROG_NAME);
 	}
 	else
 	{
-		coExecute("runsub.exe Built");
-		coExecute("runsub.exe _Built");
+		coExecute("runsub.exe " PROG_NAME);
+		coExecute("runsub.exe _" PROG_NAME);
 	}
-	cout("PostDeepBuild ended\n");
+	cout("BeforeDeepBuild ended\n");
+
+#undef PROG_NAME
+}
+static void AfterDeepBuild(int shallowMode)
+{
+#define PROG_NAME "Built"
+
+	cout("AfterDeepBuild start\n");
+
+	if(shallowMode)
+	{
+		coExecute("runsub.exe /-S " PROG_NAME);
+		coExecute("runsub.exe /-S _" PROG_NAME);
+	}
+	else
+	{
+		coExecute("runsub.exe " PROG_NAME);
+		coExecute("runsub.exe _" PROG_NAME);
+	}
+	cout("AfterDeepBuild ended\n");
+
+#undef PROG_NAME
 }
 static void DeepBuild(int shallowMode)
 {
@@ -478,6 +502,10 @@ static void DeepBuild(int shallowMode)
 
 	releaseAutoList(exeSources);
 
+	if(OptimizeLevel != CLEANING_MODE)
+	{
+		BeforeDeepBuild(shallowMode);
+	}
 	foreach(files, file, index)
 	{
 		uint remCount = getCount(files) - index;
@@ -502,12 +530,12 @@ static void DeepBuild(int shallowMode)
 			memFree(dir);
 		}
 	}
-	releaseDim(files, 1);
-
 	if(OptimizeLevel != CLEANING_MODE)
 	{
-		PostDeepBuild(shallowMode);
+		AfterDeepBuild(shallowMode);
 	}
+	releaseDim(files, 1);
+
 	cout("+------------+\n");
 	cout("| SUCCESSFUL |\n");
 	cout("+------------+\n");

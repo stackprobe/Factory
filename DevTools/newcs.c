@@ -6,6 +6,8 @@
 	newcs f2 プロジェクト名
 	newcs t2 プロジェクト名
 	newcs tt プロジェクト名
+
+	newcs /r
 */
 
 #include "C:\Factory\Common\all.h"
@@ -186,7 +188,16 @@ int main(int argc, char **argv)
 {
 	// zantei -- Chocolate.dll をビルドする。
 	{
-		if(!existFile("C:\\Dev\\CSharp\\Chocolate\\Chocolate\\bin\\Release\\Chocolate.dll"))
+		if(argIs("/R")) // リビルド
+		{
+			addCwd("C:\\Dev\\CSharp\\Chocolate");
+			{
+				coExecute("qq");
+				coExecute("cx Chocolate.sln");
+			}
+			unaddCwd();
+		}
+		else if(!existFile("C:\\Dev\\CSharp\\Chocolate\\Chocolate\\bin\\Release\\Chocolate.dll"))
 		{
 			addCwd("C:\\Dev\\CSharp\\Chocolate");
 			{
