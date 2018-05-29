@@ -8,10 +8,13 @@ IF "%3" == "" (
 	%~dp0mmpc.exe /S upload upload /S password %3 /F file %2 %X_HPUT_UUID%_content.tmp
 )
 IF NOT EXIST %X_HPUT_UUID%_content.tmp GOTO END
+C:\Factory\Tools\wait.exe 6
+IF NOT ERRORLEVEL 1 (
 IF "%5" == "" (
 	%~dp0hget.exe /C %X_HPUT_UUID%_content.tmp /O * %1
 ) ELSE (
 	%~dp0hget.exe /PS %4 /PP %5 /C %X_HPUT_UUID%_content.tmp /O * %1
+)
 )
 DEL %X_HPUT_UUID%_content.tmp
 SET X_HPUT_UUID=
