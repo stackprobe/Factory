@@ -5,23 +5,28 @@
 #include "C:\Factory\Common\all.h"
 
 #define Clean() \
-	(coExecute("qq -f"))
+	(coExecute("solclean ."))
+//	(coExecute("qq -f")) // 1.txt にリダイレクトしたときマズい。
 
 #define Build() \
-	(coExecute("cx *"))
+	coExecute("cx *")
 
 static char *SlnFile;
 static char *ProjFile;
+static char *ProjName;
 static char *ProjDir;
 static char *OutFile;
+static char *ProjBackupFile;
 
 static void ProcProj(int checkOnly)
 {
 	cout("checkOnly: %d\n", checkOnly);
 	cout("ProjFile: %s\n", ProjFile);
 
+	ProjName = changeExt(getLocal(ProjFile), "");
 	ProjDir = getParent(ProjFile);
 
+	cout("ProjName: %s\n", ProjName);
 	cout("ProjDir: %s\n", ProjDir);
 
 	Clean();
@@ -33,9 +38,14 @@ static void ProcProj(int checkOnly)
 		uint index;
 
 		foreach(files, file, index)
-			if(!mbs_stristr(file, "bin\\Release") || _stricmp(getExt(file), "exe")) // DLL は対象外
+		{
+			if(
+				!mbs_stristr(file, "\\bin\\Release\\") ||
+				!mbs_stristr(getLocal(file), ProjName) ||
+				_stricmp(getExt(file), "exe") && _stricmp(getExt(file), "dll")
+				)
 				file[0] = '\0';
-
+		}
 		trimLines(files);
 
 		errorCase_m(getCount(files) != 1, "出力ファイルが１つに絞れません。");
@@ -50,6 +60,12 @@ static void ProcProj(int checkOnly)
 
 	errorCase_m(existFile(OutFile), "クリーンアップしても出力ファイルが削除されません。");
 
+	ProjBackupFile = addExt(strx(ProjFile), "bak");
+
+	cout("ProjBackupFile: %s\n", ProjBackupFile);
+
+	errorCase_m(existPath(ProjBackupFile), "バックアップファイルが残っています。");
+
 	if(checkOnly)
 		goto checkOnlyEnd;
 
@@ -60,10 +76,14 @@ static void ProcProj(int checkOnly)
 	LOGPOS();
 
 checkOnlyEnd:
+	memFree(ProjName);
 	memFree(ProjDir);
 	memFree(OutFile);
+	memFree(ProjBackupFile);
+	ProjName = NULL;
 	ProjDir = NULL;
 	OutFile = NULL;
+	ProjBackupFile = NULL;
 
 	LOGPOS();
 }
@@ -86,6 +106,8 @@ static void TrimCsProjCs(void)
 		SlnFile = getLine(files, 0);
 		releaseAutoList(files);
 	}
+
+	cout("SlnFile: %s\n", SlnFile);
 
 	// set ProjFile + call (CheckProj, ProcProj)
 	{
