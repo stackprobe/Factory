@@ -686,6 +686,20 @@ void buffUnreadBuffer(BUFF *bp)
 	bp->Index = getSize(bp->Buffer);
 }
 
+// c_
+char *c_nnReadLine(FILE *fp)
+{
+	static char *stock;
+	memFree(stock);
+	return stock = nnReadLine(fp);
+}
+char *c_neReadLine(FILE *fp)
+{
+	static char *stock;
+	memFree(stock);
+	return stock = neReadLine(fp);
+}
+
 // _x
 FILE *fileOpen_cx(char *file, char *mode)
 {

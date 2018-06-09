@@ -80,6 +80,10 @@ int buffReadChar(BUFF *bp);
 void buffUnreadChar(BUFF *bp, int chr);
 void buffUnreadBuffer(BUFF *bp);
 
+// c_
+char *c_nnReadLine(FILE *fp);
+char *c_neReadLine(FILE *fp);
+
 // _x
 FILE *fileOpen_cx(char *file, char *mode);
 FILE *fileOpen_xc(char *file, char *mode);

@@ -9,7 +9,10 @@
 //	(coExecute("qq -f")) // 1.txt にリダイレクトしたときマズい。
 
 #define Build() \
-	coExecute("cx *")
+	(coExecute("cx *"))
+
+#define WriteProjFile(file, lines) \
+	(writeOneLineNoRet_cx((file), untokenize((lines), "\n")))
 
 static char *SlnFile;
 static char *ProjFile;
@@ -17,7 +20,87 @@ static char *ProjName;
 static char *ProjDir;
 static char *OutFile;
 static char *ProjBackupFile;
+static autoList_t *ProjLines;
+static autoList_t *DeletableCsFiles;
 
+static int TryBuild(void)
+{
+	WriteProjFile(ProjFile, ProjLines);
+
+	Clean();
+	Build();
+
+	removeFile(ProjFile);
+
+	return existFile(OutFile);
+}
+static int TrimProjLines(void)
+{
+	char *line;
+	uint index;
+	int trimmed = 0;
+
+	foreach(ProjLines, line, index)
+	{
+		if(startsWith(line, "    <Compile Include=\"") && endsWith(line, "\" />"))
+		{
+			char *csFile = ne_strchr(line, '"') + 1;
+			char *p;
+
+			p = ne_strchr(csFile, '"');
+			*p = '\0';
+			csFile = strx(csFile);
+			*p = '"';
+
+			cout("csFile.1: %s\n", csFile);
+
+			if(
+				isFairRelPath(csFile, strlen(ProjDir)) && // ? SJISファイル名 && ProjDirの配下
+				!_stricmp(getExt(csFile), "cs") && // ? .csファイル
+				!startsWithICase(csFile, "Properties\\") // ? ! 除外
+				)
+			{
+				csFile = combine_cx(ProjDir, csFile);
+
+				cout("csFile.2: %s\n", csFile);
+
+				if(existFile(csFile))
+				{
+					desertElement(ProjLines, index);
+
+					if(TryBuild())
+					{
+						memFree(line);
+						addElement(DeletableCsFiles, (uint)strx(csFile));
+					}
+					else
+						insertElement(ProjLines, index, (uint)line); // 元に戻す。
+				}
+			}
+			memFree(csFile);
+		}
+	}
+	return trimmed;
+}
+static int ConfirmDeleteCsFiles(void)
+{
+	char *file;
+	uint index;
+	char *line;
+	int ret;
+
+	cout("【確認】\n");
+
+	foreach(DeletableCsFiles, file, index)
+		cout("削除対象：%s\n", file);
+
+	cout("削除するには”DELCS”と入力してね。\n");
+	line = coInputLine();
+	ret = !strcmp(line, "DELCS");
+	memFree(line);
+	cout("ret: %d\n", ret);
+	return ret;
+}
 static void ProcProj(int checkOnly)
 {
 	cout("checkOnly: %d\n", checkOnly);
@@ -66,12 +149,48 @@ static void ProcProj(int checkOnly)
 
 	errorCase_m(existPath(ProjBackupFile), "バックアップファイルが残っています。");
 
+	ProjLines = readLines(ProjFile);
+
+	// check ProjLines -- 2bs
+	{
+		char *wkFile = makeTempPath(NULL);
+
+		WriteProjFile(wkFile, ProjLines);
+
+		errorCase(!isSameFile(wkFile, ProjFile));
+
+		removeFile(wkFile);
+		memFree(wkFile);
+	}
+
 	if(checkOnly)
 		goto checkOnlyEnd;
 
 	LOGPOS();
 
+	moveFile(ProjFile, ProjBackupFile);
 
+	DeletableCsFiles = newList();
+
+	while(TrimProjLines());
+
+	if(ConfirmDeleteCsFiles())
+	{
+		char *file;
+		uint index;
+
+		WriteProjFile(ProjFile, ProjLines);
+
+		foreach(DeletableCsFiles, file, index)
+			semiRemovePath(file);
+
+		semiRemovePath(ProjBackupFile);
+	}
+	else
+		moveFile(ProjBackupFile, ProjFile);
+
+	releaseDim(DeletableCsFiles, 1);
+	DeletableCsFiles = NULL;
 
 	LOGPOS();
 
@@ -80,10 +199,12 @@ checkOnlyEnd:
 	memFree(ProjDir);
 	memFree(OutFile);
 	memFree(ProjBackupFile);
+	releaseDim(ProjLines, 1);
 	ProjName = NULL;
 	ProjDir = NULL;
 	OutFile = NULL;
 	ProjBackupFile = NULL;
+	ProjLines = NULL;
 
 	LOGPOS();
 }
@@ -101,13 +222,24 @@ static void TrimCsProjCs(void)
 
 		trimLines(files);
 
-		errorCase_m(getCount(files) != 1, "ソリューションを１つに絞れません。");
+		errorCase_m(getCount(files) != 1, "ソリューションを１つに絞れません。ソリューションファイルと同じ場所から実行して下さい。");
 
 		SlnFile = getLine(files, 0);
 		releaseAutoList(files);
 	}
 
 	cout("SlnFile: %s\n", SlnFile);
+
+	// check vcs 2010 express
+	{
+		FILE *fp = fileOpen(SlnFile, "rt");
+
+		c_neReadLine(fp);
+		errorCase_m(strcmp(c_neReadLine(fp), "Microsoft Visual Studio Solution File, Format Version 11.00"), "vs2010じゃないですよ。");
+		errorCase_m(strcmp(c_neReadLine(fp), "# Visual C# Express 2010"), "C#じゃないですよ。");
+
+		fileClose(fp);
+	}
 
 	// set ProjFile + call (CheckProj, ProcProj)
 	{
