@@ -52,53 +52,61 @@ static int TrimProjLines(void)
 			csFile = strx(csFile);
 			*p = '"';
 
-			cout("csFile.1: %s\n", csFile);
-
 			if(
 				isFairRelPath(csFile, strlen(ProjDir)) && // ? SJISファイル名 && ProjDirの配下
-				!_stricmp(getExt(csFile), "cs") && // ? .csファイル
-				!startsWithICase(csFile, "Properties\\") // ? ! 除外
+				!_stricmp(getExt(csFile), "cs") &&        // ? .csファイル
+				!startsWithICase(csFile, "Properties\\") && // ? ! 除外
+				_stricmp(getLocal(csFile), "Program.cs")    // ? ! 除外
 				)
 			{
+				cout("csFile.1: %s\n", csFile);
+
 				csFile = combine_cx(ProjDir, csFile);
 
 				cout("csFile.2: %s\n", csFile);
 
 				if(existFile(csFile))
 				{
+					LOGPOS();
 					desertElement(ProjLines, index);
 
 					if(TryBuild())
 					{
+						LOGPOS();
 						memFree(line);
 						addElement(DeletableCsFiles, (uint)strx(csFile));
+						trimmed = 1;
 					}
 					else
 						insertElement(ProjLines, index, (uint)line); // 元に戻す。
+
+					LOGPOS();
 				}
 			}
 			memFree(csFile);
 		}
 	}
+
+	Clean();
+
+	cout("trimmed: %d\n", trimmed);
 	return trimmed;
 }
 static int ConfirmDeleteCsFiles(void)
 {
 	char *file;
 	uint index;
-	char *line;
 	int ret;
 
-	cout("【確認】\n");
+	cout("\n----\n");
 
 	foreach(DeletableCsFiles, file, index)
 		cout("削除対象：%s\n", file);
 
-	cout("削除するには”DELCS”と入力してね。\n");
-	line = coInputLine();
-	ret = !strcmp(line, "DELCS");
-	memFree(line);
+	cout("削除するには 'D' を入力してね。\n");
+	ret = clearGetKey() == 'D';
 	cout("ret: %d\n", ret);
+	sleep(500); // coutが見えるように
 	return ret;
 }
 static void ProcProj(int checkOnly)
@@ -151,7 +159,7 @@ static void ProcProj(int checkOnly)
 
 	ProjLines = readLines(ProjFile);
 
-	// check ProjLines -- 2bs
+	// check ProjLines を書き出して ProjFile を再現出来るかどうか -- 2bs
 	{
 		char *wkFile = makeTempPath(NULL);
 
@@ -179,6 +187,7 @@ static void ProcProj(int checkOnly)
 		char *file;
 		uint index;
 
+		LOGPOS();
 		WriteProjFile(ProjFile, ProjLines);
 
 		foreach(DeletableCsFiles, file, index)
@@ -189,6 +198,7 @@ static void ProcProj(int checkOnly)
 	else
 		moveFile(ProjBackupFile, ProjFile);
 
+	LOGPOS();
 	releaseDim(DeletableCsFiles, 1);
 	DeletableCsFiles = NULL;
 
@@ -230,13 +240,13 @@ static void TrimCsProjCs(void)
 
 	cout("SlnFile: %s\n", SlnFile);
 
-	// check vcs 2010 express
+	// check SlnFile -- vcs 2010 express かどうか
 	{
 		FILE *fp = fileOpen(SlnFile, "rt");
 
 		c_neReadLine(fp);
 		errorCase_m(strcmp(c_neReadLine(fp), "Microsoft Visual Studio Solution File, Format Version 11.00"), "vs2010じゃないですよ。");
-		errorCase_m(strcmp(c_neReadLine(fp), "# Visual C# Express 2010"), "C#じゃないですよ。");
+		errorCase_m(strcmp(c_neReadLine(fp), "# Visual C# Express 2010"), "C#のExpressじゃないですよ。");
 
 		fileClose(fp);
 	}
