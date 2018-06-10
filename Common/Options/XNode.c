@@ -51,3 +51,24 @@ void ReleaseXNode(XNode_t *root)
 
 	memFree(root);
 }
+
+// ----
+
+XNode_t *GetXmlChild(XNode_t *node, char *trgName, int ignoreCase)
+{
+	XNode_t *child;
+	uint index;
+
+	foreach(node->Children, child, index)
+		if(!(ignoreCase ? mbs_stricmp : strcmp)(child->Name, trgName))
+			return child;
+
+	return NULL;
+}
+XNode_t *ne_GetXmlChild(XNode_t *node, char *trgName, int ignoreCase)
+{
+	XNode_t *child = GetXmlChild(node, trgName, ignoreCase);
+
+	errorCase(!child);
+	return child;
+}

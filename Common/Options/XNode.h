@@ -15,3 +15,8 @@ XNode_t;
 
 void NormalizeXNode(XNode_t *root, char *(*strFltr)(char *));
 void ReleaseXNode(XNode_t *root);
+
+// ----
+
+XNode_t *GetXmlChild(XNode_t *node, char *trgName, int ignoreCase);
+XNode_t *ne_GetXmlChild(XNode_t *node, char *trgName, int ignoreCase);

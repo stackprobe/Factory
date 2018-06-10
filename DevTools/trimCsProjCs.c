@@ -1,5 +1,5 @@
 /*
-	trimCsProjCs.exe [/D | ソリューションがあるディレクトリ]
+	trimCsProjCs.exe [/S] [/D | ソリューションがあるディレクトリ]
 */
 
 #include "C:\Factory\Common\all.h"
@@ -16,11 +16,11 @@
 
 static char *SlnFile;
 static char *ProjFile;
-static char *ProjName;
+static autoList_t *ProjLines;
+static char *AsmbName;
 static char *ProjDir;
 static char *OutFile;
 static char *ProjBackupFile;
-static autoList_t *ProjLines;
 static autoList_t *DeletableCsFiles;
 
 static int TryBuild(void)
@@ -53,7 +53,7 @@ static int TrimProjLines(void)
 			*p = '"';
 
 			if(
-				isFairRelPath(csFile, strlen(ProjDir)) && // ? SJISファイル名 && ProjDirの配下
+				isFairRelPath(csFile, strlen(ProjDir)) && // ? SJISファイル名 && ProjDirの配下(".."を含まない＆絶対パスではない)
 				!_stricmp(getExt(csFile), "cs") &&        // ? .csファイル
 				!startsWithICase(csFile, "Properties\\") && // ? ! 除外
 				_stricmp(getLocal(csFile), "Program.cs")    // ? ! 除外
@@ -114,10 +114,46 @@ static void ProcProj(int checkOnly)
 	cout("checkOnly: %d\n", checkOnly);
 	cout("ProjFile: %s\n", ProjFile);
 
-	ProjName = changeExt(getLocal(ProjFile), "");
+	ProjLines = readLines(ProjFile);
+
+	// check ProjLines を書き出して ProjFile を再現出来るかどうか -- 2bs
+	{
+		char *wkFile = makeTempPath(NULL);
+
+		WriteProjFile(wkFile, ProjLines);
+
+		errorCase(!isSameFile(wkFile, ProjFile));
+
+		removeFile(wkFile);
+		memFree(wkFile);
+	}
+
+	// set AsmbName
+	{
+		char *line;
+		uint index;
+		char *p;
+
+		foreach(ProjLines, line, index)
+			if(startsWith(line, "    <AssemblyName>") && endsWith(line, "</AssemblyName>"))
+				break;
+
+		errorCase(!line);
+
+		AsmbName = ne_strchr(line, '>') + 1;
+
+		p = ne_strchr(AsmbName, '<');
+		*p = '\0';
+		AsmbName = strx(AsmbName);
+		*p = '<';
+
+		errorCase_m(!isJToken(AsmbName, 1, 0), "アセンブリ名に問題があります。");
+	}
+
+	cout("AsmbName: %s\n", AsmbName);
+
 	ProjDir = getParent(ProjFile);
 
-	cout("ProjName: %s\n", ProjName);
 	cout("ProjDir: %s\n", ProjDir);
 
 	Clean();
@@ -132,7 +168,7 @@ static void ProcProj(int checkOnly)
 		{
 			if(
 				!mbs_stristr(file, "\\bin\\Release\\") ||
-				!mbs_stristr(getLocal(file), ProjName) ||
+				!mbs_stristr(getLocal(file), AsmbName) ||
 				_stricmp(getExt(file), "exe") && _stricmp(getExt(file), "dll")
 				)
 				file[0] = '\0';
@@ -156,20 +192,6 @@ static void ProcProj(int checkOnly)
 	cout("ProjBackupFile: %s\n", ProjBackupFile);
 
 	errorCase_m(existPath(ProjBackupFile), "バックアップファイルが残っています。");
-
-	ProjLines = readLines(ProjFile);
-
-	// check ProjLines を書き出して ProjFile を再現出来るかどうか -- 2bs
-	{
-		char *wkFile = makeTempPath(NULL);
-
-		WriteProjFile(wkFile, ProjLines);
-
-		errorCase(!isSameFile(wkFile, ProjFile));
-
-		removeFile(wkFile);
-		memFree(wkFile);
-	}
 
 	if(checkOnly)
 		goto checkOnlyEnd;
@@ -205,16 +227,16 @@ static void ProcProj(int checkOnly)
 	LOGPOS();
 
 checkOnlyEnd:
-	memFree(ProjName);
+	releaseDim(ProjLines, 1);
+	memFree(AsmbName);
 	memFree(ProjDir);
 	memFree(OutFile);
 	memFree(ProjBackupFile);
-	releaseDim(ProjLines, 1);
-	ProjName = NULL;
+	ProjLines = NULL;
+	AsmbName = NULL;
 	ProjDir = NULL;
 	OutFile = NULL;
 	ProjBackupFile = NULL;
-	ProjLines = NULL;
 
 	LOGPOS();
 }
@@ -222,7 +244,7 @@ static void TrimCsProjCs(void)
 {
 	// set SlnFile
 	{
-		autoList_t *files = lsFiles(".");
+		autoList_t *files = lsFiles("."); // カレントのみ探す。
 		char *file;
 		uint index;
 
@@ -283,15 +305,56 @@ static void TrimCsProjCs(void)
 	memFree(SlnFile);
 	SlnFile = NULL;
 }
+
+static int SearchSubDirFlag;
+
+static void Main2(void)
+{
+	if(SearchSubDirFlag)
+	{
+		autoList_t *files = lssFiles(".");
+		char *file;
+		uint index;
+
+		foreach(files, file, index)
+			if(_stricmp(getExt(file), "sln"))
+				file[0] = '\0';
+
+		trimLines(files);
+
+		files = selectLines_x(files);
+
+		foreach(files, file, index)
+		{
+			char *dir = getParent(file);
+
+			addCwd(dir);
+			{
+				TrimCsProjCs();
+			}
+			unaddCwd();
+		}
+		releaseDim(files, 1);
+	}
+	else
+	{
+		TrimCsProjCs();
+	}
+}
 int main(int argc, char **argv)
 {
+	if(argIs("/S"))
+	{
+		SearchSubDirFlag = 1;
+	}
+
 	if(argIs("/D"))
 	{
 		char *slnDir = c_dropDir();
 
 		addCwd(slnDir);
 		{
-			TrimCsProjCs();
+			Main2();
 		}
 		unaddCwd();
 	}
@@ -301,12 +364,12 @@ int main(int argc, char **argv)
 
 		addCwd(slnDir);
 		{
-			TrimCsProjCs();
+			Main2();
 		}
 		unaddCwd();
 	}
 	else
 	{
-		TrimCsProjCs();
+		Main2();
 	}
 }
