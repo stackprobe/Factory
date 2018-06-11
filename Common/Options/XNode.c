@@ -52,23 +52,75 @@ void ReleaseXNode(XNode_t *root)
 	memFree(root);
 }
 
+// ---- accessor ----
+
+static autoList_t *CXN_PTkns;
+static autoList_t *CXN_Dest;
+
+static void CXN_Main(XNode_t *root, uint pTknIndex)
+{
+	if(pTknIndex < getCount(CXN_PTkns))
+	{
+		XNode_t *node;
+		uint index;
+
+		foreach(root->Children, node, index)
+			if(!strcmp(node->Name, getLine(CXN_PTkns, pTknIndex)))
+				CXN_Main(node, pTknIndex + 1);
+	}
+	else
+	{
+		addElement(CXN_Dest, (uint)root);
+	}
+}
+autoList_t *CollectXNode(XNode_t *root, char *path)
+{
+	errorCase(!root);
+	errorCase(!path);
+
+	CXN_PTkns = tokenize(path, '/');
+	CXN_Dest = newList();
+
+	CXN_Main(root, 0);
+
+	return CXN_Dest;
+}
+XNode_t *GetXNode(XNode_t *root, char *path)
+{
+	autoList_t *nodes = CollectXNode(root, path);
+	XNode_t *node;
+
+	errorCase(!getCount(nodes));
+
+	node = (XNode_t *)getElement(nodes, 0);
+
+	releaseAutoList(nodes);
+	return node;
+}
+XNode_t *RefXNode(XNode_t *root, char *path)
+{
+	autoList_t *nodes = CollectXNode(root, path);
+	XNode_t *node;
+
+	if(!getCount(nodes))
+	{
+		static XNode_t *dmyNode;
+
+		if(!dmyNode)
+		{
+			dmyNode = (XNode_t *)memAlloc(sizeof(XNode_t));
+
+			dmyNode->Name = "Dummy";
+			dmyNode->Text = "Dummy";
+			dmyNode->Children = newList();
+		}
+		node = dmyNode;
+	}
+	else
+		node = (XNode_t *)getElement(nodes, 0);
+
+	releaseAutoList(nodes);
+	return node;
+}
+
 // ----
-
-XNode_t *GetXmlChild(XNode_t *node, char *trgName, int ignoreCase)
-{
-	XNode_t *child;
-	uint index;
-
-	foreach(node->Children, child, index)
-		if(!(ignoreCase ? mbs_stricmp : strcmp)(child->Name, trgName))
-			return child;
-
-	return NULL;
-}
-XNode_t *ne_GetXmlChild(XNode_t *node, char *trgName, int ignoreCase)
-{
-	XNode_t *child = GetXmlChild(node, trgName, ignoreCase);
-
-	errorCase(!child);
-	return child;
-}

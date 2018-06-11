@@ -16,7 +16,10 @@ XNode_t;
 void NormalizeXNode(XNode_t *root, char *(*strFltr)(char *));
 void ReleaseXNode(XNode_t *root);
 
-// ----
+// ---- accessor ----
 
-XNode_t *GetXmlChild(XNode_t *node, char *trgName, int ignoreCase);
-XNode_t *ne_GetXmlChild(XNode_t *node, char *trgName, int ignoreCase);
+autoList_t *CollectXNode(XNode_t *root, char *path);
+XNode_t *GetXNode(XNode_t *root, char *path);
+XNode_t *RefXNode(XNode_t *root, char *path);
+
+// ----
