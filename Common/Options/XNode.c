@@ -54,6 +54,21 @@ void ReleaseXNode(XNode_t *root)
 
 // ---- accessor ----
 
+XNode_t *GetDummyXNode(void)
+{
+	static XNode_t *node;
+
+	if(!node)
+	{
+		node = (XNode_t *)memAlloc(sizeof(XNode_t));
+
+		node->Name = strx("Dummy");
+		node->Text = strx("Dummy");
+		node->Children = newList();
+	}
+	return node;
+}
+
 static autoList_t *CXN_PTkns;
 static autoList_t *CXN_Dest;
 
@@ -83,6 +98,7 @@ autoList_t *CollectXNode(XNode_t *root, char *path)
 
 	CXN_Main(root, 0);
 
+	releaseDim(CXN_PTkns, 1);
 	return CXN_Dest;
 }
 XNode_t *GetXNode(XNode_t *root, char *path)
@@ -102,22 +118,10 @@ XNode_t *RefXNode(XNode_t *root, char *path)
 	autoList_t *nodes = CollectXNode(root, path);
 	XNode_t *node;
 
-	if(!getCount(nodes))
-	{
-		static XNode_t *dmyNode;
-
-		if(!dmyNode)
-		{
-			dmyNode = (XNode_t *)memAlloc(sizeof(XNode_t));
-
-			dmyNode->Name = "Dummy";
-			dmyNode->Text = "Dummy";
-			dmyNode->Children = newList();
-		}
-		node = dmyNode;
-	}
-	else
+	if(getCount(nodes))
 		node = (XNode_t *)getElement(nodes, 0);
+	else
+		node = GetDummyXNode();
 
 	releaseAutoList(nodes);
 	return node;
