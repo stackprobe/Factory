@@ -22,5 +22,6 @@ XNode_t *GetDummyXNode(void);
 autoList_t *CollectXNode(XNode_t *root, char *path);
 XNode_t *GetXNode(XNode_t *root, char *path);
 XNode_t *RefXNode(XNode_t *root, char *path);
+XNode_t *ne_GetXNode(XNode_t *root, char *path);
 
 // ----

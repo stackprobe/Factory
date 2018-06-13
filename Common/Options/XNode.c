@@ -96,6 +96,16 @@ autoList_t *CollectXNode(XNode_t *root, char *path)
 	CXN_PTkns = tokenize(path, '/');
 	CXN_Dest = newList();
 
+	// 空のpTknをWarning
+	{
+		char *pTkn;
+		uint index;
+
+		foreach(CXN_PTkns, pTkn, index)
+			if(!*pTkn)
+				cout("Warning: XNodeパスに空のパストークンが含まれています。\n");
+	}
+
 	CXN_Main(root, 0);
 
 	releaseDim(CXN_PTkns, 1);
@@ -106,24 +116,28 @@ XNode_t *GetXNode(XNode_t *root, char *path)
 	autoList_t *nodes = CollectXNode(root, path);
 	XNode_t *node;
 
-	errorCase(!getCount(nodes));
-
-	node = (XNode_t *)getElement(nodes, 0);
+	if(getCount(nodes))
+		node = (XNode_t *)getElement(nodes, 0);
+	else
+		node = NULL;
 
 	releaseAutoList(nodes);
 	return node;
 }
 XNode_t *RefXNode(XNode_t *root, char *path)
 {
-	autoList_t *nodes = CollectXNode(root, path);
-	XNode_t *node;
+	XNode_t *node = GetXNode(root, path);
 
-	if(getCount(nodes))
-		node = (XNode_t *)getElement(nodes, 0);
-	else
+	if(!node)
 		node = GetDummyXNode();
 
-	releaseAutoList(nodes);
+	return node;
+}
+XNode_t *ne_GetXNode(XNode_t *root, char *path)
+{
+	XNode_t *node = GetXNode(root, path);
+
+	errorCase(!node);
 	return node;
 }
 

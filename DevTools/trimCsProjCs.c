@@ -3,6 +3,7 @@
 */
 
 #include "C:\Factory\Common\all.h"
+#include "C:\Factory\Common\Options\xml.h"
 
 #define Clean() \
 	(coExecute("solclean ."))
@@ -130,6 +131,13 @@ static void ProcProj(int checkOnly)
 
 	// set AsmbName
 	{
+#if 1
+		XNode_t *xml = readXMLFile(ProjFile);
+
+		AsmbName = strx(ne_GetXNode(xml, "PropertyGroup/AssemblyName")->Text);
+
+		ReleaseXNode(xml);
+#else // old
 		char *line;
 		uint index;
 		char *p;
@@ -146,6 +154,7 @@ static void ProcProj(int checkOnly)
 		*p = '\0';
 		AsmbName = strx(AsmbName);
 		*p = '<';
+#endif
 
 		errorCase_m(!isJToken(AsmbName, 1, 0), "アセンブリ名に問題があります。");
 	}
