@@ -1,5 +1,5 @@
 rem usage: qrum [(-fÅb--) [-qa]]
-rem if not "%1" == "-f" if /i not "%CD:~0,7%" == "C:\Dev\" goto end  --  ébíËîpé~
+rem if not "%1" == "-f" if /i not "%CD:~0,7%" == "C:\Dev\" goto end -- ébíËîpé~
 
 call qq -f
 if not "%2" == "-qa" (

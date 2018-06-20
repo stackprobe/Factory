@@ -15,9 +15,9 @@
 
 		保存されている NAME をクリアする。
 
-	> od NAME
+	> od [NAME]
 
-		保存されているディレクトリを開く。
+		保存されているディレクトリを開く。省略時：カレント
 
 	> ldzz
 	> ld /cz
@@ -134,7 +134,14 @@ int main(int argc, char **argv)
 	}
 	if(argIs("/O")) // Open
 	{
-		OpenDir(nextArg());
+		if(hasArgs(1))
+		{
+			OpenDir(nextArg());
+		}
+		else
+		{
+			coExecute("START .");
+		}
 		return;
 	}
 	if(argIs("/CZ")) // Clear 0 ～ 999
