@@ -22,7 +22,7 @@
 	> ldzz
 	> ld /cz
 
-		適当な番号で保存されたディレクトリ 1 ～ 999 をクリアする。
+		適当な番号で保存されたディレクトリ 0 ～ 999 をクリアする。
 
 	----
 
@@ -137,11 +137,11 @@ int main(int argc, char **argv)
 		OpenDir(nextArg());
 		return;
 	}
-	if(argIs("/CZ")) // Clear 1 ～ 999
+	if(argIs("/CZ")) // Clear 0 ～ 999
 	{
 		uint n;
 
-		for(n = 1; n <= 999; n++)
+		for(n = 0; n <= 999; n++)
 		{
 			char sn[4];
 

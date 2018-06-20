@@ -21,7 +21,7 @@
 
 static char *GetAutoName(void)
 {
-	char *sno = strx("1");
+	char *sno = strx("0");
 
 	createFileIfNotExist(SAVE_FILE);
 
