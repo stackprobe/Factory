@@ -37,16 +37,16 @@ static char *S_GetCollaboPath(char *innerPath, int (*existFunc)(char *))
 
 		if(isFactoryDirDisabled())
 		{
+			memFree(path);
 			path = combine(getSelfDir(), getLocal(innerPath));
 
 			errorCase(!_stricmp(path, getSelfFile()));
 
 			if(existFunc(path))
 				goto foundPath;
-
-			memFree(path);
 		}
 	}
+	memFree(path);
 	error_m(xcout("[%s]Ç™å©Ç¬Ç©ÇËÇ‹ÇπÇÒÅB", innerPath));
 
 foundPath:
