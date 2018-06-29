@@ -45,6 +45,34 @@ readArgs:
 		return;
 	}
 
+	/*
+		‚×‚«æ
+	*/
+	if(argIs("/P"))
+	{
+		calcOperand_t *co = calcFromString(getArg(0));
+		uint exponent = toValue(getArg(1));
+
+		cout("%s\n", c_calcGetString_x(calcPower(co, exponent)));
+
+		calcRelease(co);
+		return;
+	}
+
+	/*
+		‚×‚«ª
+	*/
+	if(argIs("/R"))
+	{
+		calcOperand_t *co = calcFromString(getArg(0));
+		uint exponent = toValue(getArg(1));
+
+		cout("%s\n", c_calcGetString_x(calcRoot(co, exponent)));
+
+		calcRelease(co);
+		return;
+	}
+
 	if(hasArgs(4))
 	{
 		calcScient = 1;

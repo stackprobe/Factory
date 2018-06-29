@@ -101,11 +101,6 @@ static calcOperand_t *GetClone(calcOperand_t *co)
 
 	return nCo;
 }
-static int IsZero(calcOperand_t *co)
-{
-	Trim(co);
-	return !getSize(co->F);
-}
 
 calcOperand_t *calcFromSmplString(char *str)
 {
@@ -559,6 +554,73 @@ char *calc(char *str1, int op, char *str2)
 
 int calcComp(calcOperand_t *co1, calcOperand_t *co2)
 {
+	int s;
+	uint size1;
+	uint size2;
+	sint scale1;
+	sint scale2;
+	uint index1;
+	uint index2;
+	int ret;
+
+	errorCase(!co1);
+	errorCase(!co2);
+
+	Trim(co1);
+	Trim(co2);
+
+	if(co1->Sign == 1 && co2->Sign == -1)
+		return 1;
+
+	if(co1->Sign == -1 && co2->Sign == 1)
+		return -1;
+
+	s = co1->Sign;
+
+	size1 = getSize(co1->F);
+	size2 = getSize(co2->F);
+
+	if(!size1 && !size2)
+		return 0;
+
+	if(!size1)
+		return -s;
+
+	if(!size2)
+		return s;
+
+	scale1 = (sint)size1 - co1->E;
+	scale2 = (sint)size2 - co2->E;
+
+	if(scale1 < scale2)
+		return -s;
+
+	if(scale2 < scale1)
+		return s;
+
+	index1 = getSize(co1->F);
+	index2 = getSize(co2->F);
+
+	while(index1 && index2)
+	{
+		index1--;
+		index2--;
+
+		ret = (int)getByte(co1->F, index1) - (int)getByte(co2->F, index2);
+
+		if(ret != 0)
+			return ret * s;
+	}
+	if(index1)
+		return s;
+
+	if(index2)
+		return -s;
+
+	return 0;
+}
+int calcComp_OLD(calcOperand_t *co1, calcOperand_t *co2) // íœ—\’è
+{
 	calcOperand_t *ans;
 	int ret;
 
@@ -570,9 +632,11 @@ int calcComp(calcOperand_t *co1, calcOperand_t *co2)
 
 	ans = calcSub(co1, co2);
 
+	Trim(ans);
+
 	if(ans->Sign == -1)
 		ret = -1;
-	else if(IsZero(ans))
+	else if(!getSize(ans->F))
 		ret = 0;
 	else
 		ret = 1;
@@ -614,14 +678,79 @@ calcOperand_t *calcPower(calcOperand_t *co, uint exponent)
 		return ans;
 	}
 }
+static int Root_TryShiftCnt(calcOperand_t *co, sint shiftCnt, uint exponent)
+{
+	calcOperand_t *tmp;
+	calcOperand_t *tmp2;
+	int ret;
+
+	tmp = calcFromInt(1);
+	tmp->E = shiftCnt;
+	tmp2 = calcPower(tmp, exponent);
+
+	ret = 0 <= calcComp(co, tmp2);
+
+	ReleaseOperand(tmp);
+	ReleaseOperand(tmp2);
+	return ret;
+}
 calcOperand_t *calcRoot(calcOperand_t *co, uint exponent)
 {
+	calcOperand_t *ans;
+	sint shiftCnt;
+	sint ss;
+
 	errorCase(!co);
 	errorCase(exponent < 2);
 	CheckVars();
 
-	error(); // todo
-	return NULL;
+	co = GetClone(co);
+	co->Sign = 1;
+	Trim(co);
+
+	for(shiftCnt = -1; Root_TryShiftCnt(co, shiftCnt, exponent); shiftCnt *= 2);
+
+	shiftCnt /= 2;
+
+	for(ss = shiftCnt; ss /= 2; )
+		if(Root_TryShiftCnt(co, shiftCnt + ss, exponent))
+			shiftCnt += ss;
+
+	ans = CreateOperand();
+
+	for(; shiftCnt <= calcBasement; shiftCnt++)
+	{
+		for(; ; )
+		{
+			calcOperand_t *tmpAdd;
+			calcOperand_t *ansTmp;
+			calcOperand_t *tmp2;
+			int ret;
+
+			tmpAdd = calcFromInt(1);
+			tmpAdd->E = shiftCnt;
+			ansTmp = calcAdd(ans, tmpAdd);
+			ReleaseOperand(tmpAdd);
+			tmp2 = calcPower(ansTmp, exponent);
+
+			ret = calcComp(co, tmp2);
+
+			ReleaseOperand(tmp2);
+
+			if(ret < 0)
+			{
+				ReleaseOperand(ansTmp);
+				break;
+			}
+			ReleaseOperand(ans);
+			ans = ansTmp;
+
+			if(ret == 0)
+				goto endSCLoop;
+		}
+	}
+endSCLoop:
+	return ans;
 }
 
 // _x
