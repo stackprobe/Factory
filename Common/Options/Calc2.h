@@ -45,6 +45,5 @@ char *c_calc_xx(char *str1, int op, char *str2);
 char *c_calc_cx(char *str1, int op, char *str2);
 
 int calcComp(calcOperand_t *co1, calcOperand_t *co2);
-int calcComp_OLD(calcOperand_t *co1, calcOperand_t *co2); // çÌèúó\íË
 calcOperand_t *calcPower(calcOperand_t *co, uint exponent);
 calcOperand_t *calcRoot(calcOperand_t *co, uint exponent);

@@ -619,31 +619,6 @@ int calcComp(calcOperand_t *co1, calcOperand_t *co2)
 
 	return 0;
 }
-int calcComp_OLD(calcOperand_t *co1, calcOperand_t *co2) // íœ—\’è
-{
-	calcOperand_t *ans;
-	int ret;
-
-	errorCase(!co1);
-	errorCase(!co2);
-
-	Trim(co1);
-	Trim(co2);
-
-	ans = calcSub(co1, co2);
-
-	Trim(ans);
-
-	if(ans->Sign == -1)
-		ret = -1;
-	else if(!getSize(ans->F))
-		ret = 0;
-	else
-		ret = 1;
-
-	ReleaseOperand(ans);
-	return ret;
-}
 calcOperand_t *calcPower(calcOperand_t *co, uint exponent)
 {
 	errorCase(!co);
@@ -694,19 +669,10 @@ static int Root_TryShiftCnt(calcOperand_t *co, sint shiftCnt, uint exponent)
 	ReleaseOperand(tmp2);
 	return ret;
 }
-calcOperand_t *calcRoot(calcOperand_t *co, uint exponent)
+static sint Root_GetShiftCntMin(calcOperand_t *co, uint exponent)
 {
-	calcOperand_t *ans;
 	sint shiftCnt;
 	sint ss;
-
-	errorCase(!co);
-	errorCase(exponent < 2);
-	CheckVars();
-
-	co = GetClone(co);
-	co->Sign = 1;
-	Trim(co);
 
 	for(shiftCnt = -1; Root_TryShiftCnt(co, shiftCnt, exponent); shiftCnt *= 2);
 
@@ -716,9 +682,23 @@ calcOperand_t *calcRoot(calcOperand_t *co, uint exponent)
 		if(Root_TryShiftCnt(co, shiftCnt + ss, exponent))
 			shiftCnt += ss;
 
+	return shiftCnt;
+}
+calcOperand_t *calcRoot(calcOperand_t *co, uint exponent)
+{
+	calcOperand_t *ans;
+	sint shiftCnt;
+
+	errorCase(!co);
+	errorCase(exponent < 2);
+	CheckVars();
+
+	co = GetClone(co);
+	co->Sign = 1;
+	Trim(co);
 	ans = CreateOperand();
 
-	for(; shiftCnt <= calcBasement; shiftCnt++)
+	for(shiftCnt = Root_GetShiftCntMin(co, exponent); shiftCnt <= calcBasement; shiftCnt++)
 	{
 		for(; ; )
 		{
@@ -746,10 +726,10 @@ calcOperand_t *calcRoot(calcOperand_t *co, uint exponent)
 			ans = ansTmp;
 
 			if(ret == 0)
-				goto endSCLoop;
+				goto endSftCtLoop;
 		}
 	}
-endSCLoop:
+endSftCtLoop:
 	return ans;
 }
 
