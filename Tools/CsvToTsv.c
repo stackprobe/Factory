@@ -1,5 +1,5 @@
 /*
-	CsvToTsv.exe [入力CSVファイル 出力TSVファイル | /T2C 入力TSVファイル 出力CSVファイル]
+	CsvToTsv.exe [[/C2T] [入力CSVファイル 出力TSVファイル] | /T2C [入力TSVファイル 出力CSVファイル]]
 */
 
 #include "C:\Factory\Common\all.h"
@@ -36,6 +36,23 @@ int main(int argc, char **argv)
 			TsvFileToCsvFile(getArg(0), getArg(1));
 			return;
 		}
+
+		TsvFileToCsvFile(c_dropFile(), c_getOutFile("output.csv"));
+		openOutDir();
+		return;
+	}
+
+	if(argIs("/C2T"))
+	{
+		if(hasArgs(2))
+		{
+			CsvFileToTsvFile(getArg(0), getArg(1));
+			return;
+		}
+
+		CsvFileToTsvFile(c_dropFile(), c_getOutFile("output.csv"));
+		openOutDir();
+		return;
 	}
 
 	if(hasArgs(2))
@@ -59,7 +76,7 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-			cout("拡張子？\n");
+			error_m("不明な拡張子");
 		}
 	}
 }

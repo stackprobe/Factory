@@ -44,6 +44,6 @@ int main(int argc, char **argv)
 		return;
 	}
 
-	CsvToJson(c_dropFile(), c_getOutFile_x("output.json"));
+	CsvToJson(c_dropFile(), c_getOutFile("output.json"));
 	openOutDir();
 }
