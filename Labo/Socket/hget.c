@@ -51,7 +51,7 @@ static void Progress_Wrap(void)
 
 	if(eqIntPulseSec(1, NULL))
 	{
-		cmdTitle_x(xcout("hget - %u", callcnt));
+		cmdTitle_x(xcout("hget - %u (S:%I64u, R:%I64u)", callcnt, SockTotalSendSize, SockTotalRecvSize));
 		Progress();
 	}
 }

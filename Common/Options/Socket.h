@@ -52,6 +52,9 @@ extern uint SockWait_T2;
 extern uint SockWait_T3;
 extern uint SockWait_T4;
 
+extern uint64 SockTotalSendSize;
+extern uint64 SockTotalRecvSize;
+
 int SockWait(int sock, uint millis, uint forWrite);
 int SockSend(int sock, uchar *buffData, uint dataSize);
 int SockRecv(int sock, uchar *buffData, uint dataSize);

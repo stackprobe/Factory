@@ -181,14 +181,27 @@ int SockWait(int sock, uint millis, uint forWrite)
 	errorCase(retval < -1 || 1 < retval);
 	return retval;
 }
+
+uint64 SockTotalSendSize;
+uint64 SockTotalRecvSize;
+
 int SockSend(int sock, uchar *buffData, uint dataSize)
 {
-	return send(sock, buffData, m_min(dataSize, SEND_MAX), 0);
-//	return send(sock, buffData, dataSize, 0);
+	int retval = send(sock, buffData, m_min(dataSize, SEND_MAX), 0);
+
+	if(1 <= retval)
+		SockTotalSendSize += (uint64)retval;
+
+	return retval;
 }
 int SockRecv(int sock, uchar *buffData, uint dataSize)
 {
-	return recv(sock, buffData, dataSize, 0);
+	int retval = recv(sock, buffData, dataSize, 0);
+
+	if(1 <= retval)
+		SockTotalRecvSize += (uint64)retval;
+
+	return retval;
 }
 int SockTransmit(int sock, uchar *buffData, uint dataSize, uint waitMillis, uint forWrite) // ret == -1: ƒGƒ‰[
 {
