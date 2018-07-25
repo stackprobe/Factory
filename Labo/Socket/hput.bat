@@ -9,9 +9,9 @@ IF "%3" == "" (
 )
 IF NOT EXIST %X_HPUT_UUID%_content.tmp GOTO END
 IF "%5" == "" (
-	%~dp0hget.exe /C %X_HPUT_UUID%_content.tmp /O * %1
+	%~dp0hget.exe /BT 3600 /C %X_HPUT_UUID%_content.tmp /O * %1
 ) ELSE (
-	%~dp0hget.exe /PS %4 /PP %5 /C %X_HPUT_UUID%_content.tmp /O * %1
+	%~dp0hget.exe /BT 3600 /PS %4 /PP %5 /C %X_HPUT_UUID%_content.tmp /O * %1
 )
 DEL %X_HPUT_UUID%_content.tmp
 SET X_HPUT_UUID=
