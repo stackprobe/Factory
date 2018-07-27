@@ -35,7 +35,7 @@ char *incrementColumnDigits(char *column, char *digits) // ret: strr(column)
 
 		if(!dp)
 		{
-			if(!p[1]) column = addChar(column, COLDIG_DLMTR); // column の最後に digits が無い -> column と digist のデリミタを付加
+			if(!p[1]) column = addChar(column, COLDIG_DLMTR); // column の最後に digits が無い -> column と digits のデリミタを付加
 			break;
 		}
 		if(dp < enddp)
