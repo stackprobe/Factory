@@ -11,6 +11,10 @@
 		sockClient() | sockClientEx() | sockClientUserTransmit()
 	CLEANUP:
 		SockCleanup()
+
+	- - -
+
+	¡Œã‚Í SClient() ‚ğg‚¤‚æ‚¤‚É‚µ‚Ä‚ËB
 */
 
 #include "SockClient.h"
