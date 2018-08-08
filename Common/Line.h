@@ -85,6 +85,7 @@ char *mbs_stristr(char *line, char *ptn);
 char *strstrNextCase(char *line, char *ptn, int ignoreCase);
 char *strstrNext(char *line, char *ptn);
 char *stristrNext(char *line, char *ptn);
+void replacePtn(char *line, char *ptn1, char *ptn2, int ignoreCase);
 char *replaceLine(char *line, char *ptn1, char *ptn2, int ignoreCase);
 char *replaceLineLoop(char *line, char *ptn1, char *ptn2, int ignoreCase, uint loopMax);
 uint replaceLine_getLastReplacedCount(void);

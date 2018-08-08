@@ -329,6 +329,20 @@ char *stristrNext(char *line, char *ptn) // mbs_
 	return strstrNextCase(line, ptn, 1);
 }
 
+void replacePtn(char *line, char *ptn1, char *ptn2, int ignoreCase) // mbs_
+{
+	char *p = line;
+	uint ptnSz = strlen(ptn1);
+
+	errorCase(ptnSz != strlen(ptn2));
+
+	while(p = mbs_strstrCase(p, ptn1, ignoreCase))
+	{
+		memcpy(p, ptn2, ptnSz);
+		p += ptnSz;
+	}
+}
+
 static uint LastReplacedCount;
 
 char *replaceLine(char *line, char *ptn1, char *ptn2, int ignoreCase) // mbs_ ret: strr(line)
