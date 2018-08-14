@@ -72,6 +72,39 @@ sint toInt(char *line)
 	return toIntDigits(line, decimal);
 }
 
+char *toLineValue64Digits(uint64 value, char *digits)
+{
+	char *buff = (char *)memAlloc(65);
+	char *p;
+	uint radix = strlen(digits);
+
+	errorCase(radix < 2);
+
+	for(p = buff; 0ui64 < value; p++)
+	{
+		*p = digits[(uint)(value % (uint64)radix)];
+		value /= (uint64)radix;
+	}
+	if(p == buff)
+		*p++ = digits[0];
+
+	*p = '\0';
+	reverseLine(buff);
+	return buff;
+}
+char *toLineValueDigits(uint value, char *digits)
+{
+	return toLineValue64Digits((uint64)value, digits);
+}
+char *toLineValue64(uint64 value)
+{
+	return toLineValue64Digits(value, decimal);
+}
+char *toLineValue(uint value)
+{
+	return toLineValueDigits(value, decimal);
+}
+
 uint iSqrt64(uint64 value)
 {
 	uint ret = 0;
@@ -254,6 +287,32 @@ char *zPad64(uint64 value, char *digits, uint minlen)
 char *zPad(uint64 value, char *digits, uint minlen)
 {
 	return zPad64((uint64)value, digits, minlen);
+}
+
+// c_
+char *c_toLineValue64Digits(uint64 value, char *digits)
+{
+	static char *stock;
+	memFree(stock);
+	return stock = toLineValue64Digits(value, digits);
+}
+char *c_toLineValueDigits(uint value, char *digits)
+{
+	static char *stock;
+	memFree(stock);
+	return stock = toLineValueDigits(value, digits);
+}
+char *c_toLineValue64(uint64 value)
+{
+	static char *stock;
+	memFree(stock);
+	return stock = toLineValue64(value);
+}
+char *c_toLineValue(uint value)
+{
+	static char *stock;
+	memFree(stock);
+	return stock = toLineValue(value);
 }
 
 // _x

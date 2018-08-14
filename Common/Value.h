@@ -24,6 +24,11 @@ sint64 toInt64(char *line);
 sint toIntDigits(char *line, char *digits);
 sint toInt(char *line);
 
+char *toLineValue64Digits(uint64 value, char *digits);
+char *toLineValueDigits(uint value, char *digits);
+char *toLineValue64(uint64 value);
+char *toLineValue(uint value);
+
 uint iSqrt64(uint64 value);
 uint iSqrt(uint value);
 uint iRoot64(uint64 value, uint extend);
@@ -49,6 +54,12 @@ uint64 revEndian64(uint64 value);
 
 char *zPad64(uint64 value, char *digits, uint minlen);
 char *zPad(uint64 value, char *digits, uint minlen);
+
+// c_
+char *c_toLineValue64Digits(uint64 value, char *digits);
+char *c_toLineValueDigits(uint value, char *digits);
+char *c_toLineValue64(uint64 value);
+char *c_toLineValue(uint value);
 
 // _x
 uint64 toValue64Digits_xc(char *line, char *digits);
