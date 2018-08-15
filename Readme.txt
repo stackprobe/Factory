@@ -12,7 +12,7 @@ Cで書いたツールとライブラリの寄せ集めです。
 --------
 
 Windows 10 Pro | Windows 7 Professional
-Visual C++ 2010 Express Edition
+Visual C++ 2010 Express
 
 システムドライブ = C
 
