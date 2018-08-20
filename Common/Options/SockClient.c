@@ -103,6 +103,68 @@ static int IsTimeout(uchar ip[4])
 	return 0;
 }
 
+uint sockConnectTimeoutSec = 20;
+
+static int ConnectWithTimeout(int sock, struct sockaddr *p_sa, uint timeoutMillis, int nonBlocking)
+{
+	WSAEVENT ev;
+	WSANETWORKEVENTS nwEv;
+	int retval = -1;
+	int ret;
+	int ioctlsocket_arg;
+
+	ev = WSACreateEvent();
+
+	if(ev == WSA_INVALID_EVENT)
+		goto endfunc;
+
+	ret = WSAEventSelect(sock, ev, FD_CONNECT);
+
+	if(ret == -1)
+		goto endfunc_ev;
+
+	ret = connect(sock, p_sa, sizeof(*p_sa));
+
+	if(ret == -1)
+	{
+		ret = WSAGetLastError();
+
+		if(ret != WSAEWOULDBLOCK)
+			goto endfunc_nwEv;
+	}
+	if(nonBlocking)
+		inner_uncritical();
+
+	ret = WSAWaitForMultipleEvents(1, &ev, 0, timeoutMillis, 0);
+
+	if(nonBlocking)
+		inner_critical();
+
+	if(ret != WSA_WAIT_EVENT_0)
+		goto endfunc_nwEv;
+
+	ret = WSAEnumNetworkEvents(sock, ev, &nwEv);
+
+	if(
+		ret == -1 ||
+		!(nwEv.lNetworkEvents & FD_CONNECT) ||
+		nwEv.iErrorCode[FD_CONNECT_BIT] != 0
+		)
+		goto endfunc_nwEv;
+
+	retval = 0;
+
+	ioctlsocket_arg = 0;
+	ioctlsocket(sock, FIONBIO, &ioctlsocket_arg);
+
+endfunc_nwEv:
+	WSAEventSelect(sock, NULL, 0);
+endfunc_ev:
+	WSACloseEvent(ev);
+endfunc:
+	return retval;
+}
+
 /*
 	ŠÈ’P‚ÈŽg—p—á
 		SockStartup();
@@ -144,10 +206,16 @@ int sockConnectEx(uchar ip[4], char *domain, uint portno, int nonBlocking) // re
 	errorCase(sa.sin_addr.s_addr == INADDR_NONE);
 
 	{
-		uint st = now();
+		uint timeoutMillis = sockConnectTimeoutSec * 1000;
+		uint st;
 		uint et;
 		uint dt;
 
+		st = now();
+
+#if 1
+		retval = ConnectWithTimeout(sock, (struct sockaddr *)&sa, timeoutMillis, nonBlocking);
+#else // old
 		if(nonBlocking)
 			inner_uncritical();
 
@@ -155,6 +223,7 @@ int sockConnectEx(uchar ip[4], char *domain, uint portno, int nonBlocking) // re
 
 		if(nonBlocking)
 			inner_critical();
+#endif
 
 		et = now();
 		dt = et - st;
