@@ -6,8 +6,6 @@
 autoList_t *sockLookupList(char *domain);
 void sockLookup(uchar ip[4], char *domain);
 
-extern uint sockConnectTimeoutSec;
-
 int sockConnectEx(uchar ip[4], char *domain, uint portno, int nonBlocking);
 int sockConnect(uchar ip[4], char *domain, uint portno);
 int sockConnect_NB(uchar ip[4], char *domain, uint portno);

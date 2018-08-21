@@ -1,7 +1,8 @@
-// ---- flags ----
+// ---- process properties ----
 
 extern int sockServerMode;
 extern int noErrorDlgMode;
+extern uint sockConnectTimeoutSec;
 
 // ----
 

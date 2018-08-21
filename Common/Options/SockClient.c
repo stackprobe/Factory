@@ -103,8 +103,6 @@ static int IsTimeout(uchar ip[4])
 	return 0;
 }
 
-uint sockConnectTimeoutSec = 20;
-
 static int ConnectWithTimeout(int sock, struct sockaddr *p_sa, uint timeoutMillis, int nonBlocking)
 {
 	WSAEVENT ev;
@@ -215,7 +213,7 @@ int sockConnectEx(uchar ip[4], char *domain, uint portno, int nonBlocking) // re
 
 #if 1
 		retval = ConnectWithTimeout(sock, (struct sockaddr *)&sa, timeoutMillis, nonBlocking);
-#else // old
+#else // old @ 2018.8.20
 		if(nonBlocking)
 			inner_uncritical();
 

@@ -1,9 +1,10 @@
 #include "all.h"
 
-// ---- flags ----
+// ---- process properties ----
 
 int sockServerMode;
 int noErrorDlgMode;
+uint sockConnectTimeoutSec = 20; // zantei
 
 // ----
 
@@ -600,6 +601,15 @@ static void ReadSysArgs(void)
 		{
 			desertElement(Args, argi);
 			noErrorDlgMode = 1;
+		}
+		else if(!_stricmp(arg, "//CT")) // zantei
+		{
+			desertElement(Args, argi);
+			arg = (char *)desertElement(Args, argi);
+
+			sockConnectTimeoutSec = toValue(arg);
+
+			errorCase(!m_isRange(sockConnectTimeoutSec, 1, 3600));
 		}
 		else
 			argi++;
