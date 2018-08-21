@@ -183,6 +183,7 @@ readArgs:
 	if(argIs("/L")) // BlueFish 内のバッチ用
 	{
 		cout("#### LITE MODE ####\n");
+		sockConnectTimeoutSec = 2;
 		httpM4UServerMode = 0;
 		timeout = 30;
 		httpBlockTimeout = 20;

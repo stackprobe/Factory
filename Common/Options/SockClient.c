@@ -116,16 +116,25 @@ static int ConnectWithTimeout(int sock, struct sockaddr *p_sa, uint timeoutMilli
 	if(ev == WSA_INVALID_EVENT)
 		goto endfunc;
 
+LOGPOS(); // test
 	ret = WSAEventSelect(sock, ev, FD_CONNECT);
+cout("ret: %d\n", ret); // test
+LOGPOS(); // test
 
 	if(ret == -1)
 		goto endfunc_ev;
 
+LOGPOS(); // test
 	ret = connect(sock, p_sa, sizeof(*p_sa));
+cout("ret: %d\n", ret); // test
+LOGPOS(); // test
 
 	if(ret == -1)
 	{
+LOGPOS(); // test
 		ret = WSAGetLastError();
+cout("ret: %d\n", ret); // test
+LOGPOS(); // test
 
 		if(ret != WSAEWOULDBLOCK)
 			goto endfunc_nwEv;
@@ -133,15 +142,31 @@ static int ConnectWithTimeout(int sock, struct sockaddr *p_sa, uint timeoutMilli
 	if(nonBlocking)
 		inner_uncritical();
 
+LOGPOS(); // test
 	ret = WSAWaitForMultipleEvents(1, &ev, 0, timeoutMillis, 0);
+cout("ret: %d\n", ret); // test
+LOGPOS(); // test
 
 	if(nonBlocking)
 		inner_critical();
 
+//	if(ret == WSA_WAIT_TIMEOUT) 1; // タイムアウト
+	// or
+	// WSA_WAIT_IO_COMPLETION  <---- 何これ？
+	// or
+	// WSA_WAIT_EVENT_0 ～ (WSA_WAIT_EVENT_0 + cEvents - 1)
+
+	// WSA_WAIT_EVENT_0       == 0
+	// WSA_WAIT_IO_COMPLETION == 192 (0xC0)
+	// WSA_WAIT_TIMEOUT       == 258
+
 	if(ret != WSA_WAIT_EVENT_0)
 		goto endfunc_nwEv;
 
+LOGPOS(); // test
 	ret = WSAEnumNetworkEvents(sock, ev, &nwEv);
+cout("ret: %d\n", ret); // test
+LOGPOS(); // test
 
 	if(
 		ret == -1 ||
@@ -155,11 +180,15 @@ static int ConnectWithTimeout(int sock, struct sockaddr *p_sa, uint timeoutMilli
 	ioctlsocket_arg = 0;
 	ioctlsocket(sock, FIONBIO, &ioctlsocket_arg);
 
+LOGPOS(); // test
 endfunc_nwEv:
+LOGPOS(); // test
 	WSAEventSelect(sock, NULL, 0);
 endfunc_ev:
+LOGPOS(); // test
 	WSACloseEvent(ev);
 endfunc:
+LOGPOS(); // test
 	return retval;
 }
 

@@ -609,6 +609,8 @@ static void ReadSysArgs(void)
 
 			sockConnectTimeoutSec = toValue(arg);
 
+			cout("sockConnectTimeoutSec: %u\n", sockConnectTimeoutSec); // zantei
+
 			errorCase(!m_isRange(sockConnectTimeoutSec, 1, 3600));
 		}
 		else
