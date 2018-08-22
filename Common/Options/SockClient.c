@@ -139,20 +139,22 @@ LOGPOS(); // test
 		if(ret != WSAEWOULDBLOCK)
 			goto endfunc_nwEv;
 	}
+LOGPOS(); // test
 	if(nonBlocking)
 		inner_uncritical();
 
-LOGPOS(); // test
 	ret = WSAWaitForMultipleEvents(1, &ev, 0, timeoutMillis, 0);
-cout("ret: %d\n", ret); // test
-LOGPOS(); // test
 
 	if(nonBlocking)
 		inner_critical();
+cout("ret: %d\n", ret); // test
+LOGPOS(); // test
 
-//	if(ret == WSA_WAIT_TIMEOUT) 1; // タイムアウト
+	// https://docs.microsoft.com/en-us/windows/desktop/api/winsock2/nf-winsock2-wsawaitformultipleevents
+
+	// WSA_WAIT_TIMEOUT        <---- タイムアウト
 	// or
-	// WSA_WAIT_IO_COMPLETION  <---- 何これ？
+	// WSA_WAIT_IO_COMPLETION  <---- This return value can only be returned if the fAlertable(第5引数) parameter is TRUE.
 	// or
 	// WSA_WAIT_EVENT_0 ～ (WSA_WAIT_EVENT_0 + cEvents - 1)
 

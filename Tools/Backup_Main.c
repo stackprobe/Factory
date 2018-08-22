@@ -55,6 +55,7 @@ static autoList_t *GetTargetDirs(void)
 			!_stricmp(dir, "C:\\Config.Msi") || // for 7
 			!_stricmp(dir, "C:\\Recovery") || // for 7
 			!_stricmp(dir, "C:\\Users") || // for 7
+			!_stricmp(dir, "C:\\$SysReset") || // for 10
 
 			dir[3] == '_' || m_isdecimal(dir[3]) || // _ 0～9 で始まるフォルダは対象外
 
@@ -84,7 +85,7 @@ static autoList_t *GetTargetDirs(void)
 //		addElement(retDirs, (uint)xcout("C:\\Users\\%s\\Documents", userName)); // 権限が無いとか言われる。
 		addElement(retDirs, (uint)xcout("C:\\Users\\%s\\Desktop", userName));
 	}
-	else // ? xp
+	else // ? XP
 	{
 		addElement(retDirs, (uint)xcout("C:\\Documents and Settings\\%s\\Favorites", userName));
 		addElement(retDirs, (uint)xcout("C:\\Documents and Settings\\%s\\My Documents", userName));
