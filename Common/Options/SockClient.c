@@ -116,30 +116,30 @@ static int ConnectWithTimeout(int sock, struct sockaddr *p_sa, uint timeoutMilli
 	if(ev == WSA_INVALID_EVENT)
 		goto endfunc;
 
-LOGPOS(); // test
+//LOGPOS(); // test
 	ret = WSAEventSelect(sock, ev, FD_CONNECT);
-cout("ret: %d\n", ret); // test
-LOGPOS(); // test
+//cout("ret: %d\n", ret); // test
+//LOGPOS(); // test
 
 	if(ret == -1)
 		goto endfunc_ev;
 
-LOGPOS(); // test
+//LOGPOS(); // test
 	ret = connect(sock, p_sa, sizeof(*p_sa));
-cout("ret: %d\n", ret); // test
-LOGPOS(); // test
+//cout("ret: %d\n", ret); // test
+//LOGPOS(); // test
 
 	if(ret == -1)
 	{
-LOGPOS(); // test
+//LOGPOS(); // test
 		ret = WSAGetLastError();
-cout("ret: %d\n", ret); // test
-LOGPOS(); // test
+//cout("ret: %d\n", ret); // test
+//LOGPOS(); // test
 
 		if(ret != WSAEWOULDBLOCK)
 			goto endfunc_nwEv;
 	}
-LOGPOS(); // test
+//LOGPOS(); // test
 	if(nonBlocking)
 		inner_uncritical();
 
@@ -147,8 +147,8 @@ LOGPOS(); // test
 
 	if(nonBlocking)
 		inner_critical();
-cout("ret: %d\n", ret); // test
-LOGPOS(); // test
+//cout("ret: %d\n", ret); // test
+//LOGPOS(); // test
 
 	// https://docs.microsoft.com/en-us/windows/desktop/api/winsock2/nf-winsock2-wsawaitformultipleevents
 
@@ -165,10 +165,10 @@ LOGPOS(); // test
 	if(ret != WSA_WAIT_EVENT_0)
 		goto endfunc_nwEv;
 
-LOGPOS(); // test
+//LOGPOS(); // test
 	ret = WSAEnumNetworkEvents(sock, ev, &nwEv);
-cout("ret: %d\n", ret); // test
-LOGPOS(); // test
+//cout("ret: %d\n", ret); // test
+//LOGPOS(); // test
 
 	if(
 		ret == -1 ||
@@ -182,15 +182,15 @@ LOGPOS(); // test
 	ioctlsocket_arg = 0;
 	ioctlsocket(sock, FIONBIO, &ioctlsocket_arg);
 
-LOGPOS(); // test
+//LOGPOS(); // test
 endfunc_nwEv:
-LOGPOS(); // test
+//LOGPOS(); // test
 	WSAEventSelect(sock, NULL, 0);
 endfunc_ev:
-LOGPOS(); // test
+//LOGPOS(); // test
 	WSACloseEvent(ev);
 endfunc:
-LOGPOS(); // test
+//LOGPOS(); // test
 	return retval;
 }
 

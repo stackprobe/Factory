@@ -887,5 +887,8 @@ void getWindowsVer(uint ver[3])
 	ver[1] = toValue(sVer[1]);
 	ver[2] = toValue(sVer[2]);
 
+	removeFile(outFile);
+
 	memFree(line);
+	memFree(outFile);
 }
