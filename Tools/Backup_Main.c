@@ -55,7 +55,8 @@ static autoList_t *GetTargetDirs(void)
 			!_stricmp(dir, "C:\\Config.Msi") || // for 7
 			!_stricmp(dir, "C:\\Recovery") || // for 7
 			!_stricmp(dir, "C:\\Users") || // for 7
-			!_stricmp(dir, "C:\\$SysReset") || // for 10
+			!_stricmp(dir, "C:\\$SysReset") || // for 10 (gomi)
+			!_stricmp(dir, "C:\\Windows.old") || // for 10 (gomi)
 
 			dir[3] == '_' || m_isdecimal(dir[3]) || // _ 0～9 で始まるフォルダは対象外
 
