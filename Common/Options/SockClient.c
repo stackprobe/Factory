@@ -103,7 +103,7 @@ static int IsTimeout(uchar ip[4])
 	return 0;
 }
 
-static int ConnectWithTimeout(int sock, struct sockaddr *p_sa, uint timeoutMillis, int nonBlocking)
+static int ConnectWithTimeout(int sock, struct sockaddr *p_sa, uint timeoutMillis, int nonBlocking, int *p_timedOut)
 {
 	WSAEVENT ev;
 	WSANETWORKEVENTS nwEv;
@@ -163,8 +163,10 @@ static int ConnectWithTimeout(int sock, struct sockaddr *p_sa, uint timeoutMilli
 	// WSA_WAIT_TIMEOUT       == 258
 
 	if(ret != WSA_WAIT_EVENT_0)
+	{
+		*p_timedOut = 1;
 		goto endfunc_nwEv;
-
+	}
 //LOGPOS(); // test
 	ret = WSAEnumNetworkEvents(sock, ev, &nwEv);
 //cout("ret: %d\n", ret); // test
@@ -236,14 +238,10 @@ int sockConnectEx(uchar ip[4], char *domain, uint portno, int nonBlocking) // re
 
 	{
 		uint timeoutMillis = sockConnectTimeoutSec * 1000;
-		uint st;
-		uint et;
-		uint dt;
-
-		st = now();
+		int timedOut = 0;
 
 #if 1
-		retval = ConnectWithTimeout(sock, (struct sockaddr *)&sa, timeoutMillis, nonBlocking);
+		retval = ConnectWithTimeout(sock, (struct sockaddr *)&sa, timeoutMillis, nonBlocking, &timedOut);
 #else // old @ 2018.8.20
 		if(nonBlocking)
 			inner_uncritical();
@@ -254,16 +252,13 @@ int sockConnectEx(uchar ip[4], char *domain, uint portno, int nonBlocking) // re
 			inner_critical();
 #endif
 
-		et = now();
-		dt = et - st;
-
-		if(4 < dt)
+		if(timedOut)
 		{
 			int warning = !nonBlocking && sockServerMode;
 
-			cout("%s: アクティブオープンに %u 秒掛かりました。%s %s %d\n",
+			cout("%s: アクティブオープンがタイムアウトしました。%u[ms] %s %s %d\n",
 				warning ? "Warning" : "Information",
-				dt,
+				timeoutMillis,
 				nonBlocking ? "NB" : "B",
 				sockServerMode ? "SVR" : "CL",
 				retval
