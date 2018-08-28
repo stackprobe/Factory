@@ -1,6 +1,6 @@
 #include "FileTools.h"
 
-#define DFDP_BUFFER_SIZE 1000000
+#define DFDP_BUFFER_SIZE (1024 * 1024 * 1)
 
 void DeleteFileDataPart(char *file, uint64 beginPos, uint64 delSize)
 {
@@ -30,7 +30,7 @@ void DeleteFileDataPart(char *file, uint64 beginPos, uint64 delSize)
 
 	for(remain = size - (beginPos + delSize); remain; )
 	{
-		int rwSize = (uint)m_min(remain, (uint64)DFDP_BUFFER_SIZE);
+		uint rwSize = (uint)m_min(remain, (uint64)DFDP_BUFFER_SIZE);
 		autoBlock_t gab;
 
 		fileRead(rfp, gndBlockVar(buffer, rwSize, gab));

@@ -225,7 +225,8 @@ void fnlzSemaphore(semaphore_t *i)
 }
 void enterSemaphore(semaphore_t *i)
 {
-	while(!i->Count)
+	while(!i->Count) // ifでも良いのでは？ <-- ダメ。
+// enter -> !Countで待ち -> leave x 2 -> Setしてenter抜ける -> enter -> enter -> !Countで待ちに入るがSetされているので待たない。== whileで戻ってくる必要がある。
 	{
 		inner_uncritical();
 		{

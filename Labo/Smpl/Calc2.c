@@ -1,3 +1,9 @@
+/*
+	Calc2 /S 123.456   ==>   1.23456E+02
+
+	Calc2 /E 10 /EM 123.456   ==>   123.4560000
+*/
+
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Calc2.h"
 

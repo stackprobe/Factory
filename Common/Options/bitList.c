@@ -29,13 +29,13 @@ void putBit(bitList_t *i, uint64 index, uint value)
 	uint c = refElement(i->Buffer, (uint)(index >> 5));
 
 	if(value)
-		c |= 1 << (uint)(index & 31);
+		c |= 1u << (uint)(index & 31);
 	else
-		c &= ~(1 << (uint)(index & 31));
+		c &= ~(1u << (uint)(index & 31));
 
 	putElement(i->Buffer, (uint)(index >> 5), c);
 }
-void putBits(bitList_t *i, uint64 index, uint64 size, uint value)
+void putBits(bitList_t *i, uint64 index, uint64 size, uint value) // size: 0 ok
 {
 	uint64 bgn = index;
 	uint64 end = index + size;
@@ -59,6 +59,39 @@ void putBits(bitList_t *i, uint64 index, uint64 size, uint value)
 
 		for(index = 0; index < indexEnd; index++)
 			putElement(i->Buffer, index, value);
+	}
+}
+
+void invBit(bitList_t *i, uint64 index)
+{
+	uint c = refElement(i->Buffer, (uint)(index >> 5));
+
+	c ^= 1u << (uint)(index & 31);
+
+	putElement(i->Buffer, (uint)(index >> 5), c);
+}
+void invBits(bitList_t *i, uint64 index, uint64 size) // size: 0 ok
+{
+	uint64 bgn = index;
+	uint64 end = index + size;
+
+	while(bgn < end && bgn & 31)
+	{
+		invBit(i, bgn);
+		bgn++;
+	}
+	while(bgn < end && end & 31)
+	{
+		end--;
+		invBit(i, end);
+	}
+	if(bgn < end)
+	{
+		uint index    = (uint)(bgn >> 5);
+		uint indexEnd = (uint)(end >> 5);
+
+		for(index = 0; index < indexEnd; index++)
+			putElement(i->Buffer, index, refElement(i->Buffer, index) ^ 0xffffffff);
 	}
 }
 

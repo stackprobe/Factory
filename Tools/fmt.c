@@ -5,6 +5,7 @@ typedef enum FType_et
 	FT_UNKNOWN,
 	FT_EXE,
 	FT_ZIP,
+	FT_GZ,
 }
 FType_t;
 
@@ -13,6 +14,7 @@ static char *FTypeNames[] =
 	"unknown",
 	"EXE",
 	"ZIP",
+	"GZ"
 };
 
 // ----
@@ -23,6 +25,7 @@ static FType_t GetFTypeByExt(char *file)
 
 	if(!_stricmp(ext, "EXE")) return FT_EXE;
 	if(!_stricmp(ext, "ZIP")) return FT_ZIP;
+	if(!_stricmp(ext, "GZ"))  return FT_GZ;
 
 	return FT_UNKNOWN;
 }
@@ -53,6 +56,15 @@ static FType_t GetFTypeBySignature(char *file)
 		)
 	{
 		result = FT_ZIP;
+		goto solved;
+	}
+
+	if(
+		refByte(fDatTop, 0) == 0x1f &&
+		refByte(fDatTop, 1) == 0x8b
+		)
+	{
+		result = FT_GZ;
 		goto solved;
 	}
 

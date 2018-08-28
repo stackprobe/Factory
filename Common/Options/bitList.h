@@ -18,4 +18,7 @@ uint refBit(bitList_t *i, uint64 index);
 void putBit(bitList_t *i, uint64 index, uint value);
 void putBits(bitList_t *i, uint64 index, uint64 size, uint value);
 
+void invBit(bitList_t *i, uint64 index);
+void invBits(bitList_t *i, uint64 index, uint64 size);
+
 // <-- accessor

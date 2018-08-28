@@ -47,6 +47,7 @@ int SClient(char *serverHost, uint serverPort, int (*userPerform)(int, uint), ui
 	errorCase(m_isEmpty(serverHost));
 	errorCase(!m_isRange(serverPort, 1, 65535));
 	errorCase(!userPerform);
+	// userPrm
 
 	if(!ServerHosts) // init
 	{
