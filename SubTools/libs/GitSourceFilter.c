@@ -91,6 +91,7 @@ void GitSourceFilter(char *rootDir)
 		char *ext = getExt(file);
 
 		if(
+			!_stricmp(ext, "bat") ||
 			!_stricmp(ext, "c") ||
 			!_stricmp(ext, "h") ||
 			!_stricmp(ext, "cs") ||
