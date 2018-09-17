@@ -1,5 +1,5 @@
 /*
-	wavCut4Game.exe [/F FADEOUT-TIME] [/FL FADEOUT-MILLIS] [/E END-SILEND-MILLIS] [/B BGN-SILEND-MILLIS] [WAV-FILE]
+	wavCut4Game.exe [/F FADEOUT-TIME] [/FL FADEOUT-MILLIS] [/E END-SILENT-MILLIS] [/B BGN-SILENT-MILLIS] [WAV-FILE]
 
 		/F  ... 省略時、フェードアウトしない。
 		FADEOUT-TIME ... 秒 or 分:秒 or 分.秒
