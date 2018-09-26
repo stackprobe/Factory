@@ -135,6 +135,10 @@ int main(int argc, char **argv)
 {
 	char *program;
 
+	ServerHost = getAppDataEnv("SERVER", "localhost");
+	ServerPort = getAppDataEnv32("NRUN_SERVER_PORT", 60123);
+	RetryMax = getAppDataEnv32("NRUN_RETRY", UINTMAX);
+
 readArgs:
 	if(argIs("/S"))
 	{

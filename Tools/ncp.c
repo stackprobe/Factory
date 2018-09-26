@@ -215,6 +215,7 @@ int main(int argc, char **argv)
 {
 	ServerDomain = getAppDataEnv("SERVER", ServerDomain);
 	ServerPort = getAppDataEnv32("NCP_SERVER_PORT", ServerPort);
+	RetryCount = getAppDataEnv32("NCP_RETRY", RetryCount);
 	sockClientAnswerFileSizeMax = UINT64MAX;
 	md5_interrupt = MD5Interrupt;
 
