@@ -20,7 +20,11 @@
 
 	CloseWin.exe ... /L
 
-		リストを表示するだけ。
+		プロセスのリストを表示するだけ。
+
+	CloseWin.exe ... /LT
+
+		ウィンドウ(タイトル)のリストを表示するだけ。
 */
 
 #pragma comment(lib, "user32.lib")
@@ -84,6 +88,21 @@ static BOOL CALLBACK EnumFindWinTitle(HWND hWnd, LPARAM lp)
 			FoundFlag = 1;
 		}
 	}
+	return TRUE;
+}
+static BOOL CALLBACK PrintWinTitle(HWND hWnd, LPARAM lp)
+{
+	char winTitle[WINTITLE_LENMAX + 1];
+
+	GetWindowText(hWnd, winTitle, WINTITLE_LENMAX);
+	line2JLine(winTitle, 1, 0, 0, 1);
+
+	cout("----\n");
+	cout("hWnd: %u\n", hWnd);
+	cout("IsWindowVisible: %d\n", IsWindowVisible(hWnd) ? 1 : 0);
+	cout("winTitle: [%s]\n", winTitle);
+	cout("----\n");
+
 	return TRUE;
 }
 static void FindWinTitle(char *winTitle)
@@ -165,6 +184,11 @@ int main(int argc, char **argv)
 	if(argIs("/L"))
 	{
 		SearchProcByExeName("", (void (*)(PROCESSENTRY32 pe32))noop);
+		return;
+	}
+	if(argIs("/LT"))
+	{
+		EnumWindows(PrintWinTitle, (LPARAM)NULL);
 		return;
 	}
 	if(argIs("/O"))

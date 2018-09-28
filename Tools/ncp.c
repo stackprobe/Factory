@@ -213,6 +213,8 @@ static void ReadEndToStream(FILE *rfp, FILE *wfp)
 
 int main(int argc, char **argv)
 {
+	mkAppDataDir();
+
 	ServerDomain = getAppDataEnv("SERVER", ServerDomain);
 	ServerPort = getAppDataEnv32("NCP_SERVER_PORT", ServerPort);
 	RetryCount = getAppDataEnv32("NCP_RETRY", RetryCount);

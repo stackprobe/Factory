@@ -135,6 +135,8 @@ int main(int argc, char **argv)
 {
 	char *program;
 
+	mkAppDataDir();
+
 	ServerHost = getAppDataEnv("SERVER", "localhost");
 	ServerPort = getAppDataEnv32("NRUN_SERVER_PORT", 60123);
 	RetryMax = getAppDataEnv32("NRUN_RETRY", UINTMAX);
