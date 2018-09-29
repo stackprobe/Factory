@@ -70,6 +70,7 @@ static void MakeIndex(char *indexDir, char *templateDir)
 		char *gameDir = combine(rootDir, name);
 		char *titleFile;
 		char *title;
+		char *title2;
 		autoList_t *files;
 		char *file;
 		uint index;
@@ -84,9 +85,21 @@ static void MakeIndex(char *indexDir, char *templateDir)
 		errorCase(!existFile(titleFile));
 
 		title = readFirstLine(titleFile);
+		title2 = strx(title);
 		files = lsFiles(gameDir);
 		sortJLinesICase(files);
 		reverseElements(files); // êVÇµÇ¢èá
+
+		// zantei
+		{
+			char *p = strchr(title2, '<');
+
+			if(p)
+			{
+				*p = '\0';
+				ucTrimEdge(title2);
+			}
+		}
 
 		LOGPOS();
 
@@ -109,7 +122,7 @@ static void MakeIndex(char *indexDir, char *templateDir)
 
 				verLink = changeRoot(strx(file), indexDir, NULL);
 				escapeYen(verLink);
-				verTitle = xcout("%s v%c.%c%c", title, ver[0], ver[1], ver[2]);
+				verTitle = xcout("%s v%c.%c%c", title2, ver[0], ver[1], ver[2]);
 
 				if(newestPassed)
 					tmp = strx(templateVer);
@@ -148,6 +161,7 @@ static void MakeIndex(char *indexDir, char *templateDir)
 		memFree(gameDir);
 		memFree(titleFile);
 		memFree(title);
+		memFree(title2);
 		releaseDim(files, 1);
 		memFree(gameVerListBuff);
 
