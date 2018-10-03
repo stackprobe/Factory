@@ -266,5 +266,5 @@ readArgs:
 		GitFactory("C:\\Factory", nextArg(), allowOverwrite);
 		return;
 	}
-	GitFactory("C:\\Factory", "C:\\home\\GitHub\\Factory", 1);
+	GitFactory("C:\\Factory", "C:\\huge\\GitHub\\Factory", 1);
 }

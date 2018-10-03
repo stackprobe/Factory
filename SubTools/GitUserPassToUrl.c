@@ -1,6 +1,6 @@
 #include "C:\Factory\Common\all.h"
 
-static char *RootDir = "C:\\home\\GitHub";
+static char *RootDir = "C:\\huge\\GitHub";
 static uint SearchDeep = 1;
 static char *User = "user01";
 static char *Pass = "9999";

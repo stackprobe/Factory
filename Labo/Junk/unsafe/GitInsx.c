@@ -2,7 +2,7 @@
 
 int main(int argc, char **argv)
 {
-	autoList_t *dirs = lsDirs("C:\\home\\GitHub");
+	autoList_t *dirs = lsDirs("C:\\huge\\GitHub");
 	char *dir;
 	uint dir_index;
 
