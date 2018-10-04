@@ -2,7 +2,8 @@
 	ZCluster.exe [/KB KEY-BUNDLE] [/OAD] (/M 入力パス 出力クラスタファイル |
 		/MO 入力パス 出力クラスタファイル |
 		/BM 入力パス 出力クラスタファイル |
-		/R 入力クラスタファイル 出力パス |
+		/RF 入力クラスタファイル 出力ファイル |
+		/R 入力クラスタファイル 出力ディレクトリ |
 		/P 入力ファイル 出力ファイル |
 		/U 入力ファイル 出力ファイル |
 		/E 入力ファイル 出力ファイル |
@@ -10,7 +11,7 @@
 		/E+ 入出力ファイル |
 		/D+ 入出力ファイル)   ★コマンドモード
 
-	ZCluster.exe [/KB KEY-BUNDLE] [/C] [/1] [/-OW] [/OAD] [入出力パス]   ★自動判定モード
+	ZCluster.exe [/KB KEY-BUNDLE] [/C] [/1] [/-OW] [/OAD] [入力パス | 入出力パス]   ★自動判定モード
 
 	KEY-BUNDLE ... 鍵束ファイル or * or *PASS
 	/C   ... 自動判定モードのリストア時にカレントディレクトリに出力する。
@@ -301,6 +302,7 @@ static void Restore(char *rFile, char *wPath, autoBlock_t *rawKey, int restoreDi
 	}
 	if(restoreDirMode)
 	{
+		removeFile(midFile);
 		moveFile(wPath, midFile);
 
 		LOGPOS();
