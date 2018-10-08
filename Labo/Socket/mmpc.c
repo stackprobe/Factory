@@ -48,7 +48,7 @@ readArgs:
 		if(existDir(bodyPath)) // ? ファイルじゃなくてDIR -> clu化してファイルにする。
 		{
 			bodyFile = makeTempPath("clu");
-			coExecute_x(xcout("C:\\Factory\\Tools\\Cluster.exe /M \"%s\" \"%s\"", bodyFile, bodyPath));
+			coExecute_x(xcout("C:\\Factory\\Tools\\Cluster.exe /I /M \"%s\" \"%s\"", bodyFile, bodyPath));
 			fileName = xcout("%s.clu", bodyPath);
 
 			mmpc_addPartFile(text, fileName, bodyFile);
