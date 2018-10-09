@@ -4,7 +4,7 @@
 
 int sockServerMode;
 int noErrorDlgMode;
-uint sockConnectTimeoutSec = 20; // zantei
+uint sockConnectTimeoutSec = 20;
 
 // ----
 
@@ -602,14 +602,14 @@ static void ReadSysArgs(void)
 			desertElement(Args, argi);
 			noErrorDlgMode = 1;
 		}
-		else if(!_stricmp(arg, "//CT")) // zantei
+		else if(!_stricmp(arg, "//CT"))
 		{
 			desertElement(Args, argi);
 			arg = (char *)desertElement(Args, argi);
 
 			sockConnectTimeoutSec = toValue(arg);
 
-			cout("sockConnectTimeoutSec: %u\n", sockConnectTimeoutSec); // zantei
+			cout("sockConnectTimeoutSec: %u\n", sockConnectTimeoutSec);
 
 			errorCase(!m_isRange(sockConnectTimeoutSec, 1, 3600));
 		}
