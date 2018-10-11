@@ -1,1 +1,1 @@
-ZCluster.exe /1 /KB *9999
+ZCluster.exe /1 /KB *9999 %*
