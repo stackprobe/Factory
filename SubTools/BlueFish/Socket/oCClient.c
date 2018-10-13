@@ -8,7 +8,7 @@
 
 static int Perform(int sock, uint prm)
 {
-	SockStream_t *ss = CreateSockStream(sock, 30);
+	SockStream_t *ss = CreateSockStream(sock, 3600); // otoの受信(鯖でDL,z9している間の待ち)があるので、長めに
 	char *command = (char *)prm;
 
 	LOGPOS();
@@ -48,6 +48,8 @@ int main(int argc, char **argv)
 	char *command;
 	uint portNo = PORTNO;
 
+	sockConnectTimeoutSec = 2; // ローカル内なので
+
 	if(argIs("/P"))
 	{
 		portNo = toValue(nextArg());
@@ -56,6 +58,6 @@ int main(int argc, char **argv)
 	command = nextArg();
 
 	LOGPOS();
-	SClient(server, portNo, Perform, (uint)command);
+	errorCase_m(!SClient(server, portNo, Perform, (uint)command), "接続出来なかった様です。");
 	LOGPOS();
 }
