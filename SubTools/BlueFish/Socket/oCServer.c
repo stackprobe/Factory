@@ -50,7 +50,7 @@ static int Perform(int sock, void *dummyPrm)
 	line2JLine(command, 1, 0, 0, 1);
 	cout("command: \n", command);
 
-	SetSockStreamTimeout(ss, 30);
+	SetSockStreamTimeout(ss, 3600); // oto‚Ì‘—M(DL,z9‚µ‚Ä‚¢‚éŠÔ‚Ì‘Ò‚¿)‚ª‚ ‚é‚Ì‚ÅA’·‚ß‚É
 
 	if(!strcmp(command, COMMAND_PREFIX "o"))
 	{
