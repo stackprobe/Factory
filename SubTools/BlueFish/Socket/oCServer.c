@@ -75,6 +75,7 @@ static int Perform(int sock, void *dummyPrm)
 	{
 		cout("不明なコマンド\n");
 	}
+	LOGPOS();
 	memFree(command);
 	ReleaseSockStream(ss);
 	return 0;
