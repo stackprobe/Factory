@@ -25,6 +25,7 @@ static void Perform_o(SockStream_t *ss)
 				releaseBlock(block);
 			}
 			fileClose(fp);
+			SockFlush(ss);
 		}
 	}
 	unaddCwd();
