@@ -24,6 +24,12 @@ static int Perform(int sock, uint prm)
 //		FILE *fp = fileOpen("oto.clu.gz.enc", "wb");
 
 		LOGPOS();
+		SockRecvChar(ss); // '1'
+		LOGPOS();
+		SockRecvChar(ss); // '2'
+		LOGPOS();
+		SockRecvChar(ss); // 'S'
+		LOGPOS();
 
 		for(; ; )
 		{

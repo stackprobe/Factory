@@ -8,12 +8,23 @@ static void Perform_o(SockStream_t *ss)
 
 	addCwd(dir);
 	{
+		// çáê}
+		SockSendChar(ss, '1');
+		SockFlush(ss);
+
 		coExecute("C:\\Factory\\Tools\\ncp.exe /S localhost /P 60022 DL oto oto");
+
+		// çáê}
+		SockSendChar(ss, '2');
+		SockFlush(ss);
 
 		createDirIfNotExist("oto"); // oto\ Ç™ñ≥Ç©Ç¡ÇΩèÍçá | í êMÇ…é∏îsÇµÇΩèÍçá ëŒçÙ
 
 		coExecute("C:\\Factory\\Tools\\Cluster.exe /M oto.clu oto");
 //		coExecute("C:\\Factory\\Tools\\z9.bat /M oto oto.clu.gz.enc");
+
+		// çáê}
+		SockSendChar(ss, 'S');
 
 		{
 			FILE *fp = fileOpen("oto.clu", "rb");
