@@ -16,7 +16,8 @@ static void Perform_o(SockStream_t *ss)
 //		coExecute("C:\\Factory\\Tools\\z9.bat /M oto oto.clu.gz.enc");
 
 		{
-			FILE *fp = fileOpen("oto.clu.gz.enc", "rb");
+			FILE *fp = fileOpen("oto.clu", "rb");
+//			FILE *fp = fileOpen("oto.clu.gz.enc", "rb");
 
 			for(; ; )
 			{
