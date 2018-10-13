@@ -1,0 +1,78 @@
+#include "C:\Factory\Common\Options\SockServer.h"
+#include "C:\Factory\Common\Options\SockStream.h"
+#include "oCDefine.h"
+
+static void Perform_o(SockStream_t *ss)
+{
+	char *dir = makeTempDir(NULL);
+
+	addCwd(dir);
+	{
+		coExecute("C:\\Factory\\Tools\\ncp.exe /S localhost /P 60022 DL oto oto");
+		coExecute("C:\\Factory\\Tools\\z9.bat /M oto oto.clu.gz.enc");
+
+		{
+			FILE *fp = fileOpen("oto.clu.gz.enc", "rb");
+
+			for(; ; )
+			{
+				autoBlock_t *block = readBinaryStream(fp, 4 * 1024 * 1024);
+
+				if(!block)
+					break;
+
+				SockSendBlock(ss, directGetBuffer(block), getSize(block));
+				releaseBlock(block);
+			}
+			fileClose(fp);
+		}
+	}
+	unaddCwd();
+
+	recurRemoveDir_x(dir);
+}
+static void Perform_C(SockStream_t *ss)
+{
+	coExecute("C:\\Factory\\SubTools\\nrun.exe /S localhost /P 60123 /R 3 SecurityEye\\start");
+}
+static int Perform(int sock, void *dummyPrm)
+{
+	SockStream_t *ss = CreateSockStream(sock, 2);
+	char *command;
+
+	command = SockRecvLine(ss, 100);
+	line2JLine(command, 1, 0, 0, 1);
+	cout("command: \n", command);
+
+	SetSockStreamTimeout(ss, 30);
+
+	if(!strcmp(command, COMMAND_PREFIX "o"))
+	{
+		Perform_o(ss);
+	}
+	else if(!strcmp(command, COMMAND_PREFIX "C"))
+	{
+		Perform_C(ss);
+	}
+	else
+	{
+		cout("不明なコマンド\n");
+	}
+	memFree(command);
+	ReleaseSockStream(ss);
+	return 0;
+}
+static int Idle(void)
+{
+	while(hasKey())
+		if(getKey() == 0x1b)
+			return 0;
+
+	return 1;
+}
+int main(int argc, char **argv)
+{
+	LOGPOS();
+	sockServerUserTransmit(Perform, (void *(*)(void))getZero, (void (*)(void *))noop_u, PORTNO, 1, Idle);
+	LOGPOS();
+}

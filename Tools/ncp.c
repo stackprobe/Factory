@@ -1,8 +1,9 @@
 /*
-	ncp.exe [/S SERVER-DOMAIN] [/P SERVER-PORT] [/F] ...
+	ncp.exe [/S SERVER-DOMAIN] [/P SERVER-PORT] [/R RETRY-COUNT] [/F] ...
 
 		SERVER-DOMAIN ... サーバードメイン, デフォルトは appDataEnv の SERVER= 無ければ localhost
 		SERVER-PORT   ... サーバーポート番号, デフォルトは appDataEnv の NCP_SERVER_PORT= 無ければ 60022
+		RETRY-COUNT   ... リトライ回数(0=リトライ無し), デフォルトは appDataEnv の NCP_RETRY= 無ければ 2
 		/F            ... /UP, /MV のとき、強制上書きモード
 
 	ncp.exe ... (/UP | UP) LOCAL-PATH [SERVER-PATH]
@@ -230,6 +231,11 @@ readArgs:
 	if(argIs("/P"))
 	{
 		ServerPort = toValue(nextArg());
+		goto readArgs;
+	}
+	if(argIs("/R"))
+	{
+		RetryCount = toValue(nextArg());
 		goto readArgs;
 	}
 	if(argIs("/F"))
