@@ -3,7 +3,7 @@
 
 	- - -
 
-	z7.exe [/C] [/T] [/7] [/OAD] [入力ファイル | 入力DIR]
+	z7.exe [/C] [/T] [/7] [/OAD] [/P パスフレーズ] [入力ファイル | 入力DIR]
 
 		/C   ... 入力ファイルと同じ場所に圧縮する。
 		/T   ... 不要な上位階層を除去する。(DIRのときのみ)
@@ -19,6 +19,7 @@ static int OutputSameDir;
 static int TrimTopDir;
 static int WFileType = 'Z'; // "7Z"
 static int OutputAndDelete;
+static char *Passphrase;
 
 static char *Get7zExeFile(void) // ret: 空白を含まないパスであること。
 {
@@ -28,6 +29,21 @@ static char *Get7zExeFile(void) // ret: 空白を含まないパスであること。
 		file = GetCollaboFile(FILE_7Z_EXE);
 
 	return file;
+}
+static char *GetSwitches(void)
+{
+	static char *ret;
+
+	memFree(ret);
+	ret = strx("");
+
+	if(Passphrase)
+	{
+		errorCase_m(!lineExp("<1,100,--__09AZaz>", Passphrase), "パスフレーズに使える文字は - _ 0～9 A～Z a～z です。");
+
+		ret = addLine_x(ret, xcout(" -p%s", Passphrase));
+	}
+	return ret;
 }
 
 static char *LastOutputDir;
@@ -72,7 +88,7 @@ static void Pack7z_File(char *file)
 {
 	char *file7z = GetWFile(file);
 
-	coExecute_x(xcout("%s a \"%s\" \"%s\"", Get7zExeFile(), file7z, file));
+	coExecute_x(xcout("%s a%s \"%s\" \"%s\"", Get7zExeFile(), GetSwitches(), file7z, file));
 
 	memFree(file7z);
 
@@ -94,13 +110,13 @@ static void Pack7z_Dir(char *dir)
 
 		foreach(subPaths, subPath, index)
 		{
-			coExecute_x(xcout("%s a \"%s\" \"%s\"", Get7zExeFile(), file7z, subPath));
+			coExecute_x(xcout("%s a%s \"%s\" \"%s\"", Get7zExeFile(), GetSwitches(), file7z, subPath));
 		}
 		releaseDim(subPaths, 1);
 	}
 	else
 	{
-		coExecute_x(xcout("%s a \"%s\" \"%s\"", Get7zExeFile(), file7z, dir));
+		coExecute_x(xcout("%s a%s \"%s\" \"%s\"", Get7zExeFile(), GetSwitches(), file7z, dir));
 	}
 	memFree(file7z);
 
@@ -161,6 +177,11 @@ readArgs:
 	if(argIs("/OAD"))
 	{
 		OutputAndDelete = 1;
+		goto readArgs;
+	}
+	if(argIs("/P"))
+	{
+		Passphrase = nextArg();
 		goto readArgs;
 	}
 

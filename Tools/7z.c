@@ -3,7 +3,7 @@
 
 	- - -
 
-	7z.exe [/ANO] [/C] [/T] [/OAD] [7z-FILE | ZIP-FILE]
+	7z.exe [/ANO] [/C] [/T] [/OAD] [/P パスフレーズ] [7z-FILE | ZIP-FILE]
 
 		/ANO ... 何も展開されなかった場合でもエラーにしない。
 		/C   ... 入力ファイルと同じ場所に展開する。
@@ -19,6 +19,7 @@ static int AllowNoOutput;
 static int ExtractSameDir;
 static int TrimOneDir;
 static int OutputAndDelete;
+static char *Passphrase;
 
 static char *Get7zExeFile(void) // ret: 空白を含まないパスであること。
 {
@@ -28,6 +29,21 @@ static char *Get7zExeFile(void) // ret: 空白を含まないパスであること。
 		file = GetCollaboFile(FILE_7Z_EXE);
 
 	return file;
+}
+static char *GetSwitches(void)
+{
+	static char *ret;
+
+	memFree(ret);
+	ret = strx("");
+
+	if(Passphrase)
+	{
+		errorCase_m(!lineExp("<1,100,--__09AZaz>", Passphrase), "パスフレーズに使える文字は - _ 0～9 A～Z a～z です。");
+
+		ret = addLine_x(ret, xcout(" -p%s", Passphrase));
+	}
+	return ret;
 }
 static char *Unlittering(char *dir, char *file7z)
 {
@@ -124,7 +140,7 @@ static void Extract7z(char *file7z)
 
 		createDir(dir);
 		addCwd(dir);
-		coExecute_x(xcout("%s x \"%s\"", Get7zExeFile(), file7z));
+		coExecute_x(xcout("%s x%s \"%s\"", Get7zExeFile(), GetSwitches(), file7z));
 		unaddCwd();
 		Post7z(dir);
 
@@ -138,7 +154,7 @@ static void Extract7z(char *file7z)
 		cout("> %s\n", dir);
 
 		addCwd(dir);
-		coExecute_x(xcout("%s x \"%s\"", Get7zExeFile(), file7z));
+		coExecute_x(xcout("%s x%s \"%s\"", Get7zExeFile(), GetSwitches(), file7z));
 		unaddCwd();
 		Post7z(dir);
 		dir = Unlittering(dir, file7z);
