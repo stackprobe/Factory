@@ -20,7 +20,8 @@ static int Perform(int sock, uint prm)
 
 	if(command[0] == 'o')
 	{
-		FILE *fp = fileOpen("oto.clu.gz.enc", "wb");
+		FILE *fp = fileOpen("oto.clu", "wb");
+//		FILE *fp = fileOpen("oto.clu.gz.enc", "wb");
 
 		LOGPOS();
 
