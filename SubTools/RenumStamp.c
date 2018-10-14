@@ -124,7 +124,7 @@ static void DoFRenumStmp(void)
 			termination(0);
 	}
 
-	// fixme: 移動テストしたい。
+	// TODO 移動テストしたい。
 
 	LOGPOS();
 

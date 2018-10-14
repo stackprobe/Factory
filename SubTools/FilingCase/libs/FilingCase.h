@@ -2,6 +2,7 @@
 
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\CRandom.h"
+#include "C:\Factory\OpenSource\sha512.h"
 
 char *FC_GetNewId(void);
 

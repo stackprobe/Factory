@@ -1,201 +1,164 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\CryptoRand.h"
-#include "C:\Factory\OpenSource\camellia.h"
-#include "C:\Factory\OpenSource\sha512.h"
 
 #define CRAND_B_EXE "C:\\Factory\\Labo\\Tools\\CryptoRand_B.exe"
+#define TMPOUT_FILE "C:\\Factory\\tmp\\CryptoRand_utest_Test.tmp"
 
-static void IncrementSeed(autoBlock_t *seed)
+static double GetSameByteRate(uchar *a, uchar *b, uint size)
 {
-	uint val = 1;
+	uint sameCnt = 0;
 	uint index;
+	double rate;
 
-	for(index = 0; index < getSize(seed); index++)
-	{
-		val += getByte(seed, index);
-		setByte(seed, index, val & 0xff);
-		val >>= 8;
-	}
-}
-static void DoTest_01_2(void)
-{
-	autoBlock_t *seed;
-	autoBlock_t *seedCa;
-	autoBlock_t *seedCa2;
-	autoBlock_t *seedCa3;
-	autoBlock_t *rSeed;
-	autoBlock_t *rSeedCa;
-	autoBlock_t *rSeedCa2;
-	autoBlock_t *rSeedCa3;
+	cout("GSBR: %08x, %08x, %u\n", (uint)a, (uint)b, size);
 
-	seed    = readBinary("C:\\Factory\\tmp\\CSeed.dat");
-	seedCa  = readBinary("C:\\Factory\\tmp\\CSeedCa.dat");
-	seedCa2 = readBinary("C:\\Factory\\tmp\\CSeedCa2.dat");
-	seedCa3 = readBinary("C:\\Factory\\tmp\\CSeedCa3.dat");
+	for(index = 0; index < size; index++)
+		if(a[index] == b[index])
+			sameCnt++;
 
-	errorCase(getSize(seed) != 4096);
-	errorCase(getSize(seedCa) != 4096);
-	errorCase(getSize(seedCa2) != 4096);
-	errorCase(getSize(seedCa3) != 4096);
-
-	coExecute(CRAND_B_EXE " 1");
-
-	IncrementSeed(seed);
-	IncrementSeed(seedCa);
-	IncrementSeed(seedCa2);
-	IncrementSeed(seedCa3);
-
-	rSeed    = readBinary("C:\\Factory\\tmp\\CSeed.dat");
-	rSeedCa  = readBinary("C:\\Factory\\tmp\\CSeedCa.dat");
-	rSeedCa2 = readBinary("C:\\Factory\\tmp\\CSeedCa2.dat");
-	rSeedCa3 = readBinary("C:\\Factory\\tmp\\CSeedCa3.dat");
-
-	errorCase(!isSameBlock(seed,    rSeed));
-	errorCase(!isSameBlock(seedCa,  rSeedCa));
-	errorCase(!isSameBlock(seedCa2, rSeedCa2));
-	errorCase(!isSameBlock(seedCa3, rSeedCa3));
-
-	releaseAutoBlock(seed);
-	releaseAutoBlock(seedCa);
-	releaseAutoBlock(seedCa2);
-	releaseAutoBlock(seedCa3);
-	releaseAutoBlock(rSeed);
-	releaseAutoBlock(rSeedCa);
-	releaseAutoBlock(rSeedCa2);
-	releaseAutoBlock(rSeedCa3);
+	rate = (double)sameCnt / size;
+	cout("GSBR_ret: %.6f (%u / %u)\n", rate, sameCnt, size);
+	return rate;
 }
 static void DoTest_01(void)
 {
-	uint c;
+	// 初期状態に依存しないはず。
+	// --> プロセスごとに乱数列は異なるはず。
 
-	LOGPOS();
+#define TEST_NUM 100
+#define DATA_SIZE    10000
+#define S_DATA_SIZE "10000"
 
-	for(c = 0; c < 550; c++)
-	{
-		cout("%u\n", c);
-
-		DoTest_01_2();
-	}
-	LOGPOS();
-}
-static void AddToCr2_Ca(autoBlock_t *cr2_ca, uint val, uint hiVal, char *seedFile)
-{
-	autoBlock_t *seed = readBinary(seedFile);
-	autoBlock_t *rawKey;
-	camellia_keyTable_t *kt;
-	uchar buff[16];
+	static uchar tbl[TEST_NUM][DATA_SIZE];
 	uint index;
-
-	sha512_makeHashBlock(seed);
-	rawKey = recreateBlock(sha512_hash, 32);
-	kt = camellia_createKeyTable(rawKey);
-
-	for(index = 0; index < 15; index++)
-	{
-		buff[index] = val & 0xff;
-		val >>= 8;
-	}
-	buff[15] = hiVal;
-	camellia_encrypt(kt, buff, buff, 1);
-	camellia_releaseKeyTable(kt);
-	releaseAutoBlock(rawKey);
-	releaseAutoBlock(seed);
-
-	ab_addBlock(cr2_ca, buff, 16);
-}
-static autoBlock_t *GetCr2_Ca(uint hiVal, char *seedFile)
-{
-	autoBlock_t *cr2_ca = newBlock();
-	uint val;
-
-	for(val = 0; getSize(cr2_ca) < 16640; val++)
-	{
-		AddToCr2_Ca(cr2_ca, val, hiVal, seedFile);
-	}
-	return cr2_ca;
-}
-static void MaskCr2(autoBlock_t *cr2, autoBlock_t *cr2_ca)
-{
-	uint index;
-
-	errorCase(getSize(cr2) != getSize(cr2_ca));
-
-	for(index = 0; index < getSize(cr2); index++)
-	{
-		b(cr2)[index] ^= b(cr2_ca)[index];
-	}
-}
-static void DoTest_02_2(void)
-{
-	autoBlock_t *seed;
-	autoBlock_t *cr1;
-	autoBlock_t *cr2;
-	autoBlock_t *cr2_c1;
-	autoBlock_t *cr2_c2;
-	autoBlock_t *cr2_c3;
-	autoBlock_t *cr2_c4;
-	uint val;
+	uint ndx;
 
 	LOGPOS();
 
-#define CR_FILE "C:\\Factory\\tmp\\cr.tmp"
+	for(index = 0; index < TEST_NUM; index++)
+	{
+		autoBlock_t *data;
 
-	removeFileIfExist(CR_FILE);
-	coExecute(CRAND_B_EXE " 16640 " CR_FILE);
-	cr1 = readBinary(CR_FILE);
-	removeFile(CR_FILE);
+		execute(CRAND_B_EXE " " S_DATA_SIZE " " TMPOUT_FILE);
 
-#undef CR_FILE
+		data = readBinary(TMPOUT_FILE);
+		errorCase(getSize(data) != DATA_SIZE);
 
-	// seed の読み込みは、読み込み -> increment -> 書き出し -> 使う
-	// なので後から読み込まないとダメ
+		memcpy(tbl[index], directGetBuffer(data), DATA_SIZE);
 
-	cr2_c1 = GetCr2_Ca(0x00, "C:\\Factory\\tmp\\CSeed.dat");
-	cr2_c2 = GetCr2_Ca(0x40, "C:\\Factory\\tmp\\CSeedCa.dat");
-	cr2_c3 = GetCr2_Ca(0x80, "C:\\Factory\\tmp\\CSeedCa2.dat");
-	cr2_c4 = GetCr2_Ca(0xc0, "C:\\Factory\\tmp\\CSeedCa3.dat");
+		releaseAutoBlock(data);
+		removeFile(TMPOUT_FILE);
+	}
+	LOGPOS();
+	for(index = 1; index < TEST_NUM; index++)
+	for(ndx = 0; ndx < index; ndx++)
+	{
+		errorCase(!memcmp(tbl[ndx], tbl[index], DATA_SIZE));
+	}
+	LOGPOS();
+	for(index = 1; index < TEST_NUM; index++)
+	for(ndx = 0; ndx < index; ndx++)
+	{
+		errorCase(0.1 < GetSameByteRate(tbl[ndx], tbl[index], DATA_SIZE)); // 各バイトが一致する確率は 1/256  -->  1/10 超えはおかしい。
+	}
+	LOGPOS();
 
-	cr2 = createBlock(16640);
-	setSize(cr2, 16640);
+#undef TEST_NUM
+#undef DATA_SIZE
+#undef S_DATA_SIZE
+}
+static void DoTest_01a(void)
+{
+	// 各バイトが一致する確率は 1/256 に収束するはず。
 
-	MaskCr2(cr2, cr2_c1);
-	MaskCr2(cr2, cr2_c2);
-	MaskCr2(cr2, cr2_c3);
-	MaskCr2(cr2, cr2_c4);
+#define DATA_SIZE    400000000
+#define S_DATA_SIZE "400000000"
+//#define DATA_SIZE    500000000
+//#define S_DATA_SIZE "500000000"
 
-//writeBinary("1.bin", cr1); // test
-//writeBinary("2.bin", cr2); // test
-
-	errorCase(!isSameBlock(cr1, cr2));
-
-	releaseAutoBlock(cr1);
-	releaseAutoBlock(cr2);
-	releaseAutoBlock(cr2_c1);
-	releaseAutoBlock(cr2_c2);
-	releaseAutoBlock(cr2_c3);
-	releaseAutoBlock(cr2_c4);
+	uint testCnt;
 
 	LOGPOS();
+
+	for(testCnt = 0; testCnt < 10; testCnt++)
+	{
+		uchar (*tbl)[DATA_SIZE] = (uchar (*)[DATA_SIZE])memAlloc(DATA_SIZE * 2);
+		uint index;
+		double rate;
+
+		for(index = 0; index < 2; index++)
+		{
+			autoBlock_t *data;
+
+			execute(CRAND_B_EXE " " S_DATA_SIZE " " TMPOUT_FILE);
+
+			data = readBinary(TMPOUT_FILE);
+			errorCase(getSize(data) != DATA_SIZE);
+
+			memcpy(tbl[index], directGetBuffer(data), DATA_SIZE);
+
+			releaseAutoBlock(data);
+			removeFile(TMPOUT_FILE);
+		}
+		LOGPOS();
+		rate = GetSameByteRate(tbl[0], tbl[1], DATA_SIZE);
+
+		// 1 / 256 == 0.00390625
+
+		// --> 0.00390625 +- 0.0001 の範囲に収まるはず。多分。
+
+		errorCase(!m_isRange(rate, 0.0038, 0.004));
+
+		LOGPOS();
+
+		memFree(tbl);
+	}
+	LOGPOS();
+
+#undef DATA_SIZE
+#undef S_DATA_SIZE
 }
 static void DoTest_02(void)
 {
-	uint c;
+	// Test01a と同じ。
+
+#define DATA_SIZE    400000000
+#define S_DATA_SIZE "400000000"
+
+	uint testCnt;
 
 	LOGPOS();
 
-	for(c = 0; c < 10; c++)
+	for(testCnt = 0; testCnt < 10; testCnt++)
 	{
-		cout("%u\n", c);
+		uchar (*tbl)[DATA_SIZE] = (uchar (*)[DATA_SIZE])memAlloc(DATA_SIZE * 2);
+		uint index;
+		double rate;
 
-		DoTest_02_2();
+		for(index = 0; index < 2; index++)
+		{
+			autoBlock_t *data = makeCryptoRandBlock(DATA_SIZE);
+
+			memcpy(tbl[index], directGetBuffer(data), DATA_SIZE);
+
+			releaseAutoBlock(data);
+		}
+		LOGPOS();
+		rate = GetSameByteRate(tbl[0], tbl[1], DATA_SIZE);
+		errorCase(!m_isRange(rate, 0.0038, 0.004));
+		LOGPOS();
+
+		memFree(tbl);
 	}
 	LOGPOS();
+
+#undef DATA_SIZE
+#undef S_DATA_SIZE
 }
 static void DoTest(void)
 {
-	coExecute(CRAND_B_EXE " 1");
-
 	DoTest_01();
+	DoTest_01a();
 	DoTest_02();
 }
 int main(int argc, char **argv)
