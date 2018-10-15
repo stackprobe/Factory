@@ -86,6 +86,8 @@ static void DoTest_01a(void)
 		uint index;
 		double rate;
 
+		LOGPOS();
+
 		for(index = 0; index < 2; index++)
 		{
 			autoBlock_t *data;
@@ -135,6 +137,17 @@ static void DoTest_02(void)
 		uint index;
 		double rate;
 
+		LOGPOS();
+
+#if 1
+		{
+			autoBlock_t *data = makeCryptoRandBlock(DATA_SIZE * 2);
+
+			memcpy(tbl[0], directGetBuffer(data), DATA_SIZE * 2);
+
+			releaseAutoBlock(data);
+		}
+#else
 		for(index = 0; index < 2; index++)
 		{
 			autoBlock_t *data = makeCryptoRandBlock(DATA_SIZE);
@@ -143,6 +156,7 @@ static void DoTest_02(void)
 
 			releaseAutoBlock(data);
 		}
+#endif
 		LOGPOS();
 		rate = GetSameByteRate(tbl[0], tbl[1], DATA_SIZE);
 		errorCase(!m_isRange(rate, 0.0038, 0.004));
