@@ -16,6 +16,14 @@ static autoTable_t *TrgBmp;
 static uint TrgBmp_W;
 static uint TrgBmp_H;
 
+// FCD == First Check Dot
+
+#define FCDNUMMAX 10
+
+static uint FCDNum;
+static uint FCDXs[FCDNUMMAX];
+static uint FCDYs[FCDNUMMAX];
+
 static int IsSameDot(uint a, uint b)
 {
 	sint aR = a >> 16;
@@ -32,8 +40,13 @@ static int IsSameDot(uint a, uint b)
 }
 static int IsMatchBmpArea(autoTable_t *bmp, uint l, uint t)
 {
+	uint i;
 	uint x;
 	uint y;
+
+	for(i = 0; i < FCDNum; i++)
+		if(!IsSameDot(getTableCell(bmp, l + FCDXs[i], t + FCDYs[i]), getTableCell(TrgBmp, FCDXs[i], FCDYs[i])))
+			return 0;
 
 	for(x = 0; x < TrgBmp_W; x++)
 	for(y = 0; y < TrgBmp_H; y++)
@@ -93,6 +106,37 @@ static int FindBmpOnScreen(void)
 	releaseDim_BR(bmps, 1, (void (*)(void *))releaseAutoBlock);
 	return ret;
 }
+static void InitFCD(void)
+{
+	uint x;
+	uint y;
+
+	FCDXs[0] = 0;
+	FCDYs[0] = 0;
+	FCDNum = 1;
+
+	for(x = 0; x < TrgBmp_W; x++)
+	for(y = 0; y < TrgBmp_H; y++)
+	{
+		uint i;
+
+		for(i = 0; i < FCDNum; i++)
+			if(IsSameDot(getTableCell(TrgBmp, FCDXs[i], FCDYs[i]), getTableCell(TrgBmp, x, y)))
+				goto nextLoop;
+
+		cout("FCDX_Ys: %u, %u\n", x, y);
+
+		FCDXs[FCDNum] = x;
+		FCDYs[FCDNum] = y;
+		FCDNum++;
+
+		if(FCDNUMMAX <= FCDNum)
+			goto endLoop;
+
+	nextLoop:;
+	}
+endLoop:;
+}
 int main(int argc, char **argv)
 {
 	int waitLoopMode = 0;
@@ -115,6 +159,8 @@ readArgs:
 
 	errorCase_m(hasArgs(1), "不明なコマンド引数");
 
+	InitFCD();
+
 	if(waitLoopMode)
 	{
 		uint sec = 0;
@@ -130,7 +176,7 @@ readArgs:
 
 			if(waitKey(sec * 1000) == 0x1b)
 			{
-				LOGPOS();
+				cout("ESCAPE key pressed.\n");
 				termination(1);
 			}
 			LOGPOS();
