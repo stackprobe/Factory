@@ -1,5 +1,9 @@
 /*
 	FindBmpOnScreen.exe [/W] [/M 色マージン] BMPファイル
+
+	エラーレベル
+		0 ... 見つかった。
+		1 ... 見つからなかった。
 */
 
 #include "C:\Factory\Common\all.h"
@@ -26,7 +30,7 @@ static int IsSameDot(uint a, uint b)
 		abs(aG - bG) <= ColorLvMargin ||
 		abs(aB - bB) <= ColorLvMargin;
 }
-static int IsSame_Bmp(autoTable_t *bmp, uint l, uint t)
+static int IsMatchBmpArea(autoTable_t *bmp, uint l, uint t)
 {
 	uint x;
 	uint y;
@@ -49,7 +53,7 @@ static int FindBmp_Bmp(autoTable_t *bmp)
 	for(x = 0; x + TrgBmp_W <= w; x++)
 	for(y = 0; y + TrgBmp_H <= h; y++)
 	{
-		if(IsSame_Bmp(bmp, x, y))
+		if(IsMatchBmpArea(bmp, x, y))
 			return 1;
 	}
 	return 0;
@@ -119,11 +123,16 @@ readArgs:
 
 		while(!FindBmpOnScreen())
 		{
-			if(sec < 60)
+			if(sec < 20)
 				sec++;
 
 			LOGPOS();
-			sleep(sec * 1000);
+
+			if(waitKey(sec * 1000) == 0x1b)
+			{
+				LOGPOS();
+				termination(1);
+			}
 			LOGPOS();
 		}
 		LOGPOS();
