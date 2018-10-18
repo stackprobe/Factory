@@ -5,6 +5,8 @@
 
 #include "xml.h"
 
+char *xmlAttrNameSuffix = ""; // Prefix ‚¾‚Æ NodeFltr ‚Åœ‹Ž‚³‚ê‚Ä‚µ‚Ü‚¤‚Ì‚ÅAA
+
 // ---- Tools ----
 
 static int IsSpaceOnly(char *text)
@@ -378,7 +380,9 @@ static void ReadXML(char *file)
 					char *name  = getLine(RAttrNames,  index);
 					char *value = getLine(RAttrValues, index);
 
+					name = xcout("%s%s", name, xmlAttrNameSuffix);
 					addElement(CurrNode->Children, (uint)CreateNode(name, value, 0));
+					memFree(name);
 				}
 			}
 		}
