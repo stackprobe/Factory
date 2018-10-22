@@ -378,12 +378,11 @@ static char *DropPath_Win10(void)
 	char *outFile;
 	char *path;
 
-	errorCase(isFactoryDirDisabled());
-	errorCase(!existFile(WDROP_EXE_FILE));
+	errorCase(!existFile(WDROP_EXE_FILE)); // 外部コマンド存在確認
 
 	funcMtx = mutexLock("{5396f16e-d695-4d3d-81a1-5b751d0d2068}");
 
-	mtxName = xcout("{73d84a3e-26dc-49dd-9630-fd730e4d3303}_%I64u", nextCommonCount());
+	mtxName = xcout("{73d84a3e-26dc-49dd-9630-fd730e4d3303}_%u", getSelfProcessId());
 	mtxHdl = mutexLock(mtxName);
 	outFile = makeTempPath(NULL);
 
@@ -391,7 +390,7 @@ static char *DropPath_Win10(void)
 //	cout("ドロップ先ウィンドウを開いています...\n");
 //	cout("%s (%u)\n", getSelfFile(), getSelfProcessId());
 
-	execute_x(xcout("START \"\" /B /WAIT %s \"%s\" %u \"%s\" %s", WDROP_EXE_FILE, getSelfFile(), getSelfProcessId(), mtxName, outFile));
+	execute_x(xcout("START \"\" /B /WAIT %s \"%s\" %u \"%s\" \"%s\"", WDROP_EXE_FILE, getSelfFile(), getSelfProcessId(), mtxName, outFile));
 
 //	cout("ドロップ先ウィンドウを閉じました。\n");
 
