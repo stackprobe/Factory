@@ -199,6 +199,7 @@ static void ReadFromAnsFp(uchar *buffer, uint size)
 	{
 		STD_ReadStop = 1;
 	}
+	releaseAutoBlock(block);
 }
 static void ReadEndToStream(FILE *rfp, FILE *wfp)
 {

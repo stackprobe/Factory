@@ -38,7 +38,7 @@ static void Perform_o(SockStream_t *ss)
 					break;
 
 				SockSendBlock(ss, directGetBuffer(block), getSize(block));
-				releaseBlock(block);
+				releaseAutoBlock(block);
 			}
 			fileClose(fp);
 			SockFlush(ss);
