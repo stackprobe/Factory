@@ -2,16 +2,21 @@
 	newcs c プロジェクト名
 	newcs f プロジェクト名
 	newcs t プロジェクト名
+	newcs d プロジェクト名
 	newcs c2 プロジェクト名
 	newcs f2 プロジェクト名
 	newcs t2 プロジェクト名
+	newcs d2 プロジェクト名
 	newcs tt プロジェクト名
 
+	newcs
 	newcs /r
 */
 
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\CRandom.h"
+
+#define TESTER_PROJ_LDIR "Test01"
 
 static uint UTIntoParentStep;
 
@@ -153,7 +158,7 @@ static void Main2(char *tmplProject, char *tmplDir, int utFlag, int m2Flag)
 
 		RenamePaths(tmplProject, project);
 
-		addCwd(project);
+		addCwd(existDir(TESTER_PROJ_LDIR) ? TESTER_PROJ_LDIR : project);
 		{
 			ChangeAppIdent("Program.cs");
 
@@ -184,9 +189,44 @@ static void Main2(char *tmplProject, char *tmplDir, int utFlag, int m2Flag)
 	}
 	unaddCwd();
 }
+static uint64 GetChocolateSourceLeastStamp(void)
+{
+	autoList_t *files = lssFiles("C:\\Dev\\CSharp\\Chocolate\\Chocolate");
+	char *file;
+	uint index;
+	uint64 leastStamp = 0;
+
+	foreach(files, file, index)
+	{
+		uint64 stamp;
+
+		if(mbs_stristr(file, "\\bin\\")) // bin の配下は除外
+			continue;
+
+		if(mbs_stristr(file, "\\obj\\")) // obj の配下は除外
+			continue;
+
+		getFileStamp(file, NULL, NULL, &stamp);
+
+		m_maxim(leastStamp, stamp);
+	}
+	return leastStamp;
+}
+static int IsChocolateSourceUpdated(void)
+{
+	uint64 dllStamp;
+	uint64 leastStamp = GetChocolateSourceLeastStamp();
+
+	getFileStamp("C:\\Dev\\CSharp\\Chocolate\\Chocolate\\bin\\Release\\Chocolate.dll", NULL, NULL, &dllStamp);
+
+//	cout("%I64u\n", dllStamp);
+//	cout("%I64u\n", leastStamp);
+
+	return dllStamp < leastStamp;
+}
 int main(int argc, char **argv)
 {
-	// zantei -- Chocolate.dll をビルドする。
+	// Chocolate.dll をビルドする。
 	{
 		if(argIs("/R")) // リビルド
 		{
@@ -197,7 +237,7 @@ int main(int argc, char **argv)
 			}
 			unaddCwd();
 		}
-		else if(!existFile("C:\\Dev\\CSharp\\Chocolate\\Chocolate\\bin\\Release\\Chocolate.dll"))
+		else if(!existFile("C:\\Dev\\CSharp\\Chocolate\\Chocolate\\bin\\Release\\Chocolate.dll") || IsChocolateSourceUpdated())
 		{
 			addCwd("C:\\Dev\\CSharp\\Chocolate");
 			{
@@ -222,6 +262,11 @@ int main(int argc, char **argv)
 		Main2("TTTTTMPL", "C:\\Dev\\CSharp\\Template\\TaskTrayTemplate", 0, 1);
 		return;
 	}
+	if(argIs("D"))
+	{
+		Main2("DDDDTMPL", "C:\\Dev\\CSharp\\Template\\DLLTemplate", 0, 1);
+		return;
+	}
 	if(argIs("C2"))
 	{
 		Main2("CCCCTMPL", "C:\\Dev\\CSharp\\Template2\\CUIProgramTemplate", 0, 0);
@@ -237,10 +282,15 @@ int main(int argc, char **argv)
 		Main2("TTTTTMPL", "C:\\Dev\\CSharp\\Template2\\TaskTrayTemplate", 0, 0);
 		return;
 	}
+	if(argIs("D2"))
+	{
+		Main2("DDDDTMPL", "C:\\Dev\\CSharp\\Template2\\DLLTemplate", 0, 0);
+		return;
+	}
 	if(argIs("TT"))
 	{
 		Main2("UUUUTMPL", FindUserTemplate(), 1, 0); // g
 		return;
 	}
-	cout("usage: newcs (C｜F｜T｜C2｜F2｜T2｜TT) プロジェクト名\n");
+	cout("usage: newcs (C｜F｜T｜D｜C2｜F2｜T2｜D2｜TT) プロジェクト名\n");
 }

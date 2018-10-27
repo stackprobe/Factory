@@ -440,6 +440,63 @@ static void AfterDeepBuild(int shallowMode)
 
 #undef PROG_NAME
 }
+static int IsDLL_CSProjFile(char *file)
+{
+	autoList_t *lines = readLines(file);
+	char *line;
+	uint index;
+	int ret = 0;
+
+	foreach(lines, line, index)
+	{
+		if(strstr(line, "<OutputType>Library</OutputType>"))
+		{
+			ret = 1;
+			break;
+		}
+	}
+	releaseDim(lines, 1);
+	return ret;
+}
+static sint GetSlnOrder(uint prm)
+{
+	char *prmFile = (char *)prm;
+	int sln_dll = 0;
+
+	// .dll の .sln を優先する。
+	// .dll が別の .dll を参照している場合を考慮していない。todo ???
+
+	if(!_stricmp("sln", getExt(prmFile)))
+	{
+		char *slnDir = changeExt(prmFile, "");
+
+		if(existDir(slnDir))
+		{
+			autoList_t *files = lssFiles(slnDir);
+			char *file;
+			uint index;
+
+			foreach(files, file, index)
+			{
+				if(!_stricmp("csproj", getExt(file)))
+				{
+					if(IsDLL_CSProjFile(file))
+					{
+						sln_dll = 1;
+						break;
+					}
+				}
+			}
+			releaseDim(files, 1);
+		}
+		memFree(slnDir);
+	}
+	return sln_dll ? 0 : 1;
+}
+static sint Comp_C_Sln(uint v1, uint v2)
+{
+	return GetSlnOrder(v1) - GetSlnOrder(v2);
+}
 static void DeepBuild(int shallowMode)
 {
 	autoList_t *files;
@@ -496,6 +553,7 @@ static void DeepBuild(int shallowMode)
 
 	sortJLinesICase(objSources);
 	sortJLinesICase(exeSources);
+	gnomeSort(exeSources, Comp_C_Sln);
 
 	files = objSources;
 	addElements(files, exeSources);
