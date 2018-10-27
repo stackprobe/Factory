@@ -57,13 +57,15 @@ static void RenamePaths(char *fromPtn, char *toPtn)
 	autoList_t *paths = ls(".");
 	char *path;
 	char *nPath;
+	uint dirCount;
 	uint index;
 
 	eraseParents(paths);
+	dirCount = lastDirCount;
 
 	foreach(paths, path, index)
 	{
-		if(index < lastDirCount)
+		if(index < dirCount)
 		{
 			addCwd(path);
 			{
