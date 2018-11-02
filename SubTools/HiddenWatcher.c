@@ -116,14 +116,31 @@ static void GitRelease(char *rFile, char *repositoryName)
 }
 static void Mochikaeri(char *rFile, char *wDir)
 {
+	char *midDir;
+
 	LOGPOS();
 	errorCase(!existDir(wDir));
+
+	midDir = makeTempDir(NULL);
+
+	addCwd(midDir);
+	{
+		moveFile(rFile, "1.clu");
+
+		coExecute("C:\\Factory\\Tools\\Cluster.exe /R 1.clu 2");
+
+		errorCase(!existDir("2"));
+
+		LOGPOS();
+		recurClearDir(wDir);
+		LOGPOS();
+		moveDir("2", wDir);
+		LOGPOS();
+	}
+	unaddCwd();
+
 	LOGPOS();
-	recurRemoveDir(wDir);
-	LOGPOS();
-	coExecute_x(xcout("C:\\Factory\\Tools\\Cluster.exe /R \"%s\" \"%s\"", rFile, wDir));
-	LOGPOS();
-	semiRemovePath(rFile);
+	recurRemoveDir_x(midDir);
 	LOGPOS();
 }
 static void Main2(void)
@@ -149,10 +166,12 @@ static void Main2(void)
 		{
 			GitRelease(file, "Denebola");
 		}
+		/*
 		else if(!_stricmp(ext, "_gitrel_Spica02"))
 		{
 			GitRelease(file, "Spica02");
 		}
+		*/
 		else if(!_stricmp(ext, "_mochi_Spica02"))
 		{
 			Mochikaeri(file, "C:\\pleiades\\workspace\\Spica02\\src");
