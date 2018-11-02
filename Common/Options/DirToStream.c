@@ -279,8 +279,8 @@ void StreamToDir(char *dir, void (*streamReader)(uchar *, uint))
 			if(STD_TrustMode)
 			{
 				/*
-					STD_TrustMode != 0 であればどんな名前もウェルカムだが、
-					フルパスや相対パスも書け、システムフォルダとか壊すような記述も出来るわけで、
+					STD_TrustMode != 0 のときはどのようなパス名も許可されるが、
+					フルパスや相対パスも許可されるため、システムフォルダ内のファイルを上書きすることも可能になる。
 					流石にそれは怖いので、せめてそれらは弾く。
 				*/
 				errorCase(strchr(path, ':'));
@@ -306,6 +306,8 @@ void StreamToDir(char *dir, void (*streamReader)(uchar *, uint))
 #else // OLD CODE
 				path = lineToFairLocalPath_x(path, strlen_x(getCwd()));
 #endif
+
+				errorCase(PATH_SIZE < strlen_x(getCwd()) + strlen(path));
 			}
 			STD_ReadStream(buffer, 1);
 
