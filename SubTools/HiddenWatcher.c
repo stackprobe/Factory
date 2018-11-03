@@ -8,6 +8,7 @@ static void GR_MoveTo(char *repositoryName)
 	autoList_t *paths;
 	char *path;
 	uint index;
+	uint dirCount;
 
 	LOGPOS();
 	errorCase(!existDir(wDir));
@@ -17,6 +18,7 @@ static void GR_MoveTo(char *repositoryName)
 	LOGPOS();
 	paths = ls(wDir);
 	LOGPOS();
+	dirCount = lastDirCount;
 
 	foreach(paths, path, index)
 	{
@@ -28,7 +30,7 @@ static void GR_MoveTo(char *repositoryName)
 		}
 		else
 		{
-			if(index < lastDirCount)
+			if(index < dirCount)
 			{
 				LOGPOS();
 				recurRemoveDir(path);
@@ -50,6 +52,7 @@ static void GR_MoveTo(char *repositoryName)
 	LOGPOS();
 	paths = ls(".");
 	LOGPOS();
+	dirCount = lastDirCount;
 
 	foreach(paths, path, index)
 	{
@@ -65,7 +68,7 @@ static void GR_MoveTo(char *repositoryName)
 
 			cout("> %s\n", wPath);
 
-			if(index < lastDirCount)
+			if(index < dirCount)
 			{
 				LOGPOS();
 				createDir(wPath);

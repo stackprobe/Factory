@@ -12,5 +12,5 @@ CALL _rum.bat -qa
 CD /D C:\pleiades\workspace\Spica01
 CALL _rum.bat -qa
 
-CD /D C:\pleiades\workspace\Spica02
-CALL _rum.bat -qa
+rem CD /D C:\pleiades\workspace\Spica02
+rem CALL _rum.bat -qa
