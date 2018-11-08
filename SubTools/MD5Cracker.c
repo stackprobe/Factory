@@ -3,87 +3,131 @@
 */
 
 #include "C:\Factory\Common\all.h"
-#include "C:\Factory\OpenSource\md5.h"
+#include "C:\Factory\OpenSource\md5\md5.h"
 
-static void Hashes_HexToBin(autoList_t *hashes)
+#define HASH_SIZE 16
+
+static autoList_t *HashTable;
+static uint RemHashCount;
+
+static void InitHashTable(autoList_t *lines)
 {
-	char *hash;
+	char *line;
 	uint index;
+
+	HashTable = newList();
+
+	for(index = 0; index < 0x10000; index++)
+		addElement(HashTable, (uint)newList());
+
+	foreach(lines, line, index)
+	{
+		uchar *hash;
+		uint segment;
+		autoList_t *hashes;
+
+		cout("INPUT_HASH: %s\n", line);
+
+		errorCase(!lineExp("<32,09AFaf>", line));
+
+		hash = (uchar *)unbindBlock(ab_fromHexLine(line));
+		segment = (uint)*(uint16 *)hash;
+		hashes = (autoList_t *)getElement(HashTable, segment);
+		addElement(hashes, (uint)hash);
+	}
+
+	RemHashCount = getCount(lines);
+	errorCase(!RemHashCount);
+}
+static void Found(uchar *msg, uint msgLen, uchar msgHash[HASH_SIZE])
+{
+	char *h1;
+	char *h2;
+	autoBlock_t gab;
+
+	h1 = makeHexLine(gndBlockVar(msgHash, HASH_SIZE, gab));
+	h2 = makeHexLine(gndBlockVar(msg, msgLen, gab));
+
+	cout("%s = %s\n", h1, h2);
+
+	memFree(h1);
+	memFree(h2);
+
+	if(!--RemHashCount)
+		termination(0);
+}
+static void Check(uchar *msg, uint msgLen, uchar msgHash[HASH_SIZE])
+{
+	uint segment = (uint)*(uint16 *)msgHash;
+	autoList_t *hashes;
+	uchar *hash;
+	uint index;
+
+	hashes = (autoList_t *)getElement(HashTable, segment);
 
 	foreach(hashes, hash, index)
 	{
-		autoBlock_t *bHash;
-
-		cout("INPUT_HASH: %s\n", hash);
-
-		errorCase(!lineExp("<32,09AFaf>", hash));
-
-		bHash = ab_fromHexLine(hash);
-		setElement(hashes, index, (uint)bHash); // g
-	}
-}
-static sint Comp_Hash(uint v1, uint v2)
-{
-	autoBlock_t *h1 = (autoBlock_t *)v1;
-	autoBlock_t *h2 = (autoBlock_t *)v2;
-
-	return memcmp(b(h1), b(h2), 16);
-}
-static void NextPw(autoBlock_t *pw)
-{
-	uint index;
-
-	for(index = 0; index < getSize(pw); index++)
-	{
-		if(b(pw)[index] < 0xff)
+		if(!memcmp(hash, msgHash, HASH_SIZE))
 		{
-			b(pw)[index]++;
-			return;
-		}
-		b(pw)[index] = 0x00;
-	}
-	addByte(pw, 0x00);
+			Found(msg, msgLen, hash);
 
-	cout("pw_size: %u\n", getSize(pw));
+			desertElement(hashes, index);
+			break;
+		}
+	}
 }
-static void MD5Crack_List(autoList_t *hashes)
+static void Search(uchar *msg, uint msgLen, uint msgIdx, md5_CTX *baseCtx)
 {
-	autoBlock_t *pw = newBlock();
-
-	Hashes_HexToBin(hashes);
-	distinct2(hashes, Comp_Hash, noop_u); // g
-
-	for(; ; )
+	if(msgIdx < msgLen)
 	{
-		autoBlock_t *pwHash = md5_makeHashBlock(pw);
+		uint count;
 
-		if(binSearch(hashes, (uint)pwHash, Comp_Hash) < getCount(hashes))
+		for(count = 0x00; count <= 0xff; count++)
 		{
-			char *pwHex = makeHexLine(pw);
-			char *pwHashHex = makeHexLine(pwHash);
+			md5_CTX ctx = *baseCtx;
 
-			cout("pw_hash: %s\n", pwHashHex);
-			cout("pw: %s\n", pwHex);
+			msg[msgIdx] = count;
 
-			// todo
+			md5_Update(&ctx, msg + msgIdx, 1);
 
-			memFree(pwHex);
-			memFree(pwHashHex);
-			goto endLoop;
+			Search(msg, msgLen, msgIdx + 1, &ctx);
 		}
-		releaseAutoBlock(pwHash);
-
-		NextPw(pw);
 	}
-endLoop:
-	releaseAutoBlock(pw);
+	else
+	{
+		md5_CTX ctx = *baseCtx;
+
+		md5_Final(&ctx);
+
+		Check(msg, msgLen, ctx.digest);
+	}
 }
-static void MD5Crack(char *hash)
+static void MD5Crack_List(autoList_t *lines)
+{
+	uchar msg[100];
+	uint msgLen;
+
+	distinct2(lines, (sint (*)(uint, uint))_stricmp, (void (*)(uint))memFree); // MD5Crack()‚Ìê‡‚Í1‚Â‚È‚Ì‚Å–â‘è–³‚¢‚Í‚¸B
+
+	InitHashTable(lines);
+
+	for(msgLen = 0; ; msgLen++)
+	{
+		md5_CTX ctx;
+
+		md5_Init(&ctx);
+
+		cout("msgLen: %u\n", msgLen);
+
+		Search(msg, msgLen, 0, &ctx);
+	}
+}
+static void MD5Crack(char *line)
 {
 	autoList_t gal;
 	uint box;
 
-	MD5Crack_List(gndOneElementVar((uint)hash, box, gal));
+	MD5Crack_List(gndOneElementVar((uint)line, box, gal));
 }
 int main(int argc, char **argv)
 {
