@@ -1,11 +1,19 @@
 /*
-	MD5Cracker.exe [/F md5リストファイル | md5]
+	MD5Cracker.exe [/A | /9 | /C 開始文字と終了文字] [/F md5リストファイル | md5]
+
+	- - -
+	実行例
+
+	MD5Cracker /C 0z 07e882d2d3a2f39f9b1c3f04d564b607
 */
 
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\OpenSource\md5\md5.h"
 
 #define HASH_SIZE 16
+
+static int BChrMin = 0x00;
+static int BChrMax = 0xff;
 
 static autoList_t *HashTable;
 static uint RemHashCount;
@@ -80,13 +88,13 @@ static void Search(uchar *msg, uint msgLen, uint msgIdx, md5_CTX *baseCtx)
 {
 	if(msgIdx < msgLen)
 	{
-		uint count;
+		uint bChr;
 
-		for(count = 0x00; count <= 0xff; count++)
+		for(bChr = BChrMin; bChr <= BChrMax; bChr++)
 		{
 			md5_CTX ctx = *baseCtx;
 
-			msg[msgIdx] = count;
+			msg[msgIdx] = bChr;
 
 			md5_Update(&ctx, msg + msgIdx, 1);
 
@@ -131,6 +139,31 @@ static void MD5Crack(char *line)
 }
 int main(int argc, char **argv)
 {
+readArgs:
+	if(argIs("/A"))
+	{
+		BChrMin = 0x20;
+		BChrMax = 0x7e;
+		goto readArgs;
+	}
+	if(argIs("/9"))
+	{
+		BChrMin = '0';
+		BChrMax = '9';
+		goto readArgs;
+	}
+	if(argIs("/C"))
+	{
+		char *chrs = nextArg();
+
+		errorCase(strlen(chrs) != 2);
+		errorCase(chrs[1] <= chrs[0]);
+
+		BChrMin = chrs[0];
+		BChrMax = chrs[1];
+		goto readArgs;
+	}
+
 	if(argIs("/F"))
 	{
 		MD5Crack_List(readLines(nextArg())); // g
