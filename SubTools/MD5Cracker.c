@@ -84,9 +84,79 @@ static void Check(uchar *msg, uint msgLen, uchar msgHash[HASH_SIZE])
 		}
 	}
 }
-static void Search(uchar *msg, uint msgLen, uint msgIdx, md5_CTX *baseCtx)
+#if 1
+static void Search(uint msgLen)
 {
-	if(msgIdx < msgLen)
+	md5_CTX ctxs[100];
+	uchar msg[100];
+	uint index = 0;
+	int ahead = 1;
+
+	md5_Init(ctxs);
+
+	for(; ; )
+	{
+		if(ahead)
+		{
+			if(index < msgLen)
+			{
+				msg[index] = BChrMin;
+				ctxs[index + 1] = ctxs[index];
+				md5_Update(ctxs + index + 1, msg + index, 1);
+			}
+			else
+			{
+				md5_Final(ctxs + index);
+
+				Check(msg, msgLen, ctxs[index].digest);
+
+				ahead = 0;
+			}
+		}
+		else
+		{
+			if(msg[index] < BChrMax)
+			{
+				msg[index]++;
+				ctxs[index + 1] = ctxs[index];
+				md5_Update(ctxs + index + 1, msg + index, 1);
+
+				ahead = 1;
+			}
+			else
+			{
+				// noop
+			}
+		}
+
+		if(ahead)
+		{
+			index++;
+		}
+		else
+		{
+			if(!index)
+				break;
+
+			index--;
+		}
+	}
+}
+static void MD5Crack_Main(void)
+{
+	uint msgLen;
+
+	for(msgLen = 0; ; msgLen++)
+	{
+		cout("msgLen: %u\n", msgLen);
+
+		Search(msgLen);
+	}
+}
+#else // old same
+static void Search(uchar *msg, uint msgLen, uint index, md5_CTX *baseCtx)
+{
+	if(index < msgLen)
 	{
 		uint bChr;
 
@@ -94,11 +164,10 @@ static void Search(uchar *msg, uint msgLen, uint msgIdx, md5_CTX *baseCtx)
 		{
 			md5_CTX ctx = *baseCtx;
 
-			msg[msgIdx] = bChr;
+			msg[index] = bChr;
+			md5_Update(&ctx, msg + index, 1);
 
-			md5_Update(&ctx, msg + msgIdx, 1);
-
-			Search(msg, msgLen, msgIdx + 1, &ctx);
+			Search(msg, msgLen, index + 1, &ctx);
 		}
 	}
 	else
@@ -110,14 +179,10 @@ static void Search(uchar *msg, uint msgLen, uint msgIdx, md5_CTX *baseCtx)
 		Check(msg, msgLen, ctx.digest);
 	}
 }
-static void MD5Crack_List(autoList_t *lines)
+static void MD5Crack_Main(void)
 {
 	uchar msg[100];
 	uint msgLen;
-
-	distinct2(lines, (sint (*)(uint, uint))_stricmp, (void (*)(uint))memFree); // MD5Crack()‚Ìê‡‚Í1‚Â‚È‚Ì‚Å–â‘è–³‚¢‚Í‚¸B
-
-	InitHashTable(lines);
 
 	for(msgLen = 0; ; msgLen++)
 	{
@@ -129,6 +194,18 @@ static void MD5Crack_List(autoList_t *lines)
 
 		Search(msg, msgLen, 0, &ctx);
 	}
+}
+#endif
+static void MD5Crack_List(autoList_t *lines)
+{
+	distinct2(lines, (sint (*)(uint, uint))_stricmp, (void (*)(uint))memFree); // MD5Crack()‚Ìê‡‚Í1‚Â‚È‚Ì‚Å–â‘è–³‚¢‚Í‚¸B
+
+	InitHashTable(lines);
+
+	cout("BChrMin: %02x\n", BChrMin);
+	cout("BChrMax: %02x\n", BChrMax);
+
+	MD5Crack_Main();
 }
 static void MD5Crack(char *line)
 {
