@@ -51,15 +51,18 @@ static void Found(uchar *msg, uint msgLen, uchar msgHash[HASH_SIZE])
 {
 	char *h1;
 	char *h2;
+	char *pmsg;
 	autoBlock_t gab;
 
 	h1 = makeHexLine(gndBlockVar(msgHash, HASH_SIZE, gab));
 	h2 = makeHexLine(gndBlockVar(msg, msgLen, gab));
+	pmsg = toPrintLine(gndBlockVar(msg, msgLen, gab), 0);
 
-	cout("%s = %s\n", h1, h2);
+	cout("%s = %s [%s]\n", h1, h2, pmsg);
 
 	memFree(h1);
 	memFree(h2);
+	memFree(pmsg);
 
 	if(!--RemHashCount)
 		termination(0);
