@@ -145,9 +145,9 @@ static void Test_combSort(void)
 {
 	SortTest(combSort);
 }
-static void Test_insertSort(void)
+static void Test_selectionSort(void)
 {
-	SortTest(insertSort);
+	SortTest(selectionSort);
 }
 static void Test_rapidSort(void)
 {
@@ -354,7 +354,7 @@ int main(int argc, char **argv)
 
 	Test_gnomeSort();
 	Test_combSort();
-	Test_insertSort();
+	Test_selectionSort();
 	Test_rapidSort();
 	Test_findBound();
 	Test_getBound();

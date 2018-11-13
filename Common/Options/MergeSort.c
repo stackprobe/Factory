@@ -96,7 +96,7 @@ static void MergePart(
 
 			addElement(readers, (uint)(readerList + index));
 		}
-		insertSort(readers, CompReader);
+		selectionSort(readers, CompReader);
 
 		rIndex += readerCount;
 		wfp = fileOpen(rIndex == wIndex ? destFile : GetPartFile(partsDir, wIndex), wMode);

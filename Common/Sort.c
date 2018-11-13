@@ -32,8 +32,7 @@ void combSort(autoList_t *list, sint (*funcComp)(uint, uint))
 
 	for(; ; )
 	{
-		span *= 10;
-		span /= 13;
+		span = (uint)(span / 1.3);
 
 		if(span < 2)
 			break;
@@ -51,7 +50,7 @@ void combSort(autoList_t *list, sint (*funcComp)(uint, uint))
 	}
 	gnomeSort(list, funcComp);
 }
-void insertSort(autoList_t *list, sint (*funcComp)(uint, uint)) // 安定ソート
+void selectionSort(autoList_t *list, sint (*funcComp)(uint, uint)) // 安定ソート
 {
 	uint nearidx;
 	uint faridx;
@@ -63,7 +62,7 @@ void insertSort(autoList_t *list, sint (*funcComp)(uint, uint)) // 安定ソート
 
 		for(faridx = nearidx + 1; faridx < getCount(list); faridx++)
 		{
-			if(funcComp(getElement(list, faridx), getElement(list, minidx)) < 0)
+			if(0 < funcComp(getElement(list, minidx), getElement(list, faridx)))
 			{
 				minidx = faridx;
 			}
@@ -75,13 +74,13 @@ void insertSort(autoList_t *list, sint (*funcComp)(uint, uint)) // 安定ソート
 	}
 }
 
-#define CUTOVER 16
+#define CUTOVER 9
 
 /*
 	２分割時の大きい方の大きさの期待値は 0.75 (たぶん..
-	0.75 ^ 100 = 0.00000000000032
+	0.75 ^ 80 = 0.0000000001*
 */
-#define ABANDON 100 // 2 * n
+#define ABANDON 160 // 2の倍数であること。
 
 /*
 	クイックソートもどき
@@ -121,7 +120,7 @@ void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint))
 		{
 			autoList_t sublist = gndSubElements(list, startidx, endnextidx - startidx);
 
-			insertSort(&sublist, funcComp);
+			selectionSort(&sublist, funcComp);
 			continue;
 		}
 		if(ABANDON <= getCount(rangeStack))

@@ -1,27 +1,20 @@
 /*
-	autoJavaDoc.exe [/S] [/LSS | 対象ディレクトリ]
+	autoJavaDoc.exe [/S] [/F Javadocファイル] [/LSS | 対象ディレクトリ]
 */
 
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\CRandom.h"
 
 static int IntoSubDir;
+static autoList_t *JavaDoc;
 
-static char *c_GetRandomCode(void)
-{
-	static char *ret;
-
-	memFree(ret);
-
-	ret = MakeRandID();
-
-	return ret;
-}
 static void DoAutoJavaDoc_File(char *file)
 {
 	autoList_t *lines = readLines(file);
 	char *line;
 	uint index;
+
+	cout("%s\n", file);
 
 	foreach(lines, line, index)
 	{
@@ -31,38 +24,39 @@ static void DoAutoJavaDoc_File(char *file)
 			lineExp("<0,100,\t\t>protected <>", line)
 			)
 		{
-			char *atmarkLine = NULL;
-			char *indent = strx(line);
+			char *indentPtn = strx(line);
+			int hasAnnotation = 0;
 
-			*ne_strchr(indent, 'p') = '\0';
-
-			if(index && lineExp("<0,100,\t\t> *//", getLine(lines, index - 1))) // エスケープ注意 / -> //
-				goto ignoreTheLine;
+			*ne_strchr(indentPtn, 'p') = '\0';
 
 			if(index && lineExp("<0,100,\t\t>@<>", getLine(lines, index - 1)))
-				atmarkLine = (char *)desertElement(lines, --index);
+			{
+				hasAnnotation = 1;
+				index--;
+			}
+			if(!index || !lineExp("<0,100,\t\t> *//", getLine(lines, index - 1))) // エスケープ注意 / -> //
+			{
+				char *javaDocLine;
+				uint javaDocLineIndex;
 
-			if(index && *getLine(lines, index - 1))
-				insertElement(lines, index++, (uint)strx(""));
+				if(index && *getLine(lines, index - 1))
+					insertElement(lines, index++, (uint)strx(""));
 
-			insertElement(lines, index++, (uint)xcout("%s/**", indent));
-//			insertElement(lines, index++, (uint)xcout("%s * random code: %s", indent, c_GetRandomCode()));
-			insertElement(lines, index++, (uint)xcout("%s * Javadoc", indent));
-			insertElement(lines, index++, (uint)xcout("%s * @version 1.0", indent));
-			insertElement(lines, index++, (uint)xcout("%s *", indent));
-			insertElement(lines, index++, (uint)xcout("%s */", indent));
+				foreach(JavaDoc, javaDocLine, javaDocLineIndex)
+					insertElement(lines, index++, (uint)xcout("%s%s", indentPtn, javaDocLine));
+			}
+			if(hasAnnotation)
+				index++;
 
-			if(atmarkLine)
-				insertElement(lines, index++, (uint)atmarkLine);
-
-		ignoreTheLine:
-			memFree(indent);
+			memFree(indentPtn);
 		}
 	}
 	writeLines_cx(file, lines);
+	cout("done\n");
 }
 static void Confirm(void)
 {
+	LOGPOS();
 	cout("続行？\n");
 
 	if(clearGetKey() == 0x1b)
@@ -106,12 +100,21 @@ static void DoAutoJavaDoc(char *dir)
 }
 int main(int argc, char **argv)
 {
+	char *javaDocFile = changeExt(getSelfFile(), "txt");
+
 readArgs:
 	if(argIs("/S"))
 	{
 		IntoSubDir = 1;
 		goto readArgs;
 	}
+	if(argIs("/F"))
+	{
+		javaDocFile = nextArg();
+		goto readArgs;
+	}
+
+	JavaDoc = readLines(javaDocFile);
 
 	if(argIs("/LSS"))
 	{

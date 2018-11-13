@@ -1,6 +1,6 @@
 void gnomeSort(autoList_t *list, sint (*funcComp)(uint, uint));
 void combSort(autoList_t *list, sint (*funcComp)(uint, uint));
-void insertSort(autoList_t *list, sint (*funcComp)(uint, uint));
+void selectionSort(autoList_t *list, sint (*funcComp)(uint, uint));
 void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint));
 void rapidSortLines(autoList_t *lines);
 void rapidSortJLinesICase(autoList_t *lines);
