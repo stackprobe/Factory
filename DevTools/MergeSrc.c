@@ -68,6 +68,29 @@ static void DoSearch(void)
 
 // ---- DoConfirm ----
 
+static double DC_FilePairingRate(void)
+{
+	autoList_t *files = lssFiles(RDir);
+	char *rFile;
+	uint index;
+	uint n = 0;
+	uint d;
+
+	d = getCount(files);
+
+	foreach(files, rFile, index)
+	{
+		char *wFile = changeRoot(strx(rFile), RDir, WDir);
+
+		if(existFile(wFile))
+			n++;
+
+		memFree(wFile);
+	}
+	releaseDim(files, 1);
+
+	return n * 1.0 / d;
+}
 static void DC_DispRWFiles(void)
 {
 	char *file;
@@ -178,6 +201,7 @@ static void DoConfirm(void)
 restart:
 	execute("CLS");
 
+	cout("%.3f\n", DC_FilePairingRate());
 	cout("< %s\n", RDir);
 	cout("> %s\n", WDir);
 
