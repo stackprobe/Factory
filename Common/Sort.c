@@ -125,8 +125,15 @@ void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint))
 		}
 		if(ABANDON <= getCount(rangeStack))
 		{
+#if 0
+			autoList_t sublist = gndSubElements(list, startidx, endnextidx - startidx);
+
+			combSort(&sublist, funcComp);
+			continue;
+#else
 			combSort(list, funcComp);
 			goto endsort;
+#endif
 		}
 
 		nearidx = startidx;
