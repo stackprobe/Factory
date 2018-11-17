@@ -32,7 +32,7 @@ void combSort(autoList_t *list, sint (*funcComp)(uint, uint))
 
 	for(; ; )
 	{
-		span = (uint)(span / 1.3);
+		span = (uint)(((uint64)span * 10) / 13); //(uint)(span / 1.3);
 
 		if(span < 2)
 			break;
