@@ -15,11 +15,8 @@ void gnomeSort(autoList_t *list, sint (*funcComp)(uint, uint)) // ˆÀ’èƒ\[ƒg
 
 	for(faridx = 1; faridx < getCount(list); faridx++)
 	{
-		for(nearidx = faridx; nearidx; nearidx--)
+		for(nearidx = faridx; nearidx && 0 < funcComp(getElement(list, nearidx - 1), getElement(list, nearidx)); nearidx--)
 		{
-			if(funcComp(getElement(list, nearidx - 1), getElement(list, nearidx)) <= 0)
-				break;
-
 			swapElement(list, nearidx - 1, nearidx);
 		}
 	}
