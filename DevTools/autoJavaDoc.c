@@ -25,14 +25,18 @@ static void DoAutoJavaDoc_File(char *file)
 			)
 		{
 			char *indentPtn = strx(line);
-			int hasAnnotation = 0;
+			uint indexDec = 0;
 
 			*ne_strchr(indentPtn, 'p') = '\0';
 
 			if(index && lineExp("<0,100,\t\t>@<>", getLine(lines, index - 1)))
 			{
-				hasAnnotation = 1;
 				index--;
+				indexDec++;
+			}
+			if(index && lineExp("<0,100,\t\t>//*<>", getLine(lines, index - 1))) // エスケープ注意 / -> //
+			{
+				goto endAddJavaDoc; // メソッドがコメントアウトされている。
 			}
 			if(!index || !lineExp("<0,100,\t\t> *//", getLine(lines, index - 1))) // エスケープ注意 / -> //
 			{
@@ -45,8 +49,9 @@ static void DoAutoJavaDoc_File(char *file)
 				foreach(JavaDoc, javaDocLine, javaDocLineIndex)
 					insertElement(lines, index++, (uint)xcout("%s%s", indentPtn, javaDocLine));
 			}
-			if(hasAnnotation)
-				index++;
+
+		endAddJavaDoc:
+			index += indexDec;
 
 			memFree(indentPtn);
 		}
