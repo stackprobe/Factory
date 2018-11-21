@@ -390,6 +390,9 @@ int main(int argc, char **argv)
 				!existFile(lastExtractedTimeFile) ||
 				getFileSize(lastExtractedTimeFile) != 8 ||
 				readFirstValue64(lastExtractedTimeFile) + 86400 * 2 < bootTime
+
+|| _access(wFile, 0) // ‚»‚à‚»‚à‘¶Ý‚µ‚È‚¯‚ê‚Î“WŠJ‚·‚éB@ 2018.11.21
+
 				)
 			{
 				createPath(wFile, 'X');
