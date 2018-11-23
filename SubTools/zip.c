@@ -66,7 +66,7 @@
 #include "libs\ChangePETimeDateStamp.h"
 
 #define ZIP_MD5_HISTORY_FILE "C:\\Factory\\tmp\\zip_md5_history.txt"
-#define ZIP_MD5_HISTORY_LMT 20
+#define ZIP_MD5_HISTORY_LMT 40
 
 /*
 	7-Zip Extra 16.02 ‚©‰½‚©
