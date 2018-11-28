@@ -136,11 +136,11 @@ static void ShowFloat_Block(autoBlock_t *block)
 	switch(getSize(block))
 	{
 	case 4:
-		ShowFloat(*(float *)b(block));
+		ShowFloat(*(float *)b_(block));
 		break;
 
 	case 8:
-		ShowDouble(*(double *)b(block));
+		ShowDouble(*(double *)b_(block));
 		break;
 
 	default:

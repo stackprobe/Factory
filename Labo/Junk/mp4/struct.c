@@ -32,8 +32,8 @@ static autoList_t *LoadByImage(autoBlock_t *image)
 			broken = 1;
 			break;
 		}
-		size = *(uint *)(b(image) + rPos + 0);
-		name = *(uint *)(b(image) + rPos + 4);
+		size = *(uint *)(b_(image) + rPos + 0);
+		name = *(uint *)(b_(image) + rPos + 4);
 
 		size = revEndian(size);
 

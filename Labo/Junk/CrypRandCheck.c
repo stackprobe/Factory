@@ -40,7 +40,7 @@ static void CheckCBytes(void)
 		if(eqIntPulseSec(2, NULL))
 			cout("CHECK %u %u\n", lPos, rPos);
 
-		if(!memcmp(b(CBytes) + lPos, b(CBytes) + rPos, CHK_SZ))
+		if(!memcmp(b_(CBytes) + lPos, b_(CBytes) + rPos, CHK_SZ))
 		{
 			cout("FOUND %u %u\n", lPos, rPos);
 			error();

@@ -19,7 +19,7 @@ static autoBlock_t *DestroyBit(autoBlock_t *block)
 	index = mt19937_rnd(getSize(block));
 	bit   = mt19937_rnd(8);
 
-	b(block)[index] ^= 1 << bit;
+	b_(block)[index] ^= 1 << bit;
 
 	return block;
 }

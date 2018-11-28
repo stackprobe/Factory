@@ -42,7 +42,7 @@ static void DoMask(autoBlock_t *fileData)
 
 	for(index = 0; index < getSize(fileData); index++)
 	{
-		b(fileData)[index] ^= b(mask)[index % getSize(mask)];
+		b_(fileData)[index] ^= b_(mask)[index % getSize(mask)];
 	}
 	releaseAutoBlock(mask);
 }

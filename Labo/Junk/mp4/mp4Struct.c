@@ -39,7 +39,7 @@ static void PrintSubStruct(uint startPos, uint endPos, uint indent)
 			break;
 		}
 		name = (char *)memAlloc(5);
-		memcpy(name, b(FileData) + index + 4, 4);
+		memcpy(name, b_(FileData) + index + 4, 4);
 		name[4] = '\0';
 
 		line2JLine(name, 1, 0, 0, 1);

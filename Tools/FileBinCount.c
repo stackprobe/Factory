@@ -25,7 +25,7 @@ static void FileBinCount(char *file)
 		if(chr == EOF)
 			break;
 
-		if(chr == b(TargetPtn)[0])
+		if(chr == b_(TargetPtn)[0])
 		{
 			uint index;
 

@@ -78,5 +78,5 @@ void unaddBytesToBlock(autoBlock_t *i, void *block, uint size);
 autoBlock_t *getSubBytes(autoBlock_t *i, uint index, uint count);
 char *unbindBlock2Line(autoBlock_t *i);
 
-#define b(block) \
+#define b_(block) \
 	((uchar *)(block)->Block)

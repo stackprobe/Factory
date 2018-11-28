@@ -117,7 +117,7 @@ static void MaskCr2(autoBlock_t *cr2, autoBlock_t *cr2_ca)
 
 	for(index = 0; index < getSize(cr2); index++)
 	{
-		b(cr2)[index] ^= b(cr2_ca)[index];
+		b_(cr2)[index] ^= b_(cr2_ca)[index];
 	}
 }
 static void DoTest_02_2(void)

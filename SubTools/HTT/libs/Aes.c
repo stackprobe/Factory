@@ -23,7 +23,7 @@ autoBlock_t *MakeEncCounter(autoBlock_t *clSeed, autoBlock_t *svSeed)
 	AES128_EncryptBlock(keyTable, clSeed, encCounter);
 
 	for(index = 0; index < 16; index++)
-		b(encCounter)[index] ^= b(svSeed)[index];
+		b_(encCounter)[index] ^= b_(svSeed)[index];
 
 	AES128_EncryptBlock(keyTable, encCounter, encCounter);
 	AES128_ReleaseKeyTable(keyTable);
@@ -47,12 +47,12 @@ static void AddCounter(autoBlock_t *counter)
 
 	for(index = 0; index < 16; index++)
 	{
-		if(b(counter)[index] < 0xff)
+		if(b_(counter)[index] < 0xff)
 		{
-			b(counter)[index]++;
+			b_(counter)[index]++;
 			break;
 		}
-		b(counter)[index] = 0x00;
+		b_(counter)[index] = 0x00;
 	}
 }
 void Crypt(autoBlock_t *data, autoBlock_t *rawKey, autoBlock_t *encCounter)
@@ -70,7 +70,7 @@ void Crypt(autoBlock_t *data, autoBlock_t *rawKey, autoBlock_t *encCounter)
 			AES128_EncryptBlock(keyTable, encCounter, mask);
 			AddCounter(encCounter);
 		}
-		b(data)[index] ^= b(mask)[subPos];
+		b_(data)[index] ^= b_(mask)[subPos];
 	}
 	AES128_ReleaseKeyTable(keyTable);
 	releaseAutoBlock(mask);
@@ -168,8 +168,8 @@ void RCBCEncrypt(autoBlock_t *block, autoBlock_t *rawKey)
 
 	for(currPos = 0; currPos < getSize(block); currPos += 16)
 	{
-		XorBlock(b(block) + currPos, b(block) + prevPos);
-		AES128_Encrypt(keyTable, b(block) + currPos, b(block) + currPos);
+		XorBlock(b_(block) + currPos, b_(block) + prevPos);
+		AES128_Encrypt(keyTable, b_(block) + currPos, b_(block) + currPos);
 		prevPos = currPos;
 	}
 	AES128_ReleaseKeyTable(keyTable);
@@ -195,12 +195,12 @@ int RCBCDecrypt(autoBlock_t *block, autoBlock_t *rawKey) // ret: ? ¬Œ÷
 	for(currPos = getSize(block) - 16; currPos; currPos -= 16)
 	{
 		prevPos = currPos - 16;
-		AES128_Encrypt(keyTable, b(block) + currPos, b(block) + currPos);
-		XorBlock(b(block) + currPos, b(block) + prevPos);
+		AES128_Encrypt(keyTable, b_(block) + currPos, b_(block) + currPos);
+		XorBlock(b_(block) + currPos, b_(block) + prevPos);
 	}
 	prevPos = getSize(block) - 16;
-	AES128_Encrypt(keyTable, b(block), b(block));
-	XorBlock(b(block), b(block) + prevPos);
+	AES128_Encrypt(keyTable, b_(block), b_(block));
+	XorBlock(b_(block), b_(block) + prevPos);
 
 	AES128_ReleaseKeyTable(keyTable);
 	return 1;
