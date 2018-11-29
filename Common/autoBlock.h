@@ -78,5 +78,12 @@ void unaddBytesToBlock(autoBlock_t *i, void *block, uint size);
 autoBlock_t *getSubBytes(autoBlock_t *i, uint index, uint count);
 char *unbindBlock2Line(autoBlock_t *i);
 
+/*
+	chr = getByte(block, index);				chr = b_(block)[index];
+	setByte(block, index, chr);					b_(block)[index] = chr;
+	chr = getByte(block, 0);					chr = *b_(block);
+	setByte(block, 0, chr);						*b_(block) = chr;
+	setByte(block, a, getByte(block, b));		b_(block)[a] = b_(block)[b];
+*/
 #define b_(block) \
 	((uchar *)(block)->Block)

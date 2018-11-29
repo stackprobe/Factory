@@ -89,3 +89,13 @@ uint zSetElement(autoList_t *i, uint index, uint element);
 // _x
 void addElements_x(autoList_t *i, autoList_t *j);
 void callAllElement_x(autoList_t *i, void (*callFunc)(uint));
+
+/*
+	value = getElement(list, index);				value = e_(list)[index];
+	setElement(list, index, value);					e_(list)[index] = value;
+	value = getElement(list, 0);					value = *e_(list);
+	setElement(list, 0, value);						*e_(list) = value;
+	setElemenet(list, a, getElement(list, b));		e_(list)[a] = e_(list)[b];
+*/
+#define e_(list) \
+	((uint *)(list)->Elements)

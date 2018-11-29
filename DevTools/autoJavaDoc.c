@@ -8,6 +8,17 @@
 static int IntoSubDir;
 static autoList_t *JavaDoc;
 
+static uint GetIndexFromPtn2(autoList_t *lines, uint index, char *ptn1, char *ptn2)
+{
+	char *ptn = xcout("%s%s", ptn1, ptn2);
+
+	for(; index < getCount(lines); index++)
+		if(!strcmp(ptn, getLine(lines, index)))
+			break;
+
+	memFree(ptn);
+	return index;
+}
 static void DoAutoJavaDoc_File(char *file)
 {
 	autoList_t *lines = readLines(file);
@@ -34,11 +45,24 @@ static void DoAutoJavaDoc_File(char *file)
 				index--;
 				indexDec++;
 			}
+			// ? メソッド又はクラスがコメントアウトされている。
 			if(index && lineExp("<0,100,\t\t>//*<>", getLine(lines, index - 1))) // エスケープ注意 / -> //
 			{
-				goto endAddJavaDoc; // メソッドがコメントアウトされている。
+				uint i = GetIndexFromPtn2(lines, index, indentPtn, "}"); // メソッド又はクラスの終端が見つかれば、そこまで進む。
+
+				if(i < getCount(lines))
+				{
+					index = i;
+					indexDec = 0;
+				}
+				goto endAddJavaDoc;
 			}
-			if(!index || !lineExp("<0,100,\t\t> *//", getLine(lines, index - 1))) // エスケープ注意 / -> //
+			// ? 既にコメントがある。
+			if(index && lineExp("<0,100,\t\t> *//", getLine(lines, index - 1))) // エスケープ注意 / -> //
+			{
+				goto endAddJavaDoc;
+			}
+
 			{
 				char *javaDocLine;
 				uint javaDocLineIndex;
