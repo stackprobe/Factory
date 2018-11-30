@@ -49,6 +49,8 @@ void writeOneLine(char *file, char *line);
 void writeOneLineNoRet(char *file, char *line);
 void writeOneLineNoRet_b(char *file, char *line);
 void addLine2File(char *file, char *line);
+void addLine2FileNoRet(char *file, char *line);
+void addLine2FileNoRet_b(char *file, char *line);
 
 void writeValue64Width(FILE *fp, uint64 value, uint width);
 void writeValue64(FILE *fp, uint64 value);

@@ -527,6 +527,20 @@ void addLine2File(char *file, char *line)
 	writeLine(fp, line);
 	fileClose(fp);
 }
+void addLine2FileNoRet(char *file, char *line)
+{
+	FILE *fp = fileOpen(file, "at");
+
+	writeToken(fp, line);
+	fileClose(fp);
+}
+void addLine2FileNoRet_b(char *file, char *line)
+{
+	FILE *fp = fileOpen(file, "ab");
+
+	writeToken(fp, line);
+	fileClose(fp);
+}
 
 /*
 	Little Endian
