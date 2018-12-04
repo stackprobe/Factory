@@ -141,7 +141,7 @@ void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint))
 		{
 			pivot = getElement(list, pivotidx);
 
-#if 0 // 同値が多いと遅くなる。全て同値のとき下より多少速い。@ 2016.3.1
+#if 1 // 同値が多いと遅くなる。全て同値のとき下より多少速い。<--- ???
 			while(nearidx < pivotidx && funcComp(getElement(list, nearidx), pivot) <= 0)
 			{
 				nearidx++;
