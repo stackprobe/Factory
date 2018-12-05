@@ -166,7 +166,7 @@ static uint GetKnownNextRemarkIndex(uint64 knownStamp)
 
 	target.Stamp = knownStamp;
 
-	return findBoundLeftestRight(Remarks, (uint)&target, RemarkStampComp);
+	return findBoundNearestRight(Remarks, (uint)&target, RemarkStampComp);
 }
 static uint64 GetStamp(void)
 {

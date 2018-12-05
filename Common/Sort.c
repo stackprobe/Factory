@@ -364,7 +364,7 @@ uint binSearchLines(autoList_t *lines, char *lineFind)
 }
 
 // list はソート済みであること。
-uint findBoundLeftestMatch(autoList_t *list, uint target, sint (*funcComp)(uint, uint)) // ? ret: targetより小さい最後の位置の次, targetより小さい要素が無ければ 0
+uint findBoundNearestMatch(autoList_t *list, uint target, sint (*funcComp)(uint, uint)) // ? ret: targetより小さい最後の位置の次, targetより小さい要素が無ければ 0
 {
 	uint l = 0;
 	uint r = getCount(list);
@@ -388,7 +388,7 @@ uint findBoundLeftestMatch(autoList_t *list, uint target, sint (*funcComp)(uint,
 	return l;
 }
 // list はソート済みであること。
-uint findBoundLeftestRight(autoList_t *list, uint target, sint (*funcComp)(uint, uint)) // ? ret: targetより大きい最初の位置, targetより大きい要素が無ければlistの長さ
+uint findBoundNearestRight(autoList_t *list, uint target, sint (*funcComp)(uint, uint)) // ? ret: targetより大きい最初の位置, targetより大きい要素が無ければlistの長さ
 {
 	uint l = 0;
 	uint r = getCount(list);
@@ -414,8 +414,8 @@ uint findBoundLeftestRight(autoList_t *list, uint target, sint (*funcComp)(uint,
 // list はソート済みであること。
 void findBound(autoList_t *list, uint target, sint (*funcComp)(uint, uint), uint bound[2])
 {
-	bound[0] = findBoundLeftestMatch(list, target, funcComp);
-	bound[1] = findBoundLeftestRight(list, target, funcComp);
+	bound[0] = findBoundNearestMatch(list, target, funcComp);
+	bound[1] = findBoundNearestRight(list, target, funcComp);
 }
 
 // list はソート済みであること。
