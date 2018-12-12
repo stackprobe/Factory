@@ -1,5 +1,5 @@
 /*
-	Server.exe [/P ポート番号] [/C 最大同時接続数] [/R ルートDIR] [/D 確保するディスクの空き領域] [/E 停止イベント名] HARUNA-WA-DJBD
+	Server.exe [/P ポート番号] [/C 最大同時接続数] [/R ルートDIR] [/D 確保するディスクの空き領域] [/E 停止イベント名] ANTI-MIS-EXEC
 
 		ポート番号     ... 1 ～ 65535, def: 65123
 		最大同時接続数 ... 1 ～ IMAX, def: 100
@@ -404,7 +404,7 @@ readArgs:
 		goto readArgs;
 	}
 
-	errorCase_m(strcmp(nextArg(), "HARUNA-WA-DJBD"), "HARUNA-WA-DJBJAS");
+	errorCase_m(strcmp(nextArg(), "ANTI-MIS-EXEC"), "no ANTI-MIS-EXEC");
 
 	cout("ポート番号: %u\n", portNo);
 	cout("最大同時接続数: %u\n", connectMax);
