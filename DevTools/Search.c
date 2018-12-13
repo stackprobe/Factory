@@ -12,10 +12,7 @@
 
 static void FSeek(FILE *fp, uint64 index)
 {
-	if(_fseeki64(fp, index, SEEK_SET) != 0)
-	{
-		error();
-	}
+	fileSeek(fp, SEEK_SET, index);
 }
 static int IsTokenChar(int chr)
 {
@@ -166,15 +163,15 @@ static void SearchFile(char *file)
 		}
 		else if(matchidx)
 		{
-			rIndex -= matchidx - 1;
+			rIndex -= matchidx;
 			matchidx = 0;
 
 			FSeek(fp, rIndex);
 		}
 		else
 		{
-			if(chr == '\r') crcnt++;
-			if(chr == '\n') lfcnt++;
+			     if(chr == '\r') crcnt++;
+			else if(chr == '\n') lfcnt++;
 		}
 	}
 	fileClose(fp);
