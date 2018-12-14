@@ -141,7 +141,7 @@ void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint))
 		{
 			pivot = getElement(list, pivotidx);
 
-#if 1 // 同値が多いと遅くなる。全て同値のとき下より多少速い。<--- ???
+#if 1
 			while(nearidx < pivotidx && funcComp(getElement(list, nearidx), pivot) <= 0)
 			{
 				nearidx++;
@@ -150,21 +150,21 @@ void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint))
 			{
 				faridx--;
 			}
-#elif 0 // 同じ要素を比較することがある。想定されない？ @ 2017.7.13
-			while(funcComp(getElement(list, nearidx), pivot) < 0)
-			{
-				nearidx++;
-			}
-			while(funcComp(pivot, getElement(list, faridx)) < 0)
-			{
-				faridx--;
-			}
-#else
+#elif 1 // 同値が多いとき多少速い。<--- pivotの最終位置が中央に寄りやすいみたい。
 			while(nearidx < pivotidx && funcComp(getElement(list, nearidx), pivot) < 0)
 			{
 				nearidx++;
 			}
 			while(pivotidx < faridx && funcComp(pivot, getElement(list, faridx)) < 0)
+			{
+				faridx--;
+			}
+#else // 同じ要素を比較することがある。この動作は想定されない場合がある気がする。
+			while(funcComp(getElement(list, nearidx), pivot) < 0)
+			{
+				nearidx++;
+			}
+			while(funcComp(pivot, getElement(list, faridx)) < 0)
 			{
 				faridx--;
 			}
