@@ -289,6 +289,10 @@ static void PerformTh(int sock, char *strip)
 
 			FC3_SendLine(ss, "/DELETE/e");
 		}
+		else if(!_stricmp(command, "HELLO"))
+		{
+			FC3_SendLine(ss, "/HELLO/e");
+		}
 		else
 		{
 			cout("不明なコマンドです。\n");
