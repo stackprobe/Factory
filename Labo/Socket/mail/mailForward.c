@@ -31,6 +31,8 @@
 #include "C:\Factory\Common\Options\CRRandom.h"
 #include "C:\Factory\Common\Options\Sequence.h"
 
+#define STOP_EV_NAME "{c991a7e5-24bf-4ab0-a657-fc0a44827620}"
+
 static char *PopServer;
 static uint PopPortno = 110;
 static char *SmtpServer;
@@ -339,6 +341,7 @@ static void RecvLoop(void)
 	double lastHTm = -IMAX;
 	double currHTm;
 	double diffHTm;
+	uint stopEv = eventOpen(STOP_EV_NAME);
 
 	for(; ; )
 	{
@@ -387,10 +390,16 @@ static void RecvLoop(void)
 				if(getKey() == 0x1b)
 					goto endLoop;
 
+#if 1
+			if(handleWaitForMillis(stopEv, 3000))
+				goto endLoop;
+#else // old
 			sleep(3000);
+#endif
 		}
 	}
-endLoop:;
+endLoop:
+	handleClose(stopEv);
 }
 int main(int argc, char **argv)
 {
@@ -401,6 +410,12 @@ int main(int argc, char **argv)
 	SendOnlyMemberList = newList();
 
 readArgs:
+	if(argIs("/S"))
+	{
+LOGPOS();
+		eventWakeup(STOP_EV_NAME);
+		return;
+	}
 	if(argIs("/PD")) // Pop server Domain
 	{
 		PopServer = nextArg();
