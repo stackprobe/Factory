@@ -74,10 +74,14 @@ void selectionSort(autoList_t *list, sint (*funcComp)(uint, uint)) // 安定ソート
 #define CUTOVER 9
 
 /*
-	２分割時の大きい方の大きさの期待値は 0.75 (たぶん..
+	2分割時の大きい方の大きさの期待値は 0.75 (たぶん..
 	0.75 ^ 80 = 0.0000000001*
+	0.75 ^ 40 = 0.00001*
+	0.75 ^ 30 = 0.00017858209*
 */
-#define ABANDON 160 // 2の倍数であること。
+#define ABANDON_DEPTH 30
+
+#define ABANDON (ABANDON_DEPTH * 2)
 
 /*
 	クイックソートもどき
@@ -122,7 +126,7 @@ void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint))
 		}
 		if(ABANDON <= getCount(rangeStack))
 		{
-#if 0
+#if 1
 			autoList_t sublist = gndSubElements(list, startidx, endnextidx - startidx);
 
 			combSort(&sublist, funcComp);
