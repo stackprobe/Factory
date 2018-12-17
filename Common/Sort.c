@@ -26,6 +26,7 @@ void combSort(autoList_t *list, sint (*funcComp)(uint, uint))
 	uint span = getCount(list);
 	uint nearidx;
 	uint faridx;
+//cout("* %u\n", getCount(list)); // test test test
 
 	for(; ; )
 	{
@@ -79,16 +80,15 @@ void selectionSort(autoList_t *list, sint (*funcComp)(uint, uint)) // 安定ソート
 	0.75 ^ 40 = 0.00001*
 	0.75 ^ 30 = 0.00017858209*
 */
-#define ABANDON_DEPTH 30
-
-#define ABANDON (ABANDON_DEPTH * 2)
+#define ABANDON 30
 
 /*
 	クイックソートもどき
 */
 void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint))
 {
-	autoList_t *rangeStack = createAutoList(ABANDON + 2);
+	autoList_t *rangeStack = createAutoList((ABANDON + 3) * 3);
+	uint depth;
 	uint startidx;
 	uint endnextidx;
 	uint nearidx;
@@ -104,12 +104,14 @@ void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint))
 	*/
 
 	addElement(rangeStack, 0);
+	addElement(rangeStack, 0);
 	addElement(rangeStack, getCount(list));
 
 	while(getCount(rangeStack))
 	{
 		endnextidx = unaddElement(rangeStack);
 		startidx = unaddElement(rangeStack);
+		depth = unaddElement(rangeStack);
 
 		/*
 		if(endnextidx < startidx + 2) // ? ソート不要
@@ -124,7 +126,7 @@ void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint))
 			selectionSort(&sublist, funcComp);
 			continue;
 		}
-		if(ABANDON <= getCount(rangeStack))
+		if(ABANDON < getCount(rangeStack))
 		{
 #if 1
 			autoList_t sublist = gndSubElements(list, startidx, endnextidx - startidx);
@@ -198,11 +200,14 @@ void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint))
 			}
 		}
 
+		addElement(rangeStack, depth + 1);
 		addElement(rangeStack, startidx);
 		addElement(rangeStack, pivotidx);
 
+		addElement(rangeStack, depth + 1);
 		addElement(rangeStack, pivotidx + 1);
 		addElement(rangeStack, endnextidx);
+//errorCase(rangeStack->AllocCount != (ABANDON + 3) * 3); // test test test
 	}
 
 endsort:
