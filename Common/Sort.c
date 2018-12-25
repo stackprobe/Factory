@@ -126,7 +126,7 @@ void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint))
 			selectionSort(&sublist, funcComp);
 			continue;
 		}
-		if(ABANDON < getCount(rangeStack))
+		if(ABANDON < depth)
 		{
 #if 1
 			autoList_t sublist = gndSubElements(list, startidx, endnextidx - startidx);
@@ -207,7 +207,7 @@ void rapidSort(autoList_t *list, sint (*funcComp)(uint, uint))
 		addElement(rangeStack, depth + 1);
 		addElement(rangeStack, pivotidx + 1);
 		addElement(rangeStack, endnextidx);
-//errorCase(rangeStack->AllocCount != (ABANDON + 3) * 3); // test test test
+errorCase(rangeStack->AllocCount != (ABANDON + 3) * 3); // test test test
 	}
 
 endsort:
