@@ -12,51 +12,14 @@ static void AutoComment_Range(autoList_t *range)
 {
 	char *line;
 	uint index;
-	int commentEntered = 0;
 
 	foreach(range, line, index)
 	{
 		int insCmt = 0;
 
-		if(!commentEntered)
-		{
-			char *tmp = strx(line);
-			ucTrim(tmp);
-			commentEntered = !strcmp(tmp, "/*");
-			memFree(tmp);
-		}
-
-#if 0
-		if(line[0] == '#')
+		if(m_isalpha(line[0]))
 		{
 			insCmt = 1;
-		}
-		else if(index)
-		{
-			char *prevLine = getLine(range, index - 1);
-
-			if(
-				!strcmp(prevLine, "") ||
-				!strcmp(prevLine, "}")
-				)
-			if(m_isalpha(line[0]))
-			{
-				insCmt = 1;
-			}
-		}
-#else
-		if(!commentEntered && m_isalpha(line[0]))
-		{
-			insCmt = 1;
-		}
-#endif
-
-		if(commentEntered)
-		{
-			char *tmp = strx(line);
-			ucTrim(tmp);
-			commentEntered = !!strcmp(tmp, "*/");
-			memFree(tmp);
 		}
 
 		if(insCmt)
