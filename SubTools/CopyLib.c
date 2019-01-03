@@ -8,19 +8,48 @@
 
 static autoList_t *ResAutoComment;
 
-static void AutoComment_Range(autoList_t *range)
+static void AutoComment_Range(autoList_t *range, uint range_index)
 {
 	char *line;
 	uint index;
+	int commentEntered = 0;
 
 	foreach(range, line, index)
 	{
 		int insCmt = 0;
 
-		if(m_isalpha(line[0]))
 		{
-			insCmt = 1;
+			char *tmp = strx(line);
+
+			ucTrim(tmp);
+
+			if(commentEntered)
+			{
+				if(!strcmp(tmp, "*/"))
+					commentEntered = 0;
+			}
+			else
+			{
+				if(!strcmp(tmp, "/*"))
+					commentEntered = 1;
+			}
+			memFree(tmp);
 		}
+
+		if(m_isalpha(line[0]) || line[0] == '_')
+			insCmt = 1;
+
+		if(index && !strcmp(getLine(range, index - 1), "}") && endsWith(line, ";"))
+			insCmt = 0;
+
+		if(index && !strcmp(getLine(range, index - 1), "*/"))
+			insCmt = 0;
+
+		if(commentEntered)
+			insCmt = 0;
+
+		if(!index && !range_index)
+			insCmt = 1;
 
 		if(insCmt)
 		{
@@ -41,7 +70,7 @@ static void AutoComment(autoList_t *ranges)
 
 	foreach(ranges, range, index)
 		if(index % 2 == 0)
-			AutoComment_Range(range);
+			AutoComment_Range(range, index);
 }
 static autoList_t *ReadCommonAndAppSpecRanges(char *file)
 {
