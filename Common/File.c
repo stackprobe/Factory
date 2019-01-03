@@ -1128,6 +1128,11 @@ char *makeFullPath_x(char *path)
 	memFree(path);
 	return out;
 }
+void removeDir_x(char *dir)
+{
+	removeDir(dir);
+	memFree(dir);
+}
 void removeFile_x(char *file)
 {
 	removeFile(file);

@@ -116,6 +116,7 @@ char *combine_cx(char *dir, char *file);
 char *combine_xc(char *dir, char *file);
 char *combine_xx(char *dir, char *file);
 char *makeFullPath_x(char *path);
+void removeDir_x(char *dir);
 void removeFile_x(char *file);
 void removeFileIfExist_x(char *file);
 void removePath_x(char *path);
