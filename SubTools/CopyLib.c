@@ -6,12 +6,130 @@
 
 #include "C:\Factory\Common\all.h"
 
+static autoList_t *ResAutoComment;
+
+static void AutoComment_Range(autoList_t *range)
+{
+	char *line;
+	uint index;
+	int commentEntered = 0;
+
+	foreach(range, line, index)
+	{
+		int insCmt = 0;
+
+		if(!commentEntered)
+		{
+			char *tmp = strx(line);
+			ucTrim(tmp);
+			commentEntered = !strcmp(tmp, "/*");
+			memFree(tmp);
+		}
+
+#if 0
+		if(line[0] == '#')
+		{
+			insCmt = 1;
+		}
+		else if(index)
+		{
+			char *prevLine = getLine(range, index - 1);
+
+			if(
+				!strcmp(prevLine, "") ||
+				!strcmp(prevLine, "}")
+				)
+			if(m_isalpha(line[0]))
+			{
+				insCmt = 1;
+			}
+		}
+#else
+		if(!commentEntered && m_isalpha(line[0]))
+		{
+			insCmt = 1;
+		}
+#endif
+
+		if(commentEntered)
+		{
+			char *tmp = strx(line);
+			ucTrim(tmp);
+			commentEntered = !!strcmp(tmp, "*/");
+			memFree(tmp);
+		}
+
+		if(insCmt)
+		{
+			char *comment;
+			uint comment_index;
+
+			foreach(ResAutoComment, comment, comment_index)
+			{
+				insertElement(range, index++, (uint)strx(comment));
+			}
+		}
+	}
+}
+static void AutoComment(autoList_t *ranges)
+{
+	autoList_t *range;
+	uint index;
+
+	foreach(ranges, range, index)
+		if(index % 2 == 0)
+			AutoComment_Range(range);
+}
 static autoList_t *ReadCommonAndAppSpecRanges(char *file)
 {
 	autoList_t *ranges = newList();
+	autoList_t *lines = newList();
+	FILE *fp = fileOpen(file, "rt");
+	char *line;
+	int appSpecEntered = 0;
 
-	error(); // TODO
+	while(line = readLine(fp))
+	{
+		int enter;
+		int leave;
 
+		{
+			char *tmp = strx(line);
+
+			ucTrim(tmp);
+
+			enter = !strcmp(tmp, "// app >");
+			leave = !strcmp(tmp, "// < app");
+
+			memFree(tmp);
+		}
+
+		errorCase(enter && leave);
+
+		if(leave)
+		{
+			errorCase(!appSpecEntered);
+			appSpecEntered = 0;
+
+			addElement(ranges, (uint)lines);
+			lines = newList();
+		}
+		addElement(lines, (uint)line);
+
+		if(enter)
+		{
+			errorCase(appSpecEntered);
+			appSpecEntered = 1;
+
+			addElement(ranges, (uint)lines);
+			lines = newList();
+		}
+	}
+	errorCase(appSpecEntered);
+
+	addElement(ranges, (uint)lines);
+
+	fileClose(fp);
 	return ranges;
 }
 static void DoCopyLib(char *rDir, char *wDir, int testMode)
@@ -92,6 +210,8 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 
 		errorCase_m(getCount(rRanges) != getCount(wRanges), "アプリ固有コードの数が合わないため上書き出来ません。");
 
+		AutoComment(rRanges);
+
 		{
 			autoList_t *lines = newList();
 			uint index;
@@ -100,8 +220,10 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 				addElements(lines, getList(index % 2 ? wRanges : rRanges, index));
 
 			if(!testMode)
+			{
+				semiRemovePath(wFile);
 				writeLines(wFile, lines);
-
+			}
 			releaseAutoList(lines);
 		}
 
@@ -132,13 +254,24 @@ static void CopyLib(char *rDir, char *wDir)
 	errorCase(!existDir(wDir));
 	errorCase(!_stricmp(rDir, wDir)); // ? 同じディレクトリ
 
+	LOGPOS();
 	DoCopyLib(rDir, wDir, 1);
-//	DoCopyLib(rDir, wDir, 0);
+	LOGPOS();
+	DoCopyLib(rDir, wDir, 0);
+	LOGPOS();
 
 	memFree(rDir);
 	memFree(wDir);
 }
 int main(int argc, char **argv)
 {
+	{
+		char *cmtFile = changeExt(getSelfFile(), "txt");
+
+		ResAutoComment = readLines(cmtFile);
+
+		memFree(cmtFile);
+	}
+
 	CopyLib(getArg(0), getArg(1));
 }
