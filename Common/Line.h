@@ -70,6 +70,8 @@ char *strchrEnd(char *line, int findChr);
 char *strchrNext(char *line, int findChr);
 char *ne_strchr(char *line, int findChr);
 char *ne_strstr(char *line, char *findPtn);
+char *nn_strchr(char *line, int findChr);
+char *nn_strstr(char *line, char *findPtn);
 uint strlen_max(char *str, uint retmax);
 
 int mbsStartsWithICase(char *line1, char *line2);
@@ -85,6 +87,9 @@ char *mbs_stristr(char *line, char *ptn);
 char *strstrNextCase(char *line, char *ptn, int ignoreCase);
 char *strstrNext(char *line, char *ptn);
 char *stristrNext(char *line, char *ptn);
+char *strstrEndCase(char *line, char *ptn, int ignoreCase);
+char *strstrEnd(char *line, char *ptn);
+char *stristrEnd(char *line, char *ptn);
 void replacePtn(char *line, char *ptn1, char *ptn2, int ignoreCase);
 char *replaceLine(char *line, char *ptn1, char *ptn2, int ignoreCase);
 char *replaceLineLoop(char *line, char *ptn1, char *ptn2, int ignoreCase, uint loopMax);

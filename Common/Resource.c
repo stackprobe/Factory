@@ -56,6 +56,16 @@ void ucTrimEdge(char *line)
 	unctrl(line);
 	trimEdge(line, ' ');
 }
+void ucTrimLead(char *line)
+{
+	unctrl(line);
+	trimLead(line, ' ');
+}
+void ucTrimTrail(char *line)
+{
+	unctrl(line);
+	trimTrail(line, ' ');
+}
 void ucTrimSqLead(char *line)
 {
 	unctrl(line);

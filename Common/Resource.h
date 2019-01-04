@@ -2,6 +2,8 @@ void disctrl(char *line);
 void unctrl(char *line);
 void ucTrim(char *line);
 void ucTrimEdge(char *line);
+void ucTrimLead(char *line);
+void ucTrimTrail(char *line);
 void ucTrimSqLead(char *line);
 void ucTrimSqTrail(char *line);
 autoList_t *ucTokenize(char *line);

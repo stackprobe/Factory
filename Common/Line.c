@@ -229,6 +229,14 @@ char *ne_strstr(char *line, char *findPtn)
 	errorCase(!ret);
 	return ret;
 }
+char *nn_strchr(char *line, int findChr)
+{
+	return strchrEnd(line, findChr);
+}
+char *nn_strstr(char *line, char *findPtn)
+{
+	return strstrEnd(line, findPtn);
+}
 uint strlen_max(char *str, uint retmax)
 {
 	uint count;
@@ -327,6 +335,24 @@ char *strstrNext(char *line, char *ptn) // mbs_
 char *stristrNext(char *line, char *ptn) // mbs_
 {
 	return strstrNextCase(line, ptn, 1);
+}
+char *strstrEndCase(char *line, char *ptn, int ignoreCase) // mbs_
+{
+	char *p = mbs_strstrCase(line, ptn, ignoreCase);
+
+	if(!p)
+		p = strchr(line, '\0');
+
+	errorCase(!p);
+	return p;
+}
+char *strstrEnd(char *line, char *ptn) // mbs_
+{
+	return strstrEndCase(line, ptn, 0);
+}
+char *stristrEnd(char *line, char *ptn) // mbs_
+{
+	return strstrEndCase(line, ptn, 1);
 }
 
 void replacePtn(char *line, char *ptn1, char *ptn2, int ignoreCase) // mbs_
