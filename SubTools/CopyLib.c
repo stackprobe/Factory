@@ -17,6 +17,7 @@ static void AutoComment_Range(autoList_t *range, uint range_index)
 	foreach(range, line, index)
 	{
 		int insCmt = 0;
+		int forceInsCmt = 0;
 
 		line = strx(line);
 		nn_strstr(line, "//")[0] = '\0'; // インラインコメントの除去
@@ -35,7 +36,10 @@ static void AutoComment_Range(autoList_t *range, uint range_index)
 			else
 			{
 				if(!strcmp(tmp, "/*"))
+				{
 					commentEntered = 1;
+					forceInsCmt = 1;
+				}
 			}
 			memFree(tmp);
 		}
@@ -58,7 +62,7 @@ static void AutoComment_Range(autoList_t *range, uint range_index)
 		if(!index && !range_index)
 			insCmt = 1;
 
-		if(insCmt)
+		if(insCmt || forceInsCmt)
 		{
 			char *comment;
 			uint comment_index;
@@ -98,8 +102,8 @@ static autoList_t *ReadCommonAndAppSpecRanges(char *file)
 
 			ucTrim(tmp);
 
-			enter = !strcmp(tmp, "// app >");
-			leave = !strcmp(tmp, "// < app");
+			enter = startsWith(tmp, "// app >");
+			leave = startsWith(tmp, "// < app");
 
 			memFree(tmp);
 		}
@@ -136,28 +140,31 @@ static void CheckAppSpecRangesPair(autoList_t *rRanges, autoList_t *wRanges)
 {
 	uint index;
 
-//	errorCase(getCount(rRanges) != getCount(wRanges));
-	errorCase(getCount(rRanges) % 2 != 1);
-	errorCase(getCount(wRanges) % 2 != 1);
+	errorCase_m(getCount(rRanges) != getCount(wRanges), "アプリ固有コードの数が合わないため上書き出来ません。");
 
-	for(index = 2; index < getCount(rRanges); index++)
+	errorCase(getCount(rRanges) % 2 != 1); // 2bs
+	errorCase(getCount(wRanges) % 2 != 1); // 2bs
+
+	for(index = 2; index < getCount(rRanges); index += 2)
 	{
 		{
 			char *r = (char *)getLastElement(getList(rRanges, index - 2));
 			char *w = (char *)getLastElement(getList(wRanges, index - 2));
-cout("*r1 %s\n", r); // test
-cout("*w1 %s\n", w); // test
 
-			errorCase(strcmp(r, w));
+coutJLine_x(xcout("r: %s", r)); // test
+coutJLine_x(xcout("w: %s", w)); // test
+
+			errorCase_m(strcmp(r, w), "アプリ固有コード開始行不一致");
 		}
 
 		{
 			char *r = getLine(getList(rRanges, index), 0);
 			char *w = getLine(getList(wRanges, index), 0);
-cout("*r2 %s\n", r); // test
-cout("*w2 %s\n", w); // test
 
-			errorCase(strcmp(r, w));
+coutJLine_x(xcout("r: %s", r)); // test
+coutJLine_x(xcout("w: %s", w)); // test
+
+			errorCase_m(strcmp(r, w), "アプリ固有コード終了行不一致");
 		}
 	}
 }
@@ -236,8 +243,6 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 
 		cout("<r %u\n", getCount(rRanges));
 		cout(">r %u\n", getCount(wRanges));
-
-		errorCase_m(getCount(rRanges) != getCount(wRanges), "アプリ固有コードの数が合わないため上書き出来ません。");
 
 		CheckAppSpecRangesPair(rRanges, wRanges);
 
