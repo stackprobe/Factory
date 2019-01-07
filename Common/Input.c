@@ -68,18 +68,21 @@ static void CheckAllProcPoundKey(void)
 		return;
 
 	{
-		static uint lastExecTime;
+		static uint lastPassedTime;
 		uint nowTime = now();
 
-		if(nowTime < lastExecTime + 3) // 3•b‚É1‰ñ’Ê‰ß
+		if(!lastPassedTime)
+			lastPassedTime = nowTime; // Å‰‚Ì2•bŠÔ‚Í’Ê‚³‚È‚¢B
+
+		if(nowTime < lastPassedTime + 2) // 2•b‚É1‰ñ’Ê‰ß
 			return;
 
-		lastExecTime = nowTime;
+		lastPassedTime = nowTime;
 	}
 
 	mutex();
 	{
-		if(existFile(ALL_PROC_POUND_KEY_FILE))
+		if(existFile(ALL_PROC_POUND_KEY_FILE) && !BackKeyStack)
 		{
 			int key = (int)readFirstValue(ALL_PROC_POUND_KEY_FILE);
 
