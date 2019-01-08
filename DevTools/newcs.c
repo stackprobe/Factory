@@ -187,7 +187,7 @@ static void Main2(char *tmplProject, char *tmplDir, int utFlag, int m2Flag)
 		execute_x(xcout("%s.sln", project));
 
 		if(m2Flag)
-			execute("START /MAX C:\\Dev\\CSharp\\Module2\\Module2");
+			execute("START C:\\Dev\\CSharp\\Module2\\Module2");
 	}
 	unaddCwd();
 }
