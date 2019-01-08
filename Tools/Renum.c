@@ -88,7 +88,26 @@ static void DoFRenum(void)
 	if(getKey() != 'R')
 		termination(0);
 
-	// fixme: 移動テストしたい。
+	LOGPOS();
+
+	for(index = 0; index < getCount(files); index++) // 移動テスト①
+	{
+		char *rFile = getLine(files, index);
+		char *wFile = getLine(midFiles, index);
+
+		errorCase(!existFile(rFile));
+		errorCase( existFile(wFile));
+
+		moveFile(rFile, wFile); // 移動トライ
+
+		errorCase( existFile(rFile));
+		errorCase(!existFile(wFile));
+
+		moveFile(wFile, rFile); // 復元
+
+		errorCase(!existFile(rFile));
+		errorCase( existFile(wFile));
+	}
 
 	LOGPOS();
 
@@ -97,6 +116,42 @@ static void DoFRenum(void)
 			getLine(files, index),
 			getLine(midFiles, index)
 			);
+
+	LOGPOS();
+
+	// 移動テスト②
+	{
+		int errorFlag = 0;
+
+		for(index = 0; index < getCount(files); index++)
+		{
+			char *wFile = getLine(destFiles, index);
+
+			if(existPath(wFile))
+			{
+				cout("%s <既に存在する>\n", wFile);
+				errorFlag = 1;
+				break;
+			}
+			if(!creatable(wFile))
+			{
+				cout("%s <作成不可>\n", wFile);
+				errorFlag = 1;
+				break;
+			}
+		}
+
+		if(errorFlag)
+		{
+			for(index = 0; index < getCount(files); index++) // 復元
+				moveFile(
+					getLine(midFiles, index),
+					getLine(files, index)
+					);
+
+			error();
+		}
+	}
 
 	LOGPOS();
 

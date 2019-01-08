@@ -90,41 +90,41 @@ static void CollectUUIDByFile(char *file)
 			if(!startsWith(uuidP, UUID_FMT)) // ? not UUID_FMT
 			{
 				UUID_t *i = nb(UUID_t);
-				char *p; // fixme: 上にも p 有り。
+				char *pp;
 
 				i->File = strx(file);
 				i->LineNo = index + 1;
 				i->UUID = strxl(uuidP, strlen(UUID_FMT));
-				i->SharedFlag = (int)(p = mbs_strstr(uuidP + strlen(UUID_FMT), SHARED_PTN));
+				i->SharedFlag = (int)(pp = mbs_strstr(uuidP + strlen(UUID_FMT), SHARED_PTN));
 //				i->GlobalFlag = 0;
 //				i->SharedNum = 0;
 				i->Project = GetProject(file);
 
-				if(p)
+				if(pp)
 				{
-					p += strlen(SHARED_PTN);
+					pp += strlen(SHARED_PTN);
 
-					if(startsWith(p, GLOBAL_SFX)) // グローバル指定
+					if(startsWith(pp, GLOBAL_SFX)) // グローバル指定
 					{
 						i->GlobalFlag = 1;
 					}
-					else if(startsWith(p, IGNORE_SFX)) // このUUIDの存在を無視する。
+					else if(startsWith(pp, IGNORE_SFX)) // このUUIDの存在を無視する。
 					{
 						goto ignoreThisUUID; // gomi: i
 					}
-					else if(*p == NUM_JOINT_CHR) // 個数指定
+					else if(*pp == NUM_JOINT_CHR) // 個数指定
 					{
 						char *q;
 
-						p++;
+						pp++;
 
-						for(q = p; *q; q++)
+						for(q = pp; *q; q++)
 							if(!m_isdecimal(*q))
 								break;
 
-						errorCase(q == p); // 個数が記述されていない。
+						errorCase(q == pp); // 個数が記述されていない。
 
-						i->SharedNum = toValue_x(strxl(p, (uint)q - (uint)p));
+						i->SharedNum = toValue_x(strxl(pp, (uint)q - (uint)pp));
 
 						errorCase(i->SharedNum < 2); // 意味のない個数
 					}

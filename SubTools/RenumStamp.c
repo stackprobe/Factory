@@ -15,13 +15,13 @@ static int ToStampOnly;
 static int TimeKind = 'W'; // "CWX" == create, write, どちらか新しい方
 
 static char *FStampsDir;
-static char *IN_NamePtr;
+static char *HS_NamePtr;
 
 static int HasStamp(char *file)
 {
 	if(lineExp("<4,09>-<2,09>-<2,09>_<2,09>-<2,09>-<2,09>_<3,09><>", file))
 	{
-		IN_NamePtr = file + 23;
+		HS_NamePtr = file + 23;
 		return 1;
 	}
 	return 0;
@@ -77,6 +77,7 @@ static void DoFRenumStmp(void)
 	autoList_t *destFiles = newList();
 	char *file;
 	uint index;
+	uint fileCount;
 	char *unqptn = xcout("_$u=%08x_", time(NULL)); // 適当..
 
 	eraseParents(files);
@@ -93,7 +94,7 @@ static void DoFRenumStmp(void)
 		if(ToStampOnly)
 			dest = xcout("%s%s", GetFStamp(file), getExtWithDot(file));
 		else if(HasStamp(file))
-			dest = xcout("%s%s", GetFStamp(file), IN_NamePtr);
+			dest = xcout("%s%s", GetFStamp(file), HS_NamePtr);
 		else
 			dest = xcout("%s_%s", GetFStamp(file), file);
 
@@ -124,7 +125,26 @@ static void DoFRenumStmp(void)
 			termination(0);
 	}
 
-	// TODO 移動テストしたい。
+	LOGPOS();
+
+	for(index = 0; index < getCount(files); index++) // 移動テスト①
+	{
+		char *rFile = getLine(files, index);
+		char *wFile = getLine(midFiles, index);
+
+		errorCase(!existFile(rFile));
+		errorCase( existFile(wFile));
+
+		moveFile(rFile, wFile); // 移動トライ
+
+		errorCase( existFile(rFile));
+		errorCase(!existFile(wFile));
+
+		moveFile(wFile, rFile); // 復元
+
+		errorCase(!existFile(rFile));
+		errorCase( existFile(wFile));
+	}
 
 	LOGPOS();
 
@@ -133,6 +153,42 @@ static void DoFRenumStmp(void)
 			getLine(files, index),
 			getLine(midFiles, index)
 			);
+
+	LOGPOS();
+
+	// 移動テスト②
+	{
+		int errorFlag = 0;
+
+		for(index = 0; index < getCount(files); index++)
+		{
+			char *wFile = getLine(destFiles, index);
+
+			if(existPath(wFile))
+			{
+				cout("%s <既に存在する>\n", wFile);
+				errorFlag = 1;
+				break;
+			}
+			if(!creatable(wFile))
+			{
+				cout("%s <作成不可>\n", wFile);
+				errorFlag = 1;
+				break;
+			}
+		}
+
+		if(errorFlag)
+		{
+			for(index = 0; index < getCount(files); index++) // 復元
+				moveFile(
+					getLine(midFiles, index),
+					getLine(files, index)
+					);
+
+			error();
+		}
+	}
 
 	LOGPOS();
 
