@@ -3,6 +3,7 @@
 */
 
 #include "C:\Factory\Common\Options\SClient.h"
+#include "C:\Factory\Labo\Socket\libs\http\Chunked.h"
 #include "libs\ApplyStampData.h"
 
 #define NICT_DOMAIN "ntp-a1.nict.go.jp"
@@ -16,12 +17,13 @@ static int NictPerform(int sock, uint prm_dummy)
 	SockStream_t *ss = CreateSockStream(sock, 5);
 	char *line;
 	int ret = 0;
+	int chunked = 0;
 
 	SockSendLine_NF(ss, "GET /cgi-bin/jst HTTP/1.1");
 	SockSendLine_NF(ss, "Host: " NICT_DOMAIN);
 	SockSendLine(ss, "");
 
-	for(; ; ) // ヘッダ読み飛ばし
+	for(; ; ) // ヘッダ読み込み
 	{
 		char *line = SockRecvLine(ss, 2000);
 
@@ -30,14 +32,51 @@ static int NictPerform(int sock, uint prm_dummy)
 			memFree(line);
 			break;
 		}
+		removeBlank(line);
+
+		if(!_stricmp(line, "Transfer-Encoding:chunked"))
+			chunked = 1;
+
 		memFree(line);
 	}
 
-	memFree(SockRecvLine(ss, 100)); // <HTML>
-	memFree(SockRecvLine(ss, 100)); // <HEAD><TITLE> ...
-	memFree(SockRecvLine(ss, 100)); // <BODY>
+	if(chunked)
+	{
+		httpChunkedRecver_t *recver = httpCreateChunkedRecver(ss);
+		autoBlock_t *body;
 
-	line = SockRecvLine(ss, 100);
+		body = httpRecvChunked(recver);
+
+		if(body)
+		{
+			char *sBody = unbindBlock2Line(body);
+			char *p;
+			char *q;
+
+			p = stristrNext(sBody, "<BODY>");
+			p = m_noz(p, sBody);
+			q = stristrEnd(p, "</BODY>");
+			*q = '\0';
+
+			line = strx(p);
+
+			memFree(sBody);
+
+			removeBlank(line);
+		}
+		else
+			line = strx("<NULL>");
+
+		httpReleaseChunkedRecver(recver);
+	}
+	else
+	{
+		memFree(SockRecvLine(ss, 100)); // <HTML>
+		memFree(SockRecvLine(ss, 100)); // <HEAD><TITLE> ...
+		memFree(SockRecvLine(ss, 100)); // <BODY>
+
+		line = SockRecvLine(ss, 100);
+	}
 
 	line2JLine(line, 1, 0, 0, 1); // 表示のため
 	cout("[%s]\n", line);

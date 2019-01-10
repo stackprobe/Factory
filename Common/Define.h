@@ -100,6 +100,9 @@ typedef unsigned __int64 uint64;
 #define m_10(flag) \
 	(!(flag) ? 1 : 0)
 
+#define m_noz(a, b) \
+	((a) ? (a) : (b))
+
 typedef struct i2D_st // access free
 {
 	int X;

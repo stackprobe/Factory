@@ -601,6 +601,9 @@ void eraseLine(char *line, uint count)
 	errorCase(strlen(line) < count);
 	copyLine(line, line + count);
 }
+// memo
+// 文字列から特定の文字を削除する。--> removeChar
+// 文字列から空白とコントロール文字を削除する。--> removeBlank
 void eraseChar(char *line)
 {
 	eraseLine(line, 1);

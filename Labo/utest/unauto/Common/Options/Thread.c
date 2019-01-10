@@ -1,3 +1,4 @@
+// smpl
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Thread.h"
 #include "C:\Factory\Common\Options\CRRandom.h"
