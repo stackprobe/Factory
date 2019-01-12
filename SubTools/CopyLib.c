@@ -56,6 +56,9 @@ static void AutoComment_Range(autoList_t *range, uint range_index)
 		if(index && !strcmp(getLine(range, index - 1), "*/"))
 			insCmt = 0;
 
+		if(index && startsWith(getLine(range, index - 1), "template <"))
+			insCmt = 0;
+
 		if(commentEntered)
 			insCmt = 0;
 
@@ -74,6 +77,7 @@ static void AutoComment_Range(autoList_t *range, uint range_index)
 		}
 		memFree(line);
 	}
+	errorCase(commentEntered);
 }
 static void AutoComment(autoList_t *ranges)
 {
@@ -218,7 +222,7 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 
 			cout("Dr %u\n", getCount(ranges));
 
-			errorCase_m(getCount(ranges), "アプリ固有コードを含むため削除出来ません。手動で削除してね。");
+			errorCase_m(1 < getCount(ranges), "アプリ固有コードを含むため削除出来ません。手動で削除してね。");
 
 			releaseDim(ranges, 2);
 		}
