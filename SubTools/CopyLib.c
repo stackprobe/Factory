@@ -16,12 +16,11 @@ static void AutoComment_Range(autoList_t *range, uint range_index)
 
 	foreach(range, line, index)
 	{
-		int insCmt = 0;
-		int forceInsCmt = 0;
+		int insCmt;
 
 		line = strx(line);
 		nn_strstr(line, "//")[0] = '\0'; // インラインコメントの除去
-		ucTrimTrail(line);
+		trimTrail(line, ' ');
 
 		{
 			char *tmp = strx(line);
@@ -36,16 +35,14 @@ static void AutoComment_Range(autoList_t *range, uint range_index)
 			else
 			{
 				if(!strcmp(tmp, "/*"))
-				{
 					commentEntered = 1;
-					forceInsCmt = 1;
-				}
 			}
 			memFree(tmp);
 		}
 
-		if(m_isalpha(line[0]) || line[0] == '_')
-			insCmt = 1;
+		// インデント x 0
+
+		insCmt = m_isalpha(line[0]) || line[0] == '_';
 
 		if(endsWith(line, ":"))
 			insCmt = 0;
@@ -62,10 +59,13 @@ static void AutoComment_Range(autoList_t *range, uint range_index)
 		if(commentEntered)
 			insCmt = 0;
 
+		if(!strcmp(line, "/*"))
+			insCmt = 1;
+
 		if(!index && !range_index)
 			insCmt = 1;
 
-		if(insCmt || forceInsCmt)
+		if(insCmt)
 		{
 			char *comment;
 			uint comment_index;
@@ -74,7 +74,37 @@ static void AutoComment_Range(autoList_t *range, uint range_index)
 			{
 				insertElement(range, index++, (uint)strx(comment));
 			}
+			goto endWrCmt;
 		}
+
+		// インデント x 1
+
+		insCmt = line[0] == '\t' && (m_isalpha(line[1]) || line[1] == '_' || line[1] == '~') && endsWith(line, ")");
+
+		if(index && !strcmp(getLine(range, index - 1), "\t*/"))
+			insCmt = 0;
+
+		if(index && startsWith(getLine(range, index - 1), "#define"))
+			insCmt = 0;
+
+		if(commentEntered)
+			insCmt = 0;
+
+		if(!strcmp(line, "\t/*"))
+			insCmt = 1;
+
+		if(insCmt)
+		{
+			char *comment;
+			uint comment_index;
+
+			foreach(ResAutoComment, comment, comment_index)
+			{
+				insertElement(range, index++, (uint)xcout("\t%s", comment));
+			}
+		}
+
+	endWrCmt:
 		memFree(line);
 	}
 	errorCase(commentEntered);
