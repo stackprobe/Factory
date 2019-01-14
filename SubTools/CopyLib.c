@@ -37,9 +37,14 @@ static void AutoComment(autoList_t *ranges)
 			if(!strcmp(line, "}"))
 				classEntered = 0;
 
+			// set insCmt >
+
 			if(classEntered)
 			{
 				insCmt = line[0] == '\t' && (m_isalpha(line[1]) || line[1] == '_' || line[1] == '~');
+
+				if(startsWith(line, "#define "))
+					insCmt = 1;
 
 				if(index && !strcmp(getLine(range, index - 1), "\t*/"))
 					insCmt = 0;
@@ -54,7 +59,10 @@ static void AutoComment(autoList_t *ranges)
 			{
 				insCmt = m_isalpha(line[0]) || line[0] == '_';
 
-				if(index && !strcmp(getLine(range, index - 1), "}") && endsWith(line, ";"))
+				if(startsWith(line, "#define "))
+					insCmt = 1;
+
+				if(index && !strcmp(getLine(range, index - 1), "}") && endsWith(line, ";")) // typedef ‚È‚Ç
 					insCmt = 0;
 
 				if(index && !strcmp(getLine(range, index - 1), "*/"))
@@ -76,6 +84,8 @@ static void AutoComment(autoList_t *ranges)
 			if(!range_index && !index)
 				insCmt = 1;
 
+			// < set insCmt
+
 			if(insCmt)
 			{
 				char *comment;
@@ -88,13 +98,17 @@ static void AutoComment(autoList_t *ranges)
 			}
 
 			{
-				char *tmp = strx(line);
+				char *tmp = strx(getLine(range, index));
+//				char *tmp = strx(line); // ƒCƒ“ƒ‰ƒCƒ“ƒRƒƒ“ƒg‚ªíœ‚³‚ê‚Ä‚¢‚é‚Ì‚Ång
 
 				ucTrim(tmp);
 
 				if(commentEntered)
 				{
 					if(!strcmp(tmp, "*/"))
+						commentEntered = 0;
+
+					if(!strcmp(tmp, "//*/")) // LOG_ENABLED ‚ñ‚Æ‚±‚Æ‚©‚Ì /* ` /*/ ` //*/
 						commentEntered = 0;
 				}
 				else
