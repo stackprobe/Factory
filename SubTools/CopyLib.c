@@ -265,7 +265,8 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 		}
 
 		if(!testMode)
-			removeFile(wFile);
+			writeOneLine(wFile, "// deleted");
+//			removeFile(wFile); // íœ‚·‚é‚Æ .vcxproj ‚ÌƒGƒ“ƒgƒŠ[‚ğÁ‚¹‚È‚­‚È‚é‚Ì‚Ång
 
 		memFree(wFile);
 	}

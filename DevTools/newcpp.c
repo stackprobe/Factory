@@ -1,6 +1,5 @@
 /*
 	newcpp g プロジェクト名
-	newcpp c プロジェクト名
 */
 
 #include "C:\Factory\Common\all.h"
@@ -72,10 +71,5 @@ int main(int argc, char **argv)
 		Main2("GGGGTMPL", "C:\\Dev\\Annex\\Template\\GameTemplate");
 		return;
 	}
-	if(argIs("C"))
-	{
-		Main2("CCCCTMPL", "C:\\Dev\\Annex\\Template\\CUIForGameTemplate");
-		return;
-	}
-	cout("usage: newcpp (G｜C｜?｜?) プロジェクト名\n");
+	cout("usage: newcpp (G｜?｜?｜?) プロジェクト名\n");
 }
