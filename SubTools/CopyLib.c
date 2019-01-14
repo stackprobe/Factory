@@ -8,115 +8,108 @@
 
 static autoList_t *ResAutoComment;
 
-static void AutoComment_Range(autoList_t *range, uint range_index)
-{
-	char *line;
-	uint index;
-	int commentEntered = 0;
-
-	foreach(range, line, index)
-	{
-		int insCmt;
-
-		line = strx(line);
-		nn_strstr(line, "//")[0] = '\0'; // インラインコメントの除去
-		trimTrail(line, ' ');
-
-		{
-			char *tmp = strx(line);
-
-			ucTrim(tmp);
-
-			if(commentEntered)
-			{
-				if(!strcmp(tmp, "*/"))
-					commentEntered = 0;
-			}
-			else
-			{
-				if(!strcmp(tmp, "/*"))
-					commentEntered = 1;
-			}
-			memFree(tmp);
-		}
-
-		// インデント x 0
-
-		insCmt = m_isalpha(line[0]) || line[0] == '_';
-
-		if(endsWith(line, ":"))
-			insCmt = 0;
-
-		if(index && !strcmp(getLine(range, index - 1), "}") && endsWith(line, ";"))
-			insCmt = 0;
-
-		if(index && !strcmp(getLine(range, index - 1), "*/"))
-			insCmt = 0;
-
-		if(index && startsWith(getLine(range, index - 1), "template <"))
-			insCmt = 0;
-
-		if(commentEntered)
-			insCmt = 0;
-
-		if(!strcmp(line, "/*"))
-			insCmt = 1;
-
-		if(!index && !range_index)
-			insCmt = 1;
-
-		if(insCmt)
-		{
-			char *comment;
-			uint comment_index;
-
-			foreach(ResAutoComment, comment, comment_index)
-			{
-				insertElement(range, index++, (uint)strx(comment));
-			}
-			goto endWrCmt;
-		}
-
-		// インデント x 1
-
-		insCmt = line[0] == '\t' && (m_isalpha(line[1]) || line[1] == '_' || line[1] == '~') && endsWith(line, ")");
-
-		if(index && !strcmp(getLine(range, index - 1), "\t*/"))
-			insCmt = 0;
-
-		if(index && startsWith(getLine(range, index - 1), "#define"))
-			insCmt = 0;
-
-		if(commentEntered)
-			insCmt = 0;
-
-		if(!strcmp(line, "\t/*"))
-			insCmt = 1;
-
-		if(insCmt)
-		{
-			char *comment;
-			uint comment_index;
-
-			foreach(ResAutoComment, comment, comment_index)
-			{
-				insertElement(range, index++, (uint)xcout("\t%s", comment));
-			}
-		}
-
-	endWrCmt:
-		memFree(line);
-	}
-	errorCase(commentEntered);
-}
 static void AutoComment(autoList_t *ranges)
 {
 	autoList_t *range;
-	uint index;
+	uint range_index;
+	int commentEntered = 0;
+	int classEntered = 0;
 
-	foreach(ranges, range, index)
-		if(index % 2 == 0)
-			AutoComment_Range(range, index);
+	foreach(ranges, range, range_index)
+	{
+		char *line;
+		uint index;
+
+		foreach(range, line, index)
+		{
+			int insCmt;
+
+			line = strx(line);
+			nn_strstr(line, "//")[0] = '\0'; // インラインコメントの除去
+			trimTrail(line, ' ');
+
+			if(startsWith(line, "class "))
+				classEntered = 1;
+
+			if(!strcmp(line, "};"))
+				classEntered = 0;
+
+			if(!strcmp(line, "}"))
+				classEntered = 0;
+
+			if(classEntered)
+			{
+				insCmt = line[0] == '\t' && (m_isalpha(line[1]) || line[1] == '_' || line[1] == '~');
+
+				if(index && !strcmp(getLine(range, index - 1), "\t*/"))
+					insCmt = 0;
+
+				if(index && startsWith(getLine(range, index - 1), "#define "))
+					insCmt = 0;
+
+				if(!strcmp(line, "\t/*"))
+					insCmt = 1;
+			}
+			else
+			{
+				insCmt = m_isalpha(line[0]) || line[0] == '_';
+
+				if(index && !strcmp(getLine(range, index - 1), "}") && endsWith(line, ";"))
+					insCmt = 0;
+
+				if(index && !strcmp(getLine(range, index - 1), "*/"))
+					insCmt = 0;
+
+				if(index && startsWith(getLine(range, index - 1), "template <"))
+					insCmt = 0;
+
+				if(!strcmp(line, "/*"))
+					insCmt = 1;
+			}
+
+			if(endsWith(line, ":"))
+				insCmt = 0;
+
+			if(commentEntered)
+				insCmt = 0;
+
+			if(!range_index && !index)
+				insCmt = 1;
+
+			if(insCmt)
+			{
+				char *comment;
+				uint comment_index;
+
+				foreach(ResAutoComment, comment, comment_index)
+				{
+					insertElement(range, index++, (uint)xcout("%s%s", classEntered ? "\t" : "", comment));
+				}
+			}
+
+			{
+				char *tmp = strx(line);
+
+				ucTrim(tmp);
+
+				if(commentEntered)
+				{
+					if(!strcmp(tmp, "*/"))
+						commentEntered = 0;
+				}
+				else
+				{
+					if(!strcmp(tmp, "/*"))
+						commentEntered = 1;
+				}
+				memFree(tmp);
+			}
+
+			memFree(line);
+		}
+	}
+	errorCase(commentEntered);
+	errorCase(classEntered);
 }
 static autoList_t *ReadCommonAndAppSpecRanges(char *file)
 {
