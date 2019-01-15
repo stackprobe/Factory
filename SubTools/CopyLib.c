@@ -12,115 +12,112 @@ static void AutoComment(autoList_t *ranges)
 {
 	autoList_t *range;
 	uint range_index;
+	char *line;
+	uint index;
 	int commentEntered = 0;
 	int classEntered = 0;
 
 	foreach(ranges, range, range_index)
+	foreach(range, line, index)
 	{
-		char *line;
-		uint index;
+		int insCmt;
 
-		foreach(range, line, index)
+		line = strx(line);
+		nn_strstr(line, "//")[0] = '\0'; // インラインコメントの除去
+		trimTrail(line, ' ');
+
+		if(startsWith(line, "class "))
+			classEntered = 1;
+
+		if(!strcmp(line, "};"))
+			classEntered = 0;
+
+		if(!strcmp(line, "}"))
+			classEntered = 0;
+
+		// set insCmt >
+
+		if(classEntered)
 		{
-			int insCmt;
+			insCmt = line[0] == '\t' && (m_isalpha(line[1]) || line[1] == '_' || line[1] == '~');
 
-			line = strx(line);
-			nn_strstr(line, "//")[0] = '\0'; // インラインコメントの除去
-			trimTrail(line, ' ');
+			if(startsWith(line, "#define "))
+				insCmt = 1;
 
-			if(startsWith(line, "class "))
-				classEntered = 1;
+			if(index && !strcmp(getLine(range, index - 1), "\t*/"))
+				insCmt = 0;
 
-			if(!strcmp(line, "};"))
-				classEntered = 0;
+			if(index && startsWith(getLine(range, index - 1), "#define "))
+				insCmt = 0;
 
-			if(!strcmp(line, "}"))
-				classEntered = 0;
+			if(!strcmp(line, "\t/*"))
+				insCmt = 1;
+		}
+		else
+		{
+			insCmt = m_isalpha(line[0]) || line[0] == '_';
 
-			// set insCmt >
+			if(startsWith(line, "#define "))
+				insCmt = 1;
 
-			if(classEntered)
+			if(index && !strcmp(getLine(range, index - 1), "}") && endsWith(line, ";")) // typedef など
+				insCmt = 0;
+
+			if(index && !strcmp(getLine(range, index - 1), "*/"))
+				insCmt = 0;
+
+			if(index && startsWith(getLine(range, index - 1), "template <"))
+				insCmt = 0;
+
+			if(!strcmp(line, "/*"))
+				insCmt = 1;
+		}
+
+		if(endsWith(line, ":"))
+			insCmt = 0;
+
+		if(commentEntered)
+			insCmt = 0;
+
+		if(!range_index && !index)
+			insCmt = 1;
+
+		// < set insCmt
+
+		if(insCmt)
+		{
+			char *comment;
+			uint comment_index;
+
+			foreach(ResAutoComment, comment, comment_index)
 			{
-				insCmt = line[0] == '\t' && (m_isalpha(line[1]) || line[1] == '_' || line[1] == '~');
+				insertElement(range, index++, (uint)xcout("%s%s", classEntered ? "\t" : "", comment));
+			}
+		}
 
-				if(startsWith(line, "#define "))
-					insCmt = 1;
+		{
+			char *tmp = strx(getLine(range, index));
+//			char *tmp = strx(line); // インラインコメントが削除されているのでng
 
-				if(index && !strcmp(getLine(range, index - 1), "\t*/"))
-					insCmt = 0;
+			ucTrim(tmp);
 
-				if(index && startsWith(getLine(range, index - 1), "#define "))
-					insCmt = 0;
+			if(commentEntered)
+			{
+				if(!strcmp(tmp, "*/"))
+					commentEntered = 0;
 
-				if(!strcmp(line, "\t/*"))
-					insCmt = 1;
+				if(!strcmp(tmp, "//*/")) // LOG_ENABLED んとことかの /* ～ /*/ ～ //*/
+					commentEntered = 0;
 			}
 			else
 			{
-				insCmt = m_isalpha(line[0]) || line[0] == '_';
-
-				if(startsWith(line, "#define "))
-					insCmt = 1;
-
-				if(index && !strcmp(getLine(range, index - 1), "}") && endsWith(line, ";")) // typedef など
-					insCmt = 0;
-
-				if(index && !strcmp(getLine(range, index - 1), "*/"))
-					insCmt = 0;
-
-				if(index && startsWith(getLine(range, index - 1), "template <"))
-					insCmt = 0;
-
-				if(!strcmp(line, "/*"))
-					insCmt = 1;
+				if(!strcmp(tmp, "/*"))
+					commentEntered = 1;
 			}
-
-			if(endsWith(line, ":"))
-				insCmt = 0;
-
-			if(commentEntered)
-				insCmt = 0;
-
-			if(!range_index && !index)
-				insCmt = 1;
-
-			// < set insCmt
-
-			if(insCmt)
-			{
-				char *comment;
-				uint comment_index;
-
-				foreach(ResAutoComment, comment, comment_index)
-				{
-					insertElement(range, index++, (uint)xcout("%s%s", classEntered ? "\t" : "", comment));
-				}
-			}
-
-			{
-				char *tmp = strx(getLine(range, index));
-//				char *tmp = strx(line); // インラインコメントが削除されているのでng
-
-				ucTrim(tmp);
-
-				if(commentEntered)
-				{
-					if(!strcmp(tmp, "*/"))
-						commentEntered = 0;
-
-					if(!strcmp(tmp, "//*/")) // LOG_ENABLED んとことかの /* ～ /*/ ～ //*/
-						commentEntered = 0;
-				}
-				else
-				{
-					if(!strcmp(tmp, "/*"))
-						commentEntered = 1;
-				}
-				memFree(tmp);
-			}
-
-			memFree(line);
+			memFree(tmp);
 		}
+
+		memFree(line);
 	}
 	errorCase(commentEntered);
 	errorCase(classEntered);
