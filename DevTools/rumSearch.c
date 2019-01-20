@@ -1,7 +1,7 @@
 /*
 	デフォルトの検索対象 == カレントの配下にある全ての .rum ディレクトリ
 
-	Search.exe [/E SPEC-EXTS] [/I] [/T] [/R RUM-DIR]... FIND-PATTERN
+	rumSearch.exe [/E SPEC-EXTS] [/I] [/T] [/R RUM-DIR]... FIND-PATTERN
 
 		SPEC-EXTS ... 検索対象の拡張子を '.' 区切りで記述する。
 
