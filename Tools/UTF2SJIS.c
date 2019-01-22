@@ -41,6 +41,7 @@ typedef enum Enc_et
 }
 Enc_t;
 
+static int BatchMode;
 static int IntoSubDir;
 static Enc_t REnc;
 static Enc_t WEnc;
@@ -134,12 +135,16 @@ static void DoConv(autoList_t *files)
 		cout("(%u) %s\n", index, file);
 
 	cout("文字コード変換: %s -> %s\n", GetSEnc(REnc), GetSEnc(WEnc));
-	cout("続行？\n");
 
-	if(clearGetKey() == 0x1b)
-		termination(0);
+	if(!BatchMode)
+	{
+		cout("続行？\n");
 
-	cout("続行します。\n");
+		if(clearGetKey() == 0x1b)
+			termination(0);
+
+		cout("続行します。\n");
+	}
 
 	foreach(files, file, index)
 	{
@@ -188,6 +193,11 @@ static void DoConv_Path(char *path)
 int main(int argc, char **argv)
 {
 readArgs:
+	if(argIs("/B"))
+	{
+		BatchMode = 1;
+		goto readArgs;
+	}
 	if(argIs("/S"))
 	{
 		IntoSubDir = 1;

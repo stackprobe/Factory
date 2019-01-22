@@ -1,5 +1,7 @@
 #include "C:\Factory\Common\all.h"
 
+static int BatchMode;
+
 static char *GetPackageFromLine(char *line)
 {
 	char *package = strx(line + 8);
@@ -34,13 +36,16 @@ static void AdjustPackage(char *packageRootDir, char *srcDir)
 	relSrcDir = changeRoot(strx(srcDir), packageRootDir, NULL); // srcDir は packageRootDir の配下であること。
 
 	cout("R %s\n", relSrcDir);
-	cout("続行？\n");
 
-	if(clearGetKey() == 0x1b)
-		termination(0);
+	if(!BatchMode)
+	{
+		cout("続行？\n");
 
-	cout("続行します。\n");
+		if(clearGetKey() == 0x1b)
+			termination(0);
 
+		cout("続行します。\n");
+	}
 	files = lssFiles(srcDir);
 
 	foreach(files, file, index)
@@ -90,6 +95,11 @@ static void AdjustPackage(char *packageRootDir, char *srcDir)
 }
 int main(int argc, char **argv)
 {
+	if(argIs("/B"))
+	{
+		BatchMode = 1;
+	}
+
 	if(hasArgs(2))
 	{
 		AdjustPackage(getArg(0), getArg(1));

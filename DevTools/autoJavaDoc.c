@@ -5,6 +5,7 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\CRandom.h"
 
+static int BatchMode;
 static int IntoSubDir;
 static autoList_t *JavaDoc;
 
@@ -86,6 +87,10 @@ static void DoAutoJavaDoc_File(char *file)
 static void Confirm(void)
 {
 	LOGPOS();
+
+	if(BatchMode)
+		return;
+
 	cout("ë±çsÅH\n");
 
 	if(clearGetKey() == 0x1b)
@@ -132,6 +137,11 @@ int main(int argc, char **argv)
 	char *javaDocFile = changeExt(getSelfFile(), "txt");
 
 readArgs:
+	if(argIs("/B"))
+	{
+		BatchMode = 1;
+		goto readArgs;
+	}
 	if(argIs("/S"))
 	{
 		IntoSubDir = 1;
