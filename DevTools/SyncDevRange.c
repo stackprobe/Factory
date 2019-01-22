@@ -83,6 +83,8 @@ static void Search_File(char *file)
 			range->EndSymLineIndex = index;
 
 			addElement(Ranges, (uint)range);
+
+			range = NULL;
 		}
 		else if(range)
 		{
@@ -104,9 +106,21 @@ static void Search(void)
 	foreach(files, file, index)
 	if(findLineCase(TargetExts, getExt(file), 1) < getCount(TargetExts))
 	{
+		cout("file: %s\n", file);
+
 		Search_File(file);
 	}
 	releaseDim(files, 1);
+}
+static void DispRanges(void)
+{
+	Range_t *range;
+	uint index;
+
+	foreach(Ranges, range, index)
+	{
+		cout("%s %s\n", range->TextMD5, range->Name);
+	}
 }
 int main(int argc, char **argv)
 {
@@ -132,6 +146,5 @@ readArgs:
 	errorCase(!getCount(TargetExts));
 
 	Search();
-
-	// TODO
+	DispRanges();
 }
