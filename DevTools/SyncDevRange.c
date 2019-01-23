@@ -8,6 +8,7 @@ static autoList_t *TargetExts;
 typedef struct Range_st
 {
 	char *File;
+	uint64 Stamp;
 	char *Name;
 	autoList_t *Lines;
 	char *Text; // { 行1 + CRLF + 行2 + CRLF + ... + 行(n-1) + CRLF + 行n + CRLF }
@@ -77,6 +78,7 @@ static void Search_File(char *file)
 			errorCase(!range);
 
 			range->File = strx(file);
+			getFileStamp(file, NULL, NULL, &range->Stamp);
 			range->Name = strx(LastRangeName);
 			range->Text = LinesToText(range->Lines);
 			range->TextMD5 = md5_makeHexHashLine(range->Text);
@@ -119,8 +121,66 @@ static void DispRanges(void)
 
 	foreach(Ranges, range, index)
 	{
-		cout("%s %s\n", range->TextMD5, range->Name);
+		cout("----\n");
+
+		cout("File : %s\n", range->File);
+		cout("Stamp: %I64u\n", range->Stamp);
+		cout("Name : %s\n", range->Name);
+		cout("T-MD5: %s\n", range->TextMD5);
+		cout("Start: %u\n", range->StartSymLineIndex);
+		cout("End  : %u\n", range->EndSymLineIndex);
 	}
+	cout("====\n");
+
+	foreach(Ranges, range, index)
+		cout("%s %s\n", range->TextMD5, range->Name);
+
+	cout("====\n");
+}
+static void RangeMenu(char *name)
+{
+	error(); // TODO
+}
+static void MainMenu(void)
+{
+	autoList_t *names = newList();
+	Range_t *range;
+	char *name;
+	uint index;
+	uint idx;
+
+	errorCase_m(!getCount(Ranges), "// sync > ～ // sync < が１つも無い。");
+
+	foreach(Ranges, range, index)
+		if(findLine(names, range->Name) == getCount(names))
+			addElement(names, (uint)range->Name);
+
+	rapidSortLines(names);
+
+	foreach(names, name, index)
+	{
+		autoList_t *md5s = newList();
+
+		foreach(Ranges, range, idx)
+		if(!strcmp(range->Name, name))
+		{
+			if(findLine(md5s, range->TextMD5) == getCount(md5s))
+				addElement(md5s, (uint)range->TextMD5);
+		}
+
+		cout("[%c] %s\n", getCount(md5s) == 1 ? ' ' : '*', name);
+
+		releaseAutoList(md5s);
+	}
+	cout("====\n");
+
+	name = selectLineKeybd(names);
+
+	if(!name)
+		termination(0);
+
+	RangeMenu(name);
+	releaseAutoList(names);
 }
 int main(int argc, char **argv)
 {
@@ -147,4 +207,5 @@ readArgs:
 
 	Search();
 	DispRanges();
+	MainMenu();
 }

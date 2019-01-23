@@ -32,6 +32,8 @@ char *dropFile(void);
 char *dropDir(void);
 char *dropDirFile(void);
 
+char *selectLineKeybd(autoList_t *lines);
+
 // c_
 char *c_dropPath(void);
 char *c_dropFile(void);

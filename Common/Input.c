@@ -337,7 +337,6 @@ char *coInputLinePrn(void (*printFunc)(char *jbuffer))
 
 			if(chr == 0x0d) // ENTER
 			{
-			endInput:
 				inputEnded = 1;
 				break;
 			}
@@ -346,7 +345,8 @@ char *coInputLinePrn(void (*printFunc)(char *jbuffer))
 				if(!buffer[0])
 				{
 					coil_esc = 1;
-					goto endInput;
+					inputEnded = 1;
+					break;
 				}
 				buffer[0] = '\0';
 			}
@@ -497,6 +497,67 @@ char *dropDirFile(void) // ディレクトリ・ファイル以外 -> プログラム終了
 		termination(0);
 	}
 	return path;
+}
+
+char *selectLineKeybd(autoList_t *lines)
+{
+	sint selidx = 0;
+	char *line;
+	uint chr;
+
+	errorCase(!getCount(lines));
+
+	for(; ; )
+	{
+		line = getLine(lines, (uint)selidx);
+
+		cout("\r%79s\r[%d:%u]%s", "", selidx, getCount(lines), line);
+
+		chr = getKey();
+
+		if(chr == 0x0d) // ENTER
+		{
+			break;
+		}
+		if(chr == 0x1b) // ESCAPE
+		{
+			line = NULL;
+			break;
+		}
+		if(chr == 0x1f47) // HOME
+		{
+			selidx = 0;
+		}
+		else if(chr == 0x1f4f) // END
+		{
+			selidx = SINTMAX;
+		}
+		else if(chr == 0x1f49) // ROLL UP
+		{
+			selidx -= 2;
+		}
+		else if(chr == 0x1f51) // ROLL DOWN
+		{
+			selidx += 2;
+		}
+		else if(chr == 0x1f48) // UP
+		{
+			selidx--;
+		}
+		else if(chr == 0x1f50) // DOWN
+		{
+			selidx += 2;
+		}
+		m_range(selidx, 0, (sint)(getCount(lines) - 1));
+	}
+	cout("\n");
+
+	if(line)
+		cout("%s SELECTED\n", line);
+	else
+		cout("CANCELLED\n");
+
+	return line;
 }
 
 // c_
