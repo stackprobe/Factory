@@ -35,6 +35,8 @@ sint dirFileComp(char *path1, char *path2);
 void dirFileSort(autoList_t *paths);
 void dirFileSortDirCount(autoList_t *paths, uint dirCount);
 
+int mkdirEx(char *dir);
+
 int creatable(char *path);
 int overwritable(char *path);
 void createDir(char *dir);

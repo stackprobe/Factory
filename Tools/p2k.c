@@ -45,7 +45,7 @@ static void Phrase2Key(char *phrase1, char *phrase2)
 }
 int main(int argc, char **argv)
 {
-	_mkdir(KEYFILESDIR);
+	mkdirEx(KEYFILESDIR);
 
 	if(argIs("/O"))
 	{

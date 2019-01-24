@@ -127,7 +127,7 @@ static void CreatePathCascade(char *path)
 	addCwd(".");
 	foreach(ptkns, ptkn, index)
 	{
-		_mkdir(ptkn);
+		mkdirEx(ptkn);
 		changeCwd(ptkn);
 	}
 	unaddCwd();

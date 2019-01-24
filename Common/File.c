@@ -330,9 +330,33 @@ void dirFileSortDirCount(autoList_t *paths, uint dirCount)
 /*
 	_mkdir("") -> !0 (¸”s) ‚ğ•Ô‚·B
 */
+int mkdirEx(char *dir) // ret: ? ¸”s
+{
+	uint c;
+
+	for(c = 1; ; c++)
+	{
+		if(!_mkdir(dir)) // ? ¬Œ÷
+			return 0;
+
+		cout("Failed _mkdir \"%s\", %u-th trial.\n", dir, c);
+
+		if(10 <= c)
+			break;
+
+		sleep(100);
+	}
+	return 1;
+}
+
 int creatable(char *path)
 {
-	if(_mkdir(path)) // ? ¸”s
+	if(accessible(path))
+		return 0;
+
+	// fixme -- accessible ‚Å‚Í‚È‚¢ì¬•s‰Â”\‚ÈƒpƒX‚ğ creatable() ‚ÅŒŸ¸‚·‚é‚±‚Æ‚Í‘½•ª–³‚¢B@ 2019.1.24
+
+	if(mkdirEx(path)) // ? ¸”s
 		return 0;
 
 	removeDir(path);
@@ -344,7 +368,7 @@ int overwritable(char *path)
 }
 void createDir(char *dir)
 {
-	if(_mkdir(dir)) // ? ¸”s
+	if(mkdirEx(dir)) // ? ¸”s
 	{
 		error();
 	}

@@ -39,7 +39,7 @@ static void Phrase2Key(char *phrase)
 }
 int main(int argc, char **argv)
 {
-	_mkdir(KEYFILESDIR);
+	mkdirEx(KEYFILESDIR);
 
 	if(argIs("/O")) // Output file
 	{

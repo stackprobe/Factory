@@ -109,7 +109,7 @@ static void ExecCopy(char *path, char *dir1, char *dir2) // (dir1, dir2) == absD
 	addCwd(dir2);
 	foreach(ptkns, ptkn, index)
 	{
-		_mkdir(ptkn);
+		mkdirEx(ptkn);
 		changeCwd(ptkn);
 	}
 	unaddCwd();
@@ -121,7 +121,7 @@ static void ExecCopy(char *path, char *dir1, char *dir2) // (dir1, dir2) == absD
 	if(existFile(path1))
 		copyFile(path1, path2);
 	else
-		_mkdir(path2);
+		mkdirEx(path2);
 
 	memFree(path1);
 	memFree(path2);
@@ -135,7 +135,7 @@ static void ProcCopy(void)
 	DestDir = makeFullPath(DestDir);
 	PathList = readLines(PathListFile);
 
-	_mkdir(DestDir);
+	mkdirEx(DestDir);
 
 	errorCase_m(!existDir(RootDir), "コピー元のディレクトリにアクセスできません。");
 	errorCase_m(!existDir(DestDir), "コピー先のディレクトリにアクセスできません。");
