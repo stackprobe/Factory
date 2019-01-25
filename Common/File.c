@@ -339,7 +339,7 @@ int mkdirEx(char *dir) // ret: ? é∏îs
 		if(!_mkdir(dir)) // ? ê¨å˜
 			return 0;
 
-		cout("Failed _mkdir \"%s\", %u-th trial.\n", dir, c);
+		cout("Failed _mkdir \"%s\", %u-th trial. LastError: %08x\n", dir, c, GetLastError());
 
 		if(10 <= c)
 			break;
