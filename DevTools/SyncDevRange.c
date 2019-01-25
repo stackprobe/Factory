@@ -2,7 +2,7 @@
 #include "C:\Factory\OpenSource\md5.h"
 
 static char *RootDir = "C:\\Dev";
-static char *S_TargetExts = "c.cs";
+static char *S_TargetExts = "c.h.cpp.cs";
 static autoList_t *TargetExts;
 
 typedef struct Range_st
@@ -26,7 +26,7 @@ static char *LastRangeName;
 
 static int GetLineKind(char *line) // ret: "SE-"
 {
-	if(lineExp("<\1 >////<\1 >sync<\1 >><>", line)) // ? StartSymLine ÇÁÇµÇ¢
+	if(lineExpICase("<\1 >////<\1 >sync<\1 >><>", line)) // ? StartSymLine ÇÁÇµÇ¢
 	{
 		errorCase(!lineExp("<\t\t>//// sync > @ <1,,__09AZaz>", line)); // ? StartSymLine Ç≈ÇÕÇ»Ç¢ÅB
 
@@ -35,7 +35,7 @@ static int GetLineKind(char *line) // ret: "SE-"
 
 		return 'S';
 	}
-	if(lineExp("<\1 >////<\1 >/<<\1 >sync<>", line)) // ? EndSymLine ÇÁÇµÇ¢
+	if(lineExpICase("<\1 >////<\1 >/<<\1 >sync<>", line)) // ? EndSymLine ÇÁÇµÇ¢
 	{
 		errorCase(!lineExp("<\t\t>//// /< sync", line)); // ? EndSymLine Ç≈ÇÕÇ»Ç¢ÅB
 

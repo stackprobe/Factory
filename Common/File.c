@@ -349,12 +349,15 @@ int mkdirEx(char *dir) // ret: ? 失敗
 	return 1;
 }
 
+/*
+	_mkdir("") -> !0 (失敗) を返す。
+*/
 int creatable(char *path)
 {
 	if(accessible(path))
 		return 0;
 
-	// fixme -- accessible ではない作成不可能なパスを creatable() で検査することは多分無い。@ 2019.1.24
+	// accessible ではない作成不可能なパスを creatable() で検査することは多分無い。だから多少リトライで時間掛けても良い。@ 2019.1.24
 
 	if(mkdirEx(path)) // ? 失敗
 		return 0;
