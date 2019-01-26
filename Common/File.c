@@ -349,9 +349,6 @@ int mkdirEx(char *dir) // ret: ? ¸”s
 	return 1;
 }
 
-/*
-	_mkdir("") -> !0 (¸”s) ‚ğ•Ô‚·B
-*/
 int creatable(char *path)
 {
 	if(accessible(path))
