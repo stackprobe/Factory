@@ -1,3 +1,9 @@
+/*
+	SyncDevRange.exe [/D ルートDIR] [/E 拡張子リスト]
+
+		拡張子リスト ... 拡張子を '.' 区切りで指定する。例 "js", "js.jsp", "js.jsp.java"
+*/
+
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\OpenSource\md5.h"
 
@@ -282,8 +288,18 @@ static sint Comp_RangeStampDesc(uint v1, uint v2)
 {
 	Range_t *a = (Range_t *)v1;
 	Range_t *b = (Range_t *)v2;
+	sint ret;
 
-	return m_simpleComp(a->Stamp, b->Stamp) * -1;
+	ret = m_simpleComp(a->Stamp, b->Stamp) * -1;
+	if(ret)
+		return ret;
+
+	ret = strcmp(a->File, b->File);
+	if(ret)
+		return ret;
+
+	ret = m_simpleComp(a->StartSymLineIndex, b->StartSymLineIndex);
+	return ret;
 }
 static void DispRangeGroup(autoList_t *rangeGroup)
 {
@@ -312,6 +328,16 @@ static void DispRangeGroup(autoList_t *rangeGroup)
 		cout("%s %I64u %u\n", range->TextMD5, range->Stamp, strlen(range->Text));
 	}
 	cout("====\n");
+
+	// ついでに FOUNDLISTFILE へ出力
+	{
+		FILE *fp = fileOpen(FOUNDLISTFILE, "wt");
+
+		foreach(rangeGroup, range, index)
+			writeLine(fp, range->File);
+
+		fileClose(fp);
+	}
 }
 static int IsRangeGroupExpectedCond(autoList_t *rangeGroup)
 {
