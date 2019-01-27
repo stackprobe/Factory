@@ -170,6 +170,7 @@ static void DispAllRange_GroupByName(void)
 	foreach(names, name, index)
 	{
 		autoList_t *md5s = newList();
+		int needSync;
 
 		foreach(Ranges, range, idx)
 		if(!strcmp(range->Name, name))
@@ -178,10 +179,33 @@ static void DispAllRange_GroupByName(void)
 				addElement(md5s, (uint)range->TextMD5);
 		}
 
-		cout("%s %u %s\n", getCount(md5s) == 1 ? "“¯ŠúÏ" : "—v“¯Šú", getCount(md5s), name);
+		needSync = getCount(md5s) != 1;
 
-		if(getCount(md5s) != 1)
+		cout("%s %u %s\n", needSync ? "—v“¯Šú" : "“¯ŠúÏ", getCount(md5s), name);
+
+		if(needSync)
 			addElement(NeedSyncRangeNames, (uint)name);
+
+#if 0 // test
+		if(needSync)
+		{
+			addCwd("C:\\temp");
+			{
+				createDir(name);
+
+				addCwd(name);
+				{
+					foreach(Ranges, range, idx)
+					if(!strcmp(range->Name, name))
+					{
+						writeOneLineNoRet(range->TextMD5, range->Text);
+					}
+				}
+				unaddCwd();
+			}
+			unaddCwd();
+		}
+#endif
 
 		releaseAutoList(md5s);
 	}
