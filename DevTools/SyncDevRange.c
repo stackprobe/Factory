@@ -2,6 +2,14 @@
 	SyncDevRange.exe [/D ルートDIR] [/E 拡張子リスト]
 
 		拡張子リスト ... 拡張子を '.' 区切りで指定する。例 "js", "js.jsp", "js.jsp.java"
+
+	----
+
+	以下のように中身が空の range は、そうでない最新の range によって上書きされる。
+
+		// sync > @ xxx
+
+		// < sync
 */
 
 #include "C:\Factory\Common\all.h"
@@ -278,27 +286,29 @@ static void SyncRangeGroup(autoList_t *rangeGroup)
 
 	foreach(rangeGroup, targetRange, index)
 	{
-		SRG_SyncFile(masterRange, targetRange);
+		if(!strcmp(masterRange->TextMD5, targetRange->TextMD5)) // ? 同じ -> 更新不要
+		{
+			LOGPOS();
+		}
+		else
+		{
+			SRG_SyncFile(masterRange, targetRange);
+		}
 	}
 }
 
 // ---- ProcAllRange ----
 
-static sint Comp_RangeStampDesc(uint v1, uint v2)
+static int IsRangeEmptyText(Range_t *range)
 {
-	Range_t *a = (Range_t *)v1;
-	Range_t *b = (Range_t *)v2;
-	sint ret;
+	char *text = strx(range->Text);
+	int ret;
 
-	ret = m_simpleComp(a->Stamp, b->Stamp) * -1;
-	if(ret)
-		return ret;
+	ucTrim(text);
 
-	ret = strcmp(a->File, b->File);
-	if(ret)
-		return ret;
+	ret = text[0] == '\0';
 
-	ret = m_simpleComp(a->StartSymLineIndex, b->StartSymLineIndex);
+	memFree(text);
 	return ret;
 }
 static void DispRangeGroup(autoList_t *rangeGroup)
@@ -325,7 +335,7 @@ static void DispRangeGroup(autoList_t *rangeGroup)
 
 	foreach(rangeGroup, range, index)
 	{
-		cout("%s %I64u %u\n", range->TextMD5, range->Stamp, strlen(range->Text));
+		cout("%s %c %I64u %u\n", range->TextMD5, IsRangeEmptyText(range) ? '-' : '+', range->Stamp, strlen(range->Text));
 	}
 	cout("====\n");
 
@@ -339,7 +349,34 @@ static void DispRangeGroup(autoList_t *rangeGroup)
 		fileClose(fp);
 	}
 }
-static int IsRangeGroupExpectedCond(autoList_t *rangeGroup)
+static sint Comp_RangeStampDesc(uint v1, uint v2)
+{
+	Range_t *a = (Range_t *)v1;
+	Range_t *b = (Range_t *)v2;
+	sint ret;
+
+	// 中身あり -> 中身空っぽ　の順
+	{
+		sint et1 = IsRangeEmptyText(a) ? 1 : 0;
+		sint et2 = IsRangeEmptyText(b) ? 1 : 0;
+
+		ret = et1 - et2;
+		if(ret)
+			return ret;
+	}
+
+	ret = m_simpleComp(a->Stamp, b->Stamp) * -1;
+	if(ret)
+		return ret;
+
+	ret = strcmp(a->File, b->File);
+	if(ret)
+		return ret;
+
+	ret = m_simpleComp(a->StartSymLineIndex, b->StartSymLineIndex);
+	return ret;
+}
+static int IsRangeGroupExpectedCond_Case1(autoList_t *rangeGroup) // 1ヶ所だけ修正した場合
 {
 	uint index;
 
@@ -350,7 +387,7 @@ static int IsRangeGroupExpectedCond(autoList_t *rangeGroup)
 
 		if(index == 1)
 		{
-			if(!strcmp(r1->TextMD5, r2->TextMD5)) // 先頭と2番目は異なるはず。
+			if(!strcmp(r1->TextMD5, r2->TextMD5)) // 最初と2番目は異なるはず。
 				return 0;
 		}
 		else
@@ -360,6 +397,31 @@ static int IsRangeGroupExpectedCond(autoList_t *rangeGroup)
 		}
 	}
 	return 1;
+}
+static int IsRangeGroupExpectedCond_Case2(autoList_t *rangeGroup) // 1ヶ所以上、空の range を追加した場合
+{
+	uint index;
+
+	for(index = 1; index < getCount(rangeGroup); index++)
+	{
+		Range_t *r1 = (Range_t *)getElement(rangeGroup, index - 1);
+		Range_t *r2 = (Range_t *)getElement(rangeGroup, index - 0);
+
+		if(strcmp(r1->TextMD5, r2->TextMD5)) // 基本的に同じはず。
+		{
+			if(!IsRangeEmptyText(r2)) // 異なる場合は、少なくとも後側が空っぽのはず。
+			{
+				return 0;
+			}
+		}
+	}
+	return 1;
+}
+static int IsRangeGroupExpectedCond(autoList_t *rangeGroup)
+{
+	return
+		IsRangeGroupExpectedCond_Case1(rangeGroup) ||
+		IsRangeGroupExpectedCond_Case2(rangeGroup);
 }
 static void ProcRangeGroup(autoList_t *rangeGroup)
 {
