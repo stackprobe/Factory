@@ -10,6 +10,10 @@
 		// sync > @ xxx
 
 		// < sync
+
+	----
+
+	更新によって using の構成が変わった場合は SyncDevUsing を使うこと。
 */
 
 #include "C:\Factory\Common\all.h"
