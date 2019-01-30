@@ -1,165 +1,104 @@
 #include "uint1024.h"
 
-void ToUI1024(uint src[32], uint1024_t *dest)
+UI1024_t ToUI1024(uint src[32])
 {
-	ToUI512(src, &dest->L);
-	ToUI512(src + 16, &dest->H);
+	UI1024_t ans;
+
+	ans.L = ToUI512(src + 0);
+	ans.H = ToUI512(src + 16);
+
+	return ans;
 }
-void UI1024_0(uint1024_t *dest)
+UI1024_t UI1024_x(uint x)
 {
-	UI512_0(&dest->L);
-	UI512_0(&dest->H);
+	UI1024_t ans;
+
+	ans.L = UI512_x(x);
+	ans.H = UI512_0();
+
+	return ans;
 }
-void UI1024_x(uint x, uint1024_t *dest)
+UI1024_t UI1024_0(void)
 {
-	UI512_x(x, &dest->L);
-	UI512_0(&dest->H);
+	UI1024_t ans;
+
+	ans.L = UI512_0();
+	ans.H = UI512_0();
+
+	return ans;
 }
-void UI1024_msb1(uint1024_t *dest)
+void FromUI1024(UI1024_t a, uint dest[32])
 {
-	UI512_0(&dest->L);
-	UI512_msb1(&dest->H);
-}
-void UnUI1024(uint1024_t *src, uint dest[32])
-{
-	UnUI512(&src->L, dest);
-	UnUI512(&src->H, dest + 16);
-}
-
-uint UI1024_Add(uint1024_t *a, uint1024_t *b, uint1024_t *ans) // ret: overflow ? 1 : 0
-{
-	static uint512_t tmp;
-	uint ofL;
-	uint ofH;
-
-	ofL = UI512_Add(&a->L, &b->L, &ans->L);
-	ofH = UI512_Add(&a->H, &b->H, &ans->H);
-
-	UI512_x(ofL, &tmp);
-
-	return ofH | UI512_Add(&ans->H, &tmp, &ans->H);
-}
-uint UI1024_Sub(uint1024_t *a, uint1024_t *b, uint1024_t *ans) // ret: underflow ? 0 : 1
-{
-	static uint512_t tmp;
-	uint ufL;
-	uint ufH;
-
-	ufL = UI512_Sub(&a->L, &b->L, &ans->L);
-	ufH = UI512_Sub(&a->H, &b->H, &ans->H);
-
-	UI512_x(ufL ^ 1, &tmp);
-
-	return ufH & UI512_Sub(&ans->H, &tmp, &ans->H);
-}
-void UI1024_Mul(uint1024_t *a, uint1024_t *b, uint1024_t *ans, uint1024_t *ans_hi)
-{
-	static uint1024_t tmp1L;
-	static uint1024_t tmp1H;
-	static uint1024_t tmp2L;
-	static uint1024_t tmp2H;
-	static uint1024_t tmp;
-
-	UI512_Mul(&a->L, &b->L, &ans->L, &ans->H);
-	UI512_Mul(&a->H, &b->H, &ans_hi->L, &ans_hi->H);
-
-	UI512_0(&tmp1L.L);
-	UI512_Mul(&a->L, &b->H, &tmp1L.H, &tmp1H.L);
-	UI512_0(&tmp1H.H);
-	UI512_0(&tmp2L.L);
-	UI512_Mul(&a->H, &b->L, &tmp2L.H, &tmp2H.L);
-	UI512_0(&tmp2H.H);
-
-	UI1024_x(UI1024_Add(ans, &tmp1L, ans), &tmp);
-	UI1024_Add(ans_hi, &tmp, ans_hi);
-	UI1024_x(UI1024_Add(ans, &tmp2L, ans), &tmp);
-	UI1024_Add(ans_hi, &tmp, ans_hi);
-	UI1024_Add(ans_hi, &tmp1H, ans_hi);
-	UI1024_Add(ans_hi, &tmp2H, ans_hi);
-}
-/*
-	---- H, L に 0 を持つ場合 ----
-
-	0 0 / 0 0 = 0 div
-	A 0 / 0 0 = 0 div
-	0 a / 0 0 = 0 div
-	0 0 / B 0 = 0
-	0 0 / 0 b = 0
-	A a / 0 0 = 0 div
-	A 0 / B 0 = A / B
-	A 0 / 0 b = x
-	0 a / B 0 = 0
-	0 a / 0 b = a / b
-	0 0 / B b = 0
-	A a / B 0 = A / B
-	A a / 0 b = x
-	A 0 / B b = z
-	0 a / B b = 0
-	A a / B b = z
-
-	---- case x ----
-
-	A < b
-		ans += A * (fill / b) [再帰]
-	else
-		ans += (A / b) << Hi [再帰]
-
-	---- case z ----
-
-	A < B ... 0
-	A = B ... a < b ? 0 : 1
-	A > B ...
-
-		ans += A / (B + 1) + (A / B - A / (B + 1)) / (fill / b) [再帰] <-- todo これでいいのか？
-*/
-void UI1024_Div(uint1024_t *a, uint1024_t *b, uint1024_t *ans)
-{
-	static uint1024_t mask;
-	static uint1024_t t;
-	static uint1024_t m;
-	static uint1024_t h;
-	static uint1024_t dummy;
-
-	UI1024_0(ans);
-
-	if(UI1024_IsZero(b)) // ? ゼロ除算
-		return;
-
-	UI1024_msb1(&mask);
-
-	do
-	{
-		UI1024_or(ans, &mask, &t);
-		UI1024_Mul(b, &t, &m, &h);
-
-		if(UI1024_IsZero(&h) && UI1024_Sub(a, &m, &dummy))
-			*ans = t;
-	}
-	while(!UI1024_rs(&mask, 0));
+	FromUI512(a.L, dest + 0);
+	FromUI512(a.H, dest + 16);
 }
 
-int UI1024_IsZero(uint1024_t *a)
+UI1024_t UI1024_Inv(UI1024_t a)
 {
-	return UI512_IsZero(&a->L) && UI512_IsZero(&a->H);
-}
-int UI1024_Comp(uint1024_t *a, uint1024_t *b)
-{
-	static uint1024_t ans;
+	UI1024_t ans;
 
-	if(!UI1024_Sub(a, b, &ans))
-		return -1;
+	ans.L = UI512_Inv(a.L);
+	ans.H = UI512_Inv(a.H);
 
-	if(UI1024_IsZero(&ans))
-		return 0;
+	return ans;
+}
+UI1024_t UI1024_Add(UI1024_t a, UI1024_t b, UI1024_t ans[2])
+{
+	error(); // TODO
 
-	return 1;
+	return ans[0];
 }
-uint UI1024_rs(uint1024_t *a, uint msb)
+UI1024_t UI1024_Sub(UI1024_t a, UI1024_t b)
 {
-	return UI512_rs(&a->L, UI512_rs(&a->H, msb));
+	UI1024_t tmp[2];
+
+	b = UI1024_Inv(b);
+	b = UI1024_Add(b, UI1024_x(1), tmp);
+
+	return UI1024_Add(a, b, tmp);
 }
-void UI1024_or(uint1024_t *a, uint1024_t *b, uint1024_t *ans)
+UI1024_t UI1024_Mul(UI1024_t a, UI1024_t b, UI1024_t ans[2])
 {
-	UI512_or(&a->L, &b->L, &ans->L);
-	UI512_or(&a->H, &b->H, &ans->H);
+	error(); // TODO
+
+	return ans[0];
+}
+UI1024_t UI1024_Div(UI1024_t a, UI1024_t b, UI1024_t ans[2])
+{
+	error(); // TODO
+
+	return ans[0];
+}
+UI1024_t UI1024_Mod(UI1024_t a, UI1024_t b, UI1024_t ans[2])
+{
+	error(); // TODO
+
+	return ans[1];
+}
+
+int UI1024_IsZero(UI1024_t a)
+{
+	return UI512_IsZero(a.L) && UI512_IsZero(a.H);
+}
+int UI1024_IsFill(UI1024_t a)
+{
+	return UI512_IsFill(a.L) && UI512_IsFill(a.H);
+}
+sint UI1024_Comp(UI1024_t a, UI1024_t b)
+{
+	sint ret = UI512_Comp(a.H, b.H);
+
+	if(!ret)
+		ret = UI512_Comp(a.L, b.L);
+
+	return ret;
+}
+UI1024_t UI1024_Fill(void)
+{
+	UI1024_t ans;
+
+	ans.L = UI512_Fill();
+	ans.H = UI512_Fill();
+
+	return ans;
 }

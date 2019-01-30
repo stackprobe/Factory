@@ -3,25 +3,26 @@
 #include "C:\Factory\Common\all.h"
 #include "uint2048.h"
 
-typedef struct uint4096_st
+typedef struct UI4096_st
 {
-	uint2048_t L;
-	uint2048_t H;
+	UI2048_t L;
+	UI2048_t H;
 }
-uint4096_t;
+UI4096_t;
 
-void ToUI4096(uint src[128], uint4096_t *dest);
-void UI4096_0(uint4096_t *dest);
-void UI4096_x(uint x, uint4096_t *dest);
-void UI4096_msb1(uint4096_t *dest);
-void UnUI4096(uint4096_t *src, uint dest[128]);
+UI4096_t ToUI4096(uint src[128]);
+UI4096_t UI4096_x(uint x);
+UI4096_t UI4096_0(void);
+void FromUI4096(UI4096_t a, uint dest[128]);
 
-uint UI4096_Add(uint4096_t *a, uint4096_t *b, uint4096_t *ans) ;
-uint UI4096_Sub(uint4096_t *a, uint4096_t *b, uint4096_t *ans) ;
-void UI4096_Mul(uint4096_t *a, uint4096_t *b, uint4096_t *ans, uint4096_t *ans_hi);
-void UI4096_Div(uint4096_t *a, uint4096_t *b, uint4096_t *ans);
+UI4096_t UI4096_Inv(UI4096_t a);
+UI4096_t UI4096_Add(UI4096_t a, UI4096_t b, UI4096_t ans[2]);
+UI4096_t UI4096_Sub(UI4096_t a, UI4096_t b);
+UI4096_t UI4096_Mul(UI4096_t a, UI4096_t b, UI4096_t ans[2]);
+UI4096_t UI4096_Div(UI4096_t a, UI4096_t b, UI4096_t ans[2]);
+UI4096_t UI4096_Mod(UI4096_t a, UI4096_t b, UI4096_t ans[2]);
 
-int UI4096_IsZero(uint4096_t *a);
-int UI4096_Comp(uint4096_t *a, uint4096_t *b);
-uint UI4096_rs(uint4096_t *a, uint msb);
-void UI4096_or(uint4096_t *a, uint4096_t *b, uint4096_t *ans);
+int UI4096_IsZero(UI4096_t a);
+int UI4096_IsFill(UI4096_t a);
+sint UI4096_Comp(UI4096_t a, UI4096_t b);
+UI4096_t UI4096_Fill(void);

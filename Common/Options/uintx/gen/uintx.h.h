@@ -1,27 +1,28 @@
 #pragma once
 
 #include "C:\Factory\Common\all.h"
-#include "uint%LBIT%.h"
+#include "uint$hBIT.h"
 
-typedef struct uint%HBIT%_st
+typedef struct UI$BIT_st
 {
-	uint%LBIT%_t L;
-	uint%LBIT%_t H;
+	UI$hBIT_t L;
+	UI$hBIT_t H;
 }
-uint%HBIT%_t;
+UI$BIT_t;
 
-void ToUI%HBIT%(uint src[%HSZ%], uint%HBIT%_t *dest);
-void UI%HBIT%_0(uint%HBIT%_t *dest);
-void UI%HBIT%_x(uint x, uint%HBIT%_t *dest);
-void UI%HBIT%_msb1(uint%HBIT%_t *dest);
-void UnUI%HBIT%(uint%HBIT%_t *src, uint dest[%HSZ%]);
+UI$BIT_t ToUI$BIT(uint src[$SZ]);
+UI$BIT_t UI$BIT_x(uint x);
+UI$BIT_t UI$BIT_0(void);
+void FromUI$BIT(UI$BIT_t a, uint dest[$SZ]);
 
-uint UI%HBIT%_Add(uint%HBIT%_t *a, uint%HBIT%_t *b, uint%HBIT%_t *ans) ;
-uint UI%HBIT%_Sub(uint%HBIT%_t *a, uint%HBIT%_t *b, uint%HBIT%_t *ans) ;
-void UI%HBIT%_Mul(uint%HBIT%_t *a, uint%HBIT%_t *b, uint%HBIT%_t *ans, uint%HBIT%_t *ans_hi);
-void UI%HBIT%_Div(uint%HBIT%_t *a, uint%HBIT%_t *b, uint%HBIT%_t *ans);
+UI$BIT_t UI$BIT_Inv(UI$BIT_t a);
+UI$BIT_t UI$BIT_Add(UI$BIT_t a, UI$BIT_t b, UI$BIT_t ans[2]);
+UI$BIT_t UI$BIT_Sub(UI$BIT_t a, UI$BIT_t b);
+UI$BIT_t UI$BIT_Mul(UI$BIT_t a, UI$BIT_t b, UI$BIT_t ans[2]);
+UI$BIT_t UI$BIT_Div(UI$BIT_t a, UI$BIT_t b, UI$BIT_t ans[2]);
+UI$BIT_t UI$BIT_Mod(UI$BIT_t a, UI$BIT_t b, UI$BIT_t ans[2]);
 
-int UI%HBIT%_IsZero(uint%HBIT%_t *a);
-int UI%HBIT%_Comp(uint%HBIT%_t *a, uint%HBIT%_t *b);
-uint UI%HBIT%_rs(uint%HBIT%_t *a, uint msb);
-void UI%HBIT%_or(uint%HBIT%_t *a, uint%HBIT%_t *b, uint%HBIT%_t *ans);
+int UI$BIT_IsZero(UI$BIT_t a);
+int UI$BIT_IsFill(UI$BIT_t a);
+sint UI$BIT_Comp(UI$BIT_t a, UI$BIT_t b);
+UI$BIT_t UI$BIT_Fill(void);

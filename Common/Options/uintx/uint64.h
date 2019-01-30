@@ -1,26 +1,28 @@
 #pragma once
 
 #include "C:\Factory\Common\all.h"
+#include "uint32.h"
 
-typedef struct uint64_st
+typedef struct UI64_st
 {
-	uint L;
-	uint H;
+	UI32_t L;
+	UI32_t H;
 }
-uint64_t;
+UI64_t;
 
-void ToUI64(uint src[2], uint64_t *dest);
-void UI64_0(uint64_t *dest);
-void UI64_x(uint x, uint64_t *dest);
-void UI64_msb1(uint64_t *dest);
-void UnUI64(uint64_t *src, uint dest[2]);
+UI64_t ToUI64(uint src[2]);
+UI64_t UI64_x(uint x);
+UI64_t UI64_0(void);
+void FromUI64(UI64_t a, uint dest[2]);
 
-uint UI64_Add(uint64_t *a, uint64_t *b, uint64_t *ans);
-uint UI64_Sub(uint64_t *a, uint64_t *b, uint64_t *ans);
-void UI64_Mul(uint64_t *a, uint64_t *b, uint64_t *ans, uint64_t *ans_hi);
-void UI64_Div(uint64_t *a, uint64_t *b, uint64_t *ans);
+UI64_t UI64_Inv(UI64_t a);
+UI64_t UI64_Add(UI64_t a, UI64_t b, UI64_t ans[2]);
+UI64_t UI64_Sub(UI64_t a, UI64_t b);
+UI64_t UI64_Mul(UI64_t a, UI64_t b, UI64_t ans[2]);
+UI64_t UI64_Div(UI64_t a, UI64_t b, UI64_t ans[2]);
+UI64_t UI64_Mod(UI64_t a, UI64_t b, UI64_t ans[2]);
 
-int UI64_IsZero(uint64_t *a);
-int UI64_Comp(uint64_t *a, uint64_t *b);
-uint UI64_rs(uint64_t *a, uint msb);
-void UI64_or(uint64_t *a, uint64_t *b, uint64_t *ans);
+int UI64_IsZero(UI64_t a);
+int UI64_IsFill(UI64_t a);
+sint UI64_Comp(UI64_t a, UI64_t b);
+UI64_t UI64_Fill(void);

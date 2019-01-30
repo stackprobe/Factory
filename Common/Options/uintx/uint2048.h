@@ -3,25 +3,26 @@
 #include "C:\Factory\Common\all.h"
 #include "uint1024.h"
 
-typedef struct uint2048_st
+typedef struct UI2048_st
 {
-	uint1024_t L;
-	uint1024_t H;
+	UI1024_t L;
+	UI1024_t H;
 }
-uint2048_t;
+UI2048_t;
 
-void ToUI2048(uint src[64], uint2048_t *dest);
-void UI2048_0(uint2048_t *dest);
-void UI2048_x(uint x, uint2048_t *dest);
-void UI2048_msb1(uint2048_t *dest);
-void UnUI2048(uint2048_t *src, uint dest[64]);
+UI2048_t ToUI2048(uint src[64]);
+UI2048_t UI2048_x(uint x);
+UI2048_t UI2048_0(void);
+void FromUI2048(UI2048_t a, uint dest[64]);
 
-uint UI2048_Add(uint2048_t *a, uint2048_t *b, uint2048_t *ans) ;
-uint UI2048_Sub(uint2048_t *a, uint2048_t *b, uint2048_t *ans) ;
-void UI2048_Mul(uint2048_t *a, uint2048_t *b, uint2048_t *ans, uint2048_t *ans_hi);
-void UI2048_Div(uint2048_t *a, uint2048_t *b, uint2048_t *ans);
+UI2048_t UI2048_Inv(UI2048_t a);
+UI2048_t UI2048_Add(UI2048_t a, UI2048_t b, UI2048_t ans[2]);
+UI2048_t UI2048_Sub(UI2048_t a, UI2048_t b);
+UI2048_t UI2048_Mul(UI2048_t a, UI2048_t b, UI2048_t ans[2]);
+UI2048_t UI2048_Div(UI2048_t a, UI2048_t b, UI2048_t ans[2]);
+UI2048_t UI2048_Mod(UI2048_t a, UI2048_t b, UI2048_t ans[2]);
 
-int UI2048_IsZero(uint2048_t *a);
-int UI2048_Comp(uint2048_t *a, uint2048_t *b);
-uint UI2048_rs(uint2048_t *a, uint msb);
-void UI2048_or(uint2048_t *a, uint2048_t *b, uint2048_t *ans);
+int UI2048_IsZero(UI2048_t a);
+int UI2048_IsFill(UI2048_t a);
+sint UI2048_Comp(UI2048_t a, UI2048_t b);
+UI2048_t UI2048_Fill(void);

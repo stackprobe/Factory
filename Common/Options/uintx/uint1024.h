@@ -3,25 +3,26 @@
 #include "C:\Factory\Common\all.h"
 #include "uint512.h"
 
-typedef struct uint1024_st
+typedef struct UI1024_st
 {
-	uint512_t L;
-	uint512_t H;
+	UI512_t L;
+	UI512_t H;
 }
-uint1024_t;
+UI1024_t;
 
-void ToUI1024(uint src[32], uint1024_t *dest);
-void UI1024_0(uint1024_t *dest);
-void UI1024_x(uint x, uint1024_t *dest);
-void UI1024_msb1(uint1024_t *dest);
-void UnUI1024(uint1024_t *src, uint dest[32]);
+UI1024_t ToUI1024(uint src[32]);
+UI1024_t UI1024_x(uint x);
+UI1024_t UI1024_0(void);
+void FromUI1024(UI1024_t a, uint dest[32]);
 
-uint UI1024_Add(uint1024_t *a, uint1024_t *b, uint1024_t *ans) ;
-uint UI1024_Sub(uint1024_t *a, uint1024_t *b, uint1024_t *ans) ;
-void UI1024_Mul(uint1024_t *a, uint1024_t *b, uint1024_t *ans, uint1024_t *ans_hi);
-void UI1024_Div(uint1024_t *a, uint1024_t *b, uint1024_t *ans);
+UI1024_t UI1024_Inv(UI1024_t a);
+UI1024_t UI1024_Add(UI1024_t a, UI1024_t b, UI1024_t ans[2]);
+UI1024_t UI1024_Sub(UI1024_t a, UI1024_t b);
+UI1024_t UI1024_Mul(UI1024_t a, UI1024_t b, UI1024_t ans[2]);
+UI1024_t UI1024_Div(UI1024_t a, UI1024_t b, UI1024_t ans[2]);
+UI1024_t UI1024_Mod(UI1024_t a, UI1024_t b, UI1024_t ans[2]);
 
-int UI1024_IsZero(uint1024_t *a);
-int UI1024_Comp(uint1024_t *a, uint1024_t *b);
-uint UI1024_rs(uint1024_t *a, uint msb);
-void UI1024_or(uint1024_t *a, uint1024_t *b, uint1024_t *ans);
+int UI1024_IsZero(UI1024_t a);
+int UI1024_IsFill(UI1024_t a);
+sint UI1024_Comp(UI1024_t a, UI1024_t b);
+UI1024_t UI1024_Fill(void);

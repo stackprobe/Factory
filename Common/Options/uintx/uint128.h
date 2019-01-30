@@ -3,25 +3,26 @@
 #include "C:\Factory\Common\all.h"
 #include "uint64.h"
 
-typedef struct uint128_st
+typedef struct UI128_st
 {
-	uint64_t L;
-	uint64_t H;
+	UI64_t L;
+	UI64_t H;
 }
-uint128_t;
+UI128_t;
 
-void ToUI128(uint src[4], uint128_t *dest);
-void UI128_0(uint128_t *dest);
-void UI128_x(uint x, uint128_t *dest);
-void UI128_msb1(uint128_t *dest);
-void UnUI128(uint128_t *src, uint dest[4]);
+UI128_t ToUI128(uint src[4]);
+UI128_t UI128_x(uint x);
+UI128_t UI128_0(void);
+void FromUI128(UI128_t a, uint dest[4]);
 
-uint UI128_Add(uint128_t *a, uint128_t *b, uint128_t *ans) ;
-uint UI128_Sub(uint128_t *a, uint128_t *b, uint128_t *ans) ;
-void UI128_Mul(uint128_t *a, uint128_t *b, uint128_t *ans, uint128_t *ans_hi);
-void UI128_Div(uint128_t *a, uint128_t *b, uint128_t *ans);
+UI128_t UI128_Inv(UI128_t a);
+UI128_t UI128_Add(UI128_t a, UI128_t b, UI128_t ans[2]);
+UI128_t UI128_Sub(UI128_t a, UI128_t b);
+UI128_t UI128_Mul(UI128_t a, UI128_t b, UI128_t ans[2]);
+UI128_t UI128_Div(UI128_t a, UI128_t b, UI128_t ans[2]);
+UI128_t UI128_Mod(UI128_t a, UI128_t b, UI128_t ans[2]);
 
-int UI128_IsZero(uint128_t *a);
-int UI128_Comp(uint128_t *a, uint128_t *b);
-uint UI128_rs(uint128_t *a, uint msb);
-void UI128_or(uint128_t *a, uint128_t *b, uint128_t *ans);
+int UI128_IsZero(UI128_t a);
+int UI128_IsFill(UI128_t a);
+sint UI128_Comp(UI128_t a, UI128_t b);
+UI128_t UI128_Fill(void);

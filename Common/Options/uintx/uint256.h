@@ -3,25 +3,26 @@
 #include "C:\Factory\Common\all.h"
 #include "uint128.h"
 
-typedef struct uint256_st
+typedef struct UI256_st
 {
-	uint128_t L;
-	uint128_t H;
+	UI128_t L;
+	UI128_t H;
 }
-uint256_t;
+UI256_t;
 
-void ToUI256(uint src[8], uint256_t *dest);
-void UI256_0(uint256_t *dest);
-void UI256_x(uint x, uint256_t *dest);
-void UI256_msb1(uint256_t *dest);
-void UnUI256(uint256_t *src, uint dest[8]);
+UI256_t ToUI256(uint src[8]);
+UI256_t UI256_x(uint x);
+UI256_t UI256_0(void);
+void FromUI256(UI256_t a, uint dest[8]);
 
-uint UI256_Add(uint256_t *a, uint256_t *b, uint256_t *ans) ;
-uint UI256_Sub(uint256_t *a, uint256_t *b, uint256_t *ans) ;
-void UI256_Mul(uint256_t *a, uint256_t *b, uint256_t *ans, uint256_t *ans_hi);
-void UI256_Div(uint256_t *a, uint256_t *b, uint256_t *ans);
+UI256_t UI256_Inv(UI256_t a);
+UI256_t UI256_Add(UI256_t a, UI256_t b, UI256_t ans[2]);
+UI256_t UI256_Sub(UI256_t a, UI256_t b);
+UI256_t UI256_Mul(UI256_t a, UI256_t b, UI256_t ans[2]);
+UI256_t UI256_Div(UI256_t a, UI256_t b, UI256_t ans[2]);
+UI256_t UI256_Mod(UI256_t a, UI256_t b, UI256_t ans[2]);
 
-int UI256_IsZero(uint256_t *a);
-int UI256_Comp(uint256_t *a, uint256_t *b);
-uint UI256_rs(uint256_t *a, uint msb);
-void UI256_or(uint256_t *a, uint256_t *b, uint256_t *ans);
+int UI256_IsZero(UI256_t a);
+int UI256_IsFill(UI256_t a);
+sint UI256_Comp(UI256_t a, UI256_t b);
+UI256_t UI256_Fill(void);

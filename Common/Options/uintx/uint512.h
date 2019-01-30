@@ -3,25 +3,26 @@
 #include "C:\Factory\Common\all.h"
 #include "uint256.h"
 
-typedef struct uint512_st
+typedef struct UI512_st
 {
-	uint256_t L;
-	uint256_t H;
+	UI256_t L;
+	UI256_t H;
 }
-uint512_t;
+UI512_t;
 
-void ToUI512(uint src[16], uint512_t *dest);
-void UI512_0(uint512_t *dest);
-void UI512_x(uint x, uint512_t *dest);
-void UI512_msb1(uint512_t *dest);
-void UnUI512(uint512_t *src, uint dest[16]);
+UI512_t ToUI512(uint src[16]);
+UI512_t UI512_x(uint x);
+UI512_t UI512_0(void);
+void FromUI512(UI512_t a, uint dest[16]);
 
-uint UI512_Add(uint512_t *a, uint512_t *b, uint512_t *ans) ;
-uint UI512_Sub(uint512_t *a, uint512_t *b, uint512_t *ans) ;
-void UI512_Mul(uint512_t *a, uint512_t *b, uint512_t *ans, uint512_t *ans_hi);
-void UI512_Div(uint512_t *a, uint512_t *b, uint512_t *ans);
+UI512_t UI512_Inv(UI512_t a);
+UI512_t UI512_Add(UI512_t a, UI512_t b, UI512_t ans[2]);
+UI512_t UI512_Sub(UI512_t a, UI512_t b);
+UI512_t UI512_Mul(UI512_t a, UI512_t b, UI512_t ans[2]);
+UI512_t UI512_Div(UI512_t a, UI512_t b, UI512_t ans[2]);
+UI512_t UI512_Mod(UI512_t a, UI512_t b, UI512_t ans[2]);
 
-int UI512_IsZero(uint512_t *a);
-int UI512_Comp(uint512_t *a, uint512_t *b);
-uint UI512_rs(uint512_t *a, uint msb);
-void UI512_or(uint512_t *a, uint512_t *b, uint512_t *ans);
+int UI512_IsZero(UI512_t a);
+int UI512_IsFill(UI512_t a);
+sint UI512_Comp(UI512_t a, UI512_t b);
+UI512_t UI512_Fill(void);
