@@ -309,7 +309,8 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 	}
 	foreach(wSubDirs, dir, index)
 		if(!testMode)
-			removeDir(combine(wDir, dir));
+			LOGPOS();
+//			removeDir_x(combine(wDir, dir)); // ファイルを削除しないのでDIRも削除しない。
 
 	releaseDim(rSubDirs, 1);
 	releaseDim(wSubDirs, 1);
