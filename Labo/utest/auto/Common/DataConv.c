@@ -41,7 +41,46 @@ static void Test_encodeBase64_decodeBase64(void)
 	cout("OK\n");
 }
 
+/*
+	https://tools.ietf.org/html/rfc4648
+*/
+static char *TEST_VECTOR[] =
+{
+	"", "",
+	"f", "Zg==",
+	"fo", "Zm8=",
+	"foo", "Zm9v",
+	"foob", "Zm9vYg==",
+	"fooba", "Zm9vYmE=",
+	"foobar", "Zm9vYmFy",
+};
+
+static void Test_encodeBase64_decodeBase64_02(void)
+{
+	uint index;
+
+	LOGPOS();
+
+	for(index = 0; index < lengthof(TEST_VECTOR); index += 2)
+	{
+		char *plain   = TEST_VECTOR[index + 0];
+		char *encoded = TEST_VECTOR[index + 1];
+		autoBlock_t *enc;
+		autoBlock_t *dec;
+		autoBlock_t gab;
+
+		enc = encodeBase64(gndBlockLineVar(plain, gab));
+		dec = decodeBase64(gndBlockLineVar(encoded, gab));
+
+		errorCase(!isSameBlock(enc, gndBlockLineVar(encoded, gab)));
+		errorCase(!isSameBlock(dec, gndBlockLineVar(plain, gab)));
+	}
+	LOGPOS();
+	cout("OK\n");
+}
+
 int main(int argc, char **argv)
 {
 	Test_encodeBase64_decodeBase64();
+	Test_encodeBase64_decodeBase64_02();
 }
