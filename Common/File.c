@@ -398,16 +398,11 @@ void removeDir(char *dir)
 	for(c = 1; ; c++)
 	{
 		if(!_rmdir(dir)) // ? 成功
-		{
 			break;
-		}
-		cout("[%u] fault remove dir: %s\n", c, dir);
+
+		cout("Failed _rmdir \"%s\", %u-th trial. LastError: %08x\n", dir, c, GetLastError());
 		errorCase(c == 10);
-		sleep(c * 100);
-	}
-	if(2 <= c)
-	{
-		cout("remove dir ok @ %u\n", c);
+		sleep(100);
 	}
 }
 void removeFile(char *file)
@@ -417,16 +412,11 @@ void removeFile(char *file)
 	for(c = 1; ; c++)
 	{
 		if(!remove(file)) // ? 成功
-		{
 			break;
-		}
-		cout("[%u] fault remove file: %s\n", c, file);
+
+		cout("Failed remove() \"%s\", %u-th trial. LastError: %08x\n", file, c, GetLastError());
 		errorCase(c == 10);
-		sleep(c * 100);
-	}
-	if(2 <= c)
-	{
-		cout("remove file ok @ %u\n", c);
+		sleep(100);
 	}
 }
 void removeDirIfExist(char *dir)
@@ -798,11 +788,16 @@ void copyDir(char *srcDir, char *destDir) // destDir は作成されていること。
 */
 void moveFile(char *srcFile, char *destFile)
 {
-	if(rename(srcFile, destFile))
+	uint c;
+
+	for(c = 1; ; c++)
 	{
-cout("< %s\n", srcFile);
-cout("> %s\n", destFile);
-		error();
+		if(!rename(srcFile, destFile)) // ? 成功
+			break;
+
+		cout("Failed rename() \"%s\" -> \"%s\", %u-th trial. LastError: %08x\n", srcFile, destFile, c, GetLastError());
+		errorCase(c == 10);
+		sleep(100);
 	}
 }
 static void MoveDir_Abs(char *srcDir, char *destDir) // destDir は作成されていること。srcDir は空のディレクトリとして残る。
