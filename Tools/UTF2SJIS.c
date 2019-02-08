@@ -13,7 +13,7 @@
 
 		SJIS    ... Shift_JIS
 		UTF16   ... UTF-16(LE) | UTF-16(BE) | UTF-16(LE)NoBOM
-		UTF16BE ... UTF-16(LE) | UTF-16(BE) | UTF-16(BE)NOBOM
+		UTF16BE ... UTF-16(LE) | UTF-16(BE) | UTF-16(BE)NoBOM
 		UTF8    ... UTF-8
 
 		- - -
