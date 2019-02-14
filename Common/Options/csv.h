@@ -13,8 +13,9 @@ void csvTrim(autoList_t *table);
 void csvRect(autoList_t *table);
 void csvSquare(autoList_t *table);
 void csvTwist(autoList_t *table);
-void csvRot(autoList_t *table);
-void csvRevRot(autoList_t *table);
+void csvRot(autoList_t *table, sint degree);
+void csvRot90(autoList_t *table);
+void csvRot270(autoList_t *table);
 void csvRot180(autoList_t *table);
 
 char *LSrchComp(autoList_t *table, uint colidxFind, uint retColidx, char *cellFind, sint (*funcComp)(char *, char *));

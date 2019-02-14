@@ -244,20 +244,33 @@ void csvTwist(autoList_t *table)
 	csvTrim(table);
 	csvRect(table);
 }
-void csvRot(autoList_t *table) // Œv‰ñ‚è‚É90‹‰ñ“]
+void csvRot(autoList_t *table, sint degree)
+{
+	switch((degree % 360 + 360) % 360)
+	{
+	case   0:                   break;
+	case  90: csvRot90(table);  break;
+	case 180: csvRot180(table); break;
+	case 270: csvRot270(table); break;
+
+	default:
+		error();
+	}
+}
+void csvRot90(autoList_t *table) // Œv‰ñ‚è‚É90‹‰ñ“]
 {
 	reverseElements(table);
 	csvTwist(table);
 }
-void csvRevRot(autoList_t *table) // ”½Œv‰ñ‚è‚É90‹‰ñ“]
+void csvRot270(autoList_t *table) // Œv‰ñ‚è‚É270‹(”½Œv‰ñ‚è‚É90‹)‰ñ“]
 {
 	csvTwist(table);
 	reverseElements(table);
 }
 void csvRot180(autoList_t *table) // 180‹‰ñ“]
 {
-	csvRot(table);
-	csvRot(table);
+	csvRot90(table);
+	csvRot90(table);
 }
 
 char *LSrchComp(autoList_t *table, uint colidxFind, uint retColidx, char *cellFind, sint (*funcComp)(char *, char *))
