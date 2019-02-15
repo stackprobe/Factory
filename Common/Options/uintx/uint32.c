@@ -39,34 +39,45 @@ UI32_t UI32_Inv(UI32_t a)
 }
 UI32_t UI32_Add(UI32_t a, UI32_t b, UI32_t ans[2])
 {
-	uint64 tmp = (uint64)a.Value + b.Value;
+	uint64 val = (uint64)a.Value + b.Value;
+	UI32_t tmp[2];
 
-	ans[0].Value = (uint)(tmp & 0xffffffffui64);
-	ans[1].Value = (uint)(tmp >> 32);
+	if(!ans)
+		ans = tmp;
+
+	ans[0].Value = (uint)(val & 0xffffffffui64);
+	ans[1].Value = (uint)(val >> 32);
 
 	return ans[0];
 }
 UI32_t UI32_Sub(UI32_t a, UI32_t b)
 {
-	UI32_t tmp[2];
-
 	b = UI32_Inv(b);
-	b = UI32_Add(b, UI32_x(1), tmp);
+	b = UI32_Add(b, UI32_x(1), NULL);
 
-	return UI32_Add(a, b, tmp);
+	return UI32_Add(a, b, NULL);
 }
 UI32_t UI32_Mul(UI32_t a, UI32_t b, UI32_t ans[2])
 {
-	uint64 tmp = (uint64)a.Value * b.Value;
+	uint64 val = (uint64)a.Value * b.Value;
+	UI32_t tmp[2];
 
-	ans[0].Value = (uint)(tmp & 0xffffffffui64);
-	ans[1].Value = (uint)(tmp >> 32);
+	if(!ans)
+		ans = tmp;
+
+	ans[0].Value = (uint)(val & 0xffffffffui64);
+	ans[1].Value = (uint)(val >> 32);
 
 	return ans[0];
 }
 UI32_t UI32_Div(UI32_t a, UI32_t b, UI32_t ans[2])
 {
+	UI32_t tmp[2];
+
 	errorCase(!b.Value);
+
+	if(!ans)
+		ans = tmp;
 
 	ans[0].Value = a.Value / b.Value;
 	ans[1].Value = a.Value % b.Value;
@@ -75,7 +86,12 @@ UI32_t UI32_Div(UI32_t a, UI32_t b, UI32_t ans[2])
 }
 UI32_t UI32_Mod(UI32_t a, UI32_t b, UI32_t ans[2])
 {
+	UI32_t tmp[2];
+
 	errorCase(!b.Value);
+
+	if(!ans)
+		ans = tmp;
 
 	ans[0].Value = a.Value / b.Value;
 	ans[1].Value = a.Value % b.Value;
