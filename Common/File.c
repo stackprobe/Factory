@@ -1,10 +1,11 @@
 /*
 	"" 渡したとき
 
-	_fullpath()   カレントディレクトリ <- 注意
-	_access()     アクセス不可
-	_mkdir()      失敗
-	_chdir()      失敗
+	_fullpath()         カレントディレクトリ <- 注意
+	_access()           アクセス不可
+	_mkdir()            失敗
+	_chdir()            失敗
+	CreateDirectory()   失敗
 */
 
 #include "all.h"
@@ -328,25 +329,25 @@ void dirFileSortDirCount(autoList_t *paths, uint dirCount)
 }
 
 /*
+	CreateDirectory("", NULL) -> 0 (失敗) を返す。
+
 	_mkdir("") -> !0 (失敗) を返す。
 */
 int mkdirEx(char *dir) // ret: ? 失敗
 {
-	uint c;
-
-	for(c = 1; ; c++)
+#if 1
+	if(CreateDirectory(dir, NULL) == 0) // ? 失敗
 	{
-		if(!_mkdir(dir)) // ? 成功
-			return 0;
-
-		cout("Failed _mkdir \"%s\", %u-th trial. LastError: %08x\n", dir, c, GetLastError());
-
-		if(10 <= c)
-			break;
-
-		sleep(100);
+		return 1;
 	}
-	return 1;
+	return 0;
+#else
+	if(_mkdir(dir)) // ? 失敗
+	{
+		return 1;
+	}
+	return 0;
+#endif
 }
 
 int creatable(char *path)
