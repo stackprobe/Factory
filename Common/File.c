@@ -338,6 +338,36 @@ int mkdirEx(char *dir) // ret: ? Ž¸”s
 #if 1
 	if(CreateDirectory(dir, NULL) == 0) // ? Ž¸”s
 	{
+		uint c;
+
+		cout("CreateDirectory() failed \"%s\" %u\n", dir, GetLastError());
+
+		for(c = 0; ; c++)
+		{
+			sleep(100);
+			LOGPOS();
+
+			if(existDir(dir))
+				break;
+
+			LOGPOS();
+
+			if(5 <= c)
+			{
+				LOGPOS();
+				return 1;
+			}
+			LOGPOS();
+			sleep(100);
+
+			execute_x(xcout("MD \"%s\"", dir));
+		}
+		LOGPOS();
+	}
+	return 0;
+#elif 1
+	if(CreateDirectory(dir, NULL) == 0) // ? Ž¸”s
+	{
 		return 1;
 	}
 	return 0;
