@@ -122,6 +122,30 @@ static char *MakeDivList(uint depth)
 
 					addElement(divs, (uint)div);
 				}
+				else if(
+					!_stricmp("avi", ext) ||
+					!_stricmp("mp4", ext) ||
+					!_stricmp("mpeg", ext) ||
+					!_stricmp("mpg", ext) ||
+					!_stricmp("webm", ext)
+					)
+				{
+					char *div = xcout("<div><video src=\"%s\" controls style=\"max-height: 75vh;\"></video></div>", href);
+
+					addElement(divs, (uint)div);
+				}
+				else if(
+					!_stricmp("mid", ext) ||
+					!_stricmp("midi", ext) ||
+					!_stricmp("mp3", ext) ||
+					!_stricmp("wav", ext) ||
+					!_stricmp("wma", ext)
+					)
+				{
+					char *div = xcout("<div><audio src=\"%s\" controls></audio></div>", href);
+
+					addElement(divs, (uint)div);
+				}
 			}
 		}
 
