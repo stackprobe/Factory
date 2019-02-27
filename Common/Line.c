@@ -245,6 +245,15 @@ uint strlen_max(char *str, uint retmax)
 
 	return count;
 }
+sint numstrcmp(char *str1, char *str2)
+{
+	sint ret = (sint)strlen(str1) - (sint)strlen(str2);
+
+	if(!ret)
+		ret = strcmp(str1, str2);
+
+	return ret;
+}
 
 /*
 	ret: line1 ‚Í line2 ‚Ån‚Ü‚é‚©”»’è‚·‚éB

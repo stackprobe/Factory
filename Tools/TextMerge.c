@@ -3,6 +3,7 @@
 	TextMerge.exe [/S PART-SIZE] [/S1] [/S2] [/I] INPUT-TEXT-FILE-1 INPUT-TEXT-FILE-2
 	              (OUTPUT-LEFT-ONLY-TEXT-FILE | *) (OUTPUT-BOTH-EXIST-TEXT-FILE | *) (OUTPUT-RIGHT-ONLY-TEXT-FILE | *)
 */
+
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\MergeSort.h"
 

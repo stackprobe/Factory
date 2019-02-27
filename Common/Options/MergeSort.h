@@ -2,6 +2,8 @@
 
 #include "C:\Factory\Common\all.h"
 
+extern uint (*MS_GetRecordWeightSize)(uint);
+
 void MergeSort(
 	char *srcFile,
 	char *destFile,

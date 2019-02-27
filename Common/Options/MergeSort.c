@@ -135,6 +135,8 @@ static void MergePart(
 	}
 }
 
+uint (*MS_GetRecordWeightSize)(uint);
+
 /*
 	srcFile
 		ì«Ç›çûÇ›å≥ÉtÉ@ÉCÉã
@@ -185,6 +187,7 @@ void MergeSort(
 	uint partCount = 0;
 	autoList_t *elements = NULL;
 	uint64 startPos = 0;
+	uint64 totalRecordWeightSize = 0;
 
 	if(textMode)
 	{
@@ -211,12 +214,17 @@ void MergeSort(
 		if(!elements)
 			elements = createAutoList(partSize / 1024); // XXX
 
+		if(MS_GetRecordWeightSize)
+			totalRecordWeightSize += MS_GetRecordWeightSize(element);
+		else
+			totalRecordWeightSize += recordConstWeightSize;
+
 		addElement(elements, element);
 
 		currPos = _ftelli64(fp);
 		errorCase(currPos < 0);
 		readSize = currPos - startPos;
-		readSize += (uint64)getCount(elements) * recordConstWeightSize;
+		readSize += totalRecordWeightSize;
 
 		if(partSize < readSize)
 		{
@@ -224,6 +232,7 @@ void MergeSort(
 			partCount++;
 			elements = NULL;
 			startPos = currPos;
+			totalRecordWeightSize = 0;
 		}
 	}
 	if(elements)
