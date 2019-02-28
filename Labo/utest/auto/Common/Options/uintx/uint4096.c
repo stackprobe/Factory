@@ -30,7 +30,7 @@ static UI4096_t FromString(char *str)
 	uint sLen = strlen(str);
 
 	for(index = 0; index < sLen; index++)
-		arr[index / 8] |= m_c2i(str[sLen - 1 - index]) << ((index % 8) * 4);
+		arr[index / 8] |= m_c2i(str[sLen - 1 - index]) << index % 8 * 4;
 
 	return ToUI4096(arr);
 }
@@ -74,6 +74,11 @@ static void Test01(void)
 
 			sa = calc(s1, '+', s2);
 
+			if(1024 < strlen(sa))
+			{
+				eraseChar(sa);
+				sa = TrimValueString(sa);
+			}
 			t1 = FromString(s1);
 			t2 = FromString(s2);
 
@@ -147,9 +152,101 @@ static void Test01(void)
 			memFree(tas);
 		}
 
-		// Mul // TODO
+		// Mul
+		{
+			char *s1 = GetHexValue(mt19937_range(0, 1024));
+			char *s2 = GetHexValue(mt19937_range(0, 1024));
+			char *sa;
+			UI4096_t t1;
+			UI4096_t t2;
+			UI4096_t ta;
+			char *t1s;
+			char *t2s;
+			char *tas;
 
-		// Div // TODO
+			sa = calc(s1, '*', s2);
+
+			if(1024 < strlen(sa))
+			{
+				eraseLine(sa, strlen(sa) - 1024);
+				sa = TrimValueString(sa);
+			}
+			t1 = FromString(s1);
+			t2 = FromString(s2);
+
+			ta = UI4096_Mul(t1, t2, NULL);
+
+			t1s = ToString(t1);
+			t2s = ToString(t2);
+			tas = ToString(ta);
+
+//			cout("s1: %s\n", s1);
+//			cout("s2: %s\n", s2);
+//			cout("sa: %s\n", sa);
+//			cout("t1: %s\n", t1s);
+//			cout("t2: %s\n", t2s);
+//			cout("ta: %s\n", tas);
+
+			errorCase(strcmp(s1, t1s));
+			errorCase(strcmp(s2, t2s));
+			errorCase(strcmp(sa, tas));
+
+			memFree(s1);
+			memFree(s2);
+			memFree(sa);
+			memFree(t1s);
+			memFree(t2s);
+			memFree(tas);
+		}
+
+		// Div
+		{
+			char *s1 = GetHexValue(mt19937_range(0, 1024));
+			char *s2 = GetHexValue(mt19937_range(0, 1024));
+			char *sa;
+			UI4096_t t1;
+			UI4096_t t2;
+			UI4096_t ta;
+			char *t1s;
+			char *t2s;
+			char *tas;
+
+			if(!strcmp(s2, "0"))
+				*s2 = '1';
+
+//			LOGPOS();
+			sa = calc(s1, '/', s2);
+//			LOGPOS();
+
+			t1 = FromString(s1);
+			t2 = FromString(s2);
+
+//			LOGPOS();
+			ta = UI4096_Div(t1, t2, NULL);
+//			LOGPOS();
+
+			t1s = ToString(t1);
+			t2s = ToString(t2);
+			tas = ToString(ta);
+
+//			cout("s1: %s\n", s1);
+//			cout("s2: %s\n", s2);
+//			cout("sa: %s\n", sa);
+//			cout("t1: %s\n", t1s);
+//			cout("t2: %s\n", t2s);
+//			cout("ta: %s\n", tas);
+
+			errorCase(strcmp(s1, t1s));
+			errorCase(strcmp(s2, t2s));
+			errorCase(strcmp(sa, tas));
+
+			memFree(s1);
+			memFree(s2);
+			memFree(sa);
+			memFree(t1s);
+			memFree(t2s);
+			memFree(tas);
+		}
 	}
 	LOGPOS();
 }

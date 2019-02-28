@@ -163,11 +163,10 @@ uint (*MS_GetRecordWeightSize)(uint);
 	partSize
 		メモリに一度期に読み込める「レコードの合計バイト数」の最大値の目安
 		srcFile のシーク位置の変化をバイトに換算しているだけ。
-		１レコード毎に recordConstWeightSize を加える。
-		0 のときは常に１レコードずつになる。
+		１レコード毎に recordConstWeightSize 又は MS_GetRecordWeightSize() を「更に」加える。
 
 	recordConstWeightSize
-		100 くらいを指定してね。
+		10 ～ 100 くらいを指定してね。(MS_GetRecordWeightSize を指定した場合無視されるので注意)
 */
 void MergeSort(
 	char *srcFile,
