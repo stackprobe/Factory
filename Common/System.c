@@ -181,8 +181,8 @@ int pulseSec(uint span, uint *p_nextSec)
 }
 int eqIntPulseSec(uint span, uint *p_nextSec)
 {
-	static uint callPerCheck = 1;
-	static uint count;
+	static uint64 callPerCheck = 1; // uintだとカンストするかも。
+	static uint64 count;
 
 	count++;
 

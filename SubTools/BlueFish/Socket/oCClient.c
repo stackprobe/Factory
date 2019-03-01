@@ -22,6 +22,7 @@ static int Perform(int sock, uint prm)
 	{
 		FILE *fp = fileOpen("oto.clu", "wb");
 //		FILE *fp = fileOpen("oto.clu.gz.enc", "wb");
+		uint64 wroteByteCount;
 
 		LOGPOS();
 		SockRecvChar(ss); // '1'
@@ -31,6 +32,8 @@ static int Perform(int sock, uint prm)
 		SockRecvChar(ss); // 'S'
 		LOGPOS();
 
+		wroteByteCount = 0;
+
 		for(; ; )
 		{
 			int chr = SockRecvChar(ss);
@@ -38,8 +41,13 @@ static int Perform(int sock, uint prm)
 			if(chr == EOF)
 				break;
 
+			if(eqIntPulseSec(5, NULL))
+				cmdTitle_x(xcout("oCClient - wrote %I64u bytes", wroteByteCount));
+
 			writeChar(fp, chr);
+			wroteByteCount++;
 		}
+		cmdTitle_x(xcout("oCClient - wrote %I64u bytes OK", wroteByteCount));
 		LOGPOS();
 
 		fileClose(fp);
