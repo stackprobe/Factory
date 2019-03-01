@@ -52,15 +52,12 @@ static char *ToString(UI4096_t value)
 
 static void Test01(void)
 {
-	uint testCnt;
-
 	calcRadix = 16;
 	calcBasement = 0;
 
-	LOGPOS();
-	for(testCnt = 0; testCnt < 1000; testCnt++)
+	while(!waitKey(0))
 	{
-		// Add
+		// ADD
 		{
 			char *s1 = GetHexValue(mt19937_range(0, 1024));
 			char *s2 = GetHexValue(mt19937_range(0, 1024));
@@ -88,12 +85,13 @@ static void Test01(void)
 			t2s = ToString(t2);
 			tas = ToString(ta);
 
-//			cout("s1: %s\n", s1);
-//			cout("s2: %s\n", s2);
-//			cout("sa: %s\n", sa);
-//			cout("t1: %s\n", t1s);
-//			cout("t2: %s\n", t2s);
-//			cout("ta: %s\n", tas);
+			cout("[ADD]\n");
+			cout("s1: %s\n", s1);
+			cout("s2: %s\n", s2);
+			cout("sa: %s\n", sa);
+			cout("t1: %s\n", t1s);
+			cout("t2: %s\n", t2s);
+			cout("ta: %s\n", tas);
 
 			errorCase(strcmp(s1, t1s));
 			errorCase(strcmp(s2, t2s));
@@ -107,7 +105,7 @@ static void Test01(void)
 			memFree(tas);
 		}
 
-		// Sub
+		// SUB
 		{
 			char *s1 = GetHexValue(mt19937_range(0, 1024));
 			char *s2 = GetHexValue(mt19937_range(0, 1024));
@@ -133,12 +131,13 @@ static void Test01(void)
 			t2s = ToString(t2);
 			tas = ToString(ta);
 
-//			cout("s1: %s\n", s1);
-//			cout("s2: %s\n", s2);
-//			cout("sa: %s\n", sa);
-//			cout("t1: %s\n", t1s);
-//			cout("t2: %s\n", t2s);
-//			cout("ta: %s\n", tas);
+			cout("[SUB]\n");
+			cout("s1: %s\n", s1);
+			cout("s2: %s\n", s2);
+			cout("sa: %s\n", sa);
+			cout("t1: %s\n", t1s);
+			cout("t2: %s\n", t2s);
+			cout("ta: %s\n", tas);
 
 			errorCase(strcmp(s1, t1s));
 			errorCase(strcmp(s2, t2s));
@@ -152,7 +151,7 @@ static void Test01(void)
 			memFree(tas);
 		}
 
-		// Mul
+		// MUL
 		{
 			char *s1 = GetHexValue(mt19937_range(0, 1024));
 			char *s2 = GetHexValue(mt19937_range(0, 1024));
@@ -180,12 +179,13 @@ static void Test01(void)
 			t2s = ToString(t2);
 			tas = ToString(ta);
 
-//			cout("s1: %s\n", s1);
-//			cout("s2: %s\n", s2);
-//			cout("sa: %s\n", sa);
-//			cout("t1: %s\n", t1s);
-//			cout("t2: %s\n", t2s);
-//			cout("ta: %s\n", tas);
+			cout("[MUL]\n");
+			cout("s1: %s\n", s1);
+			cout("s2: %s\n", s2);
+			cout("sa: %s\n", sa);
+			cout("t1: %s\n", t1s);
+			cout("t2: %s\n", t2s);
+			cout("ta: %s\n", tas);
 
 			errorCase(strcmp(s1, t1s));
 			errorCase(strcmp(s2, t2s));
@@ -199,7 +199,7 @@ static void Test01(void)
 			memFree(tas);
 		}
 
-		// Div
+		// DIV
 		{
 			char *s1 = GetHexValue(mt19937_range(0, 1024));
 			char *s2 = GetHexValue(mt19937_range(0, 1024));
@@ -214,27 +214,28 @@ static void Test01(void)
 			if(!strcmp(s2, "0"))
 				*s2 = '1';
 
-//			LOGPOS();
+			LOGPOS();
 			sa = calc(s1, '/', s2);
-//			LOGPOS();
+			LOGPOS();
 
 			t1 = FromString(s1);
 			t2 = FromString(s2);
 
-//			LOGPOS();
+			LOGPOS();
 			ta = UI4096_Div(t1, t2, NULL);
-//			LOGPOS();
+			LOGPOS();
 
 			t1s = ToString(t1);
 			t2s = ToString(t2);
 			tas = ToString(ta);
 
-//			cout("s1: %s\n", s1);
-//			cout("s2: %s\n", s2);
-//			cout("sa: %s\n", sa);
-//			cout("t1: %s\n", t1s);
-//			cout("t2: %s\n", t2s);
-//			cout("ta: %s\n", tas);
+			cout("[DIV]\n");
+			cout("s1: %s\n", s1);
+			cout("s2: %s\n", s2);
+			cout("sa: %s\n", sa);
+			cout("t1: %s\n", t1s);
+			cout("t2: %s\n", t2s);
+			cout("ta: %s\n", tas);
 
 			errorCase(strcmp(s1, t1s));
 			errorCase(strcmp(s2, t2s));
@@ -248,13 +249,11 @@ static void Test01(void)
 			memFree(tas);
 		}
 	}
-	LOGPOS();
+	cout("Stopped\n");
 }
 int main(int argc, char **argv)
 {
 	mt19937_initCRnd();
 
 	Test01();
-
-	cout("OK!\n");
 }
