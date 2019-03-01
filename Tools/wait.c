@@ -4,10 +4,15 @@
 
 static void DoAntiScreenSaver(void)
 {
+#if 1
+	SetThreadExecutionState(ES_SYSTEM_REQUIRED);
+	SetThreadExecutionState(ES_DISPLAY_REQUIRED);
+#else
 	SetCursorPos(0, 0); // âÊñ ç∂è„
 	mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
 	sleep(100);
 	mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+#endif
 }
 int main(int argc, char **argv)
 {
@@ -68,48 +73,45 @@ readArgs:
 		else
 			cout("\rwait for ESCAPE or other keys while %u seconds... ", remain);
 
+		while(hasKey())
+		{
+			switch(getKey())
+			{
+			case 0x1b:
+				errorLevel = 1;
+				goto endLoop;
+
+			case 0x0d:
+				goto endLoop;
+
+			case '+':
+				remain += 60;
+				break;
+
+			case '-':
+				if(remain < 65)
+					remain = 5;
+				else
+					remain -= 60;
+
+				break;
+
+			case '*':
+				remain += 3600;
+				break;
+
+			case '/':
+				if(remain < 3605)
+					remain = 5;
+				else
+					remain -= 3600;
+
+				break;
+			}
+		}
 		if(!remain)
 			break;
 
-		if(hasKey())
-		{
-			while(hasKey())
-			{
-				switch(getKey())
-				{
-				case 0x1b:
-					errorLevel = 1;
-					goto endLoop;
-
-				case 0x0d:
-					goto endLoop;
-
-				case '+':
-					remain += 60;
-					break;
-
-				case '-':
-					if(remain < 65)
-						remain = 5;
-					else
-						remain -= 60;
-
-					break;
-
-				case '*':
-					remain += 3600;
-					break;
-
-				case '/':
-					if(remain < 3605)
-						remain = 5;
-					else
-						remain -= 3600;
-
-					break;
-				}
-			}
-		}
 		if(antiScreenSaver && remain % 30 == 0)
 		{
 			DoAntiScreenSaver();
