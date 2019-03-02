@@ -5,11 +5,20 @@
 
 static char *TrimValueString(char *str)
 {
+#if 1
+	char *p;
+
+	for(p = str; *p == '0' && p[1]; p++)
+	{}
+
+	copyLine(str, p);
+#else // same_code
 	while(*str == '0')
 		eraseChar(str);
 
 	if(!*str)
 		str = addChar(str, '0');
+#endif
 
 	return str;
 }
