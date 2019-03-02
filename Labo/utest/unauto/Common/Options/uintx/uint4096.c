@@ -8,21 +8,26 @@ static char *TrimValueString(char *str)
 #if 1
 	char *p;
 
+	if(!*str)
+		return addChar(str, '0');
+
 	for(p = str; *p == '0' && p[1]; p++)
 	{}
 
 	copyLine(str, p);
+
+	return str;
 #else // same_code
 	while(*str == '0')
 		eraseChar(str);
 
 	if(!*str)
 		str = addChar(str, '0');
-#endif
 
 	return str;
+#endif
 }
-static char *GetHexValue(uint scale)
+static char *MakeTestHexValue_Scale(uint scale)
 {
 	autoBlock_t *buff = newBlock();
 	uint index;
@@ -31,6 +36,29 @@ static char *GetHexValue(uint scale)
 		addByte(buff, hexadecimal[mt19937_rnd(16)]);
 
 	return TrimValueString(unbindBlock2Line(buff));
+}
+static char *MakeTestHexValue(void)
+{
+	uint scale;
+
+	if(mt19937_rnd(5)) // 80%
+	{
+		scale = mt19937_range(0, 1024);
+	}
+	else // 20%
+	{
+		switch(mt19937_rnd(4))
+		{
+		case 0: scale = mt19937_range(0, 10); break;
+		case 1: scale = mt19937_range(10, 100); break;
+		case 2: scale = mt19937_range(100, 1000); break;
+		case 3: scale = mt19937_range(1000, 1024); break;
+
+		default:
+			error();
+		}
+	}
+	return MakeTestHexValue_Scale(scale);
 }
 static UI4096_t FromString(char *str)
 {
@@ -68,8 +96,8 @@ static void Test01(void)
 	{
 		// ADD
 		{
-			char *s1 = GetHexValue(mt19937_range(0, 1024));
-			char *s2 = GetHexValue(mt19937_range(0, 1024));
+			char *s1 = MakeTestHexValue();
+			char *s2 = MakeTestHexValue();
 			char *sa;
 			UI4096_t t1;
 			UI4096_t t2;
@@ -116,8 +144,8 @@ static void Test01(void)
 
 		// SUB
 		{
-			char *s1 = GetHexValue(mt19937_range(0, 1024));
-			char *s2 = GetHexValue(mt19937_range(0, 1024));
+			char *s1 = MakeTestHexValue();
+			char *s2 = MakeTestHexValue();
 			char *sa;
 			UI4096_t t1;
 			UI4096_t t2;
@@ -162,8 +190,8 @@ static void Test01(void)
 
 		// MUL
 		{
-			char *s1 = GetHexValue(mt19937_range(0, 1024));
-			char *s2 = GetHexValue(mt19937_range(0, 1024));
+			char *s1 = MakeTestHexValue();
+			char *s2 = MakeTestHexValue();
 			char *sa;
 			UI4096_t t1;
 			UI4096_t t2;
@@ -210,8 +238,8 @@ static void Test01(void)
 
 		// DIV
 		{
-			char *s1 = GetHexValue(mt19937_range(0, 1024));
-			char *s2 = GetHexValue(mt19937_range(0, 1024));
+			char *s1 = MakeTestHexValue();
+			char *s2 = MakeTestHexValue();
 			char *sa;
 			UI4096_t t1;
 			UI4096_t t2;

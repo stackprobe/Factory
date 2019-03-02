@@ -2,7 +2,7 @@
 #include "C:\Factory\Common\Options\CRRandom.h"
 #include "C:\Factory\Common\Options\uintx\uint64.h"
 
-static uint64 Test01_GetTestValue(void)
+static uint64 GetTestValue(void)
 {
 	switch(mt19937_rnd(4))
 	{
@@ -22,8 +22,8 @@ static void Test01(void)
 	while(!waitKey(0))
 	{
 		{
-			uint64 a = Test01_GetTestValue();
-			uint64 b = Test01_GetTestValue();
+			uint64 a = GetTestValue();
+			uint64 b = GetTestValue();
 			uint64 c;
 			UI64_t ta;
 			UI64_t tb;
@@ -47,8 +47,8 @@ static void Test01(void)
 		}
 
 		{
-			uint64 a = Test01_GetTestValue();
-			uint64 b = Test01_GetTestValue();
+			uint64 a = GetTestValue();
+			uint64 b = GetTestValue();
 			uint64 c;
 			UI64_t ta;
 			UI64_t tb;
@@ -76,8 +76,8 @@ static void Test01(void)
 		}
 
 		{
-			uint64 a = Test01_GetTestValue();
-			uint64 b = Test01_GetTestValue();
+			uint64 a = GetTestValue();
+			uint64 b = GetTestValue();
 			uint64 c;
 			UI64_t ta;
 			UI64_t tb;
@@ -104,8 +104,8 @@ static void Test01(void)
 		}
 
 		{
-			uint64 a = Test01_GetTestValue();
-			uint64 b = Test01_GetTestValue();
+			uint64 a = GetTestValue();
+			uint64 b = GetTestValue();
 			uint64 c;
 			UI64_t ta;
 			UI64_t tb;
@@ -131,8 +131,8 @@ static void Test01(void)
 		}
 
 		{
-			uint64 a = Test01_GetTestValue();
-			uint64 b = Test01_GetTestValue();
+			uint64 a = GetTestValue();
+			uint64 b = GetTestValue();
 			uint64 c;
 			UI64_t ta;
 			UI64_t tb;
