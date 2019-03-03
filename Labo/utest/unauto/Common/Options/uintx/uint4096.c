@@ -41,18 +41,16 @@ static char *MakeTestHexValue(void)
 {
 	uint scale;
 
-	if(mt19937_rnd(5)) // 80%
+	if(mt19937_rnd(4)) // 75%
 	{
 		scale = mt19937_range(0, 1024);
 	}
-	else // 20%
+	else // 25%
 	{
-		switch(mt19937_rnd(4))
+		switch(mt19937_rnd(2))
 		{
 		case 0: scale = mt19937_range(0, 10); break;
-		case 1: scale = mt19937_range(10, 100); break;
-		case 2: scale = mt19937_range(100, 1000); break;
-		case 3: scale = mt19937_range(1000, 1024); break;
+		case 1: scale = mt19937_range(1014, 1024); break;
 
 		default:
 			error();
