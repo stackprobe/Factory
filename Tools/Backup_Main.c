@@ -66,7 +66,7 @@ static autoList_t *GetTargetDirs(void)
 			0
 			)
 		{
-			// noop
+			cout("šœŠOF%s\n", dir);
 		}
 		else
 		{
