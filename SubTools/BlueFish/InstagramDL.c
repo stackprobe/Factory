@@ -228,6 +228,7 @@ static int Download(char *url) // ret: ? successful
 		"%s\n"
 		"/RBF\n"
 		"%s\n"
+		"/L\n"
 		"/-\n"
 		"%s"
 		,successfulFlag
@@ -277,7 +278,7 @@ static void Main2(void)
 	errorCase(!existDir(DestDir));
 
 	coExecute_x(xcout(
-		"START \"\" /B /WAIT \"%s\" /RSF \"%s\" /RHF \"%s\" /RBF \"%s\" https://www.instagram.com/%s/"
+		"START \"\" /B /WAIT \"%s\" /RSF \"%s\" /RHF \"%s\" /RBF \"%s\" /L https://www.instagram.com/%s/"
 		,HGetExeFile()
 		,successfulFlag
 		,resHeaderFile
