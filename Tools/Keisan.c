@@ -219,8 +219,8 @@ static char *Permutation(uint v1, uint v2, uint radix)
 	char *ans = strx("1");
 	uint count;
 
-	m_range(v1, 1, UINTMAX);
-	m_range(v2, 1, v1);
+	errorCase(!m_isRange(v1, 1, UINTMAX));
+	errorCase(!m_isRange(v2, 1, v1));
 
 	for(count = v1 - v2 + 1; count <= v1; count++)
 	{
@@ -230,8 +230,8 @@ static char *Permutation(uint v1, uint v2, uint radix)
 }
 static char *Combination(uint v1, uint v2, uint radix)
 {
-	m_range(v1, 1, UINTMAX);
-	m_range(v2, 1, v1);
+	errorCase(!m_isRange(v1, 1, UINTMAX));
+	errorCase(!m_isRange(v2, 1, v1));
 
 	return calcLine_xx(Permutation(v1, v2, radix), '/', Permutation(v2, v2, radix), radix, 0);
 }
