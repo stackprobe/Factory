@@ -9,6 +9,9 @@
 	２の平方根を小数第100位まで求める。
 		Keisan.exe /b 100 2 r 2
 
+	１００の階乗
+		Keisan.exe 100 u 100
+
 	処理       記号   左値       右値       評価値     精度
 	-----------------------------------------------------------
 	加算       +      多倍長     多倍長     多倍長     丸め無し
@@ -20,7 +23,8 @@
 	べき根     R      多倍長     10進uint   多倍長     少数第 basement 位まで, 少数第 basement + 1 位以下切り捨て
 	対数       L      多倍長     多倍長     10進uint   整数,                   少数第 1 位以下切り捨て
 	進数変換   X      多倍長     10進uint   多倍長     少数第 basement 位まで, 少数第 basement + 1 位以下切り捨て
-	組合せ     K      10進uint   10進uint   多倍長     丸め無し
+	順列       U      10進uint   10進uint   多倍長     丸め無し
+	組合せ     C      10進uint   10進uint   多倍長     丸め無し
 	切り捨て   I      多倍長     10進uint   多倍長     小数第 '右値' 位まで, 少数第 '右値' + 1 位以下切り捨て
 
 	'10進uint' は radix, basement に関わらず 10 進数 0 ～ 4294967295 の整数
@@ -218,14 +222,18 @@ static char *Permutation(uint v1, uint v2, uint radix)
 	m_range(v1, 1, UINTMAX);
 	m_range(v2, 1, v1);
 
-	for(count = v2; ; count++)
+	for(count = v1 - v2 + 1; count <= v1; count++)
 	{
-		ans = calcLine_xx(ans, '*', xcout("%u", count), radix, 0);
-
-		if(count == v1)
-			break;
+		ans = calcLine_xx(ans, '*', changeRadixCalcLine_x(xcout("%u", count), 10, radix, 0), radix, 0);
 	}
 	return ans;
+}
+static char *Combination(uint v1, uint v2, uint radix)
+{
+	m_range(v1, 1, UINTMAX);
+	m_range(v2, 1, v1);
+
+	return calcLine_xx(Permutation(v1, v2, radix), '/', Permutation(v2, v2, radix), radix, 0);
 }
 static void Main2(void)
 {
@@ -323,7 +331,8 @@ readArgs:
 			}
 			break;
 
-		case 'k': ans = Permutation(toValue(op1), toValue(op2), radix); break;
+		case 'u': ans = Permutation(toValue(op1), toValue(op2), radix); break;
+		case 'c': ans = Combination(toValue(op1), toValue(op2), radix); break;
 		case 'i': ans = calcLine(op1, '/', "1", radix, toValue(op2)); onceNoShowMarume = 1; break;
 		case '=': ans = strx(op1); SetMemory(op2, op1); break;
 		case ';': ans = strx(op2); break;

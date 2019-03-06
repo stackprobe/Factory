@@ -822,6 +822,12 @@ char *calcLine_xx(char *line1, int operator, char *line2, uint radix, uint basem
 	memFree(line2);
 	return out;
 }
+char *changeRadixCalcLine_x(char *line, uint radix, uint newRadix, uint basement)
+{
+	char *out = changeRadixCalcLine(line, radix, newRadix, basement);
+	memFree(line);
+	return out;
+}
 char *calcPower_x(char *line, uint exponent, uint radix)
 {
 	char *out = calcPower(line, exponent, radix);

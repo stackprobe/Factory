@@ -42,6 +42,7 @@ char *calcLineToMarume(char *line, uint basement);
 char *calcLine_cx(char *line1, int operator, char *line2, uint radix, uint basement);
 char *calcLine_xc(char *line1, int operator, char *line2, uint radix, uint basement);
 char *calcLine_xx(char *line1, int operator, char *line2, uint radix, uint basement);
+char *changeRadixCalcLine_x(char *line, uint radix, uint newRadix, uint basement);
 char *calcPower_x(char *line, uint exponent, uint radix);
 char *calcRootPower_x(char *line, uint exponent, uint radix, uint basement);
 char *calcLineToMarume_x(char *line, uint basement);
