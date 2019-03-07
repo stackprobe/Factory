@@ -222,9 +222,12 @@ static char *Permutation(uint v1, uint v2, uint radix)
 	errorCase(!m_isRange(v1, 1, UINTMAX));
 	errorCase(!m_isRange(v2, 1, v1));
 
-	for(count = v1 - v2 + 1; count <= v1; count++)
+	for(count = v1 - v2 + 1; ; count++)
 	{
 		ans = calcLine_xx(ans, '*', changeRadixCalcLine_x(xcout("%u", count), 10, radix, 0), radix, 0);
+
+		if(v1 <= count)
+			break;
 	}
 	return ans;
 }
