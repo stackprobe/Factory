@@ -2,10 +2,7 @@
 
 #include "C:\Factory\Common\all.h"
 
-/*
-	pub_member
-*/
-typedef struct VTree_st
+typedef struct VTree_st // access free
 {
 	uint (*GetLocalCount)(void);   // カレントディレクトリのディレクトリ・ファイル総数を返す。
 	char *(*GetLocal)(uint index); // ローカルファイル名を返す。★★★戻り値は呼び出し側で開放すること★★★
