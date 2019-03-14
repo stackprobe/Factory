@@ -114,6 +114,8 @@ static void CheckDyIP(char *domain)
 	if(10 < NoIPCount)
 		retCode = 1;
 
+	cout("currTime - LastUpdatedTime == %.3f\n", (currTime - LastUpdatedTime) / 86400.0);
+
 	if(LastUpdatedTime + 35 * 86400 < currTime)
 		retCode = 1;
 
