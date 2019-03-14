@@ -4,7 +4,7 @@
 
 #include "C:\Factory\Common\all.h"
 
-#define SAVE_DATA_FILE "C:\\appdata\\DyIPChk_SaveData.txt"
+#define SAVE_DATA_DIR "C:\\appdata\\DyIPChk_SaveData"
 
 #define DY_IP_CHK_COMMAND "C:\\Factory\\Labo\\Socket\\hget.exe /L http://ieserver.net/ipcheck.shtml IP.tmp"
 #define IP_OUT_FILE "IP.tmp"
@@ -12,11 +12,17 @@
 static uint NoIPCount;
 static time_t LastUpdatedTime;
 
-static void LoadData(void)
+static char *GetSaveDataFile(char *domain)
 {
-	if(existFile(SAVE_DATA_FILE))
+	return combine(SAVE_DATA_DIR, domain);
+}
+static void LoadData(char *domain)
+{
+	char *saveDataFile = GetSaveDataFile(domain);
+
+	if(existFile(saveDataFile))
 	{
-		FILE *fp = fileOpen(SAVE_DATA_FILE, "rt");
+		FILE *fp = fileOpen(saveDataFile, "rt");
 
 		NoIPCount = toValue(neReadLine(fp));
 		LastUpdatedTime = toValue64(neReadLine(fp));
@@ -28,17 +34,24 @@ static void LoadData(void)
 		NoIPCount = 0;
 		LastUpdatedTime = 0;
 	}
+	memFree(saveDataFile);
 }
-static void SaveData(void)
+static void SaveData(char *domain)
 {
+	char *saveDataFile = GetSaveDataFile(domain);
+
+	createDirIfNotExist(SAVE_DATA_DIR);
+
 	{
-		FILE *fp = fileOpen(SAVE_DATA_FILE, "wt");
+		FILE *fp = fileOpen(saveDataFile, "wt");
 
 		writeLine_x(fp, xcout("%u", NoIPCount));
 		writeLine_x(fp, xcout("%I64d", LastUpdatedTime));
 
 		fileClose(fp);
 	}
+
+	memFree(saveDataFile);
 }
 static char *GetIP_x(char *command)
 {
@@ -91,7 +104,7 @@ static void CheckDyIP(char *domain)
 
 	cout("domain: %s\n", domain);
 
-	LoadData();
+	LoadData(domain);
 
 	cout("L.NoIPCount: %u\n", NoIPCount);
 	cout("L.LastUpdatedTime: %I64d\n", LastUpdatedTime);
@@ -127,7 +140,7 @@ static void CheckDyIP(char *domain)
 	cout("S.NoIPCount: %u\n", NoIPCount);
 	cout("S.LastUpdatedTime: %I64d\n", LastUpdatedTime);
 
-	SaveData();
+	SaveData(domain);
 
 	memFree(dyIP);
 	memFree(domainIP);
@@ -138,7 +151,11 @@ int main(int argc, char **argv)
 {
 	char *domain = nextArg();
 
-	errorCase_m(!lineExp("<1,300,-.09AZaz>", domain), "不正なドメイン名");
+	errorCase_m(
+		lineExp(".<>", domain) ||
+		lineExp("<>.", domain) ||
+		lineExp("<>..<>", domain) ||
+		!lineExp("<1,300,-.09AZaz>", domain), "不正なドメイン名");
 
 	CheckDyIP(domain);
 }
