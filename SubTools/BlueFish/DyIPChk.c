@@ -5,12 +5,15 @@
 #include "C:\Factory\Common\all.h"
 
 #define SAVE_DATA_DIR "C:\\appdata\\DyIPChk_SaveData"
+#define COMMON_SAVE_DATA_FILE "C:\\appdata\\DyIPChk_SaveData.txt"
 
 #define DY_IP_CHK_COMMAND "C:\\Factory\\Labo\\Socket\\hget.exe /L http://ieserver.net/ipcheck.shtml IP.tmp"
 #define IP_OUT_FILE "IP.tmp"
 
 static uint NoIPCount;
 static time_t LastUpdatedTime;
+static char *RecentDyIP;
+static time_t RecentDyIPGotTime;
 
 static char *GetSaveDataFile(char *domain)
 {
@@ -24,8 +27,8 @@ static void LoadData(char *domain)
 	{
 		FILE *fp = fileOpen(saveDataFile, "rt");
 
-		NoIPCount = toValue(neReadLine(fp));
-		LastUpdatedTime = toValue64(neReadLine(fp));
+		NoIPCount = toValue_x(neReadLine(fp));
+		LastUpdatedTime = toValue64_x(neReadLine(fp));
 
 		fileClose(fp);
 	}
@@ -35,6 +38,21 @@ static void LoadData(char *domain)
 		LastUpdatedTime = 0;
 	}
 	memFree(saveDataFile);
+
+	if(existFile(COMMON_SAVE_DATA_FILE))
+	{
+		FILE *fp = fileOpen(COMMON_SAVE_DATA_FILE, "rt");
+
+		RecentDyIP = neReadLine(fp);
+		RecentDyIPGotTime = toValue64_x(neReadLine(fp));
+
+		fileClose(fp);
+	}
+	else
+	{
+		RecentDyIP = strx("x.x.x.x");
+		RecentDyIPGotTime = 0;
+	}
 }
 static void SaveData(char *domain)
 {
@@ -52,6 +70,15 @@ static void SaveData(char *domain)
 	}
 
 	memFree(saveDataFile);
+
+	{
+		FILE *fp = fileOpen(COMMON_SAVE_DATA_FILE, "wt");
+
+		writeLine_x(fp, xcout("%s", RecentDyIP));
+		writeLine_x(fp, xcout("%I64d", RecentDyIPGotTime));
+
+		fileClose(fp);
+	}
 }
 static char *GetIP_x(char *command)
 {
@@ -108,8 +135,28 @@ static void CheckDyIP(char *domain)
 
 	cout("L.NoIPCount: %u\n", NoIPCount);
 	cout("L.LastUpdatedTime: %I64d\n", LastUpdatedTime);
+	cout("L.RecentDyIP: %s\n", RecentDyIP);
+	cout("L.RecentDyIPGotTime: %I64d\n", RecentDyIPGotTime);
 
-	dyIP = GetDyIP();
+	cout("currTime - RecentDyIPGotTime == %I64d\n", currTime - RecentDyIPGotTime);
+
+	if(RecentDyIPGotTime + 90 < currTime) // ? timeout
+	{
+		dyIP = GetDyIP();
+
+		if(dyIP)
+		{
+			memFree(RecentDyIP);
+			RecentDyIP = strx(dyIP);
+			RecentDyIPGotTime = currTime;
+		}
+	}
+	else
+	{
+		dyIP = strx(RecentDyIP);
+
+		coutJLine_x(xcout("Recved_IP.C=[%s]", dyIP)); // test
+	}
 	domainIP = GetDomainIP(domain);
 
 	if(dyIP && domainIP)
@@ -129,7 +176,7 @@ static void CheckDyIP(char *domain)
 
 	cout("currTime - LastUpdatedTime == %.3f\n", (currTime - LastUpdatedTime) / 86400.0);
 
-	if(LastUpdatedTime + 35 * 86400 < currTime)
+	if(LastUpdatedTime + 35 * 86400 < currTime) // ? timeout
 		retCode = 1;
 
 	if(retCode == 1)
@@ -139,6 +186,8 @@ static void CheckDyIP(char *domain)
 	}
 	cout("S.NoIPCount: %u\n", NoIPCount);
 	cout("S.LastUpdatedTime: %I64d\n", LastUpdatedTime);
+	cout("S.RecentDyIP: %s\n", RecentDyIP);
+	cout("S.RecentDyIPGotTime: %I64d\n", RecentDyIPGotTime);
 
 	SaveData(domain);
 
