@@ -8,5 +8,5 @@ void cout(char *format, ...);
 char *xcout(char *format, ...);
 void coutJLine(char *line);
 void coutJLine_x(char *line);
-void coutDiv(char *text);
-void coutDiv_x(char *text);
+void coutLongText(char *text);
+void coutLongText_x(char *text);

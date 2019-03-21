@@ -161,11 +161,11 @@ void coutJLine_x(char *line)
 	短いと起こらない。
 	---> 長いテキストは分割して表示して回避する。
 */
-void coutDiv(char *text)
+void coutLongText(char *text)
 {
-	coutDiv_x(strx(text));
+	coutLongText_x(strx(text));
 }
-void coutDiv_x(char *text)
+void coutLongText_x(char *text)
 {
 	char *p;
 	char *q;

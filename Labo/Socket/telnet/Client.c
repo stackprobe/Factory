@@ -37,7 +37,7 @@ static void Perform(int sock)
 
 			line2JLine(line, 1, 1, 1, 1);
 #if 1
-			coutDiv_x(line);
+			coutLongText_x(line);
 #else // del @ 2019.3.21
 			cout("%s", line);
 			memFree(line);
