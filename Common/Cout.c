@@ -181,12 +181,11 @@ void coutJLine_x(char *line)
 	vprintf, fputs でも同じ現象が起こる。
 	text の内容にもよる。
 	"<br/>ファイル<br/>" x 1000 では 4100 文字目あたりで表示が乱れる。最後が "ファ・C" になる。C が 4099 文字目
+		--> https://github.com/stackprobe/Annex/blob/master/Labo/printf_problem.c
 	HTMLタグとカタカナが含まれていると起こりやすい模様。半角文字だけだと起こらない模様。
 	短いと起こらない。
 	---> 長いテキストは分割して表示して回避する。
 	vfprintf, _vsnprintf は問題無いっぽい。stdout に出力するとマズいのか。
-
-	https://github.com/stackprobe/Annex/blob/master/Labo/printf_problem.c
 */
 void coutLongText(char *text)
 {
