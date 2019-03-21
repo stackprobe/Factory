@@ -150,3 +150,36 @@ void coutJLine_x(char *line)
 	cout("%s\n", line);
 	memFree(line);
 }
+
+/*
+	2019.3.21
+	printf("%s", text); で text が長い場合、表示が乱れ printf が -1 を返す。
+	vprintf, fputs でも同じ現象が起こる。
+	text の内容にもよる。
+	"<br/>ファイル<br/>" x 1000 では 4100 文字目あたりで表示が乱れる。最後が "ファ・C" になる。C が 4099 文字目
+	HTMLタグとカタカナが含まれていると起こりやすい模様。半角文字だけだと起こらない模様。
+	短いと起こらない。
+	---> 長いテキストは分割して表示して回避する。
+*/
+void coutDiv(char *text)
+{
+	coutDiv_x(strx(text));
+}
+void coutDiv_x(char *text)
+{
+	char *p;
+	char *q;
+	int cbk;
+
+	for(p = text; *p; p = q)
+	{
+		for(q = p; *q && ((uint)q - (uint)p) < 100; q = mbsNext(q))
+		{}
+
+		cbk = *q;
+		*q = '\0';
+		cout("%s", p);
+		*q = cbk;
+	}
+	memFree(text);
+}
