@@ -77,6 +77,7 @@ void cout(char *format, ...)
 	if(coutOff)
 		return;
 
+#if 0 // moved @ 2019.3.21
 	if(WrFP)
 	{
 		int ret;
@@ -103,21 +104,41 @@ void cout(char *format, ...)
 			}
 		}
 	}
+#endif
 	va_start(marker, format);
 
+#if 1
+	if(!strcmp(format, "%s"))
+	{
+		coutLongText(va_arg(marker, char *));
+	}
+	else
+	{
+		coutLongText_x(vxcout(format, marker));
+	}
+#else // del @ 2019.3.21
 	if(vprintf(format, marker) < 0)
 	{
 		error();
 	}
+#endif
 	va_end(marker);
 }
 char *xcout(char *format, ...)
 {
-	char *buffer;
-	uint size;
+	char *ret;
 	va_list marker;
 
 	va_start(marker, format);
+	ret = vxcout(format, marker);
+	va_end(marker);
+
+	return ret;
+}
+char *vxcout(char *format, va_list marker)
+{
+	char *buffer;
+	uint size;
 
 	for(size = strlen(format) + 100; ; size *= 2)
 	{
@@ -136,8 +157,6 @@ char *xcout(char *format, ...)
 		memFree(buffer);
 		errorCase(UINTMAX / 4 < size); // ANTI OVER-FLOW
 	}
-	va_end(marker);
-
 	return strr(buffer);
 }
 void coutJLine(char *line)
@@ -147,8 +166,13 @@ void coutJLine(char *line)
 void coutJLine_x(char *line)
 {
 	line2JLine(line, 1, 0, 1, 1);
+#if 1
+	coutLongText_x(line);
+	coutLongText("\n");
+#else // old_same
 	cout("%s\n", line);
 	memFree(line);
+#endif
 }
 
 /*
@@ -160,6 +184,9 @@ void coutJLine_x(char *line)
 	HTMLタグとカタカナが含まれていると起こりやすい模様。半角文字だけだと起こらない模様。
 	短いと起こらない。
 	---> 長いテキストは分割して表示して回避する。
+	vfprintf, _vsnprintf は問題無いっぽい。stdout に出力するとマズいのか。
+
+	https://github.com/stackprobe/Annex/blob/master/Labo/printf_problem.c
 */
 void coutLongText(char *text)
 {
@@ -169,17 +196,41 @@ void coutLongText_x(char *text)
 {
 	char *p;
 	char *q;
-	int cbk;
 
 	for(p = text; *p; p = q)
 	{
-		for(q = p; *q && ((uint)q - (uint)p) < 100; q = mbsNext(q))
+		int bkc;
+
+#define FPUTS_TEXT_LMT 100
+
+		for(q = p; *q && ((uint)q - (uint)p) < FPUTS_TEXT_LMT; q = mbsNext(q))
 		{}
 
-		cbk = *q;
+#undef FPUTS_TEXT_LMT
+
+		bkc = *q;
 		*q = '\0';
-		cout("%s", p);
-		*q = cbk;
+		errorCase(fputs(p, stdout) < 0);
+		*q = bkc;
+	}
+	if(WrFP)
+	{
+		errorCase(fputs(text, WrFP) < 0);
+
+		if(LogFileBase)
+		{
+			uint textLen = (uint)q - (uint)p;
+
+			LogFileSize += textLen;
+
+			if(LOGFILESIZE_MAX <= LogFileSize || LOGFILE_PERIOD <= now() - LogFileTime)
+			{
+				fileClose(WrFP);
+				WrFP = NULL; // error(); 対策
+				OpenLogFile();
+				LogFileSize = 0;
+			}
+		}
 	}
 	memFree(text);
 }
