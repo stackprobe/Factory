@@ -112,6 +112,11 @@ void cout(char *format, ...)
 	{
 		coutLongText(va_arg(marker, char *));
 	}
+	else if(!strcmp(format, "%s\n"))
+	{
+		coutLongText(va_arg(marker, char *));
+		coutLongText("\n");
+	}
 	else
 	{
 		coutLongText_x(vxcout(format, marker));

@@ -472,7 +472,7 @@ static void WriteNode(XNode_t *node, uint indent)
 			TrimSpace(text);
 
 			WrIndent(indent + 1);
-			writeLine_x(Fp, strx(text));
+			writeLine(Fp, text);
 
 			memFree(text);
 		}

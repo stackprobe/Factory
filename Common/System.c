@@ -532,6 +532,10 @@ static void ReadSysArgs(void)
 			desertElement(Args, argi);
 			coutOff = 1;
 		}
+		/*
+			readResourceArgsText() と tokenizeArgs() で２回 "" の除去が行われる。
+			-> !strcmp(getArg(x), "A B C") としたい場合、ファイルの当該行を ""A B C"" にする。
+		*/
 		else if(!_stricmp(arg, "//F")) // パラメータをファイルから読み込んで置き換える。
 		{
 			char *text;
