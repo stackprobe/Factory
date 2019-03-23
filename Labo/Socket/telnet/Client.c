@@ -36,12 +36,8 @@ static void Perform(int sock)
 			line = unbindBlock2Line(rq);
 
 			line2JLine(line, 1, 1, 1, 1);
-#if 1
-			coutLongText_x(line);
-#else // del @ 2019.3.21
 			cout("%s", line);
 			memFree(line);
-#endif
 
 			rq = newBlock();
 		}
