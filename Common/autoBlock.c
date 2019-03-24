@@ -428,7 +428,7 @@ void addBytes(autoBlock_t *i, autoBlock_t *bytes)
 #if 1
 	errorCase(!i);
 	errorCase(!bytes);
-//	errorCase(UINTMAX - i->Size < bytes->Size);
+	errorCase(UINTMAX - i->Size < bytes->Size);
 
 	Resize(i, i->Size + bytes->Size);
 	memcpy(i->Block + i->Size - bytes->Size, bytes->Block, bytes->Size);
