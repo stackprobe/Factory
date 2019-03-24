@@ -425,6 +425,14 @@ void reverseBytes(autoBlock_t *i)
 }
 void addBytes(autoBlock_t *i, autoBlock_t *bytes)
 {
+#if 1
+	errorCase(!i);
+	errorCase(!bytes);
+//	errorCase(UINTMAX - i->Size < bytes->Size);
+
+	Resize(i, i->Size + bytes->Size);
+	memcpy(i->Block + i->Size - bytes->Size, bytes->Block, bytes->Size);
+#else // old_same @ 2019.3.24
 	uint index;
 
 	errorCase(!i);
@@ -434,9 +442,16 @@ void addBytes(autoBlock_t *i, autoBlock_t *bytes)
 	{
 		addByte(i, getByte(bytes, index));
 	}
+#endif
 }
 autoBlock_t *unaddBytesRev(autoBlock_t *i, uint count) // [... a b c] -> [c b a]
 {
+#if 1
+	autoBlock_t *block = unaddBytes(i, count);
+
+	reverseBytes(block);
+	return block;
+#else // old_same @ 2019.3.24
 	autoBlock_t *block = createBlock(count);
 
 	while(count)
@@ -445,13 +460,26 @@ autoBlock_t *unaddBytesRev(autoBlock_t *i, uint count) // [... a b c] -> [c b a]
 		count--;
 	}
 	return block;
+#endif
 }
 autoBlock_t *unaddBytes(autoBlock_t *i, uint count) // [... a b c] -> [a b c]
 {
+#if 1
+	autoBlock_t *block;
+
+	errorCase(!i);
+	errorCase(i->Size < count);
+
+	block = nobCreateBlock(count);
+	memcpy(block->Block, i->Block + (i->Size - count), count);
+	Resize(i, i->Size - count);
+	return block;
+#else // old_same @ 2019.3.24
 	autoBlock_t *block = unaddBytesRev(i, count);
 
 	reverseBytes(block);
 	return block;
+#endif
 }
 void unaddBytesRevToBlock(autoBlock_t *i, void *block, uint size)
 {

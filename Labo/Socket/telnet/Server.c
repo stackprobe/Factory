@@ -1,5 +1,7 @@
 #include "C:\Factory\Common\Options\SockServer.h"
 
+static char *SendFile;
+static autoBlock_t *SendData;
 static FILE *RecvFp;
 static uint TimeoutSec;
 static uint ConnectCount;
@@ -40,6 +42,12 @@ static void *CreateInfo(void)
 	i->RecvQueue = newBlock();
 	i->SendQueue = newBlock();
 	i->Timeout = TimeoutSec ? now() + TimeoutSec : 0;
+
+	if(SendFile)
+		ab_addBytes_x(i->SendQueue, readBinary(SendFile));
+
+	if(SendData)
+		addBytes(i->SendQueue, SendData);
 
 	return i;
 }
@@ -123,6 +131,16 @@ int main(int argc, char **argv)
 	uint portno = 23;
 
 readArgs:
+	if(argIs("/S"))
+	{
+		SendFile = nextArg();
+		goto readArgs;
+	}
+	if(argIs("/I"))
+	{
+		SendData = inputTextAsBinary();
+		goto readArgs;
+	}
 	if(argIs("/R"))
 	{
 		RecvFp = fileOpen(nextArg(), "wb");
