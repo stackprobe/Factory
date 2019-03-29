@@ -60,7 +60,7 @@ static void Trim(calcOperand_t *co)
 	if(!getSize(co->F))
 	{
 		co->E = 0;
-		co->Sign = 1;
+		co->Sign = 1; // 丸め表記に対応しないので、Calc.c のようにはしない。
 	}
 }
 static void Expand(calcOperand_t *co, uint count)

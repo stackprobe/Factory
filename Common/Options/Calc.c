@@ -73,7 +73,9 @@ static void TrimOp(calcOperand_t *op)
 	if(getSize(op->Figures) == 0) // ? op == "0"
 	{
 		op->DecIndex = 0;
-		op->Sign = 1;
+
+		if(!calcLastMarume) // ŠÛ‚ß‚ª”­¶‚µ‚½‚Ì‚È‚çop‚Íƒ[ƒ‚Å‚Í‚È‚¢‚Ì‚Å•„†‚ð•Ï‚¦‚Ä‚Í‚È‚ç‚È‚¢B
+			op->Sign = 1;
 	}
 }
 static void ExpandOp(calcOperand_t *op)
