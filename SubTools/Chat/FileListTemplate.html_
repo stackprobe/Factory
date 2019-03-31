@@ -19,7 +19,7 @@ body
 div
 {
 	color: __TEXT-COLOR__;
-	font-family: "ƒƒCƒŠƒI";
+	font-family: "Meiryo";
 	white-space: nowrap;
 	margin-left: 0.5em;
 	line-height: 150%;
