@@ -1,10 +1,15 @@
 /*
-	CopyLib.exe 入力DIR 出力DIR
+	CopyLib.exe [/-P] 入力DIR 出力DIR
 
 		入力DIR, 出力DIR ... 存在するディレクトリであること。
 */
 
 #include "C:\Factory\Common\all.h"
+
+static int IsNoPause(void)
+{
+	return toValue(getEnvLine("@CopyLib_NoPause")) != 0;
+}
 
 static autoList_t *ResAutoComment;
 
@@ -350,4 +355,11 @@ int main(int argc, char **argv)
 	}
 
 	CopyLib(getArg(0), getArg(1));
+
+	if(!IsNoPause())
+	{
+		cout("Press any key to continue ...");
+		getKey();
+		cout("\n");
+	}
 }
