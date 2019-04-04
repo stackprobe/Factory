@@ -1,7 +1,11 @@
 /*
-	CopyLib.exe [/-P] 入力DIR 出力DIR
+	CopyLib.exe 入力DIR 出力DIR
 
 		入力DIR, 出力DIR ... 存在するディレクトリであること。
+
+	環境変数
+
+		@CopyLib_NoPause に 非0 ... 終了時ポーズしない。
 */
 
 #include "C:\Factory\Common\all.h"
