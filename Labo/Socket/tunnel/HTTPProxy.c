@@ -4,6 +4,7 @@
 		/S ... 停止する。
 
 	HTTPProxy.exe RECV-PORT FWD-HOST FWD-PORT [/C CONNECT-MAX] [/T SOCK-TIMEOUT] [/MT MESSAGE-TIMEOUT]
+	                                          [/FBT U-FIRST-BYTE-TIMEOUT] [/FBT- D-FIRST-BYTE-TIMEOUT]
 	                                          [/NDT U-NO-DATA-TIMEOUT] [/NDT- D-NO-DATA-TIMEOUT]
 	                                          [/M MESSAGE-MAX] [/X] [/D] [/-D] [/+C]
 	                                          [/IP OK-IP-PFX]... [/-IP NG-IP-PFX]...
@@ -14,12 +15,14 @@
 	                                          [/F- FILTER-COMMAND]
 	                                          [/F+ FILTER-COMMAND]
 
-		CONNECT-MAX       ... 最大接続数, 省略時 100
-		SOCK-TIMEOUT      ... 通信タイムアウト [秒] 0 == 無制限, 省略時 10 日
-		U-NO-DATA-TIMEOUT ... 上り無通信タイムアウト [秒] 0 == 無制限, 省略時 3 分
-		D-NO-DATA-TIMEOUT ... 下り無通信タイムアウト [秒] 0 == 無制限, 省略時 5 分
-		MESSAGE-TIMEOUT   ... 1回(1つ)のメッセージの送信・受信タイムアウト [秒] 0 == 無制限, 省略時 10 時間
-		MESSAGE-MAX       ... メッセージバッファの最大合計サイズ, 省略時は 270 MB
+		CONNECT-MAX          ... 最大接続数, 省略時 100
+		SOCK-TIMEOUT         ... 通信タイムアウト [秒] 0 == 無制限, 省略時 10 日
+		U-FIRST-BYTE-TIMEOUT ... 上り最初の１バイトのタイムアウト [秒] 0 == 無制限, 省略時 3 秒
+		D-FIRST-BYTE-TIMEOUT ... 下り最初の１バイトのタイムアウト [秒] 0 == 無制限, 省略時 5 秒
+		U-NO-DATA-TIMEOUT    ... 上り無通信タイムアウト [秒] 0 == 無制限, 省略時 3 分
+		D-NO-DATA-TIMEOUT    ... 下り無通信タイムアウト [秒] 0 == 無制限, 省略時 5 分
+		MESSAGE-TIMEOUT      ... １回(１つ)のメッセージの送信・受信タイムアウト [秒] 0 == 無制限, 省略時 10 時間
+		MESSAGE-MAX          ... メッセージバッファの最大合計サイズ, 省略時は 270 MB
 		/X  ... Hostタグを見て転送先を変更する。
 		/D  ... URLにスキーム・ドメインを挿入する。
 		/-D ... URLからスキーム・ドメインを除去する。
@@ -69,8 +72,10 @@
 // ---- Prms ----
 
 static uint SockTimeoutSec = 864000;
-static uint UNoDataTimeoutSec = 180;
-static uint DNoDataTimeoutSec = 300;
+static uint U_FirstByteTimeoutSec = 3;
+static uint D_FirstByteTimeoutSec = 5;
+static uint U_NoDataTimeoutSec = 180;
+static uint D_NoDataTimeoutSec = 300;
 static uint MessageTimeoutSec = 36000;
 static uint MessageTotalSizeMax = 270000000;
 static int ChangeFwdMode;
@@ -145,14 +150,14 @@ static uint GetMessageTotalSize(void)
 	}
 	return totalSize;
 }
-static int RecvHTTPParse(Session_t *i, int sock, uint noDatTmoutSec, int oSSock) // ret: ? 成功
+static int RecvHTTPParse(Session_t *i, int sock, uint firstByteTmoutSec, uint noDatTmoutSec, int oSSock) // ret: ? 成功
 {
-	SockStream_t *ss = CreateSockStream(sock, MessageTimeoutSec);
+	SockStream_t *ss = CreateSockStream(sock, noDatTmoutSec);
 	SockStream_t *osss = oSSock != -1 ? CreateSockStream(oSSock, 0) : NULL;
 	int retval = 0;
 	int needTryParse = (int)getSize(i->BkBuff);
 	int needBreak = 0;
-	uint noDatTmoutTime = noDatTmoutSec ? now() + noDatTmoutSec : UINTMAX;
+	uint firstByteTmoutTime = GetTimeoutTime(firstByteTmoutSec);
 
 	for(; ; )
 	{
@@ -177,7 +182,7 @@ static int RecvHTTPParse(Session_t *i, int sock, uint noDatTmoutSec, int oSSock)
 				needBreak = 1;
 				break;
 			}
-			noDatTmoutTime = UINTMAX; // 少なくとも１バイト受信したので、無通信タイムアウトは無し。
+			firstByteTmoutTime = UINTMAX; // 少なくとも１バイト受信したので無効化する。
 			needTryParse = 1;
 			addByte(i->Buff, chr);
 
@@ -227,9 +232,9 @@ static int RecvHTTPParse(Session_t *i, int sock, uint noDatTmoutSec, int oSSock)
 			cout("プロセスの終了による受信キャンセル\n");
 			break;
 		}
-		if(noDatTmoutTime < now())
+		if(firstByteTmoutTime < now())
 		{
-			cout("無通信タイムアウト\n");
+			cout("最初の壱バイトのタイムアウト\n");
 			break;
 		}
 
@@ -565,11 +570,13 @@ static autoBlock_t *MakeSendData(void)
 	*/
 	return buff;
 }
-static int SendHTTP(Session_t *i, int sock) // ret: ? 通信エラー
+static int SendHTTP(Session_t *i, int sock, uint noDatTmoutSec) // ret: ? 通信エラー
 {
 	autoBlock_t *sendData = MakeSendData();
-	uint endTime = now() + MessageTimeoutSec;
+	uint endTime = GetTimeoutTime(MessageTimeoutSec);
 	int retval = 0;
+	int ret;
+	uint noDatTmoutTime = GetTimeoutTime(noDatTmoutSec);
 
 	for(; ; )
 	{
@@ -584,9 +591,18 @@ static int SendHTTP(Session_t *i, int sock) // ret: ? 通信エラー
 			cout("送信タイムアウト\n");
 			break;
 		}
-		if(SockSendSequ(sock, sendData, 2000) == -1)
+		if((ret = SockSendSequ(sock, sendData, 2000)) == -1)
 		{
 			cout("送信エラー\n");
+			break;
+		}
+		if(ret)
+		{
+			noDatTmoutTime = GetTimeoutTime(noDatTmoutSec);
+		}
+		else if(noDatTmoutTime < now())
+		{
+			cout("無通信タイムアウト！\n");
 			break;
 		}
 		if(ProcDeadFlag)
@@ -687,7 +703,7 @@ static void PerformTh(int sock, char *strip)
 	{
 		// ---- 上り ----
 
-		if(!RecvHTTPParse(i, i->Sock, UNoDataTimeoutSec, i->FwdSock))
+		if(!RecvHTTPParse(i, i->Sock, U_FirstByteTimeoutSec, U_NoDataTimeoutSec, i->FwdSock))
 			break;
 
 		if(
@@ -703,14 +719,14 @@ static void PerformTh(int sock, char *strip)
 		if(!ProcHTTP_Upload(i))
 			break;
 
-		if(!SendHTTP(i, i->FwdSock))
+		if(!SendHTTP(i, i->FwdSock, U_NoDataTimeoutSec))
 			break;
 
 		ab_swap(i->Buff, i->BkBuff);
 
 		// ---- 下り ----
 
-		if(!RecvHTTPParse(i, i->FwdSock, DNoDataTimeoutSec, i->Sock))
+		if(!RecvHTTPParse(i, i->FwdSock, D_FirstByteTimeoutSec, D_NoDataTimeoutSec, i->Sock))
 			break;
 
 		DoFilterCommand(DownloadFilterCommand);
@@ -718,7 +734,7 @@ static void PerformTh(int sock, char *strip)
 		if(!ProcHTTP_Download(i))
 			break;
 
-		if(!SendHTTP(i, i->Sock))
+		if(!SendHTTP(i, i->Sock, D_NoDataTimeoutSec))
 			break;
 
 		ab_swap(i->Buff, i->BkBuff);
@@ -759,14 +775,24 @@ static int ReadArgs(void)
 		SockTimeoutSec = toValue(nextArg());
 		return 1;
 	}
+	if(argIs("/FBT")) // 上り最初の１バイトのタイムアウト
+	{
+		U_FirstByteTimeoutSec = toValue(nextArg());
+		return 1;
+	}
+	if(argIs("/FBT-")) // 下り最初の１バイトのタイムアウト
+	{
+		D_FirstByteTimeoutSec = toValue(nextArg());
+		return 1;
+	}
 	if(argIs("/NDT")) // 上り無通信タイムアウト
 	{
-		UNoDataTimeoutSec = toValue(nextArg());
+		U_NoDataTimeoutSec = toValue(nextArg());
 		return 1;
 	}
 	if(argIs("/NDT-")) // 下り無通信タイムアウト
 	{
-		DNoDataTimeoutSec = toValue(nextArg());
+		D_NoDataTimeoutSec = toValue(nextArg());
 		return 1;
 	}
 	if(argIs("/MT"))
@@ -866,8 +892,10 @@ static int ReadArgs(void)
 
 	cout("ConnectMax: %u\n", ConnectMax);
 	cout("SockTimeoutSec: %u\n", SockTimeoutSec);
-	cout("UNoDataTimeoutSec: %u\n", UNoDataTimeoutSec);
-	cout("DNoDataTimeoutSec: %u\n", DNoDataTimeoutSec);
+	cout("U_FirstByteTimeoutSec: %u\n", U_FirstByteTimeoutSec);
+	cout("D_FirstByteTimeoutSec: %u\n", D_FirstByteTimeoutSec);
+	cout("U_NoDataTimeoutSec: %u\n", U_NoDataTimeoutSec);
+	cout("D_NoDataTimeoutSec: %u\n", D_NoDataTimeoutSec);
 	cout("MessageTimeoutSec: %u\n", MessageTimeoutSec);
 	cout("MessageTotalSizeMax: %u\n", MessageTotalSizeMax);
 	cout("ChangeFwdMode: %d\n", ChangeFwdMode);

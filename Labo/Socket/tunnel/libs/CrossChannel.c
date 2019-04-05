@@ -7,6 +7,7 @@ typedef struct Channel_st
 	void (*DataFltr)(autoBlock_t *, uint);
 	uint FltrData;
 	int *P_DeadFlag;
+	uint *P_NoDataTimeoutTime;
 }
 Channel_t;
 
@@ -31,6 +32,8 @@ static void ChannelTransmit(Channel_t *i)
 
 		for(; ; )
 		{
+			int ioOccurred = 0;
+
 			if(ProcDeadFlag)
 				goto endTransmit;
 
@@ -59,6 +62,7 @@ static void ChannelTransmit(Channel_t *i)
 				{
 					rTmout = 0;
 					execDataFltrFlag = 1;
+					ioOccurred = 1;
 				}
 				else
 				{
@@ -108,7 +112,7 @@ static void ChannelTransmit(Channel_t *i)
 				else
 				{
 					dosFlag = 1;
-					dosTmout = DOSTimeoutSec ? now() + DOSTimeoutSec : UINTMAX;
+					dosTmout = GetTimeoutTime(DOSTimeoutSec);
 				}
 				rTmout = 0;
 			}
@@ -122,11 +126,27 @@ static void ChannelTransmit(Channel_t *i)
 					*i->P_DeadFlag = 1;
 					goto endTransmit;
 				}
+
+				if(retval)
+				{
+					ioOccurred = 1;
+				}
+			}
+
+			if(ioOccurred)
+			{
+				*i->P_NoDataTimeoutTime = GetTimeoutTime(CC_NoDataTimeoutSec);
+			}
+			else if(*i->P_NoDataTimeoutTime < now())
+			{
+				cout("★★★CC無通信タイムアウト★★★\n");
+				*i->P_DeadFlag = 1;
+				goto endTransmit;
 			}
 		}
 
 		{
-			uint abortTime = DOSTimeoutSec ? now() + DOSTimeoutSec : UINTMAX;
+			uint abortTime = GetTimeoutTime(DOSTimeoutSec);
 
 			for(; ; )
 			{
@@ -175,6 +195,7 @@ void CrossChannel(
 	uint aToBTh;
 	uint bToATh;
 	int deadFlag = 0;
+	uint noDatTmoutTime = GetTimeoutTime(CC_NoDataTimeoutSec);
 
 	errorCase(sockA == -1);
 	errorCase(sockB == -1);
@@ -194,12 +215,14 @@ void CrossChannel(
 	aToB.DataFltr = aToBFltr;
 	aToB.FltrData = aToBFltrData;
 	aToB.P_DeadFlag = &deadFlag;
+	aToB.P_NoDataTimeoutTime = &noDatTmoutTime;
 
 	bToA.RSock = sockB;
 	bToA.WSock = sockA;
 	bToA.DataFltr = bToAFltr;
 	bToA.FltrData = bToAFltrData;
 	bToA.P_DeadFlag = &deadFlag;
+	bToA.P_NoDataTimeoutTime = &noDatTmoutTime;
 
 	aToBTh = runThread(ChannelTransmit, &aToB);
 	bToATh = runThread(ChannelTransmit, &bToA);

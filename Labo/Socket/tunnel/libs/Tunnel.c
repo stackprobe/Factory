@@ -105,9 +105,14 @@ readArgs:
 		ConnectMax = toValue(nextArg());
 		goto readArgs;
 	}
-	if(argIs("/DOSTO")) // todo: コメントに記載
+	if(argIs("/DOSTO")) // TODO コメントに記載
 	{
 		DOSTimeoutSec = toValue(nextArg());
+		goto readArgs;
+	}
+	if(argIs("/CCNDTO")) // TODO コメントに記載
+	{
+		CC_NoDataTimeoutSec = toValue(nextArg());
 		goto readArgs;
 	}
 	if(userReadArgs())
