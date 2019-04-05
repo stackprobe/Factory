@@ -19,4 +19,4 @@ uint DOSTimeoutSec = 3600;
 
 	0 == タイムアウト無し
 */
-uint CC_NoDataTimeoutSec = 3600;
+uint CC_NoDataTimeoutSec = 0;
