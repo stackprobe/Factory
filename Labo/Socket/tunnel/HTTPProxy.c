@@ -170,7 +170,7 @@ static int RecvHTTPParse(Session_t *i, int sock, uint firstByteTmoutSec, uint no
 				cout("対岸から切断されました。\n");
 				break;
 			}
-			addByte(i->BkBuff, chr);
+			addByte(i->BkBuff, chr); // memo: 片方から受信中に、もう片方からデータが送信されることってあるのか？
 		}
 
 		while(SockRecvCharWait(ss, needTryParse ? 0 : 2000))
@@ -202,6 +202,18 @@ static int RecvHTTPParse(Session_t *i, int sock, uint firstByteTmoutSec, uint no
 						cout("| メッセージバッファサイズの合計が上限に達しました |\n");
 						cout("+--------------------------------------------------+\n");
 						goto endFunc;
+					}
+
+					{
+						static uint rCnt2;
+
+						rCnt2++;
+						rCnt2 %= 16;
+
+						if(!rCnt2)
+						{
+							break; // パース等強制的に実施する。
+						}
 					}
 				}
 			}
@@ -591,7 +603,9 @@ static int SendHTTP(Session_t *i, int sock, uint noDatTmoutSec) // ret: ? 通信エ
 			cout("送信タイムアウト\n");
 			break;
 		}
-		if((ret = SockSendSequ(sock, sendData, 2000)) == -1)
+		ret = SockSendSequ(sock, sendData, 2000);
+
+		if(ret == -1)
 		{
 			cout("送信エラー\n");
 			break;
