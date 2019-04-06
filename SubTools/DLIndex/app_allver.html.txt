@@ -21,7 +21,7 @@
 	{
 		font-family: monospace;
 		color: white;
-		background-color: #232443;
+		background-color: *BACK_COLOR*;
 	}
 	-->
 	</style>

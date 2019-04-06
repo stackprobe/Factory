@@ -15,7 +15,7 @@
 	{
 		font-family: Meiryo, Arial;
 		padding: 10px;
-		background-color: #343554;
+		background-color: *TD_BACK_COLOR*;
 		vertical-align: middle;
 	}
 	td.appname
@@ -34,7 +34,7 @@
 	td.menuitem-sourcecodelink
 	{
 		text-align: left;
-		background-color: #7070a0;
+		background-color: *TD_BACK_HILITE_COLOR*;
 	}
 	a
 	{
@@ -52,7 +52,7 @@
 	body
 	{
 		color: white;
-		background-color: #232443;
+		background-color: *BACK_COLOR*;
 	}
 	-->
 	</style>
