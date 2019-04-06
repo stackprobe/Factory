@@ -26,6 +26,8 @@
 		|  |
 		|  +--description.txt 0*1
 		|  |
+		|  +--sourcecodelink.txt 0*1
+		|  |
 		|  +--allver.html <- out
 		|  |
 		|  +--index.html <- out
@@ -52,6 +54,10 @@
 		description.txt
 			アプリの説明文
 			CP932/MultiLine
+
+		sourcecodelink.txt
+			ソースコードへのリンク(URL)
+			CP932/OneLine
 
 		out ... このプログラムが出力するファイル
 */
@@ -95,6 +101,7 @@ static int IsHexStr(char *str)
 #define APPALLVER_FMTFILE "app_allver.html.txt"
 
 #define DESCRIPTION_FILE "description.txt"
+#define SOURCECODELINK_FILE "sourcecodelink.txt"
 
 #define INDEX_FILE "index.html"
 #define ALLVER_FILE "allver.html"
@@ -152,6 +159,7 @@ typedef struct AppInfo_st
 	char *AppName;
 	autoList_t *RevInfos;
 	char *Description;
+	char *SourceCodeLink;
 }
 AppInfo_t;
 
@@ -302,6 +310,18 @@ static void LoadAppInfos(char *rootDir)
 			cout("description: %s\n", ai->Description);
 		}
 
+		{
+			char *file = combine(dir, SOURCECODELINK_FILE);
+
+			if(existFile(file))
+				ai->SourceCodeLink = readFirstLine(file);
+			else
+				ai->SourceCodeLink = strx("javascript:void(0);\" onclick=\"alert('リンク情報がありません。');");
+
+			memFree(file);
+			cout("sourcecodelink: %s\n", ai->SourceCodeLink);
+		}
+
 		addElement(AppInfos, (uint)ai);
 	}
 	releaseDim(appDirs, 1);
@@ -380,6 +400,7 @@ static void MakeAppIndex(char *rootDir, AppInfo_t *ai, char *appIndexFmt, char *
 		memFree(description);
 	}
 
+	appIndexFmt = replaceLine(appIndexFmt, "*sourcecodelink*", ai->SourceCodeLink, 0);
 	appIndexFmt = ReplaceAllDefine(appIndexFmt);
 
 	{
@@ -387,6 +408,7 @@ static void MakeAppIndex(char *rootDir, AppInfo_t *ai, char *appIndexFmt, char *
 		writeOneLine(indexFile, appIndexFmt);
 		memFree(indexFile);
 	}
+
 	memFree(appIndexFmt);
 
 	{
