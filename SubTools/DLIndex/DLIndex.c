@@ -431,7 +431,7 @@ static void MakeAppIndex(char *rootDir, AppInfo_t *ai, char *appIndexFmt, char *
 		for(index = 1; index < getCount(ai->SourceCodeLinks); index++)
 		{
 			char *tmp = strx(fmt);
-			char *title = xcout("*%u", index + 1);
+			char *title = xcout("#%u", index + 1);
 
 			tmp = replaceLine(tmp, "*sourcecodelink*", getLine(ai->SourceCodeLinks, index), 0);
 			tmp = replaceLine(tmp, "*title*", title, 0);
