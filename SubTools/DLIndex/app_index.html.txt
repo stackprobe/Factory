@@ -74,15 +74,15 @@
 	</tr>
 
 	<tr>
-	<td class="menuitem"><a href="*newest*">最新版<a/></td>
+	<td class="menuitem"><a href="*newest*">最新版</a></td>
 	</tr>
 
 	<tr>
-	<td class="menuitem"><a href="allver.html">最新版と旧版<a/></td>
+	<td class="menuitem"><a href="allver.html">最新版と旧版</a></td>
 	</tr>
 
 	<tr>
-	<td class="menuitem-sourcecodelink"><a href="*sourcecodelink*" target="_blank">ソースコード<a/></td>
+	<td class="menuitem-sourcecodelink"><a href="*sourcecodelink*" target="_blank">ソースコード</a>*extra-sourcecodelink*</td>
 	</tr>
 
 	<tr>

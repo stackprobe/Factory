@@ -4,7 +4,7 @@
 	----
 	フォルダ構成
 
-		<実行時のカレントDIR>
+		<実行時のカレントDIR>   **1
 		|
 		+--define.txt 1
 		|
@@ -13,6 +13,8 @@
 		+--app_index.html.txt 1
 		|
 		+--app_allver.html.txt 1
+		|
+		+--extra_sourcecodelink.html.txt 1
 
 		<ルートDIR> 1
 		|
@@ -57,9 +59,12 @@
 
 		sourcecodelink.txt
 			ソースコードへのリンク(URL)
-			CP932/OneLine
+			複数可・改行区切り
+			CP932/MultiLine
 
 		out ... このプログラムが出力するファイル
+
+		**1 ... 実行時のカレントDIRから見つからない場合は、実行ファイルと同じ場所を見る。そこにも無ければエラー。
 */
 
 #include "C:\Factory\Common\all.h"
@@ -99,6 +104,7 @@ static int IsHexStr(char *str)
 #define ROOTINDEX_FMTFILE "index.html.txt"
 #define APPINDEX_FMTFILE "app_index.html.txt"
 #define APPALLVER_FMTFILE "app_allver.html.txt"
+#define EXTRA_SOURCECODELINK_FMTFILE "extra_sourcecodelink.html.txt"
 
 #define DESCRIPTION_FILE "description.txt"
 #define SOURCECODELINK_FILE "sourcecodelink.txt"
@@ -107,6 +113,20 @@ static int IsHexStr(char *str)
 #define ALLVER_FILE "allver.html"
 #define NEWEST_FILE "newest.txt"
 
+static char *GetAppResourceFile(char *localFile)
+{
+	char *file;
+
+	if(existFile(localFile))
+		file = makeFullPath(localFile);
+	else
+		file = combine(getSelfDir(), localFile);
+
+	cout("app_res_file: %s\n", file);
+
+	return file;
+}
+
 // ---- define ----
 
 static autoList_t *DefineKeys;
@@ -114,7 +134,7 @@ static autoList_t *DefineValues;
 
 static void LoadDefineFile(void)
 {
-	autoList_t *lines = readResourceLines(DEFINE_FILE);
+	autoList_t *lines = readResourceLines_x(GetAppResourceFile(DEFINE_FILE));
 	uint index;
 
 	errorCase(getCount(lines) & 1);
@@ -159,7 +179,7 @@ typedef struct AppInfo_st
 	char *AppName;
 	autoList_t *RevInfos;
 	char *Description;
-	char *SourceCodeLink;
+	autoList_t *SourceCodeLinks;
 }
 AppInfo_t;
 
@@ -168,15 +188,8 @@ static int SkipHashCheckFlag;
 
 static char *LoadFmtFile(char *localFile)
 {
-	char *fmtFile;
+	char *fmtFile = GetAppResourceFile(localFile);
 	char *fmt;
-
-	if(existFile(localFile))
-		fmtFile = makeFullPath(localFile);
-	else
-		fmtFile = combine(getSelfDir(), localFile);
-
-	cout("fmtFile: %s\n", fmtFile);
 
 	fmt = untokenize_xc(readLines(fmtFile), "\n");
 	memFree(fmtFile);
@@ -314,12 +327,12 @@ static void LoadAppInfos(char *rootDir)
 			char *file = combine(dir, SOURCECODELINK_FILE);
 
 			if(existFile(file))
-				ai->SourceCodeLink = readFirstLine(file);
+				ai->SourceCodeLinks = readResourceLines(file);
 			else
-				ai->SourceCodeLink = strx("javascript:void(0);\" onclick=\"alert('リンク情報がありません。');");
+				ai->SourceCodeLinks = newList();
 
 			memFree(file);
-			cout("sourcecodelink: %s\n", ai->SourceCodeLink);
+			cout("sourcecodelink_num: %u\n", getCount(ai->SourceCodeLinks));
 		}
 
 		addElement(AppInfos, (uint)ai);
@@ -400,7 +413,41 @@ static void MakeAppIndex(char *rootDir, AppInfo_t *ai, char *appIndexFmt, char *
 		memFree(description);
 	}
 
-	appIndexFmt = replaceLine(appIndexFmt, "*sourcecodelink*", ai->SourceCodeLink, 0);
+	{
+		char *sourcecodelink;
+
+		if(getCount(ai->SourceCodeLinks))
+			sourcecodelink = getLine(ai->SourceCodeLinks, 0);
+		else
+			sourcecodelink = "javascript:alert('リンク情報がありません。')";
+
+		appIndexFmt = replaceLine(appIndexFmt, "*sourcecodelink*", sourcecodelink, 0);
+	}
+
+	{
+		char *fmt = LoadFmtFile(EXTRA_SOURCECODELINK_FMTFILE);
+		char *buff = strx("");
+
+		for(index = 1; index < getCount(ai->SourceCodeLinks); index++)
+		{
+			char *tmp = strx(fmt);
+			char *title = xcout("*%u", index + 1);
+
+			tmp = replaceLine(tmp, "*sourcecodelink*", getLine(ai->SourceCodeLinks, index), 0);
+			tmp = replaceLine(tmp, "*title*", title, 0);
+
+			buff = addLine(buff, tmp);
+
+			memFree(tmp);
+			memFree(title);
+		}
+		memFree(fmt);
+
+		appIndexFmt = replaceLine(appIndexFmt, "*extra-sourcecodelink*", buff, 0);
+
+		memFree(buff);
+	}
+
 	appIndexFmt = ReplaceAllDefine(appIndexFmt);
 
 	{
@@ -442,6 +489,7 @@ static void MakeAppIndex(char *rootDir, AppInfo_t *ai, char *appIndexFmt, char *
 		writeOneLine(allVerFile, appAllVerFmt);
 		memFree(allVerFile);
 	}
+
 	memFree(appAllVerFmt);
 
 	releaseDim(dlLinkList, 1);
