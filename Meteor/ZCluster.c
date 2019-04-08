@@ -116,6 +116,7 @@ static int DoEncrypt(char *file, autoBlock_t *rawKey, int mode) // mode: "ED"
 		retval = rngcphrDecryptFile(file, keyTableList);
 	}
 	cphrReleaseKeyTableList(keyTableList);
+cout("********** retval: %d\n", retval); // test test test test test
 	return retval;
 }
 void ZC_Encrypt(char *file, autoBlock_t *rawKey)

@@ -279,9 +279,19 @@ static int F_UnaddHash(char *file)
 	setFileSize(file, fileSize - 64);
 	sha512_makeHashFile(file);
 
-	if(memcmp(sha512_hash, r_hash, 64)) // ? 生成したハッシュと読み込んだハッシュが違う。
-		return 0;
+LOGPOS();
+	{
+	char *tmp;
+	cout("fileのハッシュ：%s\n", tmp = makeHexLine(gndBlockVar(r_hash,      64, gab))); memFree(tmp);
+	cout("再計算ハッシュ：%s\n", tmp = makeHexLine(gndBlockVar(sha512_hash, 64, gab))); memFree(tmp);
+	}
 
+	if(memcmp(sha512_hash, r_hash, 64)) // ? 生成したハッシュと読み込んだハッシュが違う。
+	{
+LOGPOS();
+		return 0;
+	}
+LOGPOS();
 	return 1;
 }
 

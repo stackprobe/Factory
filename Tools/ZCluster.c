@@ -289,7 +289,7 @@ static void Restore(char *rFile, char *wPath, autoBlock_t *rawKey, int restoreDi
 		copyFile(rFile, midFile);
 
 		LOGPOS();
-		ZC_Decrypt(midFile, rawKey);
+		errorCase_m(!ZC_Decrypt(midFile, rawKey), "ïúçÜé∏îs");
 		LOGPOS();
 		ZC_Unpack(midFile, wPath);
 		LOGPOS();
