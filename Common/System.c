@@ -55,13 +55,7 @@ static void ContextSwitching(void) // ts_
 void sleep(uint millis) // ts_
 {
 	if(millis)
-	{
-		// それなりに長くスリープするときはフラッシュしておく。PipeLogger のため
-		if(500 < millis)
-			fflush(stdout);
-
 		Sleep(millis);
-	}
 	else
 		ContextSwitching(); // sleep(0); のときは、単にコンテキストスイッチを行う。
 }

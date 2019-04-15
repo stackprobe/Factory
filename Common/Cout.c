@@ -198,13 +198,15 @@ void coutLongText(char *text)
 	char *p;
 	char *q;
 	uint d;
+	int needFlush = 0;
 
 	for(p = text; *p; p = q)
 	{
 #define PRINT_LMT 98
 
 		for(q = p; *q && (uint)q - (uint)p < PRINT_LMT; q = mbsNext(q))
-		{}
+			if(*q == '\r' || *q == '\n')
+				needFlush = 1;
 
 #undef PRINT_LMT
 
@@ -213,6 +215,9 @@ void coutLongText(char *text)
 		errorCase(sprintf(format, "%%.%us", d) < 0);
 		errorCase(printf(format, p) != d);
 	}
+	if(needFlush)
+		errorCase(fflush(stdout));
+
 	if(WrFP)
 	{
 		errorCase(fputs(text, WrFP) < 0);
