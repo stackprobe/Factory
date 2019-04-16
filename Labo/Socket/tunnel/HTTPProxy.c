@@ -508,176 +508,6 @@ static int ProcHTTP_Download(Session_t *i) // ret: ? 成功
 	return 1; // 成功
 }
 
-// ★★★ SendHTTPBody ★★★
-
-typedef struct SHB_DataPipeInfo_st
-{
-	int Chunked;
-	uint64 ContentLength;
-	uint64 SentSize;
-	uint ChunkRemSize;
-	int ChunkEnded;
-}
-SHB_DataPipeInfo_t;
-
-static int SHB_GetChunkSize(autoBlock_t *buff, uint endPos)
-{
-	uint index;
-	uint size = 0;
-
-	for(index = 0; index < endPos; index++)
-	{
-		int chr = (int)getByte(buff, index);
-
-		if(m_ishexadecimal(chr))
-		{
-			size *= 16;
-			size += m_c2i(chr);
-		}
-	}
-	return size;
-}
-static int SHB_DataPipe(autoBlock_t *rBuff, autoBlock_t *wBuff, SHB_DataPipeInfo_t *i)
-{
-	int retval = 0;
-
-	if(i->Chunked)
-	{
-		if(i->ChunkRemSize)
-		{
-			uint size = m_min(i->ChunkRemSize, getSize(rBuff));
-			autoBlock_t gab;
-
-			addBytes(wBuff, gndSubBytesVar(rBuff, 0, size, gab));
-			i->ChunkRemSize -= size;
-			removeBytes(rBuff, 0, size);
-		}
-		else if(i->ChunkEnded)
-		{
-			retval = 1;
-		}
-		else
-		{
-			uint index = findByte(rBuff, '\n');
-
-			if(index < getSize(rBuff))
-			{
-				uint chunkExtensionIndex = findByte(rBuff, ';');
-				uint chunkSize;
-
-				chunkSize = SHB_GetChunkSize(rBuff, m_min(index, chunkExtensionIndex));
-
-				i->ChunkRemSize = index + 1 + chunkSize + 2;
-				i->ChunkEnded = !chunkSize;
-			}
-			else
-			{
-				if(65000 < getSize(rBuff)) // fixme: 長さ適当
-				{
-					cout("★★★チャンクのエンティティヘッダが長過ぎます。\n");
-
-					// XXX 適当にデータぶっ壊す。
-					setSize(rBuff, 0);
-					setSize(wBuff, 0);
-					retval = 1;
-				}
-			}
-		}
-	}
-	else
-	{
-		uint64 remSize = i->ContentLength - i->SentSize;
-
-		if((uint64)getSize(rBuff) < remSize)
-		{
-			addBytes(wBuff, rBuff);
-			i->SentSize += (uint64)getSize(rBuff);
-			setSize(rBuff, 0);
-		}
-		else
-		{
-			autoBlock_t gab;
-
-			addBytes(wBuff, gndSubBytesVar(rBuff, 0, (uint)remSize, gab));
-			removeBytes(rBuff, 0, (uint)remSize);
-			retval = 1;
-		}
-	}
-	return retval;
-}
-static int SendHTTPBody(autoBlock_t *recvData, int rSock, int wSock, uint noDatTmoutSec, uint endTime, SHB_DataPipeInfo_t *i)
-{
-	autoBlock_t *sendData = newBlock();
-	int recvCompleted;
-	int retval = 0;
-	int ret;
-	uint noDatTmoutTime = GetTimeoutTime(noDatTmoutSec);
-
-	recvCompleted = SHB_DataPipe(recvData, sendData, i);
-
-	for(; ; )
-	{
-		if(getSize(sendData))
-		{
-			ret = SockSendSequ(wSock, sendData, 2000);
-
-			if(ret == -1)
-			{
-				cout("送信エラー(SHB)\n");
-				break;
-			}
-			if(ret)
-			{
-				noDatTmoutTime = GetTimeoutTime(noDatTmoutSec);
-			}
-		}
-		else if(recvCompleted)
-		{
-			cout("送受信完了(SHB)\n");
-			retval = 1;
-			break;
-		}
-		else
-		{
-			ret = SockRecvSequ(rSock, recvData, 2000);
-
-			if(ret == -1)
-			{
-				cout("受信エラー(SHB)\n");
-				break;
-			}
-			if(ret)
-			{
-				noDatTmoutTime = GetTimeoutTime(noDatTmoutSec);
-			}
-			recvCompleted = SHB_DataPipe(recvData, sendData, i);
-		}
-
-		{
-			uint nowTime = now();
-
-			if(endTime < nowTime)
-			{
-				cout("送受信タイムアウト(SHB)\n");
-				break;
-			}
-			if(noDatTmoutTime < nowTime)
-			{
-				cout("無通信タイムアウト(SHB)\n");
-				break;
-			}
-		}
-
-		if(ProcDeadFlag)
-		{
-			cout("送信中止！(SHB_ProcDeadFlag)\n");
-			break;
-		}
-	}
-	releaseAutoBlock(sendData);
-	return retval;
-}
-
 // ★★★ SendHTTP ★★★
 
 static char *HFldFolding(char *str)
@@ -723,11 +553,7 @@ static autoBlock_t *MakeSendData(void)
 
 	ab_addLine(buff, "\r\n");
 
-	if(HP_HeaderOnly)
-	{
-		// noop
-	}
-	else if(HttpDat.Chunked)
+	if(HttpDat.Chunked)
 	{
 		uint rPos = 0;
 
@@ -746,23 +572,23 @@ static autoBlock_t *MakeSendData(void)
 	else
 		ab_addBytes(buff, HttpDat.Body);
 
+	// test
+	/*
+	{
+		char *tmp;
+		cout("SENDBuff:[%s]\n", tmp = toPrintLine(buff, 1));
+		memFree(tmp);
+	}
+	*/
 	return buff;
 }
-static int SendHTTP(Session_t *i, int rSock, int wSock, uint noDatTmoutSec) // ret: ? 通信エラー
+static int SendHTTP(Session_t *i, int sock, uint noDatTmoutSec) // ret: ? 通信エラー
 {
 	autoBlock_t *sendData = MakeSendData();
 	uint endTime = GetTimeoutTime(MessageTimeoutSec);
 	int retval = 0;
 	int ret;
 	uint noDatTmoutTime = GetTimeoutTime(noDatTmoutSec);
-	SHB_DataPipeInfo_t dpi;
-
-	zeroclear(dpi);
-
-	dpi.Chunked = HttpDat.Chunked;
-	dpi.ContentLength = HttpDat.ContentLength;
-
-	// この先、別スレッドにより HttpDat は書き換わる。
 
 	for(; ; )
 	{
@@ -777,7 +603,7 @@ static int SendHTTP(Session_t *i, int rSock, int wSock, uint noDatTmoutSec) // r
 			cout("送信タイムアウト\n");
 			break;
 		}
-		ret = SockSendSequ(wSock, sendData, 2000);
+		ret = SockSendSequ(sock, sendData, 2000);
 
 		if(ret == -1)
 		{
@@ -800,16 +626,6 @@ static int SendHTTP(Session_t *i, int rSock, int wSock, uint noDatTmoutSec) // r
 		}
 	}
 	releaseAutoBlock(sendData);
-
-	if(retval && HP_HeaderOnly)
-	{
-		autoBlock_t *recvData = ab_eject(i->Buff); // i->Buff は ReallocSessionBuffs() で触られるので脱皮する。<-- この系では触らないかもしれない。
-
-		retval = SendHTTPBody(recvData, rSock, wSock, noDatTmoutSec, endTime, &dpi);
-
-		ab_swap(recvData, i->Buff);
-		releaseAutoBlock(recvData);
-	}
 	return retval;
 }
 
@@ -846,7 +662,7 @@ static void PfmConnect(Session_t *i)
 
 	if(i->FwdSock != -1) // ? 接続成功
 	{
-		autoBlock_t *iBuffTmp = ab_eject(i->Buff); // i->Buff は ReallocSessionBuffs() で触られるので脱皮する。
+		autoBlock_t *iBuffTmp = copyAutoBlock(i->Buff); // i->Buff は ReallocSessionBuffs() で触られるので複製する。
 		autoBlock_t *buffTmp1;
 		autoBlock_t *buffTmp2 = sendData;
 
@@ -917,7 +733,7 @@ static void PerformTh(int sock, char *strip)
 		if(!ProcHTTP_Upload(i))
 			break;
 
-		if(!SendHTTP(i, i->Sock, i->FwdSock, U_NoDataTimeoutSec))
+		if(!SendHTTP(i, i->FwdSock, U_NoDataTimeoutSec))
 			break;
 
 		ab_swap(i->Buff, i->BkBuff);
@@ -932,7 +748,7 @@ static void PerformTh(int sock, char *strip)
 		if(!ProcHTTP_Download(i))
 			break;
 
-		if(!SendHTTP(i, i->FwdSock, i->Sock, D_NoDataTimeoutSec))
+		if(!SendHTTP(i, i->Sock, D_NoDataTimeoutSec))
 			break;
 
 		ab_swap(i->Buff, i->BkBuff);
@@ -1088,8 +904,6 @@ static int ReadArgs(void)
 		return 1;
 	}
 
-	HP_HeaderOnly = !UploadFilterCommand && !DownloadFilterCommand;
-
 	cout("ConnectMax: %u\n", ConnectMax);
 	cout("SockTimeoutSec: %u\n", SockTimeoutSec);
 	cout("U_FirstByteTimeoutSec: %u\n", U_FirstByteTimeoutSec);
@@ -1107,7 +921,6 @@ static int ReadArgs(void)
 	cout("DR_Keys: [%u]\n", getCount(DR_Keys));
 	cout("UploadFilterCommand: %s\n", UploadFilterCommand ? UploadFilterCommand : "<NONE>");
 	cout("DownloadFilterCommand: %s\n", DownloadFilterCommand ? DownloadFilterCommand : "<NONE>");
-	cout("HP_HeaderOnly: %s\n", HP_HeaderOnly ? "<YES>" : "<NO>");
 
 	errorCase(IMAX / sizeof(Session_t) < ConnectMax);
 
