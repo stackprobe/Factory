@@ -505,3 +505,26 @@ char *unbindBlock2Line(autoBlock_t *i)
 	addByte(i, '\0');
 	return unbindBlock(i);
 }
+
+uint findByteMatch(autoBlock_t *i, int (*match)(uint))
+{
+	uint index;
+
+	for(index = 0; index < i->Size; index++)
+		if(match(i->Block[index]))
+			break;
+
+	return index;
+}
+
+static uint FB_Byte;
+
+static int FB_Match(uint byte)
+{
+	return FB_Byte == byte;
+}
+uint findByte(autoBlock_t *i, uint byte)
+{
+	FB_Byte = byte;
+	return findByteMatch(i, FB_Match);
+}

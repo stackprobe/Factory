@@ -87,3 +87,6 @@ char *unbindBlock2Line(autoBlock_t *i);
 */
 #define b_(block) \
 	((uchar *)(block)->Block)
+
+uint findByteMatch(autoBlock_t *i, int (*match)(uint));
+uint findByte(autoBlock_t *i, uint byte);

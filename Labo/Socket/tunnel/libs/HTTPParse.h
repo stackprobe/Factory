@@ -9,7 +9,7 @@ typedef struct HttpDat_st
 	autoList_t *H_Keys;
 	autoList_t *H_Values;
 	int Chunked;
-	uint ContentLength;
+	uint64 ContentLength;
 	int Expect100Continue;
 	autoBlock_t *Body;
 	uint EndPos;
@@ -17,6 +17,7 @@ typedef struct HttpDat_st
 HttpDat_t;
 
 extern HttpDat_t HttpDat;
+extern int HP_HeaderOnly;
 
 int HTTPParse(autoBlock_t *buff);
 

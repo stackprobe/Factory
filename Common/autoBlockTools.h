@@ -68,3 +68,4 @@ void ab_addTrailZero(autoBlock_t *i, uint count);
 uint ab_unaddTrailZero(autoBlock_t *i);
 
 void ab_swap(autoBlock_t *i, autoBlock_t *j);
+autoBlock_t *ab_eject(autoBlock_t *i);

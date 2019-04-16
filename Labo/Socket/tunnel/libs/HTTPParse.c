@@ -171,21 +171,19 @@ static void CheckHeader(void)
 		}
 		else if(!_stricmp(key, "content-length"))
 		{
-			HttpDat.ContentLength = toValue(value);
+			HttpDat.ContentLength = toValue64(value);
 		}
 		else if(!_stricmp(key, "expect"))
 		{
 			HttpDat.Expect100Continue = (int)mbs_stristr(value, "100-continue");
-cout("HttpDat.Expect100Continue: %d\n", HttpDat.Expect100Continue);
 		}
 	}
 }
 static int ReadBody(void)
 {
-	if(HttpDat.Expect100Continue)
+	if(HttpDat.Expect100Continue || !HP_HeaderOnly)
 	{
 		HttpDat.Body = newBlock();
-LOGPOS();
 		return 1;
 	}
 	if(HttpDat.Chunked)
@@ -230,17 +228,21 @@ LOGPOS();
 	}
 	else
 	{
-		if(HttpDat.ContentLength <= getSize(RBuff) - RPos)
+		uint contentLength32 = (uint)HttpDat.ContentLength;
+
+		if(contentLength32 <= getSize(RBuff) - RPos)
 		{
 			autoBlock_t gab;
 
-			HttpDat.Body = copyAutoBlock(gndSubBytesVar(RBuff, RPos, HttpDat.ContentLength, gab));
-			RPos += HttpDat.ContentLength;
+			HttpDat.Body = copyAutoBlock(gndSubBytesVar(RBuff, RPos, contentLength32, gab));
+			RPos += contentLength32;
 			return 1;
 		}
 	}
 	return 0;
 }
+
+int HP_HeaderOnly;
 
 int HTTPParse(autoBlock_t *buff)
 {

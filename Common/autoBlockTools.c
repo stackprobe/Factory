@@ -205,3 +205,9 @@ void ab_swap(autoBlock_t *i, autoBlock_t *j)
 	*i = *j;
 	*j = gab;
 }
+autoBlock_t *ab_eject(autoBlock_t *i)
+{
+	autoBlock_t *j = createBlock(0);
+	ab_swap(i, j);
+	return j;
+}
