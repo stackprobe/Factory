@@ -15,9 +15,9 @@ static HHOOK H_SMF;
 
 #pragma data_seg()
 
-static void Listener(int command, HWND hwnd, uint prm)
+static void Listener(int command, HWND hwnd, uint prm, int callType)
 {
-	cout("%c %08x %08x\n", command, hwnd, prm);
+	cout("%c %08x %08x %c\n", command, hwnd, prm, callType);
 
 	if(command == 'C')
 	{
@@ -27,7 +27,7 @@ static void Listener(int command, HWND hwnd, uint prm)
 	}
 }
 
-static void Monitor(int code, WPARAM prm_wParam, LPARAM prm_lParam)
+static void Monitor(int code, WPARAM prm_wParam, LPARAM prm_lParam, int callType)
 {
 	CWPSTRUCT *info;
 	uint message;
@@ -51,7 +51,7 @@ LOGPOS();
 	{
 	case WM_NCPAINT:
 	case WM_NCACTIVATE:
-		Listener('B', hwnd, message); // NotifyWindowBorder
+		Listener('B', hwnd, message, callType);
 		break;
 
 	case BM_SETCHECK:
@@ -67,14 +67,14 @@ LOGPOS();
 	case WM_SYSCOLORCHANGE:
 	case WM_SETTEXT:
 	case WM_SETFOCUS:
-	    Listener('A', hwnd, message); // NotifyWindowClientArea
+	    Listener('A', hwnd, message, callType);
 	    break;
 
 	case WM_HSCROLL:
 	case WM_VSCROLL:
 		if((int)LOWORD(wParam) == SB_THUMBTRACK || (int)LOWORD(wParam) == SB_ENDSCROLL)
 		{
-			Listener('W', hwnd, message); // NotifyWindow
+			Listener('W', hwnd, message, callType);
 		}
 		break;
 
@@ -82,55 +82,49 @@ LOGPOS();
 	case WM_DESTROY:
 		if(GetWindowRect(hwnd, &rect))
 		{
-			Listener('R', hwnd, (uint)&rect); // NotifyRectangle
+			Listener('R', hwnd, (uint)&rect, callType);
 		}
 		break;
 
 	case WM_WINDOWPOSCHANGED:
-		Listener('W', hwnd, message); // NotifyWindow
+	case 482:
+	case 485: // ???
+		Listener('W', hwnd, message, callType);
 		break;
 
 	case WM_PAINT:
-		Listener('A', hwnd, message); // NotifyWindowClientArea
-		break;
-
-	case 482:
-		Listener('W', hwnd, message); // NotifyWindow
-		break;
-
-	case 485:
-		Listener('W', hwnd, message); // NotifyWindow ???
+		Listener('A', hwnd, message, callType);
 		break;
 
 	case WM_NCMOUSEMOVE:
 	case WM_MOUSEMOVE:
-		Listener('C', hwnd, message); // NotifyWindow
+		Listener('C', hwnd, message, callType);
 		break;
 	}
 }
 
-/*
-	ëSïîìØÇ∂Ç‚ÇÒÅH
-*/
+LRESULT CALLBACK F_Common(int code, WPARAM wParam, LPARAM lParam, int callType)
+{
+LOGPOS();
+	Monitor(code, wParam, lParam, callType);
+	return CallNextHookEx(NULL, code, wParam, lParam);
+}
+
 LRESULT CALLBACK F_CWP(int code, WPARAM wParam, LPARAM lParam)
 {
-	Monitor(code, wParam, lParam);
-	return CallNextHookEx(NULL, code, wParam, lParam);
+	return F_Common(code, wParam, lParam, 'C');
 }
 LRESULT CALLBACK F_CWPR(int code, WPARAM wParam, LPARAM lParam)
 {
-	Monitor(code, wParam, lParam);
-	return CallNextHookEx(NULL, code, wParam, lParam);
+	return F_Common(code, wParam, lParam, 'R');
 }
 LRESULT CALLBACK F_GM(int code, WPARAM wParam, LPARAM lParam)
 {
-	Monitor(code, wParam, lParam);
-	return CallNextHookEx(NULL, code, wParam, lParam);
+	return F_Common(code, wParam, lParam, 'G');
 }
 LRESULT CALLBACK F_SMF(int code, WPARAM wParam, LPARAM lParam)
 {
-	Monitor(code, wParam, lParam);
-	return CallNextHookEx(NULL, code, wParam, lParam);
+	return F_Common(code, wParam, lParam, 'S');
 }
 
 int main(int argc, char **argv)
@@ -141,8 +135,8 @@ int main(int argc, char **argv)
 	cout("%u\n", hm);
 	cout("%u\n", tid);
 
-hm = 0;
-//tid = 0;
+//hm = 0;
+tid = 0;
 
 	H_CWP  = SetWindowsHookEx(WH_CALLWNDPROC,    F_CWP,  hm, tid);
 cout("* %u\n", GetLastError());
