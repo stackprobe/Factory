@@ -13,5 +13,5 @@ int main(int argc, char **argv)
 
 		addElement(paths, (uint)path);
 	}
-	editLines_x(paths);
+	writeLines_cx("C:\\Factory\\tmp\\Drop2Text_Last.txt", editLines_x(paths));
 }

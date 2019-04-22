@@ -310,7 +310,7 @@ void writeJoinBinary(char *file, autoBlock_t *block)
 	WriteBinary_DM(file, block, "ab");
 }
 
-int readChar(FILE *fp)
+int readChar(FILE *fp) // バイナリ・テキスト問わずストリームから１バイト(１文字)読み込む。
 {
 	int chr = fgetc(fp);
 
@@ -433,7 +433,7 @@ char *readText_b(char *file)
 {
 	return unbindBlock2Line(readBinary(file));
 }
-void writeChar(FILE *fp, int chr)
+void writeChar(FILE *fp, int chr) // バイナリ・テキスト問わずストリームに１バイト(１文字)書き出す。
 {
 	if(fputc(chr, fp) == EOF)
 	{
