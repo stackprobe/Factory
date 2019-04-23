@@ -159,6 +159,8 @@ static void SH_Main(Header_t *masterHeader, Header_t *targetHeader)
 
 	fileClose(fp);
 
+	setFileStamp(targetHeader->File, 0, 0, targetHeader->Stamp); // 更新日時を元に戻す。<- 連続して SyncDevRange したとき、このファイルが最新にならないように。
+
 	LOGPOS();
 }
 static void SyncHeader(Header_t *masterHeader, Header_t *targetHeader)

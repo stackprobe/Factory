@@ -273,6 +273,8 @@ static void SRG_SyncFile(Range_t *masterRange, Range_t *targetRange)
 
 	fileClose(fp);
 
+	setFileStamp(targetRange->File, 0, 0, targetRange->Stamp); // 更新日時を元に戻す。<- 連続して SyncDevUsing したとき、このファイルが最新にならないように。
+
 	LOGPOS();
 }
 static sint Comp_RangeSSLIDesc(uint v1, uint v2)
