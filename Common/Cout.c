@@ -191,6 +191,9 @@ void coutJLine_x(char *line)
 	短いと起こらない。
 	---> 長いテキストは分割して表示して回避する。
 	vfprintf, _vsnprintf は問題無いっぽい。stdout に出力するとマズいのか。
+
+	2019.4.23
+	修正された模様
 */
 void coutLongText(char *text)
 {
