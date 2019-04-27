@@ -169,12 +169,10 @@ static void Main2(void)
 		{
 			GitRelease(file, "Denebola");
 		}
-		/*
 		else if(!_stricmp(ext, "_gitrel_Spica02"))
 		{
 			GitRelease(file, "Spica02");
 		}
-		*/
 		else if(!_stricmp(ext, "_mochi_Spica02"))
 		{
 			Mochikaeri(file, "C:\\pleiades\\workspace\\Spica02\\src");
