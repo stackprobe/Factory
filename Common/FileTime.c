@@ -52,7 +52,7 @@ void getFileStamp(char *file, uint64 *createTime, uint64 *accessTime, uint64 *up
 
 	memset(ft, 0x00, sizeof(ft));
 
-	hdl = getWindowsHandleByFilePointer(fp);
+	hdl = getHandleByFilePointer(fp);
 	errorCase(!GetFileTime(hdl, ft + 0, ft + 1, ft + 2)); // ? Ž¸”s
 
 	fileClose(fp);
@@ -75,7 +75,7 @@ void setFileStamp(char *file, uint64 createTime, uint64 accessTime, uint64 updat
 	if(accessTime) StampToFileTime(accessTime, pft[1] = ft + 1);
 	if(updateTime) StampToFileTime(updateTime, pft[2] = ft + 2);
 
-	hdl = getWindowsHandleByFilePointer(fp);
+	hdl = getHandleByFilePointer(fp);
 	errorCase(!SetFileTime(hdl, pft[0], pft[1], pft[2])); // ? Ž¸”s
 
 	fileClose(fp);

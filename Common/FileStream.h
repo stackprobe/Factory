@@ -9,7 +9,7 @@ FILE *rfopen(char *file, char *mode);
 FILE *fileOpen(char *file, char *mode);
 void fileClose(FILE *fp);
 
-HANDLE getWindowsHandleByFilePointer(FILE *fp);
+HANDLE getHandleByFilePointer(FILE *fp);
 
 void fileSeek(FILE *fp, int origin, sint64 offset);
 void fileRead(FILE *fp, autoBlock_t *block);

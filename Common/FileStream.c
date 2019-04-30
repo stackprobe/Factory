@@ -92,7 +92,7 @@ void fileClose(FILE *fp)
 	}
 }
 
-HANDLE getWindowsHandleByFilePointer(FILE *fp) // ret: CreateFile() ‚É‚æ‚Á‚Ä“¾‚ç‚ê‚é HANDEL ‚Æ“¯‚¶
+HANDLE getHandleByFilePointer(FILE *fp) // ret: CreateFile() ‚É‚æ‚Á‚Ä“¾‚ç‚ê‚é HANDEL ‚Æ“¯‚¶
 {
 	return (HANDLE)_get_osfhandle(fileno(fp));
 }
