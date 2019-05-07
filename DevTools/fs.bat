@@ -1,1 +1,1 @@
-Search.exe /E c.cpp.h.cs.java.bat.ts %*
+Search.exe /E c.cpp.h.cs.java.bat.js %*
