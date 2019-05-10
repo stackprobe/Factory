@@ -145,6 +145,7 @@ static void ClientRequest(void)
 		}
 		cout("RETRY %u TIMES\n", RetryCount);
 		RetryCount--;
+		sleep(100);
 	}
 	SockCleanup();
 	AnsFp = fileOpen(AnsFile, "rb");
