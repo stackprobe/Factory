@@ -65,12 +65,16 @@ void coSleep(uint millis)
 
 	cout("%uミリ秒待ちます...\n", millis);
 
+	goto loopStart;
+
 	while(elapse < millis)
 	{
 		uint m = m_min(millis - elapse, SLEEP_NICK_MILLIS);
 
 		sleep(m);
 		elapse += m;
+
+	loopStart:
 		cout("\r%uミリ秒経ちました。", elapse);
 	}
 	cout("\n");

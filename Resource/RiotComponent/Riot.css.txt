@@ -1,4 +1,4 @@
-Root
+Box
 	width
 		@(@@_WIDTH)px
 

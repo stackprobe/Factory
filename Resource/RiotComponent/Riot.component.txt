@@ -1,2 +1,2 @@
-div Root
+div Box
 	div Content

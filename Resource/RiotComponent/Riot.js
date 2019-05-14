@@ -15,5 +15,5 @@ function @@_Destroy(coName) {
 }
 
 function @@_GetRoot(coName) {
-	return Riot_Get(coName + "_Root");
+	return Riot_Get(coName + "_Box");
 }

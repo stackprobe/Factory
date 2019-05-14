@@ -66,7 +66,8 @@ static void MD5Interrupt(void)
 
 static char *ServerDomain = "localhost";
 static uint ServerPort = 60022;
-static uint RetryCount = 2;
+static uint RetryCount = 7;
+static uint RetryWaitMillis = 3000;
 static char *PrmFile;
 static FILE *PrmFp;
 static char *AnsFile;
@@ -145,7 +146,7 @@ static void ClientRequest(void)
 		}
 		cout("RETRY %u TIMES\n", RetryCount);
 		RetryCount--;
-		sleep(100);
+		coSleep(RetryWaitMillis);
 	}
 	SockCleanup();
 	AnsFp = fileOpen(AnsFile, "rb");
@@ -221,6 +222,7 @@ int main(int argc, char **argv)
 	ServerDomain = getAppDataEnv("SERVER", ServerDomain);
 	ServerPort = getAppDataEnv32("NCP_SERVER_PORT", ServerPort);
 	RetryCount = getAppDataEnv32("NCP_RETRY", RetryCount);
+	RetryWaitMillis = getAppDataEnv32("NCP_RETRY_WAIT_MILLIS", RetryWaitMillis);
 	sockClientAnswerFileSizeMax = UINT64MAX;
 	md5_interrupt = MD5Interrupt;
 
@@ -500,4 +502,6 @@ readArgs:
 
 cr_fnlz:
 	CR_Fnlz();
+
+	termination(RequestAborted ? 1 : 0);
 }
