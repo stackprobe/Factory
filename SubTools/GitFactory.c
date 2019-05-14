@@ -111,9 +111,9 @@ static void SolveEncoding(char *rootDir)
 
 	foreach(files, file, index)
 	{
-		char *lFile = getLocal(file);
+		char *localFile = getLocal(file);
 
-		if(!_stricmp("Readme.txt", lFile) || !_stricmp("_source.txt", lFile))
+		if(!_stricmp("Readme.txt", localFile) || !_stricmp("_source.txt", localFile))
 		{
 			cout("SE_file: %s\n", file);
 

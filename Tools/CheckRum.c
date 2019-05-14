@@ -109,11 +109,11 @@ static autoList_t *CheckAndReadLines(char *file, char *errorMessage)
 	}
 	return lines;
 }
-static void Check_IsCompactStamp(char *lDir)
+static void Check_IsCompactStamp(char *localDir)
 {
-	char *tmp = makeCompactStamp(getStampDataTime(compactStampToTime(lDir)));
+	char *tmp = makeCompactStamp(getStampDataTime(compactStampToTime(localDir)));
 
-	errorCase_m(strcmp(tmp, lDir), "日付に問題があります。");
+	errorCase_m(strcmp(tmp, localDir), "日付に問題があります。");
 
 	memFree(tmp);
 }
@@ -203,21 +203,21 @@ static void CheckRum(char *rumDir)
 
 		foreach(files, file, index)
 		{
-			char *lFile;
+			char *localFile;
 			char *md5;
 
 			cout("%s\n", file);
 
 			errorCase_m(!existFile(file), "ファイルが見つかりません。");
 
-			lFile = getLocal(file);
+			localFile = getLocal(file);
 			md5 = md5_makeHexHashFile(file);
 
-			cout("%s\n", lFile);
+			cout("%s\n", localFile);
 			cout("%s\n", md5);
 
-			errorCase_m(!lineExp("<32,09AFaf>", lFile), "ファイル名がフォーマットに一致しません。");
-			errorCase_m(_stricmp(lFile, md5), "ファイルが破損しています。");
+			errorCase_m(!lineExp("<32,09AFaf>", localFile), "ファイル名がフォーマットに一致しません。");
+			errorCase_m(_stricmp(localFile, md5), "ファイルが破損しています。");
 		}
 		releaseDim(files, 1);
 	}
@@ -235,18 +235,18 @@ static void CheckRum(char *rumDir)
 
 		foreach(dirs, dir, index)
 		{
-			char *lDir;
+			char *localDir;
 
 			cout("%s\n", dir);
 
 			errorCase_m(!existDir(dir), "ディレクトリが見つかりません。");
 
-			lDir = getLocal(dir);
+			localDir = getLocal(dir);
 
-			cout("%s\n", lDir);
+			cout("%s\n", localDir);
 
-			errorCase_m(!lineExp("<14,09>", lDir), "ディレクトリ名がフォーマットに一致しません。");
-			Check_IsCompactStamp(lDir);
+			errorCase_m(!lineExp("<14,09>", localDir), "ディレクトリ名がフォーマットに一致しません。");
+			Check_IsCompactStamp(localDir);
 
 			// ---- revision ----
 

@@ -60,11 +60,11 @@ static void FindProgram_Main(char *trgDir)
 
 	foreach(dirs, dir, dir_index)
 	{
-		char *lDir = getLocal(dir);
+		char *localDir = getLocal(dir);
 
-		if(lineExp("<1,,__09AZaz>", lDir) && _stricmp(lDir, "obj") && _stricmp(lDir, DebugMode ? "Release" : "Debug"))
+		if(lineExp("<1,,__09AZaz>", localDir) && _stricmp(localDir, "obj") && _stricmp(localDir, DebugMode ? "Release" : "Debug"))
 		{
-			char *subDir = xcout("%s\\%s", trgDir, lDir);
+			char *subDir = xcout("%s\\%s", trgDir, localDir);
 
 			FindProgram_Main(subDir);
 

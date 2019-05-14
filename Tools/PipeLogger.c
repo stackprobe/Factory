@@ -83,22 +83,22 @@ int main(int argc, char **argv)
 	if(argIs("/DT"))
 	{
 		char *dir = nextArg();
-		char *lFile = xcout("%s.log", c_makeCompactStamp(NULL));
+		char *localFile = xcout("%s.log", c_makeCompactStamp(NULL));
 
-		LogFile = combine(dir, lFile); // ネットワークパスng
+		LogFile = combine(dir, localFile); // ネットワークパスng
 		PipeLogger();
-		memFree(lFile);
+		memFree(localFile);
 		return;
 	}
 	if(argIs("/UDT"))
 	{
 		char *dir = nextArg();
-		char *lFile = xcout("%s_%s.log", getEnvLine("USERNAME"), c_makeCompactStamp(NULL));
+		char *localFile = xcout("%s_%s.log", getEnvLine("USERNAME"), c_makeCompactStamp(NULL));
 
-		LogFile = xcout("%s\\%s", dir, lFile);
-//		LogFile = combine(dir, lFile); // ネットワークパスng
+		LogFile = xcout("%s\\%s", dir, localFile);
+//		LogFile = combine(dir, localFile); // ネットワークパスng
 		PipeLogger();
-		memFree(lFile);
+		memFree(localFile);
 		return;
 	}
 	if(hasArgs(1))

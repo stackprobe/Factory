@@ -7,33 +7,33 @@ static void Run_EE(char *file, int exeFlag, int escapedFlag)
 	if(existFile(file))
 	{
 		char *dir = changeLocal(file, "");
-		char *lFile = strx(getLocal(file));
-		char *lFileOrig = NULL;
-		char *lFileDone = NULL;
+		char *localFile = strx(getLocal(file));
+		char *localFileOrig = NULL;
+		char *localFileDone = NULL;
 
 		addCwd(dir);
 		{
 			if(escapedFlag)
 			{
-				lFileOrig = lFile;
-				lFile     = changeExt(lFile, exeFlag ? "exe"      : "bat");
-				lFileDone = changeExt(lFile, exeFlag ? "exe_done" : "bat_done");
+				localFileOrig = localFile;
+				localFile     = changeExt(localFile, exeFlag ? "exe"      : "bat");
+				localFileDone = changeExt(localFile, exeFlag ? "exe_done" : "bat_done");
 
-				moveFile(lFileOrig, lFile);
+				moveFile(localFileOrig, localFile);
 			}
-			execute_x(xcout("\"%s\"", lFile));
+			execute_x(xcout("\"%s\"", localFile));
 
 			if(escapedFlag)
 			{
-				moveFile(lFile, lFileDone);
+				moveFile(localFile, localFileDone);
 			}
 		}
 		unaddCwd();
 
 		memFree(dir);
-		memFree(lFile);
-		memFree(lFileOrig);
-		memFree(lFileDone);
+		memFree(localFile);
+		memFree(localFileOrig);
+		memFree(localFileDone);
 	}
 	memFree(file);
 }

@@ -118,18 +118,18 @@ int main(int argc, char **argv)
 
 	if(argIs("/D")) // Dir
 	{
-		char *lDir;
+		char *localDir;
 		char *rDir;
 		autoList_t *diff;
 
-		lDir = strx(nextArg());
+		localDir = strx(nextArg());
 		rDir = strx(nextArg());
 
-		diff = MakeDirSabun(lDir, rDir, 1, 1);
+		diff = MakeDirSabun(localDir, rDir, 1, 1);
 		DispDirSabunList(diff);
 		ReleaseDirSabunList(diff);
 
-		memFree(lDir);
+		memFree(localDir);
 		memFree(rDir);
 	}
 

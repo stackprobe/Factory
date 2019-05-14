@@ -71,7 +71,7 @@ thread_tls static SockStream_t *SL_SS;
 
 static int SL_Action(struct _finddata_t *i)
 {
-	char *lPath;
+	char *localPath;
 
 	if(
 		!strcmp(i->name, ".") ||
@@ -80,12 +80,12 @@ static int SL_Action(struct _finddata_t *i)
 		goto endFunc;
 
 	if(i->attrib & _A_SUBDIR)
-		lPath = xcout("%s\\", i->name);
+		localPath = xcout("%s\\", i->name);
 	else
-		lPath = strx(i->name);
+		localPath = strx(i->name);
 
-	FC3_SendLine(SL_SS, lPath);
-	memFree(lPath);
+	FC3_SendLine(SL_SS, localPath);
+	memFree(localPath);
 endFunc:
 	return 1;
 }

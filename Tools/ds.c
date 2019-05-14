@@ -16,8 +16,8 @@ static void DirSize(char *dir)
 	uint64 totalSize = 0;
 	autoList_t *lines = newList();
 	char *line;
-	char *lsize;
-	char *lfile;
+	char *sSize;
+	char *localFile;
 
 	dircnt = lastDirCount;
 
@@ -35,20 +35,20 @@ static void DirSize(char *dir)
 
 	foreach(lines, line, index)
 	{
-		lsize = strxl(line, 20);
-		lfile = strx(line + 20);
+		sSize = strxl(line, 20);
+		localFile = strx(line + 20);
 
-		while(lsize[0] == '0' && lsize[1])
-			eraseChar(lsize);
+		while(sSize[0] == '0' && sSize[1])
+			eraseChar(sSize);
 
-		lsize = thousandComma(lsize);
+		sSize = thousandComma(sSize);
 
 		memFree(line);
-		line = xcout("%s*%s", lfile, lsize);
+		line = xcout("%s*%s", localFile, sSize);
 		setElement(lines, index, (uint)line);
 
-		memFree(lsize);
-		memFree(lfile);
+		memFree(sSize);
+		memFree(localFile);
 	}
 	spacingStarLines(lines, 79);
 
@@ -71,11 +71,11 @@ int main(int argc, char **argv)
 {
 	if(argIs("/S")) // Simple mode
 	{
-		char *lsize = xcout("%I64u", getDirSize(nextArg()));
+		char *sSize = xcout("%I64u", getDirSize(nextArg()));
 
-		lsize = thousandComma(lsize);
-		cout("%s\n", lsize);
-		memFree(lsize);
+		sSize = thousandComma(sSize);
+		cout("%s\n", sSize);
+		memFree(sSize);
 		return;
 	}
 	if(hasArgs(1))

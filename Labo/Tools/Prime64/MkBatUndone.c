@@ -15,7 +15,7 @@ static void MakeBatch(uint64 minval, uint64 maxval, uint bat_no)
 }
 static void MkBatUndone(void)
 {
-	char *lDir;
+	char *localDir;
 	char *dir;
 	uint64 count;
 	uint bat_no;
@@ -24,11 +24,11 @@ static void MkBatUndone(void)
 	errorCase(NUMB_SPAN * 9998ui64 < MaxValue - MinValue); // ƒXƒpƒ“‚ª’·‚·‚¬‚éB
 
 	if(CountMode)
-		lDir = xcout("PrimeCount_%I64u-%I64u", MinValue, MaxValue);
+		localDir = xcout("PrimeCount_%I64u-%I64u", MinValue, MaxValue);
 	else
-		lDir = xcout("Prime_%I64u-%I64u", MinValue, MaxValue);
+		localDir = xcout("Prime_%I64u-%I64u", MinValue, MaxValue);
 
-	dir = getOutFile(lDir);
+	dir = getOutFile(localDir);
 	createDir(dir);
 	addCwd(dir);
 
@@ -84,7 +84,7 @@ static void MkBatUndone(void)
 	}
 
 	unaddCwd();
-	memFree(lDir);
+	memFree(localDir);
 	memFree(dir);
 	openOutDir();
 }

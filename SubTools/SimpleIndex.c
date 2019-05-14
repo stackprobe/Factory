@@ -14,12 +14,12 @@ static char *BackColor = "#556b2f";
 static char *RootParentHRef;
 static int ImageTagDisabled;
 
-static int IsSimpleName(char *lpath)
+static int IsSimpleName(char *localPath)
 {
-	return lineExp("<1,,-.__09AZaz>", lpath) &&
-		!lineExp("<>..<>", lpath) &&
-		!lineExp(".<>", lpath) &&
-		!lineExp("<>.", lpath);
+	return lineExp("<1,,-.__09AZaz>", localPath) &&
+		!lineExp("<>..<>", localPath) &&
+		!lineExp(".<>", localPath) &&
+		!lineExp("<>.", localPath);
 
 	// "<>." というローカル名は作成出来ないぽい。。。
 }

@@ -1,7 +1,7 @@
 #include "GitJapanesePath.h"
 
-#define ESC_LPATH "[Japanese-path-name]_0001"
-//#define ESC_LPATH "JP_0001"
+#define ESC_LOCALPATH "[Japanese-path-name]_0001"
+//#define ESC_LOCALPATH "JP_0001"
 
 static autoList_t *RBLines; // restore batch lines
 
@@ -93,11 +93,11 @@ static void SolveJpnPath(char *rootDir, char *realRootDir)
 
 	foreach(paths, path, index)
 	{
-		char *lPath = getLocal(path);
+		char *localPath = getLocal(path);
 
-		if(HasJpn(lPath))
+		if(HasJpn(localPath))
 		{
-			char *dest = changeExt_xc(changeLocal(path, ESC_LPATH), getExt(path));
+			char *dest = changeExt_xc(changeLocal(path, ESC_LOCALPATH), getExt(path));
 			char *relDest;
 
 			dest = toCreatablePath(dest, IMAX);
@@ -105,13 +105,13 @@ static void SolveJpnPath(char *rootDir, char *realRootDir)
 
 			movePath(path, dest);
 
-			lPath = strx(lPath);
-			lPath = PutDq(lPath);
+			localPath = strx(localPath);
+			localPath = PutDq(localPath);
 			relDest = PutDq(relDest);
 
-			addElement(RBLines, (uint)xcout("REN %s %s", relDest, lPath));
+			addElement(RBLines, (uint)xcout("REN %s %s", relDest, localPath));
 
-			memFree(lPath);
+			memFree(localPath);
 			memFree(dest);
 			memFree(relDest);
 		}

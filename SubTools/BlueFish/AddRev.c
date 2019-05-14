@@ -52,7 +52,7 @@ static void TrimRev(char *appDir)
 }
 static void AddRev_File(char *arcFile, char *docRoot)
 {
-	char *lfile = getLocal(arcFile);
+	char *localFile = getLocal(arcFile);
 	char *ext;
 	char *appName = NULL;
 	char *appDir = NULL;
@@ -63,8 +63,8 @@ static void AddRev_File(char *arcFile, char *docRoot)
 	cout("arcFile: %s\n", arcFile);
 	cout("docRoot: %s\n", docRoot);
 
-	ext = getExt(lfile);
-	appName= changeExt(lfile, "");
+	ext = getExt(localFile);
+	appName= changeExt(localFile, "");
 
 	if(!IsAsciiStr(appName))
 	{
@@ -85,7 +85,7 @@ static void AddRev_File(char *arcFile, char *docRoot)
 
 	createDir(revDir);
 
-	wFile = combine(revDir, lfile);
+	wFile = combine(revDir, localFile);
 	cout("wFile: %s\n", wFile);
 
 	moveFile(arcFile, wFile);
