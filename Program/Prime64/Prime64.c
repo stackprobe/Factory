@@ -6,7 +6,6 @@
 #define PRIME_MAX 18446744073709551557ui64 // uint64 ç≈ëÂÇÃëfêî
 
 #define DUMMY_UUID "{905cac95-9d4c-482d-a189-e6a941c68fbe}"
-#define OUT_PFX "*[Prime64_OUT-PFX]:"
 
 // ---- WrUI64 ----
 
@@ -389,9 +388,9 @@ static void Main2(void)
 		uint64 value = ToValue_Check(nextArg());
 
 		if(IsPrime(value))
-			cout(OUT_PFX "IS_PRIME\n");
+			cout("%sIS_PRIME\n", majorOutputLinePrefix);
 		else
-			cout(OUT_PFX "IS_NOT_PRIME\n");
+			cout("%sIS_NOT_PRIME\n", majorOutputLinePrefix);
 
 		return;
 	}
@@ -405,7 +404,7 @@ static void Main2(void)
 
 		for(index = 0; dest[index] != 0; index++)
 		{
-			cout(OUT_PFX "%I64u\n", dest[index]);
+			cout("%s%I64u\n", majorOutputLinePrefix, dest[index]);
 		}
 		return;
 	}
@@ -413,22 +412,22 @@ static void Main2(void)
 	{
 		uint64 value = ToValue_Check(nextArg());
 
-		cout(OUT_PFX "%I64u\n", GetLowPrime(value));
+		cout("%s%I64u\n", majorOutputLinePrefix, GetLowPrime(value));
 		return;
 	}
 	if(argIs("/H"))
 	{
 		uint64 value = ToValue_Check(nextArg());
 
-		cout(OUT_PFX "%I64u\n", GetHiPrime(value));
+		cout("%s%I64u\n", majorOutputLinePrefix, GetHiPrime(value));
 		return;
 	}
 	if(argIs("/LH"))
 	{
 		uint64 value = ToValue_Check(nextArg());
 
-		cout(OUT_PFX "%I64u\n", GetLowPrime(value));
-		cout(OUT_PFX "%I64u\n", GetHiPrime(value));
+		cout("%s%I64u\n", majorOutputLinePrefix, GetLowPrime(value));
+		cout("%s%I64u\n", majorOutputLinePrefix, GetHiPrime(value));
 		return;
 	}
 	if(argIs("/R"))

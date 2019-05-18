@@ -58,6 +58,10 @@ autoList_t *mergeLinesICase(autoList_t *lines1, autoList_t *lines2)
 {
 	return merge(lines1, lines2, (sint (*)(uint, uint))mbs_stricmp, (void (*)(uint))memFree);
 }
+autoList_t *mergeConstLinesICase(autoList_t *lines1, autoList_t *lines2)
+{
+	return merge(lines1, lines2, (sint (*)(uint, uint))mbs_stricmp, (void (*)(uint))noop);
+}
 
 /*
 	merge ‚Í strcmp ‚Ås‚í‚ê‚éB

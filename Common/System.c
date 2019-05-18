@@ -5,6 +5,7 @@
 int sockServerMode;
 int noErrorDlgMode;
 uint sockConnectTimeoutSec = 20;
+char *majorOutputLinePrefix = "";
 
 // ----
 
@@ -614,6 +615,15 @@ static void ReadSysArgs(void)
 			cout("sockConnectTimeoutSec: %u\n", sockConnectTimeoutSec);
 
 			errorCase(!m_isRange(sockConnectTimeoutSec, 1, 3600));
+		}
+		else if(!_stricmp(arg, "//MOLP"))
+		{
+			desertElement(Args, argi);
+			arg = (char *)desertElement(Args, argi);
+
+			majorOutputLinePrefix = arg;
+
+			cout("majorOutputLinePrefix: %s\n", majorOutputLinePrefix);
 		}
 		else
 			argi++;

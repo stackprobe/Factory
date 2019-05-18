@@ -1,10 +1,11 @@
 /*
-	ncp.exe [/S SERVER-DOMAIN] [/P SERVER-PORT] [/R RETRY-COUNT] [/F] ...
+	ncp.exe [/S SERVER-DOMAIN] [/P SERVER-PORT] [/R RETRY-COUNT] [/T RETRY-WAIT-MILLIS] [/F] ...
 
-		SERVER-DOMAIN ... サーバードメイン, デフォルトは appDataEnv の SERVER= 無ければ localhost
-		SERVER-PORT   ... サーバーポート番号, デフォルトは appDataEnv の NCP_SERVER_PORT= 無ければ 60022
-		RETRY-COUNT   ... リトライ回数(0=リトライ無し), デフォルトは appDataEnv の NCP_RETRY= 無ければ 2
-		/F            ... /UP, /MV のとき、強制上書きモード
+		SERVER-DOMAIN     ... サーバードメイン, デフォルトは appDataEnv の SERVER= 無ければ localhost
+		SERVER-PORT       ... サーバーポート番号, デフォルトは appDataEnv の NCP_SERVER_PORT= 無ければ 60022
+		RETRY-COUNT       ... リトライ回数(0=リトライ無し), デフォルトは appDataEnv の NCP_RETRY= 無ければ 2
+		RETRY-WAIT-MILLIS ... リトライ前の待ち時間(ミリ秒), デフォルトは appDataEnv の NCP_RETRY_WAIT_MILLIS= 無ければ 3000
+		/F                ... /UP, /MV のとき、強制上書きモード
 
 	ncp.exe ... (/UP | UP) LOCAL-PATH [SERVER-PATH]
 
@@ -242,6 +243,11 @@ readArgs:
 		RetryCount = toValue(nextArg());
 		goto readArgs;
 	}
+	if(argIs("/T"))
+	{
+		RetryWaitMillis = toValue(nextArg());
+		goto readArgs;
+	}
 	if(argIs("/F"))
 	{
 		ForceOverwriteMode = 1;
@@ -252,25 +258,25 @@ readArgs:
 
 	if(argIs("/UP") || argIs("UP")) // Upload
 	{
-		char *localPath;
+		char *clientPath;
 		char *serverPath;
 
 		cout("UPLOAD\n");
 
-		localPath = nextArg();
+		clientPath = nextArg();
 
-		if(localPath[0] == '*')
-			localPath = dropDirFile(); // g
+		if(clientPath[0] == '*')
+			clientPath = dropDirFile(); // g
 
 		if(hasArgs(1))
 			serverPath = nextArg();
 		else
-			serverPath = getLocal(localPath);
+			serverPath = getLocal(clientPath);
 
-		cout("< %s\n", localPath);
+		cout("< %s\n", clientPath);
 		cout("> %s\n", serverPath);
 
-		errorCase(!*localPath);
+		errorCase(!*clientPath);
 		errorCase(!*serverPath);
 
 		// send commands
@@ -279,26 +285,26 @@ readArgs:
 		writeChar(PrmFp, 'U');
 		writeChar(PrmFp, ForceOverwriteMode ? 'F' : '-');
 
-		if(existDir(localPath)) // Directory
+		if(existDir(clientPath)) // Directory
 		{
 			writeChar(PrmFp, 'D');
-			DirToStream(localPath, WriteToPrmFp);
+			DirToStream(clientPath, WriteToPrmFp);
 		}
-		else if(existFile(localPath)) // File
+		else if(existFile(clientPath)) // File
 		{
 			FILE *fp;
 
 			writeChar(PrmFp, 'F');
 
-			fp = fileOpen(localPath, "rb");
+			fp = fileOpen(clientPath, "rb");
 			ReadEndToStream(fp, PrmFp);
 			fileClose(fp);
 		}
 		else
 		{
-			cout("+--------+\n");
-			cout("| ねーよ |\n");
-			cout("+--------+\n");
+			cout("+--------------------------------------------+\n");
+			cout("| クライアント側に指定されたパスはありません |\n");
+			cout("+--------------------------------------------+\n");
 
 			goto cr_fnlz;
 		}
@@ -308,27 +314,27 @@ readArgs:
 	}
 	else if(argIs("/DL") || argIs("DL")) // Download
 	{
-		char *localPath;
+		char *clientPath;
 		char *serverPath;
 		char *willOpenDir = NULL;
 		int type;
 
 		cout("DOWNLOAD\n");
 
-		localPath = nextArg();
+		clientPath = nextArg();
 		serverPath = nextArg();
 
-		errorCase(!*localPath);
+		errorCase(!*clientPath);
 		errorCase(!*serverPath);
 
-		if(localPath[0] == '*')
-			localPath = combine(willOpenDir = makeFreeDir(), getLocal(serverPath)); // g
+		if(clientPath[0] == '*')
+			clientPath = combine(willOpenDir = makeFreeDir(), getLocal(serverPath)); // g
 
-		cout("> %s\n", localPath);
+		cout("> %s\n", clientPath);
 		cout("< %s\n", serverPath);
 
-		errorCase(existPath(localPath));
-		errorCase(!creatable(localPath));
+		errorCase(existPath(clientPath));
+		errorCase(!creatable(clientPath));
 
 		// send commands
 		writeLine(PrmFp, serverPath);
@@ -347,26 +353,23 @@ readArgs:
 
 		if(type == 'D') // Directory
 		{
-			createDir(localPath);
+			createDir(clientPath);
 
 //			STD_TrustMode = 1;
-			StreamToDir(localPath, ReadFromAnsFp);
+			StreamToDir(clientPath, ReadFromAnsFp);
 //			STD_TrustMode = 0;
 		}
 		else if(type == 'F') // File
 		{
 			FILE *fp;
 
-			fp = fileOpen(localPath, "wb");
+			fp = fileOpen(clientPath, "wb");
 			ReadEndToStream(AnsFp, fp);
 			fileClose(fp);
 		}
 		else
-		{
-			cout("+----------+\n");
-			cout("| ちげーよ |\n");
-			cout("+----------+\n");
-		}
+			cout("Error: bad type. %02x\n", type);
+
 		if(willOpenDir)
 		{
 			execute_x(xcout("START \"\" \"%s\"", willOpenDir));
@@ -476,7 +479,7 @@ readArgs:
 		while(path = readLine(AnsFp))
 		{
 			line2JLine(path, 1, 0, 0, 1);
-			cout("%s\n", path);
+			cout("%s%s\n", majorOutputLinePrefix, path);
 			memFree(path);
 		}
 	}
@@ -495,10 +498,12 @@ readArgs:
 		while(path = readLine(AnsFp))
 		{
 			line2JLine(path, 1, 0, 0, 1);
-			cout("%s\n", path);
+			cout("%s%s\n", majorOutputLinePrefix, path);
 			memFree(path);
 		}
 	}
+	else
+		cout("不明なコマンド\n");
 
 cr_fnlz:
 	CR_Fnlz();

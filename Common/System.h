@@ -3,6 +3,7 @@
 extern int sockServerMode;
 extern int noErrorDlgMode;
 extern uint sockConnectTimeoutSec;
+extern char *majorOutputLinePrefix;
 
 // ----
 

@@ -1,12 +1,44 @@
 /*
 	GitHisRemove.exe リポジトリ名
+
+	GitHisRemove.exe /AUTO リポジトリ名
+
+	GitHisRemove.exe /AUTOALL
 */
 
 #include "C:\Factory\Common\all.h"
 
-#define REDIR_FILE "C:\\temp\\1.tmp"
+#define REDIR_FILE "C:\\temp\\GitHisRemove_out.tmp"
 
-static void Main2(char *repositoryName)
+#define EXT_GIT_ESCAPE "_git-escape"
+
+static autoList_t *SelectAuto(autoList_t *files)
+{
+	autoList_t *dest = newList();
+	char *file;
+	uint index;
+
+	foreach(files, file, index)
+	{
+		if(_stricmp(getExt(file), EXT_GIT_ESCAPE))
+		{
+			char *file1 = changeExt(file, EXT_GIT_ESCAPE);
+			char *file2 = addExt(strx(file), EXT_GIT_ESCAPE);
+
+			if(
+				findJLineICase(files, file1) < getCount(files) ||
+				findJLineICase(files, file2) < getCount(files)
+				)
+				addElement(dest, (uint)strx(file));
+
+			memFree(file1);
+			memFree(file2);
+		}
+	}
+	releaseDim(files, 1);
+	return dest;
+}
+static void Main2(char *repositoryName, int manualMode)
 {
 	char *repositoryDir = combine("C:\\huge\\GitHub", repositoryName);
 	autoList_t *files = newList();
@@ -49,17 +81,22 @@ static void Main2(char *repositoryName)
 		}
 
 		files = autoDistinctLines(files);
-		files = selectLines_x(files);
+		files = manualMode ? selectLines_x(files) : SelectAuto(files);
 
 		foreach(files, file, index)
 			cout("削除対象 ⇒ %s\n", file);
 
-		cout("続行？\n");
+		if(manualMode)
+		{
+			cout("続行？\n");
 
-		if(clearGetKey() == 0x1b)
-			termination(0);
+			if(clearGetKey() == 0x1b)
+				termination(0);
 
-		cout("続行します。\n");
+			cout("続行します。\n");
+		}
+		else
+			cout("続行します。(自動)\n");
 
 		foreach(files, file, index)
 		{
@@ -79,5 +116,23 @@ static void Main2(char *repositoryName)
 }
 int main(int argc, char **argv)
 {
-	Main2(nextArg());
+	if(argIs("/AUTOALL"))
+	{
+		autoList_t *dirs = lsDirs("C:\\huge\\GitHub");
+		char *dir;
+		uint index;
+
+		foreach(dirs, dir, index)
+		{
+			Main2(getLocal(dir), 0);
+		}
+		releaseDim(dirs, 1);
+		return;
+	}
+	if(argIs("/AUTO"))
+	{
+		Main2(nextArg(), 0);
+		return;
+	}
+	Main2(nextArg(), 1);
 }

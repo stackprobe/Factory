@@ -2,6 +2,7 @@ autoList_t *merge(autoList_t *list1, autoList_t *list2, sint (*funcComp)(uint, u
 autoList_t *mergeLines(autoList_t *lines1, autoList_t *lines2);
 autoList_t *mergeConstLines(autoList_t *lines1, autoList_t *lines2);
 autoList_t *mergeLinesICase(autoList_t *lines1, autoList_t *lines2);
+autoList_t *mergeConstLinesICase(autoList_t *lines1, autoList_t *lines2);
 
 autoList_t *selectLines(autoList_t *lines);
 char *selectLine(autoList_t *lines);
