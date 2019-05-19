@@ -6,6 +6,12 @@
 	ncp2.exe ... (/MDL | MDL) LOCAL-DIR SERVER-DIR
 
 	ncp2.exe ... (/MDL | MDL) * SERVER-DIR
+
+	- - -
+
+	/MUP, /MDL 共に、コピー先に既に存在するファイルについては（内容が異なっていても）更新しないことに注意して下さい。
+
+	/MUP, /MDL 共に、コピー先にしか存在しないファイル・フォルダを削除することに注意して下さい。
 */
 
 #include "C:\Factory\Common\all.h"
@@ -98,8 +104,6 @@ static int MirrorDirMain(char *clientDir, char *serverDir, int direction)
 	autoList_t *serverFiles;
 	int retval = 0;
 
-	createDirIfNotExist(clientDir);
-
 	if(!serverPaths)
 		goto endFunc;
 
@@ -132,14 +136,55 @@ static int MirrorDirMain(char *clientDir, char *serverDir, int direction)
 		}
 	}
 
+	if(direction == 'U') // Upload
+	{
+		char *dummyFile = makeTempFile(NULL);
+		char *dummyServerPath = combine_cx(serverDir, addExt(MakeUUID(1), "ncp2_dummy.tmp"));
+
+		// 空フォルダ対策
+		retval =
+			UploadFile(dummyFile, dummyServerPath) &&
+			RemoveServerPath(dummyServerPath);
+
+		removeFile(dummyFile);
+		memFree(dummyFile);
+		memFree(dummyServerPath);
+	}
+	else // Download
+	{
+		createDirIfNotExist(clientDir);
+	}
+
+	if(!retval)
+		goto freeVars;
+
 	{
 		autoList_t *dirs = lsDirs(clientDir);
 		char *dir;
 		uint index;
+		autoList_t *bothExistDirs;
 
 		eraseParents(dirs);
 
-		releaseDim(mergeConstLinesICase(dirs, serverDirs), 1);
+		bothExistDirs = mergeConstLinesICase(dirs, serverDirs);
+
+		foreach(bothExistDirs, dir, index)
+		{
+			char *clientSubDir = combine(clientDir, dir);
+			char *serverSubDir = combine(serverDir, dir);
+
+			retval = MirrorDirMain(clientSubDir, serverSubDir, direction);
+
+			memFree(clientSubDir);
+			memFree(serverSubDir);
+
+			if(!retval)
+				break;
+		}
+		releaseDim(bothExistDirs, 1);
+
+		if(!retval)
+			goto endClientOnlyDirs;
 
 		foreach(dirs, dir, index)
 		{
@@ -160,6 +205,7 @@ static int MirrorDirMain(char *clientDir, char *serverDir, int direction)
 			if(!retval)
 				break;
 		}
+	endClientOnlyDirs:
 		releaseDim(dirs, 1);
 
 		if(!retval)
