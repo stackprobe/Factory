@@ -302,20 +302,18 @@ static void MirrorDir(char *clientDir, char *serverDir, int direction)
 {
 	uint retryCount = 0;
 
-restart:
-	if(!MirrorDirMain(clientDir, serverDir, direction))
+	while(!MirrorDirMain(clientDir, serverDir, direction))
 	{
-		if(retryCount < MIRROR_DIR_RETRY_COUNT)
+		if(MIRROR_DIR_RETRY_COUNT < ++retryCount)
 		{
-			retryCount++;
-			cout("リトライ %u 回目\n", retryCount);
-			coSleep(MIRROR_DIR_RETRY_WAIT_MILLIS);
-			goto restart;
-		}
+			cout("+--------------------------------------------------------+\n");
+			cout("| 失敗しましたがリトライ回数の上限に達したので終了します |\n");
+			cout("+--------------------------------------------------------+\n");
 
-		cout("+--------------------------------------------------------+\n");
-		cout("| 失敗しましたがリトライ回数の上限に達したので終了します |\n");
-		cout("+--------------------------------------------------------+\n");
+			break;
+		}
+		cout("リトライ %u 回目\n", retryCount);
+		coSleep(MIRROR_DIR_RETRY_WAIT_MILLIS);
 	}
 }
 int main(int argc, char **argv)

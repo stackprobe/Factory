@@ -1,9 +1,10 @@
 /*
-	> runsub.exe [/-B] [/-S | /-R] [/R ROOT-DIR] [/T TIMEWAIT-SEC] [/TM TIMEWAIT-MILLIS] TARGET
+	> runsub.exe [/-B] [/-S | /-R] [/-O] [/R ROOT-DIR] [/T TIMEWAIT-SEC] [/TM TIMEWAIT-MILLIS] TARGET
 
 		/-B             ... 実行するプログラムの終了を待たずに次へ進む。
 		/-S             ... サブディレクトリを無視する。
 		/-R             ... 検索のルートディレクトリを無視する。
+		/-O             ... Ignore obj Debug
 		ROOT-DIR        ... 検索のルートディレクトリを指定する。デフォ = 実行時のカレント
 		TIMEWAIT-SEC    ... プログラムを実行する度に待つ秒数。
 		TIMEWAIT-MILLIS ... プログラムを実行する度に待つミリ秒数。
@@ -44,6 +45,7 @@ int main(int argc, char **argv)
 {
 	int intoSubDirMode = 1;
 	int skipRootDir = 0;
+	int ignoreObjDebug = 0;
 	char *rootDir = ".";
 	char *target;
 	char *batch;
@@ -66,6 +68,11 @@ readArgs:
 	if(argIs("/-R"))
 	{
 		skipRootDir = 1;
+		goto readArgs;
+	}
+	if(argIs("/-O"))
+	{
+		ignoreObjDebug = 1;
 		goto readArgs;
 	}
 	if(argIs("/R"))
@@ -102,6 +109,9 @@ readArgs:
 	foreach(dirs, dir, index)
 	{
 		if(!existDir(dir)) // これまでの Run() によって削除されることもある。
+			continue;
+
+		if(ignoreObjDebug && (mbs_stristr(dir, "\\obj\\") || mbs_stristr(dir, "\\Debug\\")))
 			continue;
 
 		addCwd(dir);
