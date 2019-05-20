@@ -110,8 +110,8 @@ static void Main2(char *repositoryName, int manualMode)
 		{
 			cout("çÌèú ÅÀ %s\n", file);
 
-//			coExecute_x(xcout("C:\\var\\bat\\go filter-branch -f --tree-filter \"rm -f '%s'\" HEAD", file));
-//			coExecute("C:\\var\\bat\\go push -f");
+			coExecute_x(xcout("C:\\var\\bat\\go filter-branch -f --tree-filter \"rm -f '%s'\" HEAD", file));
+			coExecute("C:\\var\\bat\\go push -f");
 
 			LOGPOS();
 		}
