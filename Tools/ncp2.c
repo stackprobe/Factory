@@ -24,7 +24,7 @@ static uint RetryWaitMillis = UINTMAX;
 
 #define NCP_EXE "C:\\Factory\\Tools\\ncp.exe"
 
-#define MIRROR_DIR_RETRY_COUNT 7
+#define MIRROR_DIR_RETRY_COUNT 2
 #define MIRROR_DIR_RETRY_WAIT_MILLIS 3000
 
 static char *GetNcpOptions(void) // ret: c_
