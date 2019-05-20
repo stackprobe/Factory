@@ -12,6 +12,14 @@
 
 #define EXT_GIT_ESCAPE "_git-escape"
 
+static int IsSourceFile(char *file)
+{
+	return
+		!_stricmp(getExt(file), "c") ||
+		!_stricmp(getExt(file), "h") ||
+		!_stricmp(getExt(file), "cs") ||
+		!_stricmp(getExt(file), "cpp");
+}
 static autoList_t *SelectAuto(autoList_t *files)
 {
 	autoList_t *dest = newList();
@@ -20,7 +28,7 @@ static autoList_t *SelectAuto(autoList_t *files)
 
 	foreach(files, file, index)
 	{
-		if(_stricmp(getExt(file), EXT_GIT_ESCAPE))
+		if(_stricmp(getExt(file), EXT_GIT_ESCAPE) && !IsSourceFile(file))
 		{
 			char *file1 = changeExt(file, EXT_GIT_ESCAPE);
 			char *file2 = addExt(strx(file), EXT_GIT_ESCAPE);
@@ -102,8 +110,8 @@ static void Main2(char *repositoryName, int manualMode)
 		{
 			cout("çÌèú ÅÀ %s\n", file);
 
-			coExecute_x(xcout("C:\\var\\bat\\go filter-branch -f --tree-filter \"rm -f '%s'\" HEAD", file));
-			coExecute("C:\\var\\bat\\go push -f");
+//			coExecute_x(xcout("C:\\var\\bat\\go filter-branch -f --tree-filter \"rm -f '%s'\" HEAD", file));
+//			coExecute("C:\\var\\bat\\go push -f");
 
 			LOGPOS();
 		}

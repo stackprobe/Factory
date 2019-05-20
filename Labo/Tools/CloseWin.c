@@ -7,13 +7,13 @@
 
 		ウィンドウを閉じます。
 
-	CloseWin.exe ... /O EXE-NAME
-
-		ウィンドウが開くのを待ちます。
-
+	CloseWin.exe ... /O  EXE-NAME
 	CloseWin.exe ... /OT WIN-TITLE
+	CloseWin.exe ... /C  EXE-NAME
+	CloseWin.exe ... /CT WIN-TITLE
 
-		ウィンドウが開くのを待ちます。
+		/O, /OT ... ウィンドウが開く (プロセスが起動する) のを待ちます。  制限時間３分
+		/C, /CT ... ウィンドウが閉じる (プロセスが終了する) のを待ちます。制限時間なし
 
 		EXE-NAME  ... 実行ファイルのローカル名, タスクマネージャのイメージ名と多分同じ, 大文字・小文字を区別しない。
 		WIN-TITLE ... ウィンドウのタイトル, 部分一致, 大文字・小文字を区別しない。
@@ -42,7 +42,7 @@ static int FoundFlag;
 static PROCESSENTRY32 P_Pe32;
 static char *P_WinTitle;
 
-static BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lp)
+static BOOL CALLBACK EnumDoCloseWin(HWND hWnd, LPARAM lp)
 {
 	cout("hWnd: %u\n", hWnd);
 
@@ -66,7 +66,7 @@ static BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lp)
 static void DoCloseWin(PROCESSENTRY32 pe32)
 {
 	P_Pe32 = pe32;
-	EnumWindows(EnumWindowsProc, (LPARAM)NULL);
+	EnumWindows(EnumDoCloseWin, (LPARAM)NULL);
 }
 static BOOL CALLBACK EnumFindWinTitle(HWND hWnd, LPARAM lp)
 {
@@ -175,6 +175,8 @@ int main(int argc, char **argv)
 	uint loopCnt;
 	int waitOpenMode = 0;
 	int waitOpenTitleMode = 0;
+	int waitCloseMode = 0;
+	int waitCloseTitleMode = 0;
 	char *winTitle;
 
 	if(argIs("/-V"))
@@ -194,14 +196,23 @@ int main(int argc, char **argv)
 	if(argIs("/O"))
 	{
 		waitOpenMode = 1;
+		exeName = nextArg();
 	}
 	if(argIs("/OT"))
 	{
 		waitOpenTitleMode = 1;
 		winTitle = nextArg();
 	}
-	else
+	if(argIs("/C"))
+	{
+		waitCloseMode = 1;
 		exeName = nextArg();
+	}
+	if(argIs("/CT"))
+	{
+		waitCloseTitleMode = 1;
+		winTitle = nextArg();
+	}
 
 	if(waitOpenMode)
 	{
@@ -215,7 +226,7 @@ int main(int argc, char **argv)
 			if(FoundFlag)
 				break;
 
-			cout("ループ回数 [ %u ], F を押すと強制的に続行するよ。\n", loopCnt);
+			cout("ループ回数 [ %u ], F を押すと強制的に続行するよ。(wait open)\n", loopCnt);
 
 			if(waitKey(0) == 'F')
 			{
@@ -225,6 +236,7 @@ int main(int argc, char **argv)
 			errorCase(90 <= loopCnt); // 90 * 2000 ms == ３分
 			coSleep(2000);
 		}
+		LOGPOS();
 		return;
 	}
 
@@ -240,7 +252,7 @@ int main(int argc, char **argv)
 			if(FoundFlag)
 				break;
 
-			cout("ループ回数 [ %u ], F を押すと強制的に続行するよ。\n", loopCnt);
+			cout("ループ回数 [ %u ], F を押すと強制的に続行するよ。(wait open title)\n", loopCnt);
 
 			if(waitKey(0) == 'F')
 			{
@@ -250,8 +262,81 @@ int main(int argc, char **argv)
 			errorCase(90 <= loopCnt); // 90 * 2000 ms == ３分
 			coSleep(2000);
 		}
+		LOGPOS();
 		return;
 	}
+
+	if(waitCloseMode)
+	{
+		for(loopCnt = 1; ; loopCnt++)
+		{
+			FoundFlag = 0;
+			SearchProcByExeName(exeName, FindPE);
+
+			cout("FoundFlag: %d\n", FoundFlag);
+
+			if(!FoundFlag)
+			{
+				cout("念の為もう一度確認します。(wait close)\n");
+
+				coSleep(5000);
+
+				FoundFlag = 0;
+				SearchProcByExeName(exeName, FindPE);
+
+				cout("FoundFlag.2: %d\n", FoundFlag);
+
+				if(!FoundFlag)
+					break;
+			}
+			cout("ループ回数 [ %u ], F を押すと強制的に続行するよ。(wait close)\n", loopCnt);
+
+			if(coWaitKey(25000) == 'F')
+			{
+				LOGPOS();
+				break;
+			}
+		}
+		LOGPOS();
+		return;
+	}
+
+	if(waitCloseTitleMode)
+	{
+		for(loopCnt = 1; ; loopCnt++)
+		{
+			FoundFlag = 0;
+			FindWinTitle(winTitle);
+
+			cout("FoundFlag: %d\n", FoundFlag);
+
+			if(!FoundFlag)
+			{
+				cout("念の為もう一度確認します。(wait close)\n");
+
+				coSleep(5000);
+
+				FoundFlag = 0;
+				FindWinTitle(winTitle);
+
+				cout("FoundFlag.2: %d\n", FoundFlag);
+
+				if(!FoundFlag)
+					break;
+			}
+			cout("ループ回数 [ %u ], F を押すと強制的に続行するよ。(wait close title)\n", loopCnt);
+
+			if(waitKey(25000) == 'F')
+			{
+				LOGPOS();
+				break;
+			}
+		}
+		LOGPOS();
+		return;
+	}
+
+	exeName = nextArg();
 
 	{
 		for(loopCnt = 1; ; loopCnt++)
