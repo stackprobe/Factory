@@ -17,3 +17,8 @@ function @@_Destroy(coName) {
 function @@_GetRoot(coName) {
 	return Riot_Get(coName + "_Box");
 }
+
+function @@_Append(coName, tag) {
+	Riot_Never();
+//	Riot_Append(coName + "_Box", tag);
+}
