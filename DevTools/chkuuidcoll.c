@@ -263,7 +263,7 @@ static uint GetProjectCountUUID(char *target)
 	uint count;
 
 	foreach(UUIDList, i, index)
-		if(!strcmp(i->UUID, target)) // 大文字小文字だけ違うUUID -> 違うと見なす。
+		if(!_stricmp(i->UUID, target)) // 大文字小文字だけ違うUUID -> 同じと見なす。
 			addElement(prjs, (uint)strx(i->Project));
 
 	prjs = autoDistinctJLinesICase(prjs);
@@ -278,7 +278,7 @@ static uint GetUUIDCount(char *target)
 	uint count = 0;
 
 	foreach(UUIDList, i, index)
-		if(!strcmp(i->UUID, target)) // 大文字小文字だけ違うUUID -> 違うと見なす。
+		if(!_stricmp(i->UUID, target)) // 大文字小文字だけ違うUUID -> 同じと見なす。
 			count++;
 
 	return count;
