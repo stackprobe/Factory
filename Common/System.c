@@ -474,7 +474,8 @@ autoList_t *tokenizeArgs(char *str)
 	{
 		if(literalMode)
 		{
-			if(*p == '"' && (p[1] == ' ' || !p[1]))
+			if(*p == '"') // トークンの途中であってもリテラル終了
+//			if(*p == '"' && (p[1] == ' ' || !p[1]))
 			{
 				literalMode = 0;
 				goto addEnd;
@@ -488,7 +489,8 @@ autoList_t *tokenizeArgs(char *str)
 				buff = newBlock();
 				goto addEnd;
 			}
-			if(*p == '"' && !getSize(buff))
+			if(*p == '"') // トークンの途中であってもリテラル開始
+//			if(*p == '"' && !getSize(buff))
 			{
 				literalMode = 1;
 				goto addEnd;
@@ -500,7 +502,8 @@ autoList_t *tokenizeArgs(char *str)
 			addByte(buff, *p);
 			p++;
 		}
-		else if(*p == '\\' && (p[1] == '\\' || p[1] == '"'))
+		else if(*p == '\\')
+//		else if(*p == '\\' && (p[1] == '\\' || p[1] == '"'))
 		{
 			p++;
 		}
