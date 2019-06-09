@@ -1,7 +1,7 @@
 #include "CryptoRand.h"
 
 #define POOLSIZE_BGN 8
-#define POOLSIZE_MAX (16 * 1024 * 1024)
+#define POOLSIZE_MAX (16 * 1024 * 1024) // == POOLSIZE_BGN * (2^n)
 
 uint getCryptoByte(void)
 {

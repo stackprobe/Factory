@@ -42,6 +42,9 @@ int isEmptyJTkn(char *token);
 	'[' <= (c) && (c) <= '`' || \
 	'{' <= (c) && (c) <= '~')
 
+#define m_iscsymf(c) ((c) == '_' || m_isalpha(c))
+#define m_iscsym(c)  ((c) == '_' || m_isalpha(c) || m_isdecimal(c))
+
 int c2upper(int c);
 int c2lower(int c);
 
