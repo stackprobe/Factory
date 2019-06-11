@@ -118,6 +118,7 @@ void error2(char *source, uint lineno, char *function, char *message)
 		removeFile(vbsfile);
 		memFree(vbsfile);
 	}
+
 	mutexUnlock(mtx);
 
 endproc:
