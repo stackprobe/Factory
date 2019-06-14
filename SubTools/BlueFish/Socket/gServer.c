@@ -6,7 +6,7 @@
 #define LANE_NUM_LMT 1000
 #define FILE_NUM_LMT 1000
 #define TOTAL_SIZE_LMT 30000000000ui64 // 30 gb
-#define BUFFSIZE 4000000
+#define BUFFSIZE (4 * 1024 * 1024)
 
 static uchar Buff[BUFFSIZE];
 
@@ -37,6 +37,7 @@ static void Upload(SockStream_t *ss, char *laneDir)
 	char *file;
 	FILE *fp;
 	autoBlock_t gab;
+	int errorFlag = 0;
 
 	LOGPOS();
 
@@ -51,7 +52,7 @@ static void Upload(SockStream_t *ss, char *laneDir)
 	for(; ; )
 	{
 		LOGPOS();
-		SockSendLine(ss, "READY.1");
+		SockSendLine(ss, "READY-NEXT-FILE");
 
 		if(!SockRecvValue(ss))
 		{
@@ -81,7 +82,7 @@ static void Upload(SockStream_t *ss, char *laneDir)
 			break;
 		}
 		totalSize += fileSize;
-		SockSendLine(ss, "READY.2");
+		SockSendLine(ss, "READY-FILE-ENTITY");
 
 		name = SockRecvLine(ss, 100);
 		name = lineToFairLocalPath_x(name, strlen(laneDir));
@@ -97,18 +98,41 @@ static void Upload(SockStream_t *ss, char *laneDir)
 
 			if(!SockRecvBlock(ss, Buff, recvSize))
 			{
-				cout("★★★ファイル受信エラー！\n");
-				break; // 次の SockRecvValue64(); で 0 を読むはず。
+				cout("★★★ファイルデータ受信エラー！\n");
+				errorFlag = 1;
+				break;
 			}
 			writeBinaryBlock(fp, gndBlockVar(Buff, recvSize, gab));
 			fileSize -= recvSize;
 		}
 		LOGPOS();
 		fileClose(fp);
+		LOGPOS();
+
+		if(SockRecvChar(ss) != 'E')
+		{
+			cout("★★★ファイル終端符受信エラー！\n");
+			errorFlag = 1;
+		}
+		LOGPOS();
+
+		if(errorFlag)
+		{
+			LOGPOS();
+			removeFile(file);
+			LOGPOS();
+		}
+		LOGPOS();
 		memFree(file);
 		memFree(name);
 		LOGPOS();
-		SockSendLine(ss, "READY.3");
+
+		if(errorFlag)
+			break;
+
+		LOGPOS();
+		SockSendLine(ss, "RECV-FILE-COMPLETED");
+		LOGPOS();
 	}
 	LOGPOS();
 }
@@ -129,6 +153,8 @@ static void Download(SockStream_t *ss, char *laneDir)
 		uint64 fileSize = getFileSize(file);
 		FILE *fp;
 
+		LOGPOS();
+		SockSendValue(ss, 1);
 		LOGPOS();
 		SockSendValue64(ss, fileSize);
 		LOGPOS();
@@ -160,6 +186,8 @@ static void Download(SockStream_t *ss, char *laneDir)
 		removeFile(file);
 		LOGPOS();
 	}
+	LOGPOS();
+	SockSendValue(ss, 0);
 	LOGPOS();
 	releaseDim(files, 1);
 	LOGPOS();

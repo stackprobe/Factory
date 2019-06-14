@@ -11,7 +11,7 @@ static char *Command;
 static char *Lane;
 static char *ClientDir;
 
-#define BUFFSIZE 4000000
+#define BUFFSIZE (4 * 1024 * 1024)
 
 static uchar Buff[BUFFSIZE];
 
@@ -42,21 +42,17 @@ static void Upload(SockStream_t *ss)
 	sortJLinesICase(files);
 	LOGPOS();
 
-	addElement(files, (uint)NULL);
-
 	foreach(files, file, index)
 	{
 		uint64 fileSize;
 		FILE *fp;
 
-		if(!RecvLineCheck(ss, "READY.1"))
-			break;
+		LOGPOS();
 
-		if(!file)
-		{
-			SockSendValue(ss, 0);
-			break;
-		}
+		if(!RecvLineCheck(ss, "READY-NEXT-FILE"))
+			goto netError;
+
+		LOGPOS();
 		fileSize = getFileSize(file);
 		LOGPOS();
 		SockSendValue(ss, 1);
@@ -64,8 +60,8 @@ static void Upload(SockStream_t *ss)
 		SockSendValue64(ss, fileSize);
 		LOGPOS();
 
-		if(!RecvLineCheck(ss, "READY.2"))
-			break;
+		if(!RecvLineCheck(ss, "READY-FILE-ENTITY"))
+			goto netError;
 
 		LOGPOS();
 		SockSendLine(ss, getLocal(file));
@@ -83,21 +79,116 @@ static void Upload(SockStream_t *ss)
 		}
 		fileClose(fp);
 		LOGPOS();
+		SockSendChar(ss, 'E');
+		SockFlush(ss);
+		LOGPOS();
 
-		if(!RecvLineCheck(ss, "READY.3"))
-			break;
+		if(!RecvLineCheck(ss, "RECV-FILE-COMPLETED"))
+			goto netError;
 
 		LOGPOS();
 		removeFile(file);
 		LOGPOS();
 	}
 	LOGPOS();
+
+	if(!RecvLineCheck(ss, "READY-NEXT-FILE"))
+		goto netError;
+
+	LOGPOS();
+	SockSendValue(ss, 0);
+	LOGPOS();
+
+	if(!RecvLineCheck(ss, "OK"))
+		goto netError;
+
+	cout("+--------------------------------+\n");
+	cout("| アップロードは全て成功しました |\n");
+	cout("+--------------------------------+\n");
+
+netError:
+	LOGPOS();
 	releaseDim(files, 1);
 	LOGPOS();
 }
 static void Download(SockStream_t *ss)
 {
-	error(); // TODO
+	int errorFlag = 0;
+
+	LOGPOS();
+
+	for(; ; )
+	{
+		uint64 fileSize;
+		char *name;
+		char *file;
+		FILE *fp;
+
+		LOGPOS();
+
+		if(!SockRecvValue(ss))
+		{
+			cout("+--------------------------------+\n");
+			cout("| ダウンロードは全て成功しました |\n");
+			cout("+--------------------------------+\n");
+			break;
+		}
+		LOGPOS();
+		fileSize = SockRecvValue64(ss);
+		cout("fileSize: %I64u\n", fileSize);
+		name = SockRecvLine(ss, 100);
+		name = lineToFairLocalPath_x(name, strlen(ClientDir));
+		cout("name: %s\n", name);
+		file = combine(ClientDir, name);
+		cout("file: %s\n", file);
+		fp = fileOpen(file, "wb");
+		LOGPOS();
+
+		while(0ui64 < fileSize)
+		{
+			uint recvSize = (uint)m_min((uint64)BUFFSIZE, fileSize);
+			autoBlock_t gab;
+
+			if(!SockRecvBlock(ss, Buff, recvSize))
+			{
+				cout("★★★ファイルデータ受信エラー！\n");
+				errorFlag = 1;
+				break;
+			}
+			writeBinaryBlock(fp, gndBlockVar(Buff, recvSize, gab));
+			fileSize -= recvSize;
+		}
+		LOGPOS();
+		fileClose(fp);
+		LOGPOS();
+
+		if(SockRecvChar(ss) != 'D')
+		{
+			cout("★★★ファイル終端符受信エラー！\n");
+			errorFlag = 1;
+		}
+		LOGPOS();
+
+		if(errorFlag)
+		{
+			LOGPOS();
+			removeFile(file);
+			LOGPOS();
+		}
+		LOGPOS();
+		memFree(file);
+		memFree(name);
+		LOGPOS();
+
+		if(errorFlag)
+			break;
+
+		LOGPOS();
+		SockSendChar(ss, 'C');
+		SockFlush(ss);
+		LOGPOS();
+	}
+	LOGPOS();
 }
 static int Perform(int sock, uint prm)
 {
