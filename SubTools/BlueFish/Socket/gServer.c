@@ -57,7 +57,7 @@ static void Upload(SockStream_t *ss, char *laneDir)
 		SockSendLine(ss, "READY-NEXT-FILE");
 		LOGPOS();
 
-		if(SockRecvChar(ss) == 'B')
+		if(SockRecvChar(ss) != 'B')
 			break;
 
 		LOGPOS();
