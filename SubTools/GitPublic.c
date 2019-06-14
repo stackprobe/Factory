@@ -1,5 +1,6 @@
 #include "C:\Factory\Common\all.h"
 
+#define GIT_ROOTDIR "C:\\huge\\GitHub"
 #define MEM_ROOTDIR "C:\\huge\\GitMem"
 #define PUB_ROOTDIR "C:\\huge\\GitPub"
 
@@ -34,31 +35,70 @@ static void NormalizeMemRepoDir(char *memRepoDir)
 
 	LOGPOS();
 }
+static void NormalizeMemDir(char *memDir)
+{
+	autoList_t *paths = ls(memDir);
+	char *path;
+	uint index;
+
+	LOGPOS();
+
+	foreach(paths, path, index)
+	{
+		if(existFile(path))
+		{
+			cout("!F %s", path); // ここにファイルを置いてはならない。
+			semiRemovePath(path);
+			continue;
+		}
+
+		{
+			char *gitDir = combine(GIT_ROOTDIR, getLocal(path));
+
+			cout("G %s\n", gitDir);
+
+			if(!existDir(gitDir))
+			{
+				cout("!R %s\n", path); // そんなリポジトリありません。
+				semiRemovePath(path);
+
+				memFree(gitDir);
+				continue;
+			}
+			memFree(gitDir);
+		}
+
+		NormalizeMemRepoDir(path);
+	}
+	releaseDim(paths, 1);
+
+	LOGPOS();
+}
 static void MemoryToPublic(void)
 {
-	autoList_t *memRepoDirs = lsDirs(MEM_ROOTDIR);
-	char *memRepoDir;
-	uint memRepoDir_index;
+	autoList_t *memDirs = lsDirs(MEM_ROOTDIR);
+	char *memDir;
+	uint memDir_index;
 
-	sortJLinesICase(memRepoDirs);
+	sortJLinesICase(memDirs);
 
-	foreach(memRepoDirs, memRepoDir, memRepoDir_index)
+	foreach(memDirs, memDir, memDir_index)
 	{
-		char *pubFile = combine(PUB_ROOTDIR, getLocal(memRepoDir));
+		char *pubFile = combine(PUB_ROOTDIR, getLocal(memDir));
 
-		pubFile = toCreatablePath(pubFile, 99); // -> GitMemory.c
+		pubFile = toCreatablePath(pubFile, 1000); // tkt
 
-		cout("< %s\n", memRepoDir);
+		cout("< %s\n", memDir);
 		cout("> %s\n", pubFile);
 
-		coExecute_x(xcout("C:\\Factory\\Tools\\Cluster.exe /OAD /M \"%s\" \"%s\"", pubFile, memRepoDir));
+		coExecute_x(xcout("C:\\Factory\\Tools\\Cluster.exe /OAD /M \"%s\" \"%s\"", pubFile, memDir));
 
 		LOGPOS();
 		memFree(pubFile);
 		LOGPOS();
 	}
 	LOGPOS();
-	releaseDim(memRepoDirs, 1);
+	releaseDim(memDirs, 1);
 	LOGPOS();
 }
 static void PublicToMemory(void)
@@ -71,19 +111,19 @@ static void PublicToMemory(void)
 
 	foreach(pubFiles, pubFile, pubFile_index)
 	{
-		char *memRepoDir = combine(MEM_ROOTDIR, getLocal(pubFile));
+		char *memDir = combine(MEM_ROOTDIR, getLocal(pubFile));
 
-		memRepoDir = toCreatablePath(memRepoDir, 99); // -> GitMemory.c
+		memDir = toCreatablePath(memDir, 1000); // tkt
 
 		cout("< %s\n", pubFile);
-		cout("> %s\n", memRepoDir);
+		cout("> %s\n", memDir);
 
-		coExecute_x(xcout("C:\\Factory\\Tools\\Cluster.exe /OAD /R \"%s\" \"%s\"", pubFile, memRepoDir));
+		coExecute_x(xcout("C:\\Factory\\Tools\\Cluster.exe /OAD /R \"%s\" \"%s\"", pubFile, memDir));
 
-		NormalizeMemRepoDir(memRepoDir);
+		NormalizeMemDir(memDir);
 
 		LOGPOS();
-		memFree(memRepoDir);
+		memFree(memDir);
 		LOGPOS();
 	}
 	LOGPOS();
