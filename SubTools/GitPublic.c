@@ -3,6 +3,37 @@
 #define MEM_ROOTDIR "C:\\huge\\GitMem"
 #define PUB_ROOTDIR "C:\\huge\\GitPub"
 
+static void NormalizeMemRepoDir(char *memRepoDir)
+{
+	autoList_t *paths = ls(memRepoDir);
+	char *path;
+	uint index;
+
+	LOGPOS();
+
+	foreach(paths, path, index)
+	{
+		char *wPath = strx(path);
+		char *wLocalPath;
+
+		wLocalPath = getLocal(wPath);
+
+		if(*wLocalPath == '.') // GitMemory ÇÃ IsGitPath() ëŒçÙ -- í èÌÇÕñ≥Ç¢ÇÕÇ∏ÇæÇØÇ«ÅAîOÇÃà◊
+		{
+			*wLocalPath = '_';
+			wPath = toCreatableTildaPath(wPath, IMAX);
+
+			cout("< %s\n", path);
+			cout("> %s\n", wPath);
+
+			movePath(path, wPath);
+		}
+		memFree(wPath);
+	}
+	releaseDim(paths, 1);
+
+	LOGPOS();
+}
 static void MemoryToPublic(void)
 {
 	autoList_t *memRepoDirs = lsDirs(MEM_ROOTDIR);
@@ -15,12 +46,12 @@ static void MemoryToPublic(void)
 	{
 		char *pubFile = combine(PUB_ROOTDIR, getLocal(memRepoDir));
 
-		pubFile = toCreatablePath(pubFile, 100); // fixme
+		pubFile = toCreatablePath(pubFile, 99); // -> GitMemory.c
 
 		cout("< %s\n", memRepoDir);
 		cout("> %s\n", pubFile);
 
-		coExecute_x(xcout("C:\\Factoty\\Tools\\Cluster.exe /OAD /M \"%s\" \"%s\"", pubFile, memRepoDir));
+		coExecute_x(xcout("C:\\Factory\\Tools\\Cluster.exe /OAD /M \"%s\" \"%s\"", pubFile, memRepoDir));
 
 		LOGPOS();
 		memFree(pubFile);
@@ -42,12 +73,14 @@ static void PublicToMemory(void)
 	{
 		char *memRepoDir = combine(MEM_ROOTDIR, getLocal(pubFile));
 
-		memRepoDir = toCreatablePath(memRepoDir, 100); // fixme
+		memRepoDir = toCreatablePath(memRepoDir, 99); // -> GitMemory.c
 
 		cout("< %s\n", pubFile);
 		cout("> %s\n", memRepoDir);
 
-		coExecute_x(xcout("C:\\Factoty\\Tools\\Cluster.exe /OAD /R \"%s\" \"%s\"", pubFile, memRepoDir));
+		coExecute_x(xcout("C:\\Factory\\Tools\\Cluster.exe /OAD /R \"%s\" \"%s\"", pubFile, memRepoDir));
+
+		NormalizeMemRepoDir(memRepoDir);
 
 		LOGPOS();
 		memFree(memRepoDir);

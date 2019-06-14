@@ -16,11 +16,11 @@ static void MemoryMain(void)
 	autoList_t *repoDirs = lsDirs(GIT_ROOTDIR);
 	char *repoDir;
 	uint repoDir_index;
-	char *memDir = combine_cx(MEM_ROOTDIR, makeCompactStamp(NULL));
+	char *memDir = combine_cx(MEM_ROOTDIR, addLine(makeCompactStamp(NULL), "00"));
 
 	sortJLinesICase(repoDirs);
 
-	memDir = toCreatablePath(memDir, 100); // 日時が被ることは滅多に無いと思うけど、念の為
+	memDir = toCreatablePath(memDir, 99); // 秒間 100 件超えは想定しない。
 	cout("memDir: %s\n", memDir);
 	createDir(memDir);
 

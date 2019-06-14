@@ -90,7 +90,7 @@ static void Upload(SockStream_t *ss, char *laneDir)
 		cout("name: %s\n", name);
 		file = combine(laneDir, name);
 		cout("file: %s\n", file);
-		fp = fileOpen(file, "wb");
+		fp = fileOpen(file, "wb"); // 同じ名前のファイルは上書き！
 		LOGPOS();
 
 		while(0ui64 < fileSize)
