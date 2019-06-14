@@ -258,6 +258,8 @@ static int Idle(void)
 }
 int main(int argc, char **argv)
 {
+	cmdTitle("gServer");
+
 	LOGPOS();
 	mkAppDataDir();
 	LOGPOS();

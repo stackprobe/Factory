@@ -90,6 +90,8 @@ static int Idle(void)
 }
 int main(int argc, char **argv)
 {
+	cmdTitle("oCServer");
+
 	LOGPOS();
 	sockServerUserTransmit(Perform, (void *(*)(void))getZero, (void (*)(void *))noop_u, PORTNO, 1, Idle);
 	LOGPOS();
