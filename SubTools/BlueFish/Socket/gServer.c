@@ -32,12 +32,6 @@ static uint64 GetTotalSize(void)
 static void Upload(SockStream_t *ss, char *laneDir)
 {
 	uint64 totalSize = GetTotalSize();
-	uint64 fileSize;
-	char *name;
-	char *file;
-	FILE *fp;
-	autoBlock_t gab;
-	int errorFlag = 0;
 
 	LOGPOS();
 
@@ -51,15 +45,19 @@ static void Upload(SockStream_t *ss, char *laneDir)
 
 	for(; ; )
 	{
+		uint64 fileSize;
+		char *name;
+		char *file;
+		FILE *fp;
+		autoBlock_t gab;
+		int errorFlag = 0;
+
 		LOGPOS();
 		SockSendLine(ss, "READY-NEXT-FILE");
 
 		if(!SockRecvValue(ss))
-		{
-			cout("アップロード終了\n");
-			SockSendLine(ss, "OK");
 			break;
-		}
+
 		fileSize = SockRecvValue64(ss);
 		cout("fileSize: %I64u\n", fileSize);
 
@@ -67,19 +65,19 @@ static void Upload(SockStream_t *ss, char *laneDir)
 		{
 			cout("★★★ファイルが多すぎる！\n");
 			SockSendLine(ss, "NG");
-			break;
+			goto netError;
 		}
 		if(TOTAL_SIZE_LMT < fileSize)
 		{
 			cout("★★★ファイルが大きすぎる！\n");
 			SockSendLine(ss, "NG");
-			break;
+			goto netError;
 		}
 		if(TOTAL_SIZE_LMT - totalSize < fileSize)
 		{
 			cout("★★★総ファイルサイズが大きすぎる！\n");
 			SockSendLine(ss, "NG");
-			break;
+			goto netError;
 		}
 		totalSize += fileSize;
 		SockSendLine(ss, "READY-FILE-ENTITY");
@@ -109,6 +107,8 @@ static void Upload(SockStream_t *ss, char *laneDir)
 		fileClose(fp);
 		LOGPOS();
 
+		// memo: !SockRecvBlock() になった場合 Sock == -1 なので、以降送受信しないはず。
+
 		if(SockRecvChar(ss) != 'E')
 		{
 			cout("★★★ファイル終端符受信エラー！\n");
@@ -128,12 +128,17 @@ static void Upload(SockStream_t *ss, char *laneDir)
 		LOGPOS();
 
 		if(errorFlag)
-			break;
+			goto netError;
 
 		LOGPOS();
 		SockSendLine(ss, "RECV-FILE-COMPLETED");
 		LOGPOS();
 	}
+	cout("アップロード終了\n");
+	SockSendLine(ss, "OK");
+	LOGPOS();
+
+netError:
 	LOGPOS();
 }
 static void Download(SockStream_t *ss, char *laneDir)
@@ -177,7 +182,7 @@ static void Download(SockStream_t *ss, char *laneDir)
 		if(SockRecvChar(ss) != 'C')
 		{
 			cout("★★★ファイル送信エラー！\n");
-			break;
+			goto netError;
 		}
 		LOGPOS();
 		SockSendChar(ss, 'D');
@@ -186,8 +191,11 @@ static void Download(SockStream_t *ss, char *laneDir)
 		removeFile(file);
 		LOGPOS();
 	}
-	LOGPOS();
+	cout("ダウンロード終了\n");
 	SockSendValue(ss, 0);
+	LOGPOS();
+
+netError:
 	LOGPOS();
 	releaseDim(files, 1);
 	LOGPOS();

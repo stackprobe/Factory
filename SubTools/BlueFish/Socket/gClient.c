@@ -15,7 +15,7 @@ static char *ClientDir;
 
 static uchar Buff[BUFFSIZE];
 
-static int RecvLineCheck(SockStream_t *ss, char *expectedLine)
+static int RecvResponse(SockStream_t *ss, char *expectedLine)
 {
 	char *line = SockRecvLine(ss, 100);
 	int ret;
@@ -49,7 +49,7 @@ static void Upload(SockStream_t *ss)
 
 		LOGPOS();
 
-		if(!RecvLineCheck(ss, "READY-NEXT-FILE"))
+		if(!RecvResponse(ss, "READY-NEXT-FILE"))
 			goto netError;
 
 		LOGPOS();
@@ -60,7 +60,7 @@ static void Upload(SockStream_t *ss)
 		SockSendValue64(ss, fileSize);
 		LOGPOS();
 
-		if(!RecvLineCheck(ss, "READY-FILE-ENTITY"))
+		if(!RecvResponse(ss, "READY-FILE-ENTITY"))
 			goto netError;
 
 		LOGPOS();
@@ -83,7 +83,7 @@ static void Upload(SockStream_t *ss)
 		SockFlush(ss);
 		LOGPOS();
 
-		if(!RecvLineCheck(ss, "RECV-FILE-COMPLETED"))
+		if(!RecvResponse(ss, "RECV-FILE-COMPLETED"))
 			goto netError;
 
 		LOGPOS();
@@ -92,14 +92,14 @@ static void Upload(SockStream_t *ss)
 	}
 	LOGPOS();
 
-	if(!RecvLineCheck(ss, "READY-NEXT-FILE"))
+	if(!RecvResponse(ss, "READY-NEXT-FILE"))
 		goto netError;
 
 	LOGPOS();
 	SockSendValue(ss, 0);
 	LOGPOS();
 
-	if(!RecvLineCheck(ss, "OK"))
+	if(!RecvResponse(ss, "OK"))
 		goto netError;
 
 	cout("+--------------------------------+\n");
@@ -113,8 +113,6 @@ netError:
 }
 static void Download(SockStream_t *ss)
 {
-	int errorFlag = 0;
-
 	LOGPOS();
 
 	for(; ; )
@@ -123,16 +121,13 @@ static void Download(SockStream_t *ss)
 		char *name;
 		char *file;
 		FILE *fp;
+		int errorFlag = 0;
 
 		LOGPOS();
 
 		if(!SockRecvValue(ss))
-		{
-			cout("+--------------------------------+\n");
-			cout("| ダウンロードは全て成功しました |\n");
-			cout("+--------------------------------+\n");
 			break;
-		}
+
 		LOGPOS();
 		fileSize = SockRecvValue64(ss);
 		cout("fileSize: %I64u\n", fileSize);
@@ -161,6 +156,9 @@ static void Download(SockStream_t *ss)
 		LOGPOS();
 		fileClose(fp);
 		LOGPOS();
+		SockSendChar(ss, 'C'); // memo: !SockRecvBlock() になった場合 Sock == -1 なので、以降送受信しないはず。
+		SockFlush(ss);
+		LOGPOS();
 
 		if(SockRecvChar(ss) != 'D')
 		{
@@ -181,13 +179,15 @@ static void Download(SockStream_t *ss)
 		LOGPOS();
 
 		if(errorFlag)
-			break;
+			goto netError;
 
 		LOGPOS();
-		SockSendChar(ss, 'C');
-		SockFlush(ss);
-		LOGPOS();
 	}
+	cout("+--------------------------------+\n");
+	cout("| ダウンロードは全て成功しました |\n");
+	cout("+--------------------------------+\n");
+
+netError:
 	LOGPOS();
 }
 static int Perform(int sock, uint prm)
@@ -206,9 +206,13 @@ static int Perform(int sock, uint prm)
 	{
 		Upload(ss);
 	}
-	else // d
+	else if(Command[0] == 'd')
 	{
 		Download(ss);
+	}
+	else
+	{
+		cout("★★★不明なコマンド！");
 	}
 	LOGPOS();
 
