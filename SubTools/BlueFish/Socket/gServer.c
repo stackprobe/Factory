@@ -34,6 +34,8 @@ static void Upload(SockStream_t *ss, char *laneDir)
 	uint64 totalSize = GetTotalSize();
 
 	LOGPOS();
+	createDirIfNotExist(laneDir);
+	LOGPOS();
 
 	if(LANE_NUM_LMT < lsCount(ROOTDIR))
 	{
@@ -151,6 +153,8 @@ static void Download(SockStream_t *ss, char *laneDir)
 	uint index;
 
 	LOGPOS();
+	createDirIfNotExist(laneDir);
+	LOGPOS();
 	files = lsFiles(laneDir);
 	LOGPOS();
 	sortJLinesICase(files);
@@ -226,8 +230,6 @@ static int Perform(int sock, void *dummyPrm)
 
 	laneDir = combine(ROOTDIR, lane);
 	cout("laneDir: %s\n", laneDir);
-	createDirIfNotExist(laneDir);
-	LOGPOS();
 
 	if(!strcmp(command, COMMAND_PREFIX "u"))
 	{

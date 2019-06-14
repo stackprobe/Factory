@@ -1,7 +1,7 @@
 /*
-	qrumall [/D [COMMENT] | ROOT-DIR]
+	qrumall [(/D | ROOT-DIR) [COMMENT]]
 
-		/D ... Daily-Release mode
+		/D ... Daily-Release 'sumire' only
 */
 
 #include "C:\Factory\Common\all.h"
@@ -33,16 +33,23 @@ int main(int argc, char **argv)
 
 		dirs = lssDirs(rootDir);
 
-		coExecute("rum /c");
-
-		// confirm
+		if(hasArgs(1))
 		{
-			cout("続行？\n");
+			coExecute_x(xcout("rum /c \"%s\"", nextArg()));
+		}
+		else
+		{
+			coExecute("rum /c");
 
-			if(clearGetKey() == 0x1b)
-				termination(0);
+			// confirm
+			{
+				cout("続行？\n");
 
-			cout("続行します。\n");
+				if(clearGetKey() == 0x1b)
+					termination(0);
+
+				cout("続行します。\n");
+			}
 		}
 	}
 
