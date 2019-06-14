@@ -58,8 +58,8 @@ static int Perform(int sock, void *dummyPrm)
 	char *command;
 
 	command = SockRecvLine(ss, 100);
-	line2JLine(command, 1, 0, 0, 1);
-	cout("command: \n", command);
+	line2JLine(command, 1, 0, 0, 0);
+	cout("command: %s\n", command);
 
 	SetSockStreamTimeout(ss, 3600); // oto‚Ì‘—M(DL,z9‚µ‚Ä‚¢‚éŠÔ‚Ì‘Ò‚¿)‚ª‚ ‚é‚Ì‚ÅA’·‚ß‚É
 

@@ -12,6 +12,9 @@
 	/MUP, /MDL 共に、コピー先に既に存在するファイルについては（内容が異なっていても）更新しないことに注意して下さい。
 
 	/MUP, /MDL 共に、コピー先にしか存在しないファイル・フォルダを削除することに注意して下さい。
+
+	エスケープキーを押すと安全に中断します。
+	同じコマンドを実行することによって中断したところから再開出来ます。
 */
 
 #include "C:\Factory\Common\all.h"
@@ -27,9 +30,30 @@ static uint RetryWaitMillis = UINTMAX;
 #define MIRROR_DIR_RETRY_COUNT 2
 #define MIRROR_DIR_RETRY_WAIT_MILLIS 3000
 
+static int AbortRequested;
+
+static void CheckAbortRequest(void)
+{
+	int escapePressed = 0;
+
+	while(hasKey())
+		if(getKey() == 0x1b)
+			escapePressed = 1;
+
+	if(!AbortRequested && escapePressed)
+	{
+		AbortRequested = 1;
+
+		cout("+------------+\n");
+		cout("| 中断します |\n");
+		cout("+------------+\n");
+	}
+}
 static char *GetNcpOptions(void) // ret: c_
 {
 	static char *ret;
+
+	CheckAbortRequest();
 
 	if(!ret)
 		ret = strx("");
@@ -83,19 +107,19 @@ static int RemoveServerPath(char *serverPath)
 {
 	coExecute_x(xcout(NCP_EXE "%s /RM \"%s\"", GetNcpOptions(), serverPath));
 
-	return !lastSystemRet;
+	return !lastSystemRet && !AbortRequested;
 }
 static int UploadFile(char *clientFile, char *serverFile)
 {
 	coExecute_x(xcout(NCP_EXE "%s /UP \"%s\" \"%s\"", GetNcpOptions(), clientFile, serverFile));
 
-	return !lastSystemRet;
+	return !lastSystemRet && !AbortRequested;
 }
 static int DownloadFile(char *clientFile, char *serverFile)
 {
 	coExecute_x(xcout(NCP_EXE "%s /DL \"%s\" \"%s\"", GetNcpOptions(), clientFile, serverFile));
 
-	return !lastSystemRet;
+	return !lastSystemRet && !AbortRequested;
 }
 static int MirrorDirMain(char *clientDir, char *serverDir, int direction)
 {
@@ -302,7 +326,7 @@ static void MirrorDir(char *clientDir, char *serverDir, int direction)
 {
 	uint retryCount = 0;
 
-	while(!MirrorDirMain(clientDir, serverDir, direction))
+	while(!MirrorDirMain(clientDir, serverDir, direction) && !AbortRequested)
 	{
 		if(MIRROR_DIR_RETRY_COUNT < ++retryCount)
 		{
@@ -314,6 +338,11 @@ static void MirrorDir(char *clientDir, char *serverDir, int direction)
 		}
 		cout("リトライ %u 回目\n", retryCount);
 		coSleep(MIRROR_DIR_RETRY_WAIT_MILLIS);
+	}
+
+	if(AbortRequested)
+	{
+		cout("中断しました。\n");
 	}
 }
 int main(int argc, char **argv)
