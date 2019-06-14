@@ -17,9 +17,12 @@ static uchar Buff[BUFFSIZE];
 
 static int RecvResponse(SockStream_t *ss, char *expectedLine)
 {
-	char *line = SockRecvLine(ss, 100);
+	char *line;
 	int ret;
 
+	SockFlush(ss); // ここでフラッシュしてるん！
+
+	line = SockRecvLine(ss, 100);
 	ret = !strcmp(line, expectedLine);
 	memFree(line);
 
@@ -55,7 +58,7 @@ static void Upload(SockStream_t *ss)
 		LOGPOS();
 		fileSize = getFileSize(file);
 		LOGPOS();
-		SockSendValue(ss, 1);
+		SockSendChar(ss, 'B');
 		LOGPOS();
 		SockSendValue64(ss, fileSize);
 		LOGPOS();
@@ -80,7 +83,6 @@ static void Upload(SockStream_t *ss)
 		fileClose(fp);
 		LOGPOS();
 		SockSendChar(ss, 'E');
-		SockFlush(ss);
 		LOGPOS();
 
 		if(!RecvResponse(ss, "RECV-FILE-COMPLETED"))
@@ -96,7 +98,7 @@ static void Upload(SockStream_t *ss)
 		goto netError;
 
 	LOGPOS();
-	SockSendValue(ss, 0);
+	SockSendChar(ss, 0xff);
 	LOGPOS();
 
 	if(!RecvResponse(ss, "OK"))
@@ -136,7 +138,7 @@ static void Download(SockStream_t *ss)
 		cout("name: %s\n", name);
 		file = combine(ClientDir, name);
 		cout("file: %s\n", file);
-		fp = fileOpen(file, "wb");
+		fp = fileOpen(file, "wb"); // 同じ名前のファイルは上書き！
 		LOGPOS();
 
 		while(0ui64 < fileSize)
@@ -157,6 +159,7 @@ static void Download(SockStream_t *ss)
 		fileClose(fp);
 		LOGPOS();
 		SockSendChar(ss, 'C'); // memo: !SockRecvBlock() になった場合 Sock == -1 なので、以降送受信しないはず。
+		LOGPOS();
 		SockFlush(ss);
 		LOGPOS();
 
@@ -228,7 +231,7 @@ int main(int argc, char **argv)
 	ClientDir = nextArg();
 
 	errorCase(m_isEmpty(Server));
-	errorCase(m_isRange(PortNo, 1, 65535));
+	errorCase(!m_isRange(PortNo, 1, 65535));
 	errorCase(m_isEmpty(Command));
 	errorCase(m_isEmpty(Lane));
 	errorCase(!existDir(ClientDir));

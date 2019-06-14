@@ -50,14 +50,17 @@ static void Upload(SockStream_t *ss, char *laneDir)
 		char *file;
 		FILE *fp;
 		autoBlock_t gab;
+		int chr;
 		int errorFlag = 0;
 
 		LOGPOS();
 		SockSendLine(ss, "READY-NEXT-FILE");
+		LOGPOS();
 
-		if(!SockRecvValue(ss))
+		if(SockRecvChar(ss) == 'B')
 			break;
 
+		LOGPOS();
 		fileSize = SockRecvValue64(ss);
 		cout("fileSize: %I64u\n", fileSize);
 
@@ -178,6 +181,8 @@ static void Download(SockStream_t *ss, char *laneDir)
 		}
 		fileClose(fp);
 		LOGPOS();
+		SockFlush(ss);
+		LOGPOS();
 
 		if(SockRecvChar(ss) != 'C')
 		{
@@ -186,13 +191,15 @@ static void Download(SockStream_t *ss, char *laneDir)
 		}
 		LOGPOS();
 		SockSendChar(ss, 'D');
-		SockFlush(ss);
 		LOGPOS();
 		removeFile(file);
 		LOGPOS();
 	}
 	cout("ダウンロード終了\n");
 	SockSendValue(ss, 0);
+	SockFlush(ss);
+	LOGPOS();
+	removeDir(laneDir); // 空になったはずなのでレーン削除 -- レーン数に上限があるので必要！
 	LOGPOS();
 
 netError:
