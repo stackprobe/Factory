@@ -1,31 +1,28 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<style>
 
-	<style type="text/css">
-	<!--
-	a
-	{
-		color: white;
-		text-decoration: none;
-	}
-	a:visited
-	{
-		color: #ddeeff;
-	}
-	a:hover
-	{
-		text-decoration: underline;
-	}
-	body
-	{
-		font-family: monospace;
-		color: white;
-		background-color: *BACK_COLOR*;
-	}
-	-->
-	</style>
+body {
+	font-family: monospace;
+	color: white;
+	background-color: *BACK_COLOR*;
+}
 
+a {
+	color: white;
+	text-decoration: none;
+}
+
+a:visited {
+	color: #ddeeff;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+</style>
 <title>*app-name*</title>
 </head>
 <body>
