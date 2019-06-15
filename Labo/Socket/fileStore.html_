@@ -6,40 +6,40 @@
 	ディレクトリサイズ = *dir-size* バイト
 	ディレクトリ空き = *dir-free* バイト
 -->
-
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS"/>
 <title>*title*</title>
-<style>
-
-body {
+<style type="text/css">
+<!--
+.upfile-row
+{
+	color: *fore-color*;
+}
+.upfile-link
+{
+	color: *fore-color-file*;
+}
+a
+{
+	text-decoration: none;
+}
+a:hover
+{
+	text-decoration: underline;
+}
+body
+{
 	background-color: *back-color*;
 }
-
-div {
+div
+{
 	font-family: Tahoma;
 	font-size: x-small;
 	margin: 1em;
 	white-space: nowrap;
 }
-
-a {
-	text-decoration: none;
-}
-
-a:hover {
-	text-decoration: underline;
-}
-
-.upfile-row {
-	color: *fore-color*;
-}
-
-.upfile-link {
-	color: *fore-color-file*;
-}
-
+-->
 </style>
 </head>
 <body>

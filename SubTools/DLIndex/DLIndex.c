@@ -356,10 +356,13 @@ static void MakeRootIndex(char *rootDir, char *rootIndexFmt)
 
 			description = replaceLine(description, "\n", "<br/>\n", 0);
 
-			addElement(lines, (uint)strx("<tr>"));
-			addElement(lines, (uint)xcout("<td class=\"appname\"><a href=\"%s/%s\">%s</a></td>", ai->AppName, INDEX_FILE, ai->AppName));
-			addElement(lines, (uint)xcout("<td class=\"description\">%s</td>", description));
-			addElement(lines, (uint)strx("</tr>"));
+			if(index)
+				addElement(lines, (uint)strx(""));
+
+			addElement(lines, (uint)strx("\t<tr>"));
+			addElement(lines, (uint)xcout("\t<td class=\"appname\"><a href=\"%s/%s\">%s</a></td>", ai->AppName, INDEX_FILE, ai->AppName));
+			addElement(lines, (uint)xcout("\t<td class=\"description\">%s</td>", description));
+			addElement(lines, (uint)strx("\t</tr>"));
 
 			memFree(description);
 		}

@@ -1,34 +1,35 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS"/>
 <title>$(TITLE)</title>
-<style>
-
-body {
+<style type="text/css">
+<!--
+a
+{
+	color: $(LINK-COLOR);
+	text-decoration: none;
+}
+a:hover
+{
+	text-decoration: underline;
+}
+body
+{
 	color: $(TEXT-COLOR);
 	background-color: $(BACK-COLOR);
 }
-
-div {
+div
+{
 	font-family: 'Meiryo UI', Tahoma;
 	margin: 1em;
 }
-
-img {
+img
+{
 	border-style:none;
 	max-width: 100%;
 	max-height: 100%;
 }
-
-a {
-	color: $(LINK-COLOR);
-	text-decoration: none;
-}
-
-a:hover {
-	text-decoration: underline;
-}
-
+-->
 </style>
 </head>
 <body>
