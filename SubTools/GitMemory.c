@@ -2,6 +2,7 @@
 
 #define GIT_ROOTDIR "C:\\huge\\GitHub"
 #define MEM_ROOTDIR "C:\\huge\\GitMem"
+#define RUM_ROOTDIR "C:\\huge\\GitRum"
 
 static uint EndCode = 0;
 
@@ -11,18 +12,13 @@ static int IsGitPath(char *path)
 
 	return localPath[0] == '.'; // '.' で始まっているファイルは全てgitのファイルと見なす。
 }
-static void MemoryMain(void)
+static void MemoryMain_MD(char *memDir)
 {
 	autoList_t *repoDirs = lsDirs(GIT_ROOTDIR);
 	char *repoDir;
 	uint repoDir_index;
-	char *memDir = combine_cx(MEM_ROOTDIR, addLine(makeCompactStamp(NULL), "00"));
 
 	sortJLinesICase(repoDirs);
-
-	memDir = toCreatablePath(memDir, 99); // 秒間 100 件超えは想定しない。
-	cout("memDir: %s\n", memDir);
-	createDir(memDir);
 
 	foreach(repoDirs, repoDir, repoDir_index)
 	{
@@ -69,7 +65,28 @@ static void MemoryMain(void)
 	}
 	LOGPOS();
 	releaseDim(repoDirs, 1);
+	LOGPOS();
+}
+static void MemoryMain(void)
+{
+	char *memDir = combine_cx(MEM_ROOTDIR, addLine(makeCompactStamp(NULL), "00"));
+
+	memDir = toCreatablePath(memDir, 99); // 秒間 100 件超えは想定しない。
+	cout("memDir: %s\n", memDir);
+	createDir(memDir);
+
+	MemoryMain_MD(memDir);
+
+	LOGPOS();
 	memFree(memDir);
+	LOGPOS();
+}
+static void RumMain(void)
+{
+	LOGPOS();
+	recurClearDir(RUM_ROOTDIR);
+	LOGPOS();
+	MemoryMain_MD(RUM_ROOTDIR);
 	LOGPOS();
 }
 static void FlushMain(void)
@@ -173,10 +190,15 @@ int main(int argc, char **argv)
 {
 	errorCase(!existDir(GIT_ROOTDIR));
 	errorCase(!existDir(MEM_ROOTDIR));
+	errorCase(!existDir(RUM_ROOTDIR));
 
 	if(argIs("MEMORY"))
 	{
 		MemoryMain();
+	}
+	else if(argIs("RUM"))
+	{
+		RumMain();
 	}
 	else if(argIs("FLUSH"))
 	{
