@@ -381,6 +381,7 @@ static char *DropPath_Win10(void)
 	char *outFile;
 	char *path;
 
+	errorCase(isFactoryDirDisabled());
 	errorCase(!existFile(WDROP_EXE_FILE)); // 外部コマンド存在確認
 
 	funcMtx = mutexLock("{5396f16e-d695-4d3d-81a1-5b751d0d2068}");
