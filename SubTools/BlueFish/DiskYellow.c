@@ -27,12 +27,14 @@ static void Monitor(void)
 	{
 		int key = waitKey(2000);
 		uint64 diskFree;
+		uint64 diskSize;
 
 		if(key == 0x1b)
 			break;
 
 		updateDiskSpace(TargetDrive);
 		diskFree = lastDiskFree_User;
+		diskSize = lastDiskSize;
 
 		if(key == 'T')
 		{
@@ -55,7 +57,7 @@ static void Monitor(void)
 			cout("%s\n", c_makeJStamp(NULL, 0));
 			cout("----\n");
 		}
-		cout("DiskFree: %I64u (DiskFreeLimit: %I64u, rate: %.3f)\n", diskFree, DiskFreeLimit, diskFree * 1.0 / DiskFreeLimit);
+		cout("DiskFree: %I64u, DiskFreeLimit: %I64u, rate: %.3f / %.3f\n", diskFree, DiskFreeLimit, diskFree * 1.0 / diskSize, DiskFreeLimit * 1.0 / diskSize);
 
 		if(diskFree < DiskFreeLimit)
 		{
