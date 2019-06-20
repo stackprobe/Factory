@@ -105,7 +105,7 @@ int main(int argc, char **argv)
 	{
 		char *fileBase = nextArg();
 
-		LogFile = xcout("%s_%s.log", fileBase, c_makeCompactStamp(NULL));
+		LogFile = xcout("%s%s.log", fileBase, c_makeCompactStamp(NULL));
 		PipeLogger();
 		return;
 	}

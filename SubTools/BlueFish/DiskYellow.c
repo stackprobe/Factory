@@ -8,11 +8,20 @@ static int TargetDrive;
 static uint64 DiskFreeLimit;
 static char *YellowCommand;
 
+static void SetTitle(void)
+{
+	cmdTitle_x(xcout("DiskYellow - [%c:] %I64u = %s", TargetDrive, DiskFreeLimit, YellowCommand));
+}
+static void SetTitleEnd(void)
+{
+	cmdTitle("DiskYellow");
+}
 static void Monitor(void)
 {
 	uint loopCount;
 
 	cout("モニター開始 @ %s\n", c_makeJStamp(NULL, 0));
+	SetTitle();
 
 	for(loopCount = 0; ; loopCount++)
 	{
@@ -53,9 +62,11 @@ static void Monitor(void)
 			cout("コマンド実行 @ %s\n", c_makeJStamp(NULL, 0));
 			coExecute(YellowCommand);
 			cout("コマンド終了 @ %s\n", c_makeJStamp(NULL, 0));
+			SetTitle();
 		}
 	}
 	cout("モニター終了 @ %s\n", c_makeJStamp(NULL, 0));
+	SetTitleEnd();
 }
 int main(int argc, char **argv)
 {
@@ -72,9 +83,5 @@ int main(int argc, char **argv)
 	errorCase(!m_isRange(DiskFreeLimit, 1ui64, IMAX_64));
 	errorCase(m_isEmpty(YellowCommand));
 
-	cmdTitle_x(xcout("DiskYellow - [%c:] %I64u = %s", TargetDrive, DiskFreeLimit, YellowCommand));
-
 	Monitor();
-
-	cmdTitle("DiskYellow");
 }
