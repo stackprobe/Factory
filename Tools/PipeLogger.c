@@ -1,5 +1,7 @@
 /*
-	PipeLogger.exe [/DT ログ出力DIR | /UDT ログ出力DIR | /B ログ出力ファイルベース名 | ログ出力ファイル]
+	PipeLogger.exe [/DT ログ出力DIR | /UDT ログ出力DIR | /B ログ出力ファイルベース名 | /BH ログ出力ファイルベース名 | ログ出力ファイル]
+
+		/BH ... 1時間毎にログ出力ファイル名を更新する。
 
 	- - -
 
@@ -14,10 +16,18 @@
 #include "C:\Factory\Common\all.h"
 
 #define LOGLINELENMAX 1000000
+#define LOGFILE_CHANGE_PERIOD_SEC 3600
 
 static char *LogFile;
 static FILE *LogFp;
 
+static char *LogFileBase = NULL; // NULL == ログ出力ファイル名の更新、無効
+static uint NextChangeTime;
+
+static char *GetNextLogFile(void)
+{
+	return xcout("%s%s.log", LogFileBase, c_makeCompactStamp(NULL));
+}
 static void WrLog(char *line)
 {
 	line = xcout("[%s] %s", c_makeJStamp(NULL, 0), line);
@@ -26,6 +36,22 @@ static void WrLog(char *line)
 	line2JLine(line, 1, 0, 1, 1); // 表示向けに矯正
 	cout("%s\n", line);
 	memFree(line);
+
+	if(LogFileBase)
+	{
+		uint currTime = now();
+
+		if(NextChangeTime < currTime)
+		{
+			memFree(LogFile);
+			LogFile = GetNextLogFile();
+
+			fileClose(LogFp);
+			LogFp = fileOpen(LogFile, "wt");
+
+			NextChangeTime = currTime + LOGFILE_CHANGE_PERIOD_SEC;
+		}
+	}
 }
 static void PipeLogger(void)
 {
@@ -106,6 +132,16 @@ int main(int argc, char **argv)
 		char *fileBase = nextArg();
 
 		LogFile = xcout("%s%s.log", fileBase, c_makeCompactStamp(NULL));
+		PipeLogger();
+		return;
+	}
+	if(argIs("/BH"))
+	{
+		LogFileBase = nextArg();
+
+		LogFile = GetNextLogFile();
+		NextChangeTime = now() + LOGFILE_CHANGE_PERIOD_SEC;
+
 		PipeLogger();
 		return;
 	}
