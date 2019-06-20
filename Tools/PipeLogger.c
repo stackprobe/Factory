@@ -1,5 +1,5 @@
 /*
-	PipeLogger.exe [/DT ログ出力DIR | /UDT ログ出力DIR | ログ出力ファイル]
+	PipeLogger.exe [/DT ログ出力DIR | /UDT ログ出力DIR | /B ログ出力ファイルベース名 | ログ出力ファイル]
 
 	- - -
 
@@ -101,6 +101,17 @@ int main(int argc, char **argv)
 		memFree(localFile);
 		return;
 	}
+	if(argIs("/B"))
+	{
+		char *fileBase = nextArg();
+
+		LogFile = xcout("%s_%s.log", fileBase, c_makeCompactStamp(NULL));
+		PipeLogger();
+		return;
+	}
+
+	errorCase_m(hasArgs(2), "不明なコマンド引数");
+
 	if(hasArgs(1))
 	{
 		LogFile = nextArg();

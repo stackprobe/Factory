@@ -10,9 +10,11 @@ static char *YellowCommand;
 
 static void Monitor(void)
 {
-	cout("モニター開始 @ %s\n", c_makeCompactStamp(NULL));
+	uint loopCount;
 
-	for(; ; )
+	cout("モニター開始 @ %s\n", c_makeJStamp(NULL, 0));
+
+	for(loopCount = 0; ; loopCount++)
 	{
 		int key = waitKey(2000);
 		uint64 diskFree;
@@ -38,16 +40,22 @@ static void Monitor(void)
 			cout("| T ⇒ コマンドテスト |\n");
 			cout("+---------------------+\n");
 		}
+		if(loopCount % 10 == 0)
+		{
+			cout("----\n");
+			cout("%s\n", c_makeJStamp(NULL, 0));
+			cout("----\n");
+		}
 		cout("DiskFree: %I64u (DiskFreeLimit: %I64u, rate: %.3f)\n", diskFree, DiskFreeLimit, diskFree * 1.0 / DiskFreeLimit);
 
 		if(diskFree < DiskFreeLimit)
 		{
-			cout("コマンド実行 @ %s\n", c_makeCompactStamp(NULL));
+			cout("コマンド実行 @ %s\n", c_makeJStamp(NULL, 0));
 			coExecute(YellowCommand);
-			cout("コマンド終了 @ %s\n", c_makeCompactStamp(NULL));
+			cout("コマンド終了 @ %s\n", c_makeJStamp(NULL, 0));
 		}
 	}
-	cout("モニター終了 @ %s\n", c_makeCompactStamp(NULL));
+	cout("モニター終了 @ %s\n", c_makeJStamp(NULL, 0));
 }
 int main(int argc, char **argv)
 {
