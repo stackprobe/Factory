@@ -41,7 +41,7 @@ static void Upload(SockStream_t *ss, char *laneDir)
 	{
 		cout("šššƒŒ[ƒ“‚ª‘½‚·‚¬‚éI\n");
 		SockSendLine(ss, "NG");
-		return;
+		goto netError;
 	}
 	LOGPOS();
 

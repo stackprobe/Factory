@@ -1,5 +1,5 @@
 /*
-	Period.exe ID (/CTT | /C | /R MIN-SEC MAX-SEC | /RH MIN-HOUR MAX-HOUR | /T SEC | /TH HOUR)
+	Period.exe ID (/CTT | /C | /R MIN-SEC MAX-SEC | /RH MIN-HOUR MAX-HOUR | /T SEC | /TH HOUR | /TD DAY)
 
 		ID ... 大文字小文字を区別する。
 			/CTT を指定する場合は、使用しない。適当な文字列をセットすること。
@@ -12,7 +12,7 @@ static char *S_Id;
 
 // ---- time table ----
 
-#define TIME_TABLE_FILE "C:\\Factory\\tmp\\TimeTable.dat"
+#define TIME_TABLE_FILE "C:\\appdata\\Period.dat"
 
 static autoList_t *TTbl;
 static uint TTPos;
@@ -144,12 +144,17 @@ static void Update_TimeHour(uint hour)
 {
 	UpdateTime((time_t)hour * 3600);
 }
+static void Update_TimeDay(uint day)
+{
+	UpdateTime((time_t)day * 86400);
+}
 
 // ----
 
 int main(int argc, char **argv)
 {
 	mt19937_initCRnd();
+	mkAppDataDir();
 
 	S_Id = nextArg();
 
@@ -201,5 +206,11 @@ int main(int argc, char **argv)
 		uint hour = toValue(nextArg());
 
 		Update_TimeHour(hour);
+	}
+	if(argIs("/TD"))
+	{
+		uint day = toValue(nextArg());
+
+		Update_TimeDay(day);
 	}
 }
