@@ -4,6 +4,13 @@
 	GitHisRemove.exe /AUTO リポジトリ名
 
 	GitHisRemove.exe /AUTOALL
+
+	----
+
+	最新の状態に削除対象ファイルが存在すると、履歴から削除出来ないことがあるっぽい。
+	当該ファイルを削除してコミット・pushしてから、履歴からの削除を行うべき。
+
+	----> いちおう自動で行うようにした。
 */
 
 #include "C:\Factory\Common\all.h"
@@ -109,6 +116,32 @@ static void Main2(char *repositoryName, int manualMode)
 		foreach(files, file, index)
 		{
 			cout("削除 ⇒ %s\n", file);
+
+			// 最新の状態に当該ファイルが存在すると削除出来ないことがあるっぽいので、削除する。
+			{
+				char *realFile = strx(file);
+
+				restoreYen(realFile);
+
+				if(!isFairRelPath(realFile, strlen_x(getCwd())))
+				{
+					cout("★★★相対パスとして認識出来ないため削除しません。\n"); // 日本語を含むパスなど有り得る。
+				}
+				else
+				{
+					if(existFile(realFile))
+						coExecute_x(xcout("DEL \"%s\"", realFile));
+				}
+				memFree(realFile);
+			}
+
+			// 念のためコミット
+
+			coExecute("C:\\var\\bat\\go add *");
+			coExecute("C:\\var\\bat\\go commit -m \"remove from history\"");
+			coExecute("C:\\var\\bat\\go push");
+
+			// ----
 
 			coExecute_x(xcout("C:\\var\\bat\\go filter-branch -f --tree-filter \"rm -f '%s'\" HEAD", file));
 			coExecute("C:\\var\\bat\\go push -f");
