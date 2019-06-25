@@ -135,9 +135,22 @@ readArgs:
 
 // ---- Tools ----
 
+static int IsTight_Main(void)
+{
+	if(10 <= sockConnectMax)
+		return 0.8999 < sockConnectedRate;
+
+	if(4 <= sockConnectMax)
+		return sockConnectMax - 1 <= sockConnectedCount;
+
+	if(2 <= sockConnectMax)
+		return sockConnectMax <= sockConnectedCount;
+
+	return 0;
+}
 int IsTight(void)
 {
-	if(0.8999 < sockConnectedRate)
+	if(IsTight_Main())
 	{
 		cout("TIGHT!\n");
 		return 1;

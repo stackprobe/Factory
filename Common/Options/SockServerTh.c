@@ -101,7 +101,7 @@ void sockServerTh(void (*funcTransmit)(int, char *), uint portno, uint connectma
 
 	if(bind(sock, (struct sockaddr *)&sa, sizeof(sa)) != 0) // ? == -1
 	{
-		error();
+		error_m("TCPポートのバインドに失敗しました。");
 	}
 	if(listen(sock, SOMAXCONN) != 0) // ? == -1
 	{

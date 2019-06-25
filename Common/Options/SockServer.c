@@ -364,7 +364,7 @@ void sockServerEx(int (*funcPerform)(char *, char *),
 	sa.sin_port = htons((unsigned short)portno);
 
 	retval = bind(sock, (struct sockaddr *)&sa, sizeof(sa));
-	errorCase(retval != 0); // ? == -1
+	errorCase_m(retval != 0, "Can not bind to TCP port."); // ? == -1
 
 	retval = listen(sock, SOMAXCONN);
 	errorCase(retval != 0); // ? == -1
