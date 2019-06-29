@@ -1,7 +1,7 @@
 #include "C:\Factory\Common\all.h"
 
 #define REV_MAX 1000
-//#define REV_MAX 100 // 少ない気がした。@ 2016.6.26
+#define REV_MAX_AT_DELETED 950
 
 #define GAME_ORDER_FILE "order.txt"
 #define GAME_TITLE_FILE "title.txt"
@@ -34,19 +34,22 @@ static void TrimRev(char *appDir)
 {
 	autoList_t *revDirs = lsDirs(appDir);
 
-	sortJLinesICase(revDirs);
-	reverseElements(revDirs); // 終端 == 最も旧いリビジョン
-
-	while(REV_MAX < getCount(revDirs))
+	if(REV_MAX < getCount(revDirs))
 	{
-		char *revDir = (char *)unaddElement(revDirs); // 最も旧いリビジョンを取り出す。
+		sortJLinesICase(revDirs);
+		reverseElements(revDirs); // 終端 == 最も旧いリビジョン
 
-		cout("[DEL_REV] %s\n", revDir);
+		while(REV_MAX_AT_DELETED < getCount(revDirs))
+		{
+			char *revDir = (char *)unaddElement(revDirs); // 最も旧いリビジョンを取り出す。
 
-		errorCase(!lineExp("<4,09>.<3,09>.<5,09>", getLocal(revDir))); // 2bs
+			cout("[DEL_REV] %s\n", revDir);
 
-		recurRemoveDir(revDir);
-		memFree(revDir);
+			errorCase(!lineExp("<4,09>.<3,09>.<5,09>", getLocal(revDir))); // 2bs
+
+			recurRemoveDir(revDir);
+			memFree(revDir);
+		}
 	}
 	releaseDim(revDirs, 1);
 }
