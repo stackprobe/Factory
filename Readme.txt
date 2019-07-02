@@ -27,27 +27,39 @@ Visual C++ 2010 Express
 	★ビルド手順中の fcrlf がこのディレクトリを生成し、zz がこれらのディレクトリを削除します。
 
 
-メインの開発環境では以下のディレクトリを使用していました。@ 2017.x.x
+開発環境では以下のディレクトリを使用しています。@ 2019.xx.xx
+突然現れる謎のパスはだいたいこいつらです。
 
-	C:\app       = フリーソフト等、外部アプリ置き場
-	C:\app\Kit   = https://github.com/stackprobe/Kit/tree/master/
-	C:\appdata   = APP_DATA
-	C:\Dat       = C:\Devで使う共通データ
-	C:\Dev       = いろいろな開発環境
-	C:\etc       = 物置1
-	C:\Factory   = ここ
-	C:\home      = 物置3
-	C:\huge      = 物置5 (でかいもの専用)
-	C:\pleiades  = Pleiades All in One 4.x Ultimate
-	C:\prv       = subst S: C:\prv
-	C:\temp      = 一時ファイル用、ログオン時に空にする。
-	C:\tmp       = 一時ファイル用、クリアしない。
-	C:\var       = 物置2
-	S:\          = 物置4 (元はネットワークドライブ、使わなくなって形骸化)
+	C:\app         = フリーソフト等、外部アプリ置き場
+	C:\app2        = フリーソフト等、外部アプリ置き場２
+	C:\app\Kit     = https://github.com/stackprobe/Kit/tree/master/
+	C:\appdata     = APP_DATA や ProgramData みたいな場所
+	C:\Dat         = C:\Devで使う共通データ
+	C:\Dev         = いろいろな開発環境
+	C:\etc         = 第１の物置
+	C:\Factory     = ここ
+	C:\home        = 第３の物置
+	C:\huge        = 第５の物置 (GitHub関係専用)
+	C:\huge\GitHub = リポジトリ置き場
+	C:\pleiades    = Pleiades All in One Java? Full Edition?
+	C:\prv         = subst S: C:\prv
+	C:\temp        = 一時ファイル用、ログオン時に空にする。
+	C:\tmp         = 一時ファイル用、クリアしない。
+	C:\var         = 第２の物置
+	C:\var2        = 第６の物置
+	S:\            = 第４の物置 (元はネットワークドライブ、使わなくなって形骸化)
 
 
 ビルド手順
 ----------
+
+-1. Windows 10 Pro 又は Windows 7 Professional 環境を用意する。
+
+	-1.1. アップデートを全て適用する。
+
+0. Visual C++ 2010 Express をインストールする。
+
+	0.1. アップデートを全て適用する。
 
 1. 全てのファイルをローカルに展開する。
 
@@ -55,7 +67,7 @@ Visual C++ 2010 Express
 
 2. コンソールを開く。
 
-	OpenConsole.bat を実行する。
+	2.1. OpenConsole.bat を実行する。
 
 3. 以下のコマンドを実行する。-- 全てのソースをコンパイル・リンクする。
 
