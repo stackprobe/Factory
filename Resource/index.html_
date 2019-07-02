@@ -10,7 +10,7 @@ body {
 }
 
 div {
-	font-family: 'Meiryo UI', Tahoma;
+	font: normal 16px Meiryo;
 	margin: 1em;
 }
 
