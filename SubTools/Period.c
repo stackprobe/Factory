@@ -1,5 +1,5 @@
 /*
-	Period.exe ID (/CTT | /C | /R MIN-SEC MAX-SEC | /RH MIN-HOUR MAX-HOUR | /T SEC | /TH HOUR | /TD DAY)
+	Period.exe ID [/CTT | /C | /R MIN-SEC MAX-SEC | /RH MIN-HOUR MAX-HOUR | /T SEC | /TM MINUTE | /TH HOUR | /TD DAY]
 
 		ID ... 大文字小文字を区別する。
 			/CTT を指定する場合は、使用しない。適当な文字列をセットすること。
@@ -140,6 +140,10 @@ static void Update_Time(uint sec)
 {
 	UpdateTime(sec);
 }
+static void Update_TimeMinute(uint minute)
+{
+	UpdateTime((time_t)minute * 60);
+}
 static void Update_TimeHour(uint hour)
 {
 	UpdateTime((time_t)hour * 3600);
@@ -201,6 +205,12 @@ int main(int argc, char **argv)
 
 		Update_Time(sec);
 	}
+	if(argIs("/TM"))
+	{
+		uint minute = toValue(nextArg());
+
+		Update_TimeMinute(minute);
+	}
 	if(argIs("/TH"))
 	{
 		uint hour = toValue(nextArg());
@@ -213,4 +223,5 @@ int main(int argc, char **argv)
 
 		Update_TimeDay(day);
 	}
+	Update_Time(60);
 }
