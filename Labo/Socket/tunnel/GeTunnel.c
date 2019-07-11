@@ -6,6 +6,7 @@
 	GeTunnel.exe RECV-PORT FWD-HOST FWD-PORT [/C CONNECT-MAX] [/P PROXY-HOST PROXY-PORT] [/R]
 	                                         [/E EMBED-MODE] [/BS BUFF-FULL] [/EF ERROR-PAGE-FILE]
 	                                         [/XRH EXTRA-REQ-RES-HEADER-LINES-FILE]
+	                                         [/FAV FAVICON-ICO-FILE]
 
 		CONNECT-MAX ... 最大接続数, 省略時は 50
 		PROXY-HOST  ... プロキシサーバー
@@ -15,6 +16,7 @@
 		BUFF-FULL   ... 送受信バッファの最大サイズ。リクエスト・レスポンスの最大サイズより少し大きめにすること。
 		ERROR-PAGE-FILE ... エラー応答ファイル
 		EXTRA-REQ-RES-HEADER-LINES-FILE ... 拡張ヘッダー行リストファイル
+		FAVICON-ICO-FILE ... "favicon.ico" ファイル
 
 		★タイムアウトは無い -> boomClient, boomServer の SOCK-TIMEOUT に依存する。
 */
@@ -29,6 +31,7 @@
 #define HOST_LENMAX 255
 
 static char *ErrorBodyFmt;
+static autoBlock_t *FaviconBody;
 
 /*
 	プロキシ -> 本当の接続先
@@ -100,6 +103,7 @@ static void ReleaseInfo(Info_t *i)
 
 static Info_t *CurrInfo;
 static int DecodeErrorFlag;
+static int RequestFaviconFlag;
 
 // ---- HTTP ----
 
@@ -172,12 +176,10 @@ static int HTTPDecode(autoBlock_t *rBuff, autoBlock_t *wBuff)
 	{
 		char *body = unbindBlock2Line(copyAutoBlock(HttpDat.Body));
 
-		if(
-			mbs_stristr(body, BODY_MESSAGE_PTN) &&
-			(
-				updateTagRng(body, "<caption>", "</caption>", 1) ||
-				updateTagRng(body, "<th>", "</th>", 1) ||
-				updateTagRng(body, "<td>", "</td>", 1)
+		if(mbs_stristr(body, BODY_MESSAGE_PTN) && (
+			updateTagRng(body, "<caption>", "</caption>", 1) ||
+			updateTagRng(body, "<th>", "</th>", 1) ||
+			updateTagRng(body, "<td>", "</td>", 1)
 			))
 		{
 			HD_Decode(body, &lastTagRng, wBuff);
@@ -241,6 +243,7 @@ static int HTTPDecode(autoBlock_t *rBuff, autoBlock_t *wBuff)
 			LOGPOS();
 			return 1;
 		}
+		RequestFaviconFlag = (int)mbs_stristr(url, "/favicon.ico");
 		memFree(url);
 	}
 
@@ -518,7 +521,15 @@ static void DataFltr(autoBlock_t *buff, uint prm)
 
 			LOGPOS();
 
-			if(ErrorBodyFmt)
+			if(RequestFaviconFlag && FaviconBody)
+			{
+				ab_addLine(buff, "HTTP/1.1 200 OK\r\n");
+				ab_addLine_x(buff, xcout("Content-Length: %u\r\n", getSize(FaviconBody)));
+				ab_addLine(buff, "Content-Type: image/x-icon\r\n");
+				ab_addLine(buff, "\r\n");
+				ab_addBytes(buff, FaviconBody);
+			}
+			else if(ErrorBodyFmt)
 			{
 #if 1 // 変数の展開アリ
 				char *body = strx(ErrorBodyFmt);
@@ -700,6 +711,11 @@ static int ReadArgs(void)
 	if(argIs("/XRH")) // eXtra Req-Res Header lines file
 	{
 		ExtraHeaderLines = readLines(nextArg());
+		return 1;
+	}
+	if(argIs("/FAV"))
+	{
+		FaviconBody = readBinary(nextArg());
 		return 1;
 	}
 
