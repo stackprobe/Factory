@@ -1,5 +1,9 @@
 /*
 	Hugest.exe [/S 最小の下限] [/-S] [/LSS | 入力ディレクトリ]
+
+		/-S  ... サブディレクトリを無視
+
+		[/LSS | 入力ディレクトリ] を省略した場合 ⇒ D&D
 */
 
 #include "C:\Factory\Common\all.h"
