@@ -1,15 +1,17 @@
 /*
-	UTF2SJIS.exe [/S] R-ENC W-ENC [/LSS | 対象ファイル | 対象ディレクトリ]
+	UTF2SJIS.exe [/B] [/S] [/SF] R-ENC W-ENC [/LSS | 対象ファイル | 対象ディレクトリ]
 
+		/B    ... バッチモード
 		/S    ... ディレクトリを指定する場合、サブディレクトリも対象とする。
+		/SF   ... セーフモード == 読み込み文字コードが違うまたは内容が変化しない場合、何もしない。
 		/LSS  ... FOUNDLISTFILE を対象とする。
-		R-ENC ... 読み込みエンコード
-		W-ENC ... 書き出しエンコード
+		R-ENC ... 読み込み文字コード
+		W-ENC ... 書き出し文字コード
 
-		★ R-ENC, W-ENC のどちらかを SJIS にしなければならない。
+		★ R-ENC, W-ENC の少なくともどちらかを SJIS にしなければならない。
 
 		- - -
-		読み込みエンコード
+		読み込み文字コード
 
 		SJIS    ... Shift_JIS
 		UTF16   ... UTF-16(LE) | UTF-16(BE) | UTF-16(LE)NoBOM
@@ -17,7 +19,7 @@
 		UTF8    ... UTF-8
 
 		- - -
-		書き出しエンコード
+		書き出し文字コード
 
 		SJIS          ... Shift_JIS
 		UTF16         ... UTF-16(LE)
@@ -43,6 +45,7 @@ Enc_t;
 
 static int BatchMode;
 static int IntoSubDir;
+static int SafeMode;
 static Enc_t REnc;
 static Enc_t WEnc;
 
@@ -72,7 +75,7 @@ static char *GetSEnc(Enc_t enc)
 	error();
 	return NULL;
 }
-static void DoConv2(char *rFile, char *wFile)
+static void DoConv3(char *rFile, char *wFile)
 {
 	UTF_BE = 0;
 	UTF_NoWriteBOM = 0;
@@ -81,6 +84,10 @@ static void DoConv2(char *rFile, char *wFile)
 	{
 		switch(WEnc)
 		{
+		case ENC_SJIS:
+			copyFile(rFile, wFile);
+			return;
+
 		case ENC_UTF16:
 			SJISToUTF16File(rFile, wFile);
 			return;
@@ -126,6 +133,52 @@ static void DoConv2(char *rFile, char *wFile)
 	}
 	error();
 }
+static int IsNeedConv(char *rFile, char *wFile, char *rFile2)
+{
+	if(!isSameFile(rFile, rFile2))
+	{
+		cout("読み込み文字コードが違うようです。\n");
+		return 0;
+	}
+	if(isSameFile(rFile, wFile))
+	{
+		cout("変化無し。\n");
+		return 0;
+	}
+	return 1;
+}
+static int DoConv2(char *rFile, char *wFile)
+{
+	int ret = 1;
+
+	if(SafeMode)
+	{
+		char *midFile = makeTempPath(NULL);
+		char *retFile = makeTempPath(NULL);
+
+		DoConv3(rFile, midFile);
+		m_swap(REnc, WEnc, uint);
+		DoConv3(midFile, retFile);
+		m_swap(REnc, WEnc, uint); // 復元
+
+		if(!IsNeedConv(rFile, midFile, retFile))
+		{
+			removeFile(midFile);
+			ret = 0;
+		}
+		else
+			moveFile(midFile, wFile);
+
+		removeFile(retFile);
+
+		memFree(midFile);
+		memFree(retFile);
+	}
+	else
+		DoConv3(rFile, wFile);
+
+	return ret;
+}
 static void DoConv(autoList_t *files)
 {
 	char *file;
@@ -159,15 +212,15 @@ static void DoConv(autoList_t *files)
 
 		cout("<%u> %s\n", index, file);
 
-		DoConv2(file, midFile);
-
-		LOGPOS();
-
-		removeFile(file);
-		moveFile(midFile, file);
+		if(DoConv2(file, midFile))
+		{
+			LOGPOS();
+			removeFile(file);
+			LOGPOS();
+			moveFile(midFile, file);
+			LOGPOS();
+		}
 		memFree(midFile);
-
-		LOGPOS();
 	}
 }
 static void DoConv_File(char *file)
@@ -203,6 +256,12 @@ readArgs:
 		IntoSubDir = 1;
 		goto readArgs;
 	}
+	if(argIs("/SF"))
+	{
+		LOGPOS();
+		SafeMode = 1;
+		goto readArgs;
+	}
 
 	REnc = GetEnc(nextArg());
 	WEnc = GetEnc(nextArg());
@@ -210,7 +269,6 @@ readArgs:
 	errorCase(REnc == ENC_UTF16_NOBOM);
 	errorCase(REnc == ENC_UTF16BE_NOBOM);
 	errorCase(REnc != ENC_SJIS && WEnc != ENC_SJIS);
-	errorCase(REnc == ENC_SJIS && WEnc == ENC_SJIS);
 
 	if(argIs("/LSS"))
 	{

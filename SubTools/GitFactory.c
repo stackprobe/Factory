@@ -113,7 +113,8 @@ static void SolveEncoding(char *rootDir)
 	{
 		char *localFile = getLocal(file);
 
-		if(!_stricmp("Readme.txt", localFile) || !_stricmp("_source.txt", localFile))
+		if(!_stricmp("txt", getExt(localFile)))
+//		if(!_stricmp("Readme.txt", localFile) || !_stricmp("_source.txt", localFile)) // old
 		{
 			cout("SE_file: %s\n", file);
 

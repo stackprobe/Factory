@@ -97,7 +97,7 @@ void UTF16ToSJISFile(char *rFile, char *wFile)
 
 		if(chr == -1)
 		{
-			LOGPOS(); // fixme
+			cout("Warning: UTF-16 処理できない文字\n");
 			chr = 0x8148; // "？"
 		}
 		if(chr & 0xff00)
@@ -147,7 +147,7 @@ void SJISToUTF16File(char *rFile, char *wFile)
 
 		if(chr == -1)
 		{
-			LOGPOS(); // fixme
+			cout("Warning: SJIS 処理できない文字\n");
 			chr = 0xff1f; // "？"
 		}
 		WriteUTF16Char(wfp, chr & 0xff, chr >> 8);
@@ -205,7 +205,7 @@ void UTF8ToUTF16File(char *rFile, char *wFile)
 			break;
 
 		default:
-			LOGPOS(); // fixme
+			cout("Warning: UTF-8 処理出来ない有効ビット数\n");
 			chr = 0xff1f; // "？"
 			break;
 		}
