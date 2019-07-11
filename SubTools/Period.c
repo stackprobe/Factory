@@ -1,5 +1,5 @@
 /*
-	Period.exe ID [/CTT | /C | /R MIN-SEC MAX-SEC | /RH MIN-HOUR MAX-HOUR | /T SEC | /TM MINUTE | /TH HOUR | /TD DAY]
+	Period.exe [/EI] ID [/CTT | /C | /R MIN-SEC MAX-SEC | /RH MIN-HOUR MAX-HOUR | /T SEC | /TM MINUTE | /TH HOUR | /TD DAY]
 
 		ID ... 大文字小文字を区別する。
 			/CTT を指定する場合は、使用しない。適当な文字列をセットすること。
@@ -7,6 +7,8 @@
 
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\CRRandom.h"
+
+static int EqualInterval;
 
 static char *S_Id;
 
@@ -117,6 +119,13 @@ static void UpdateTime(time_t addTime)
 	cout("時間キタ！次の時刻まで %f 時間です。endCode=0\n", addTime / 3600.0);
 	cout("次回時刻：%f\n", nextTime / 3600.0);
 
+	if(EqualInterval)
+	{
+		nextTime -= nextTime % addTime;
+
+		cout("次回時刻：%f (修正)\n", nextTime / 3600.0);
+	}
+
 	SetTime(nextTime);
 
 	termination(0); // 時間キタ
@@ -159,6 +168,11 @@ int main(int argc, char **argv)
 {
 	mt19937_initCRnd();
 	mkAppDataDir();
+
+	if(argIs("/EI"))
+	{
+		EqualInterval = 1;
+	}
 
 	S_Id = nextArg();
 
