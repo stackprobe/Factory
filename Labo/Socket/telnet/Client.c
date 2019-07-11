@@ -1,3 +1,9 @@
+/*
+	Client.exe [/S 送信データ入力ファイル] [/I] [/R 受信データ出力ファイル] [/T セッション_タイムアウト秒] [接続先ホスト名 [接続先ポート番号]]
+
+		/I ... エディタを開いて送信データを入力する。
+*/
+
 #include "C:\Factory\Common\Options\SockClient.h"
 
 static char *SendFile;

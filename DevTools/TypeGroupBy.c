@@ -1,3 +1,13 @@
+/*
+	TypeGroupBy.exe [/C] [/-C] [/I] [入力ファイル]
+
+		/C  ... 出力行数 (グループ数) を表示する。
+		/-C ... 出力行に件数を表示しない。
+		/I  ... 大文字・小文字を区別しない。
+
+		入力ファイルを省略すると、標準入力から読み込む
+*/
+
 #include "C:\Factory\Common\all.h"
 
 static autoList_t *ReadLinesFromStdin(void)
