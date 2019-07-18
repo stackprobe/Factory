@@ -103,7 +103,7 @@ endFunc:
 }
 static void AddGameVer(char *arcFile, char *rootDir)
 {
-	char *lArcFile;
+	char *arcLocalFile;
 	char *name;
 	char *wDir;
 	char *wFile;
@@ -112,17 +112,17 @@ static void AddGameVer(char *arcFile, char *rootDir)
 
 	LOGPOS();
 
-	lArcFile = getLocal(arcFile);
-	name = strxl(lArcFile, strlen(lArcFile) - 9); // "_v999.zip" ÇçÌÇÈÅB
+	arcLocalFile = getLocal(arcFile);
+	name = strxl(arcLocalFile, strlen(arcLocalFile) - 9); // "_v999.zip" ÇçÌÇÈÅB
 	wDir = combine(rootDir, name);
-	wFile = combine(wDir, lArcFile);
+	wFile = combine(wDir, arcLocalFile);
 	md5File = addExt(strx(arcFile), "md5");
 	wMD5File = addExt(strx(wFile), "md5");
 
 	cout("< %s\n", arcFile);
 	cout("< %s\n", md5File);
 	cout("> %s\n", rootDir);
-	cout("1.> %s\n", lArcFile);
+	cout("1.> %s\n", arcLocalFile);
 	cout("2.> %s\n", name);
 	cout("3.> %s\n", wDir);
 	cout("4.> %s\n", wFile);
