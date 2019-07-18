@@ -15,10 +15,21 @@ static void MskSrcFile(char *file, int eurpFlag)
 	LOGPOS();
 
 	foreach(lines, line, index)
+	{
 		for(p = line; *p; p++)
 			if(' ' < *p)
 				*p = '/';
 
+		p = strchr(line, '/');
+
+		if(p && p[1] != '/')
+		{
+			if(p[1])
+				p[1] = '/';
+			else
+				setElement(lines, index, (uint)addChar(line, '/'));
+		}
+	}
 	p = md5_makeHexHashFile(file);
 	insertElement(lines, 0, (uint)xcout("//// _git source mask md5:%s ////", p));
 	memFree(p);
