@@ -16,3 +16,8 @@ PATH=%PATH%;C:\Factory\DevTools
 PATH=%PATH%;C:\Factory\Tools
 
 rem ds.exe /s tmp
+
+IF NOT "%1" == "" (
+	REM DUMMY
+	%*
+)

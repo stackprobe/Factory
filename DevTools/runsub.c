@@ -98,7 +98,7 @@ readArgs:
 	if(intoSubDirMode)
 	{
 		dirs = lssDirs(rootDir);
-		rapidSortLines(dirs);
+		sortJLinesICase(dirs);
 
 		if(!skipRootDir)
 			insertElement(dirs, 0, (uint)strx(rootDir));
@@ -123,7 +123,7 @@ readArgs:
 			uint file_index;
 
 			eraseParents(files);
-			rapidSortLines(files);
+			sortJLinesICase(files);
 
 			foreach(files, file, file_index)
 			{
