@@ -1,3 +1,7 @@
+/*
+	中身が空の場合はコピー元にならないようにした。
+*/
+
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\OpenSource\md5.h"
 
@@ -174,11 +178,25 @@ static void SyncHeader(Header_t *masterHeader, Header_t *targetHeader)
 		SH_Main(masterHeader, targetHeader);
 	}
 }
+static sint Eval_NotEmptyEmpty(Header_t *header)
+{
+	char *text = strx(header->Text);
+	sint ret;
+
+	ucTrim(text);
+	ret = *text ? 1 : 2;
+	memFree(text);
+	return ret;
+}
 static sint Comp_HeaderStampDesc(uint v1, uint v2)
 {
 	Header_t *a = (Header_t *)v1;
 	Header_t *b = (Header_t *)v2;
 	sint ret;
+
+	ret = Eval_NotEmptyEmpty(a) - Eval_NotEmptyEmpty(b);
+	if(ret)
+		return ret;
 
 	ret = m_simpleComp(a->Stamp, b->Stamp) * -1;
 	if(ret)
