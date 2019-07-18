@@ -77,11 +77,8 @@ static void AddRev_File(char *arcFile, char *docRoot)
 	appDir = combine(docRoot, appName);
 	cout("appDir: %s\n", appDir);
 
-	if(!existDir(appDir))
-	{
-		cout("アプリケーションが無いのでスキップ\n");
-		goto endFunc;
-	}
+	createDirIfNotExist(appDir);
+
 	revision = GetRevision();
 	revDir = combine(appDir, revision);
 	cout("revDir: %s\n", revDir);
@@ -210,17 +207,20 @@ static void AddRev(char *rDir, char *wDir, char *gameWDir, char *extCluWDir)
 
 		foreach(files, file, index)
 		{
-			if(existFile(file)) // .md5 ファイルなど、消失する場合がある。
+			if(!existFile(file)) // .md5 ファイルなど、消失する場合がある。
+				continue;
+
+			if(!_stricmp("clu", getExt(file)))
 			{
-				AddRev_File(file, wDir);
+				ExtractCluster(file, extCluWDir);
 			}
-			if(existFile(file) && lineExpICase("<>_v<3,09>.zip", file))
+			else if(lineExpICase("<>_v<3,09>.zip", file))
 			{
 				AddGameVer(file, gameWDir);
 			}
-			if(existFile(file) && !_stricmp("clu", getExt(file)))
+			else if(!_stricmp("zip", getExt(file)))
 			{
-				ExtractCluster(file, extCluWDir);
+				AddRev_File(file, wDir);
 			}
 		}
 		releaseDim(files, 1);
