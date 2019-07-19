@@ -249,6 +249,31 @@ int main(int argc, char **argv)
 		}
 	}
 
+	// DLL をビルドする。(要オプション指定)
+	{
+		if(argIs("/DR"))
+		{
+			addCwd("C:\\Dev\\CSharp\\DLL");
+			{
+				coExecute("qq");
+				coExecute("cx **");
+			}
+			unaddCwd();
+
+			return;
+		}
+		if(argIs("/D"))
+		{
+			addCwd("C:\\Dev\\CSharp\\DLL");
+			{
+				coExecute("cx **");
+			}
+			unaddCwd();
+
+			return;
+		}
+	}
+
 	if(argIs("C"))
 	{
 		Main2("CCCCTMPL", "C:\\Dev\\CSharp\\Template\\CUIProgramTemplate", 0, 1);
