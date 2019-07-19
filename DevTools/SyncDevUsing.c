@@ -183,6 +183,9 @@ static sint Eval_NotEmptyEmpty(Header_t *header)
 	char *text = strx(header->Text);
 	sint ret;
 
+	if(startsWith(text, "\xEF\xBB\xBF")) // BOM
+		eraseLine(text, 3);
+
 	ucTrim(text);
 	ret = *text ? 1 : 2;
 	memFree(text);
