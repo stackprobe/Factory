@@ -49,7 +49,6 @@ static void CreateRiotComponent(char *name)
 		char *file;
 		uint index;
 
-
 		foreach(files, file, index)
 		{
 			CopyResFile(file, name);

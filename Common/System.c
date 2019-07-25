@@ -726,7 +726,7 @@ void setArgIndex(uint index)
 
 // ---- innerResPathFltr ----
 
-// 主に C:\Factory の配下 との連携を想定する。
+// 主に C:\Factory の配下 との連携を想定する。関連 -> GetCollaboFile, GetCollaboDir
 
 static char *FPP_Path;
 
