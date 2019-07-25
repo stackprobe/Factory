@@ -11,6 +11,9 @@
 
 	newcs
 	newcs /r
+
+	newcs /d
+	newcs /dr
 */
 
 #include "C:\Factory\Common\all.h"
