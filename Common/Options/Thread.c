@@ -216,7 +216,7 @@ void inner_critical(void)
 
 void initSemaphore(semaphore_t *i, uint count)
 {
-	i->EvLeave = eventOpen_x(xcout("{0585e92b-bc63-4521-abdd-bc613fcf691b}_%u", (uint)GetCurrentProcessId()));
+	i->EvLeave = eventOpen_x(xcout("{0585e92b-bc63-4521-abdd-bc613fcf691b}_%u", getSelfProcessId()));
 	i->Count = count;
 }
 void fnlzSemaphore(semaphore_t *i)

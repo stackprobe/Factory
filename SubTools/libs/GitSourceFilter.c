@@ -4,24 +4,27 @@
 #define COMMAND_SECRET "secret"
 #define COMMAND_SECRET_BEGIN "secretBegin"
 #define COMMAND_SECRET_END "secretEnd"
-#define CHR_SECRET '/'
 
-static void MaskLine(char *p, char *q)
+static char *MaskLine(char *line, char *end)
 {
-#if 1
-	for(; p < q; p++)
-		if(' ' < *p)
-			*p = CHR_SECRET;
-#else // old
-	while(p < q && *p <= ' ')
+	char *p = line;
+	uint span;
+
+	while(p < end && *p <= ' ')
 		p++;
 
-	while(p < q && q[-1] <= ' ')
-		q--;
+	while(p < end && end[-1] <= ' ')
+		end--;
 
-	while(p < q)
-		*p++ = CHR_SECRET;
-#endif
+	span = (uint)end - (uint)p;
+
+	while(p < end)
+		*p++ = '/';
+
+	if(span < 2)
+		line = insertLine(line, (uint)end - (uint)line, "//" + span);
+
+	return line;
 }
 static FilterSourceFile(char *file)
 {
@@ -50,7 +53,7 @@ static FilterSourceFile(char *file)
 
 			if(!strcmp(command, COMMAND_SECRET))
 			{
-				MaskLine(line, p);
+				setElement(lines, index, (uint)MaskLine(line, p));
 			}
 			else if(!strcmp(command, COMMAND_SECRET_BEGIN))
 			{
@@ -68,7 +71,7 @@ static FilterSourceFile(char *file)
 		}
 		if(onSecret)
 		{
-			MaskLine(line, strchr(line, '\0'));
+			setElement(lines, index, (uint)MaskLine(line, strchr(line, '\0')));
 		}
 		onSecret |= onSecretLater;
 	}

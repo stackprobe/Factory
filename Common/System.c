@@ -270,10 +270,10 @@ uint64 nextCommonCount(void)
 		// ex. 1980/01/02 02:03:55 -> 0x1980010202035500
 #endif
 	}
-	errorCase(counter == UINT64MAX); // カンスト..有り得ないだろうけど..
+	errorCase(counter == UINT64MAX); // カンスト
 
 	if(UINT64MAX / 2 < counter)
-		LOGPOS(); // カンスト注意..有り得ないだろうけど..
+		LOGPOS(); // カンスト注意
 
 	line = xcout("%I64u", counter + 1);
 	writeOneLine(FILE_SHARE_COUNTER, line);
@@ -299,15 +299,14 @@ static char *c_GetTempSuffix(void)
 		static uint64 pFATime;
 		static uint64 counter;
 
-		errorCase(counter == UINT64MAX); // カンスト..有り得ないだろうけど..
+		errorCase(counter == UINT64MAX); // カンスト
 
 		if(UINT64MAX / 2 < counter)
-			LOGPOS(); // カンスト注意..有り得ないだろうけど..
+			LOGPOS(); // カンスト注意
 
 		if(!pid)
 		{
-			pid = (uint)GetCurrentProcessId();
-			errorCase(!pid); // 0 == System Idle Process
+			pid = getSelfProcessId();
 			pFATime = (uint64)time(NULL);
 		}
 		ret = xcout("%x_%I64x_%I64x", pid, pFATime, counter);
@@ -420,8 +419,11 @@ uint getSelfProcessId(void)
 	static uint pid; // 0 は System Idle Process
 
 	if(!pid)
-		pid = (uint)_getpid();
-
+	{
+		pid = (uint)GetCurrentProcessId();
+//		pid = (uint)_getpid(); // old
+		errorCase(!pid);
+	}
 	return pid;
 }
 
