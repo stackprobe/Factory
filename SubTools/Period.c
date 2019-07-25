@@ -8,6 +8,11 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\CRRandom.h"
 
+static time_t GetCurrentTimeJST(void)
+{
+	return time(NULL) + 9 * 3600;
+}
+
 static int EqualInterval;
 
 static char *S_Id;
@@ -100,7 +105,7 @@ static void ClearTime(void)
 static void CheckTime(void)
 {
 	time_t nextTime = GetTime();
-	time_t currTime = time(NULL);
+	time_t currTime = GetCurrentTimeJST();
 
 	cout("次回時刻：%f\n", nextTime / 3600.0);
 	cout("現在時刻：%f\n", currTime / 3600.0);
@@ -114,7 +119,7 @@ static void CheckTime(void)
 }
 static void UpdateTime(time_t addTime)
 {
-	time_t nextTime = time(NULL) + addTime;
+	time_t nextTime = GetCurrentTimeJST() + addTime;
 
 	cout("時間キタ！次の時刻まで %f 時間です。endCode=0\n", addTime / 3600.0);
 	cout("次回時刻：%f\n", nextTime / 3600.0);
