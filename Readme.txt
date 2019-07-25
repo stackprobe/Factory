@@ -90,5 +90,5 @@ Visual C++ 2010 Express
 
 /J コンパイラオプションにより char は unsigned char になります。
 
-i486 を使っていた頃からの習慣で unsigned を多用しています。
+昔の(i486搭載の)PCを使っていた頃からの習慣で unsigned を多用しています。(unsigned の方が速かったので)
 
