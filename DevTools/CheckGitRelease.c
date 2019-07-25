@@ -27,22 +27,34 @@ static void CheckGitRelease(char *dir)
 	}
 	else
 	{
-		char *text = readText_b(LOCAL_GIT_RELEASE_BAT);
-		char *text2 = xcout(
-			"IF NOT EXIST .\\GitRelease.bat GOTO END\r\n"
-			"CALL qq\r\n"
-			"C:\\Factory\\SubTools\\GitFactory.exe /ow . C:\\huge\\GitHub\\%s\r\n"
-			"rem CALL C:\\var\\go.bat\r\n"
-			":END\r\n"
-			,getLocal(dir)
-			);
-
-		if(strcmp(text, text2))
 		{
-			FoundError(LOCAL_GIT_RELEASE_BAT " の内容に問題があります。");
+			char *text = readText_b(LOCAL_GIT_RELEASE_BAT);
+			char *text2 = xcout(
+				"IF NOT EXIST .\\GitRelease.bat GOTO END\r\n"
+				"CALL qq\r\n"
+				"C:\\Factory\\SubTools\\GitFactory.exe /ow . C:\\huge\\GitHub\\%s\r\n"
+				"rem CALL C:\\var\\go.bat\r\n"
+				":END\r\n"
+				,getLocal(dir)
+				);
+
+			if(strcmp(text, text2))
+			{
+				FoundError(LOCAL_GIT_RELEASE_BAT " の内容に問題があります。(bad contents)");
+			}
+			memFree(text);
+			memFree(text2);
 		}
-		memFree(text);
-		memFree(text2);
+
+		{
+			char *repoDir = combine("C:\\huge\\GitHub", getLocal(dir));
+
+			if(!existDir(repoDir))
+			{
+				FoundError(LOCAL_GIT_RELEASE_BAT " の内容に問題があります。(no repoDir)");
+			}
+			memFree(repoDir);
+		}
 	}
 
 	if(!existFile(LOCAL_RUN_ME_FIRST_BAT))
