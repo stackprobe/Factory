@@ -185,7 +185,7 @@ static void DispAllRange_GroupByName(void)
 
 		needSync = getCount(md5s) != 1;
 
-		cout("%s %u %s\n", needSync ? "要同期" : "同期済", getCount(md5s), name);
+		cout("%s %u %s\n", needSync ? "■要同期" : "□同期済", getCount(md5s), name);
 
 		if(needSync)
 			addElement(NeedSyncRangeNames, (uint)name);
@@ -298,20 +298,28 @@ static void SyncRangeGroup(autoList_t *rangeGroup)
 
 	rapidSort(rangeGroup, Comp_RangeSSLIDesc);
 
-	// test 更新順確認
+	// 更新順確認
 	{
-		Range_t *range;
-		uint range_index;
+		cout("---- 更新順確認 ----\n");
 
-		LOGPOS();
-
-		foreach(rangeGroup, range, range_index)
 		{
-			cout("%s (%u)\n", range->File, range->StartSymLineIndex);
+			Range_t *range;
+			uint range_index;
+
+			cout("< %s (%u)\n", masterRange->File, masterRange->StartSymLineIndex);
+
+			foreach(rangeGroup, range, range_index)
+			{
+				cout("> %s (%u)\n", range->File, range->StartSymLineIndex);
+			}
 		}
-		cout("test 更新順確認 -- PRESS KEY !!!\n");
-		clearGetKey();
-		LOGPOS();
+
+		cout("続行？\n");
+
+		if(clearGetKey() == 0x1b)
+			termination(0);
+
+		cout("続行します。\n");
 	}
 
 	foreach(rangeGroup, targetRange, index)
@@ -510,6 +518,7 @@ readArgs:
 		S_TargetExts = nextArg();
 		goto readArgs;
 	}
+	errorCase(hasArgs(1)); // 不明なコマンド引数
 
 	errorCase(!existDir(RootDir));
 

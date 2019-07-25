@@ -1,4 +1,10 @@
 /*
+	SyncDevUsing.exe [/D ルートDIR] [/E 拡張子リスト]
+
+		拡張子リスト ... 拡張子を '.' 区切りで指定する。例 "js", "js.jsp", "js.jsp.java"
+
+	----
+
 	中身が空の場合はコピー元にならないようにした。
 */
 
@@ -128,7 +134,7 @@ static void Confirm(void)
 
 		needSync = getCount(md5s) != 1;
 
-		cout("%s %s\n", needSync ? "未同期" : "同期済", name);
+		cout("%s %s\n", needSync ? "■未同期" : "□同期済", name);
 
 		if(needSync)
 			addElement(NeedSyncHeaderNames, (uint)name);
@@ -215,6 +221,21 @@ static void ProcHeaderGroup(autoList_t *headerGroup)
 
 	rapidSort(headerGroup, Comp_HeaderStampDesc);
 
+	// 更新順確認
+	{
+		cout("---- 更新順確認 ----\n");
+
+		foreach(headerGroup, header, index)
+			cout("%c %s (%u)\n", index ? '>' : '<', header->File, header->SymLineIndex);
+
+		cout("続行？\n");
+
+		if(clearGetKey() == 0x1b)
+			termination(0);
+
+		cout("続行します。\n");
+	}
+
 	foreach(headerGroup, header, index)
 	if(index)
 	{
@@ -261,6 +282,7 @@ readArgs:
 		S_TargetExts = nextArg();
 		goto readArgs;
 	}
+	errorCase(hasArgs(1)); // 不明なコマンド引数
 
 	errorCase(!existDir(RootDir));
 
