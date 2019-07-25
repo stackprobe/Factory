@@ -1,3 +1,9 @@
+/*
+	rumCommitHistory.exe [ROOT_DIR]
+
+		ROOT_DIR ... È—ª‚µ‚½ê‡‚ÍƒJƒŒƒ“ƒgDIR
+*/
+
 #include "C:\Factory\Common\all.h"
 
 static autoList_t *Revisions;
