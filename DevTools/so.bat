@@ -1,1 +1,1 @@
-nearest /e sln /o
+fndtoparent /e sln /o

@@ -1,3 +1,7 @@
+/*
+	fndtoparent.exe /E ext (/O | /OB)
+*/
+
 #include "C:\Factory\Common\all.h"
 
 static char *TargetExt;
