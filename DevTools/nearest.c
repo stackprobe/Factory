@@ -23,7 +23,7 @@ static void Search(void)
 	char *dir = getCwd();
 	int found = 0;
 
-	while(3 < strlen(dir)) // ? ! reached root-dirc
+	while(3 < strlen(dir)) // ? ! ルートDIRに達した。
 	{
 		addCwd(dir);
 		{
@@ -47,7 +47,7 @@ static void Search(void)
 		if(found)
 			break;
 
-		eraseLocal(dir); // 最後は "C:" など２文字になる。
+		eraseLocal(dir); // ルート直下のDIRからルートDIRに達したとき、"C:" など２文字になる。
 	}
 	memFree(dir);
 
@@ -62,8 +62,8 @@ int main(int argc, char **argv)
 readArgs:
 	if(argIs("/E"))
 	{
-		FuncIsMatch = IsMatchTargetExt;
 		TargetExt = nextArg();
+		FuncIsMatch = IsMatchTargetExt;
 		goto readArgs;
 	}
 	if(argIs("/O"))
