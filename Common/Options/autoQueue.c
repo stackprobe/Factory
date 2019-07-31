@@ -88,3 +88,40 @@ autoBlock_t *deqBytes(autoQueue_t *i, uint size)
 	Trim(i);
 	return block;
 }
+
+void enqBlock(autoQueue_t *i, autoBlock_t *block)
+{
+	enqValue(i, getSize(block));
+	enqBytes(i, block);
+}
+autoBlock_t *deqBlock(autoQueue_t *i)
+{
+	return deqBytes(i, deqValue(i));
+}
+
+void enqLine(autoQueue_t *i, char *line)
+{
+	autoBlock_t gab;
+	enqBlock(i, gndBlockLineVar(line, gab));
+}
+char *deqLine(autoQueue_t *i)
+{
+	return unbindBlock2Line(deqBlock(i));
+}
+
+// _x
+void enqBytes_x(autoQueue_t *i, autoBlock_t *bytes)
+{
+	enqBytes(i, bytes);
+	releaseAutoBlock(bytes);
+}
+void enqBlock_x(autoQueue_t *i, autoBlock_t *block)
+{
+	enqBlock(i, block);
+	releaseAutoBlock(block);
+}
+void enqLine_x(autoQueue_t *i, char *line)
+{
+	enqLine(i, line);
+	memFree(line);
+}

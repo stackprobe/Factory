@@ -23,3 +23,14 @@ uint deqValue(autoQueue_t *i);
 
 void enqBytes(autoQueue_t *i, autoBlock_t *bytes);
 autoBlock_t *deqBytes(autoQueue_t *i, uint size);
+
+void enqBlock(autoQueue_t *i, autoBlock_t *block);
+autoBlock_t *deqBlock(autoQueue_t *i);
+
+void enqLine(autoQueue_t *i, char *line);
+char *deqLine(autoQueue_t *i);
+
+// _x
+void enqBytes_x(autoQueue_t *i, autoBlock_t *bytes);
+void enqBlock_x(autoQueue_t *i, autoBlock_t *block);
+void enqLine_x(autoQueue_t *i, char *line);

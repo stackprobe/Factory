@@ -100,6 +100,14 @@ uint getZero(void)
 {
 	return 0;
 }
+uint getZero_u(uint dummy)
+{
+	return 0;
+}
+uint getZero_uu(uint dummy1, uint dummy2)
+{
+	return 0;
+}
 char *getEnvLine(char *name) // ret: c_
 {
 	char *line;
