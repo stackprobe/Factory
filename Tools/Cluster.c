@@ -13,7 +13,7 @@
 	             /BM 出力クラスタファイル 入力DIR |
 	             /R  入力クラスタファイル 出力DIR |
 	             /RQ 入力クラスタファイル 出力DIR |
-	             /MR 入力DIR 出力DIR]
+	             /MR 入力DIR 出力DIR [中間ファイル]]
 
 		/C   ... 自動判定のとき常に入力ファイルと同じディレクトリに出力する。
 		/1   ... 自動判定のとき常にフリーディレクトリに出力する。
@@ -417,9 +417,9 @@ readArgs:
 	}
 	if(argIs("/MR")) // Make and Restore (Copy)
 	{
-		char *inpDir = getArg(0); // (0) 入力DIR -> (1) 出力DIR, (1) ... 存在しない作成可能なパス
+		char *inpDir = getArg(0); // (0) 入力DIR -> (2) 中間ファイル_省略可能 -> (1) 出力DIR, (1) ... 存在しない作成可能なパス, (2) ... 上書き可能なファイル or 存在しない作成可能なパス
 		char *outDir = getArg(1);
-		char *midFile = makeTempPath(NULL);
+		char *midFile = hasArgs(3) ? strx(getArg(2)) : makeTempPath(NULL);
 
 		cout("< %s\n", inpDir);
 		cout("> %s\n", outDir);
