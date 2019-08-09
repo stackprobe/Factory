@@ -2,12 +2,23 @@
 	鯖は１画面
 	ログオン画面は画像、デスクトップは単色なので、
 	スクリーンキャプチャした画像の (0, 0) ～ (99, 0) が全て同じ色であればデスクトップと見なす。
+	デスクトップの左上にごみ箱があるはず。
 */
 
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Meteor\Toolkit.h"
 #include "C:\Factory\SubTools\libs\bmp.h"
 
+static int IsSingleColorBmpRow_First100(autoList_t *bmpRow)
+{
+	uint x;
+
+	for(x = 1; x < 100; x++)
+		if(refElement(bmpRow, 0) != refElement(bmpRow, x))
+			return 0;
+
+	return 1;
+}
 static int IsLoggedOn(void)
 {
 	char *dir = makeTempDir(NULL);
@@ -17,21 +28,26 @@ static int IsLoggedOn(void)
 	{
 		coExecute(FILE_TOOLKIT_EXE " /PRINT-SCREEN ss_");
 
-		if(existFile("ss_01.bmp"))
+		if(existFile("ss_01.bmp")) // ファイルが無い == スクリーンショットを撮れない場合は、パスワード入力中 (Secure Desktop) と考えられる。
 		{
 			autoList_t *bmp = readBMPFile("ss_01.bmp");
 			autoList_t *bmpRow;
 			uint x;
 
-			bmpRow = getList(bmp, 0);
+			LOGPOS();
+			bmpRow = refList(bmp, 0);
 
-			for(x = 1; x < 100; x++)
-				if(getElement(bmpRow, 0) != getElement(bmpRow, x))
-					goto endBmp;
+			if(IsSingleColorBmpRow_First100(bmpRow))
+			{
+				LOGPOS();
+				bmpRow = refList(bmp, 35); // 左上にはごみ箱があるはず。無ければ (この段も単色なら) ブランク画面かも？
 
-			ret = 1;
-
-		endBmp:
+				if(!IsSingleColorBmpRow_First100(bmpRow))
+				{
+					LOGPOS();
+					ret = 1;
+				}
+			}
 			releaseDim_BR(bmp, 2, NULL);
 		}
 	}
