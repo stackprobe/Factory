@@ -42,12 +42,23 @@ static int IsLoggedOn(void)
 }
 int main(int argc, char **argv)
 {
-	LOGPOS();
+	uint exitCode = 0;
+
 	errorCase(!existFile(FILE_TOOLKIT_EXE)); // 外部コマンド存在確認
 
 	while(!IsLoggedOn())
-		if(coWaitKey(5000) == 0x1b)
+	{
+		int key = coWaitKey(5000);
+
+		if(key == 0x0d)
 			break;
 
-	LOGPOS();
+		if(key == 0x1b)
+		{
+			exitCode = 1;
+			break;
+		}
+	}
+	cout("exitCode: %u\n", exitCode);
+	termination(exitCode);
 }
