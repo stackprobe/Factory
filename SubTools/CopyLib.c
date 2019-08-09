@@ -16,6 +16,7 @@ static int IsNoPause(void)
 }
 
 static autoList_t *ResAutoComment;
+static autoList_t *ResAutoComment_CS;
 
 static void AutoComment(autoList_t *ranges)
 {
@@ -130,6 +131,47 @@ static void AutoComment(autoList_t *ranges)
 	}
 	errorCase(commentEntered);
 	errorCase(classEntered);
+}
+static void AutoComment_CS(autoList_t *ranges)
+{
+	autoList_t *range;
+	uint range_index;
+	char *line;
+	uint index;
+
+	foreach(ranges, range, range_index)
+	foreach(range, line, index)
+	{
+		char *prevLine = index ? getLine(range, index - 1) : "";
+		char *insCmtIndent = NULL;
+
+		if(!startsWith(prevLine, "\t/// "))
+		if(
+			startsWith(line, "\t/// ") ||
+			startsWith(line, "\tpublic class ")
+			)
+			insCmtIndent = "\t";
+
+		if(!startsWith(prevLine, "\t\t/// "))
+		if(
+			startsWith(line, "\t\t/// ") ||
+			startsWith(line, "\t\tpublic ") ||
+			startsWith(line, "\t\tprivate ") ||
+			startsWith(line, "\t\tprotected ")
+			)
+			insCmtIndent = "\t\t";
+
+		if(insCmtIndent)
+		{
+			char *comment;
+			uint comment_index;
+
+			foreach(ResAutoComment_CS, comment, comment_index)
+			{
+				insertElement(range, index++, (uint)xcout("%s%s", insCmtIndent, comment));
+			}
+		}
+	}
 }
 static autoList_t *ReadCommonAndAppSpecRanges(char *file)
 {
@@ -294,7 +336,7 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 
 		CheckAppSpecRangesPair(rRanges, wRanges);
 
-		AutoComment(rRanges);
+		(_stricmp("cs", getExt(file)) ? AutoComment : AutoComment_CS)(rRanges);
 
 		{
 			autoList_t *lines = newList();
@@ -354,6 +396,14 @@ int main(int argc, char **argv)
 		char *cmtFile = changeExt(getSelfFile(), "txt");
 
 		ResAutoComment = readLines(cmtFile);
+
+		memFree(cmtFile);
+	}
+
+	{
+		char *cmtFile = addLine(changeExt(getSelfFile(), ""), "_CS.txt");
+
+		ResAutoComment_CS = readLines(cmtFile);
 
 		memFree(cmtFile);
 	}
