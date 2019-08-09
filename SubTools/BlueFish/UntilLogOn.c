@@ -9,7 +9,7 @@
 #include "C:\Factory\Meteor\Toolkit.h"
 #include "C:\Factory\SubTools\libs\bmp.h"
 
-static int IsSingleColorBmpRow_First100(autoList_t *bmpRow)
+static int IsSingleColor_First100Px_BmpRow(autoList_t *bmpRow)
 {
 	uint x;
 
@@ -37,12 +37,12 @@ static int IsLoggedOn(void)
 			LOGPOS();
 			bmpRow = refList(bmp, 0);
 
-			if(IsSingleColorBmpRow_First100(bmpRow))
+			if(IsSingleColor_First100Px_BmpRow(bmpRow))
 			{
 				LOGPOS();
 				bmpRow = refList(bmp, 35); // 左上にはごみ箱があるはず。無ければ (この段も単色なら) ブランク画面かも？
 
-				if(!IsSingleColorBmpRow_First100(bmpRow))
+				if(!IsSingleColor_First100Px_BmpRow(bmpRow))
 				{
 					LOGPOS();
 					ret = 1;
@@ -74,6 +74,7 @@ int main(int argc, char **argv)
 			exitCode = 1;
 			break;
 		}
+		clearKey();
 	}
 	cout("exitCode: %u\n", exitCode);
 	termination(exitCode);
