@@ -27,7 +27,7 @@ static void Search(void)
 	char *dir = getCwd();
 	int found = 0;
 
-	while(3 < strlen(dir)) // ? ! ルートDIRに達した。
+	while(!isAbsRootDir(dir))
 	{
 		addCwd(dir);
 		{
@@ -51,7 +51,7 @@ static void Search(void)
 		if(found)
 			break;
 
-		eraseLocal(dir); // ルート直下のDIRからルートDIRに達したとき、"C:" など２文字になる。
+		dir = getParent_x(dir);
 	}
 	memFree(dir);
 
