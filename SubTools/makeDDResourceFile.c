@@ -1,11 +1,27 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Meteor\ZCluster.h"
 
+#define INDEX_FILE_ON_INDEX "_index"
+
 static char *RootDir;
 static char *DDResFile;
 
 static FILE *DDResFp;
 
+static void FilesFilter(autoList_t *files)
+{
+	char *file;
+	uint index;
+
+	foreach(files, file, index)
+	{
+		if(*getLocal(file) == '_') // '_' で始まるファイルは DDResFile に含めない。
+		{
+			memFree((char *)fastDesertElement(files, index));
+			index--;
+		}
+	}
+}
 static void AddToDDResFile(char *file)
 {
 	char *wFile = makeTempPath(NULL);
@@ -37,9 +53,12 @@ static void MakeDDResFile(void)
 	uint index;
 	char *indexFile = makeTempPath(NULL);
 
+	FilesFilter(files);
+
 	sortJLinesICase(files);
 	indexes = copyLines(files);
 	changeRoots(indexes, RootDir, NULL);
+	insertElement(indexes, 0, (uint)strx(INDEX_FILE_ON_INDEX));
 	writeLines(indexFile, indexes);
 
 	DDResFp = fileOpen(DDResFile, "wb");
