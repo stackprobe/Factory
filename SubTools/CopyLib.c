@@ -171,6 +171,8 @@ static void AutoComment_CS(autoList_t *ranges)
 				insertElement(range, index++, (uint)xcout("%s%s", insCmtIndent, comment));
 			}
 		}
+
+		// TODO @" など、いずれ対応が必要になると思う。
 	}
 }
 static autoList_t *ReadCommonAndAppSpecRanges(char *file)
