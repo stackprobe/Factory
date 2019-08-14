@@ -71,5 +71,10 @@ int main(int argc, char **argv)
 		Main2("GGGGTMPL", "C:\\Dev\\Annex\\Template\\GameTemplate");
 		return;
 	}
-	cout("usage: newcpp (G｜?｜?｜?) プロジェクト名\n");
+	if(argIs("G2"))
+	{
+		Main2("GGGGTMPL", "C:\\Dev\\Annex\\Template\\GameTemplate2");
+		return;
+	}
+	cout("usage: newcpp (G｜G2｜?｜?) プロジェクト名\n");
 }

@@ -153,8 +153,10 @@ static void AutoComment_CS(autoList_t *ranges)
 			insCmtIndent = "\t";
 
 		if(!startsWith(prevLine, "\t\t/// "))
+		if(!startsWith(prevLine, "\t\t[DllImport"))
 		if(
 			startsWith(line, "\t\t/// ") ||
+			startsWith(line, "\t\t[DllImport") ||
 			startsWith(line, "\t\tpublic ") ||
 			startsWith(line, "\t\tprivate ") ||
 			startsWith(line, "\t\tprotected ")

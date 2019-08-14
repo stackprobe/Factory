@@ -239,7 +239,7 @@ static void ReplaceVersion(char *dir, uint version) // version: 1 Å` 999, VER_BE
 		if(
 			!_stricmp("Manual.txt", getLocal(file)) ||
 			!_stricmp("É}ÉjÉÖÉAÉã.txt", getLocal(file)) ||
-			!_stricmp("Resource.version.dat", getLocal(file))
+			!_stricmp("Properties.dat", getLocal(file))
 			)
 //		if(!_stricmp("txt", getExt(file))) // old @ 2017.8.5
 		{
