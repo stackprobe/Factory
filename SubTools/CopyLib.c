@@ -149,7 +149,8 @@ static void AutoComment_CS(autoList_t *ranges)
 		if(
 			startsWith(line, "\t/// ") ||
 			startsWith(line, "\tpublic class ") ||
-			startsWith(line, "\tpublic static class ")
+			startsWith(line, "\tpublic static class ") ||
+			startsWith(line, "\tpublic interface ")
 			)
 			insCmtIndent = "\t";
 
