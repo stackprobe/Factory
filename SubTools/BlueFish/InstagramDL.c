@@ -229,6 +229,8 @@ static int Download(char *url) // ret: ? successful
 		"/RBF\n"
 		"%s\n"
 		"/L\n"
+		"/RBFX\n"
+		"5000000\n" // 5 MB
 		"/-\n"
 		"%s"
 		,successfulFlag
