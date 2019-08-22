@@ -9,9 +9,9 @@
 #define CONFUSER_CLI_EXE "C:\\app\\ConfuserEx_bin\\Confuser.CLI.exe"
 #define PROJ_TEMPLATE_FILE "C:\\Factory\\SubTools\\CallConfuserCLI_Proj.txt"
 
-static void CopyDLL(char *prmRFile, char *wDir)
+static void CopyDLL(char *rExeFile, char *wDir)
 {
-	char *rDir = changeLocal(prmRFile, "");
+	char *rDir = getParent(rExeFile);
 	autoList_t *files;
 	char *file;
 	uint index;
@@ -38,7 +38,8 @@ static void CopyDLL(char *prmRFile, char *wDir)
 static void CallConfuserCLI(char *rFile, char *wFile)
 {
 	char *midDir;
-	char *midFile;
+	char *projName;
+	char *targFile;
 	char *projFile;
 	uint64 size1;
 	uint64 size2;
@@ -54,35 +55,38 @@ static void CallConfuserCLI(char *rFile, char *wFile)
 	errorCase(!creatable(wFile));
 
 	midDir = makeTempDir(NULL);
-	midFile  = combine(midDir, "BitterCoffee.exe");
-	projFile = combine(midDir, "BitterCoffee.crproj");
+	projName = getLocal(rFile);
+	projName = changeExt(projName, "");
+	targFile = combine_cx(midDir, addExt(strx(projName), "exe"));
+	projFile = combine_cx(midDir, addExt(strx(projName), "crproj"));
 
-	copyFile(rFile, midFile);
+	copyFile(rFile, targFile);
 
 	CopyDLL(rFile, midDir);
 
 	{
 		char *text = readText_b(PROJ_TEMPLATE_FILE);
 
-		text = replaceLine(text, "$TARGET_EXE$", midFile, 0);
+		text = replaceLine(text, "$TARGET_EXE$", targFile, 0);
 
 		writeOneLineNoRet_b_cx(projFile, text);
 	}
 
-	size1 = getFileSize(midFile);
+	size1 = getFileSize(targFile);
 	coExecute_x(xcout(CONFUSER_CLI_EXE " -n \"%s\"", projFile));
-	size2 = getFileSize(midFile);
+	size2 = getFileSize(targFile);
 
 	cout("FILE SIZE: %I64u -> %I64u (%.3f)\n", size1, size2, (double)size2 / size1);
 
 	errorCase((double)size2 / size1 < 1.1); // 難読化するとファイルサイズは4倍くらいになるっぽい。1割も増えてないなら、何かおかしいと見る。
 
-	copyFile(midFile, wFile);
+	copyFile(targFile, wFile);
 
 	memFree(rFile);
 	memFree(wFile);
 	recurRemoveDir_x(midDir);
-	memFree(midFile);
+	memFree(projName);
+	memFree(targFile);
 	memFree(projFile);
 }
 int main(int argc, char **argv)
