@@ -78,7 +78,7 @@ static void CheckGitRelease(char *dir)
 		memFree(text2);
 	}
 
-	if(!existFile(LOCAL_LICENSE) && !existFile(LOCAL_LICENSE_IGNORE))
+	if(m_01(existFile(LOCAL_LICENSE)) + m_01(existFile(LOCAL_LICENSE_IGNORE)) != 1)
 	{
 		FoundError("ライセンスファイル (LICENSE) が見つかりません。");
 	}

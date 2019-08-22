@@ -6,6 +6,9 @@
 		SPEC-EXTS ... 検索対象の拡張子を '.' 区切りで記述する。
 
 			例) c.h.txt
+
+			/E "" は拡張子無しに対応
+			/E .txt や /E txt. は拡張子 txt と拡張子無しに対応
 */
 
 #include "C:\Factory\Common\all.h"
