@@ -6,6 +6,8 @@
 
 #define LOCAL_GIT_RELEASE_BAT "GitRelease.bat"
 #define LOCAL_RUN_ME_FIRST_BAT "__run_me_first.bat_"
+#define LOCAL_LICENSE "LICENSE"
+#define LOCAL_LICENSE_IGNORE "LIGNORE" // LICENSEファイルをまだ？設定しない場合、暫定的に？これを置いておく。
 
 static uint ErrorCount;
 
@@ -74,6 +76,19 @@ static void CheckGitRelease(char *dir)
 		}
 		memFree(text);
 		memFree(text2);
+	}
+
+	if(!existFile(LOCAL_LICENSE) && !existFile(LOCAL_LICENSE_IGNORE))
+	{
+		FoundError("ライセンスファイル (LICENSE) が見つかりません。");
+	}
+	if(existFile(LOCAL_LICENSE) && getFileSize(LOCAL_LICENSE) == 0)
+	{
+		FoundError("ライセンスファイル (LICENSE) が空っぽです。");
+	}
+	if(existFile(LOCAL_LICENSE_IGNORE) && getFileSize(LOCAL_LICENSE_IGNORE) != 0)
+	{
+		FoundError(LOCAL_LICENSE_IGNORE " が空ではありません。");
 	}
 
 	unaddCwd();
