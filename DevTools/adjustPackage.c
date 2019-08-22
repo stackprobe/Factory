@@ -1,3 +1,9 @@
+/*
+	adjustPackage.exe [パッケージのルートディレクトリ 変換を行うソースのディレクトリ]
+
+		変換を行うソースのディレクトリ は パッケージのルートディレクトリ の配下であること。同じであってはならない。
+*/
+
 #include "C:\Factory\Common\all.h"
 
 static int BatchMode;

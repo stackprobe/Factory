@@ -1,3 +1,11 @@
+/*
+	adjustNamespace.exe [変換を行うソースのディレクトリ]
+
+		変換を行うソースのディレクトリ は プロジェクトのルートディレクトリ の配下であること。同じであってはならない。
+
+		プロジェクトのルートディレクトリ == .csproj があるディレクトリ
+*/
+
 #include "C:\Factory\Common\all.h"
 
 static int BatchMode;
