@@ -161,6 +161,10 @@ int main(int argc, char **argv)
 readArgs:
 	if(argIs("/C"))
 	{
+		cout("+----------------+\n");
+		cout("| ìØÇ∂èÍèäÇ…çÏê¨ |\n");
+		cout("+----------------+\n");
+
 		OutputSameDir = 1;
 		goto readArgs;
 	}
@@ -176,6 +180,10 @@ readArgs:
 	}
 	if(argIs("/OAD"))
 	{
+		cout("+-------------------+\n");
+		cout("| OUTPUT AND DELETE |\n");
+		cout("+-------------------+\n");
+
 		OutputAndDelete = 1;
 		goto readArgs;
 	}

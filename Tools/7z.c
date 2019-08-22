@@ -207,6 +207,11 @@ readArgs:
 		OutputAndDelete = 1;
 		goto readArgs;
 	}
+	if(argIs("/P"))
+	{
+		Passphrase = nextArg();
+		goto readArgs;
+	}
 
 	if(hasArgs(1))
 	{
