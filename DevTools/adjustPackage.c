@@ -110,10 +110,10 @@ int main(int argc, char **argv)
 		char *packageRootDir;
 		char *srcDir;
 
-		cout("パッケージのルートディレクトリ：\n");
+		cout("[Java]パッケージのルートディレクトリ：\n");
 		packageRootDir = dropDir();
 
-		cout("変換を行うソースのディレクトリ：\n");
+		cout("[Java]変換を行うソースのディレクトリ：\n");
 		srcDir = dropDir();
 
 		AdjustPackage(packageRootDir, srcDir);

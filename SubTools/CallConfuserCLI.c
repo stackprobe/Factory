@@ -37,9 +37,9 @@ static void CopyDLL(char *rExeFile, char *wDir)
 }
 static void CallConfuserCLI(char *rFile, char *wFile)
 {
-	char *midDir;
 	char *projName;
-	char *targFile;
+	char *midDir;
+	char *midFile;
 	char *projFile;
 	uint64 size1;
 	uint64 size2;
@@ -54,39 +54,42 @@ static void CallConfuserCLI(char *rFile, char *wFile)
 	errorCase( existFile(wFile));
 	errorCase(!creatable(wFile));
 
-	midDir = makeTempDir(NULL);
 	projName = getLocal(rFile);
 	projName = changeExt(projName, "");
-	targFile = combine_cx(midDir, addExt(strx(projName), "exe"));
+
+	errorCase(!lineExp("<1,,__09AZaz>", projName));
+
+	midDir = makeTempDir(NULL);
+	midFile  = combine_cx(midDir, addExt(strx(projName), "exe"));
 	projFile = combine_cx(midDir, addExt(strx(projName), "crproj"));
 
-	copyFile(rFile, targFile);
+	copyFile(rFile, midFile);
 
 	CopyDLL(rFile, midDir);
 
 	{
 		char *text = readText_b(PROJ_TEMPLATE_FILE);
 
-		text = replaceLine(text, "$TARGET_EXE$", targFile, 0);
+		text = replaceLine(text, "$TARGET_EXE$", midFile, 0);
 
 		writeOneLineNoRet_b_cx(projFile, text);
 	}
 
-	size1 = getFileSize(targFile);
+	size1 = getFileSize(midFile);
 	coExecute_x(xcout(CONFUSER_CLI_EXE " -n \"%s\"", projFile));
-	size2 = getFileSize(targFile);
+	size2 = getFileSize(midFile);
 
 	cout("FILE SIZE: %I64u -> %I64u (%.3f)\n", size1, size2, (double)size2 / size1);
 
 	errorCase((double)size2 / size1 < 1.1); // 難読化するとファイルサイズは4倍くらいになるっぽい。1割も増えてないなら、何かおかしいと見る。
 
-	copyFile(targFile, wFile);
+	copyFile(midFile, wFile);
 
 	memFree(rFile);
 	memFree(wFile);
-	recurRemoveDir_x(midDir);
 	memFree(projName);
-	memFree(targFile);
+	recurRemoveDir_x(midDir);
+	memFree(midFile);
 	memFree(projFile);
 }
 int main(int argc, char **argv)
