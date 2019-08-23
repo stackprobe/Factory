@@ -92,9 +92,6 @@ static void AdjustNamespace(char *targetDir)
 	autoList_t *files;
 	char *file;
 	uint index;
-	char *ignPathPfx_1;
-	char *ignPathPfx_2;
-	char *ignPathPfx_3;
 
 	targetDir = makeFullPath(targetDir);
 
@@ -119,40 +116,24 @@ static void AdjustNamespace(char *targetDir)
 	}
 	files = lssFiles(targetDir);
 
-	ignPathPfx_1 = combine(rootDir, "bin");
-	ignPathPfx_2 = combine(rootDir, "obj");
-	ignPathPfx_3 = combine(rootDir, "Properties");
-
-	ignPathPfx_1 = addChar(ignPathPfx_1, '\\');
-	ignPathPfx_2 = addChar(ignPathPfx_2, '\\');
-	ignPathPfx_3 = addChar(ignPathPfx_3, '\\');
-
 	foreach(files, file, index)
 	{
-		if(
-			startsWithICase(file, ignPathPfx_1) ||
-			startsWithICase(file, ignPathPfx_2) ||
-			startsWithICase(file, ignPathPfx_3)
-			)
-		{
-			LOGPOS();
-			continue;
-		}
-
 		if(!_stricmp("cs", getExt(file)))
 		{
 			autoList_t *lines = readLines(file);
 			char *line;
 			uint index;
 			int modified = 0;
+			char *relFile = changeRoot(strx(file), rootDir, NULL);
 
 			foreach(lines, line, index)
 			{
-				if(startsWith(line, "namespace "))
+				if(startsWith(line, "namespace ") && !endsWith(line, " {"))
 				{
 					char *oldNamespace = GetNamespaceFromLine(line);
 					char *newNamespace = GetNamespaceFromPath(rootNamespace, rootDir, file);
 
+					cout("F %s\n", relFile);
 					cout("< %s\n", oldNamespace);
 					cout("> %s\n", newNamespace);
 
@@ -175,6 +156,7 @@ static void AdjustNamespace(char *targetDir)
 				writeLines(file, lines);
 			}
 			releaseDim(lines, 1);
+			memFree(relFile);
 		}
 	}
 	LOGPOS();
@@ -183,9 +165,6 @@ static void AdjustNamespace(char *targetDir)
 	memFree(projFile);
 	memFree(rootDir);
 	memFree(rootNamespace);
-	memFree(ignPathPfx_1);
-	memFree(ignPathPfx_2);
-	memFree(ignPathPfx_3);
 	LOGPOS();
 }
 int main(int argc, char **argv)
