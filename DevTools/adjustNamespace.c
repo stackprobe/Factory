@@ -128,7 +128,7 @@ static void AdjustNamespace(char *targetDir)
 
 			foreach(lines, line, index)
 			{
-				if(startsWith(line, "namespace ") && !endsWith(line, " {"))
+				if(lineExp("namespace <1,,..__09AZaz>", line))
 				{
 					char *oldNamespace = GetNamespaceFromLine(line);
 					char *newNamespace = GetNamespaceFromPath(rootNamespace, rootDir, file);
