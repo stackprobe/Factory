@@ -1,7 +1,7 @@
 /*
 	adjustNamespace.exe [変換を行うソースのディレクトリ]
 
-		変換を行うソースのディレクトリ は プロジェクトのルートディレクトリ の配下であること。同じであってはならない。
+		変換を行うソースのディレクトリ は プロジェクトのルートディレクトリ と同じか配下であること。
 
 		プロジェクトのルートディレクトリ == .csproj があるディレクトリ
 */
@@ -74,14 +74,14 @@ static char *GetNamespaceFromLine(char *line)
 }
 static char *GetNamespaceFromPath(char *rootNamespace, char *rootDir, char *file)
 {
-	char *dir = getParent(file);
-	char *relDir;
 	char *namespace;
 
-	relDir = changeRoot(dir, rootDir, NULL);
-	replaceChar(relDir, '\\', '.');
-	namespace = xcout("%s.%s", rootNamespace, relDir);
-	memFree(relDir);
+	file = changeRoot(strx(file), rootDir, NULL);
+	namespace = xcout("%s\\%s", rootNamespace, file);
+	namespace = changeLocal_xc(namespace, "");
+	replaceChar(namespace, '\\', '.');
+
+	memFree(file);
 	return namespace;
 }
 static void AdjustNamespace(char *targetDir)
@@ -92,6 +92,9 @@ static void AdjustNamespace(char *targetDir)
 	autoList_t *files;
 	char *file;
 	uint index;
+	char *ignPathPfx_1;
+	char *ignPathPfx_2;
+	char *ignPathPfx_3;
 
 	targetDir = makeFullPath(targetDir);
 
@@ -105,8 +108,6 @@ static void AdjustNamespace(char *targetDir)
 	cout("D %s\n", rootDir);
 	cout("N %s\n", rootNamespace);
 
-	errorCase(strlen(targetDir) <= strlen(rootDir)); // targetDir は rootDir の配下であること。
-
 	if(!BatchMode)
 	{
 		cout("続行？\n");
@@ -118,8 +119,26 @@ static void AdjustNamespace(char *targetDir)
 	}
 	files = lssFiles(targetDir);
 
+	ignPathPfx_1 = combine(rootDir, "bin");
+	ignPathPfx_2 = combine(rootDir, "obj");
+	ignPathPfx_3 = combine(rootDir, "Properties");
+
+	ignPathPfx_1 = addChar(ignPathPfx_1, '\\');
+	ignPathPfx_2 = addChar(ignPathPfx_2, '\\');
+	ignPathPfx_3 = addChar(ignPathPfx_3, '\\');
+
 	foreach(files, file, index)
 	{
+		if(
+			startsWithICase(file, ignPathPfx_1) ||
+			startsWithICase(file, ignPathPfx_2) ||
+			startsWithICase(file, ignPathPfx_3)
+			)
+		{
+			LOGPOS();
+			continue;
+		}
+
 		if(!_stricmp("cs", getExt(file)))
 		{
 			autoList_t *lines = readLines(file);
@@ -158,11 +177,16 @@ static void AdjustNamespace(char *targetDir)
 			releaseDim(lines, 1);
 		}
 	}
+	LOGPOS();
 	releaseDim(files, 1);
 	memFree(targetDir);
 	memFree(projFile);
 	memFree(rootDir);
 	memFree(rootNamespace);
+	memFree(ignPathPfx_1);
+	memFree(ignPathPfx_2);
+	memFree(ignPathPfx_3);
+	LOGPOS();
 }
 int main(int argc, char **argv)
 {
