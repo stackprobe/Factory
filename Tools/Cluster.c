@@ -75,11 +75,17 @@ static int IsNoFilesDir(char *dir)
 	return ret;
 }
 
-static char *IgnoreLocalPtPtn;
+static char *IgnorePtPtn;
 
-static int IsNoIgnoreLocalPtPtn(char *path)
+static int IsNoIgnorePtPtn(char *path)
 {
-	return !mbs_stristr(path, IgnoreLocalPtPtn);
+	char *path_a = xcout("%s*", path);
+	int ret;
+
+	ret = !mbs_stristr(path_a, IgnorePtPtn);
+
+	memFree(path_a);
+	return ret;
 }
 
 #define EXT_CLUSTER "clu"
@@ -393,10 +399,10 @@ readArgs:
 	{
 		char *ptPtn = nextArg();
 
-		cout("[DTS]IgnoreLocalPtPtn: %s\n", ptPtn);
+		cout("[DTS]IgnorePtPtn: %s\n", ptPtn);
 
-		IgnoreLocalPtPtn = ptPtn;
-		DTS_AcceptLocalPath = IsNoIgnoreLocalPtPtn;
+		IgnorePtPtn = ptPtn;
+		DTS_AcceptPath = IsNoIgnorePtPtn;
 		goto readArgs;
 	}
 
