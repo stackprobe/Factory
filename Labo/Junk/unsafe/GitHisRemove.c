@@ -25,7 +25,9 @@ static int IsSourceFile(char *file)
 		!_stricmp(getExt(file), "c") ||
 		!_stricmp(getExt(file), "h") ||
 		!_stricmp(getExt(file), "cs") ||
-		!_stricmp(getExt(file), "cpp");
+		!_stricmp(getExt(file), "cpp") ||
+		!_stricmp(getExt(file), "bat") ||
+		!_stricmp(getExt(file), "js");
 }
 static autoList_t *SelectAuto(autoList_t *files)
 {
