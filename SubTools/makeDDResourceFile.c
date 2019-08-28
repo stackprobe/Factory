@@ -5,6 +5,7 @@
 
 static char *RootDir;
 static char *DDResFile;
+static char *MaskingExeFile;
 
 static FILE *DDResFp;
 
@@ -22,6 +23,22 @@ static void FilesFilter(autoList_t *files)
 		}
 	}
 }
+static void MaskFileData(autoBlock_t *fileData)
+{
+	char *file = makeTempPath(NULL);
+	autoBlock_t *fileDataNew;
+
+	writeBinary(file, fileData);
+
+	coExecute_x(xcout("START \"\" /B /WAIT \"%s\" MASK-GZ-DATA \"%s\"", MaskingExeFile, file));
+
+	errorCase(!existFile(file)); // 2bs?
+
+	fileDataNew = readBinary(file);
+	ab_swap(fileData, fileDataNew);
+	releaseAutoBlock(fileDataNew);
+	removeFile_x(file);
+}
 static void AddToDDResFile(char *file)
 {
 	char *wFile = makeTempPath(NULL);
@@ -38,6 +55,8 @@ static void AddToDDResFile(char *file)
 
 		setByte(fileData, 0, 'D');
 		setByte(fileData, 1, 'D');
+
+		MaskFileData(fileData);
 	}
 	writeValue(DDResFp, getSize(fileData));
 	writeBinaryBlock(DDResFp, fileData);
@@ -77,10 +96,13 @@ static void MakeDDResFile(void)
 }
 int main(int argc, char **argv)
 {
-	RootDir   = makeFullPath(nextArg());
-	DDResFile = makeFullPath(nextArg());
+	RootDir        = makeFullPath(nextArg());
+	DDResFile      = makeFullPath(nextArg());
+	MaskingExeFile = makeFullPath(nextArg());
 
 	errorCase(!existDir(RootDir));
+//	DDResFile
+	errorCase(!existFile(MaskingExeFile));
 
 	MakeDDResFile();
 }
