@@ -2,7 +2,7 @@
 
 #define FLAG_FILE      "_gitsrcmsk"
 #define FLAG_TXT_FILE  "_gittxtmsk"
-#define RES_FILES_FILE "_gitsrcmsk_files"
+#define MSK_FILES_FILE "_gitsrcmsk_files"
 #define IGN_FILES_FILE "_gitignore_files"
 
 static void MskSrcFile(char *file, int eurpFlag)
@@ -73,7 +73,7 @@ static void MaskSourceByResFile(autoList_t *files)
 	{
 		cout("* %s\n", file);
 
-		if(!_stricmp(RES_FILES_FILE, getLocal(file)))
+		if(!_stricmp(MSK_FILES_FILE, getLocal(file)))
 		{
 			autoList_t *mskfiles = readResourceLines(file);
 			char *mskfile;

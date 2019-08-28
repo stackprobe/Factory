@@ -1,7 +1,8 @@
 /*
-	qrumall [(/D | ROOT-DIR) [COMMENT]]
+	qrumall [(/D | ROOT-DIR [/R]) [COMMENT]]
 
 		/D ... Daily-Release 'sumire' only
+		/R ... ROOT-DIR Ç‡ rum ÇÃëŒè€Ç∆Ç∑ÇÈÅB
 */
 
 #include "C:\Factory\Common\all.h"
@@ -32,6 +33,12 @@ int main(int argc, char **argv)
 		char *rootDir = hasArgs(1) ? nextArg() : c_dropDir();
 
 		dirs = lssDirs(rootDir);
+
+		if(argIs("/R"))
+		{
+			LOGPOS();
+			addElement(dirs, (uint)strx(rootDir));
+		}
 
 		if(hasArgs(1))
 		{
