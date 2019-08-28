@@ -4,6 +4,7 @@
 #include "CryptoRand_MS.h"
 
 uint getCryptoByte(void);
+void getCryptoBytes(uchar *buff, uint size);
 uint getCryptoRand16(void);
 uint getCryptoRand24(void);
 uint getCryptoRand(void);

@@ -204,7 +204,7 @@ static void F_AddPadding(char *file)
 	uint padSzLow;
 	uint padSize;
 	FILE *fp;
-	uint index;
+	uint count;
 
 	padSzLow = ~(uint)fileSize & 0x0f;
 
@@ -216,9 +216,10 @@ static void F_AddPadding(char *file)
 
 	fp = fileOpen(file, "ab");
 
-	for(index = 0; index < padSize; index++)
+	for(count = padSize; count; count--)
+	{
 		writeChar(fp, getCryptoByte());
-
+	}
 	writeChar(fp, padSize);
 	fileClose(fp);
 }

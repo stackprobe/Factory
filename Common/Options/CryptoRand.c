@@ -21,29 +21,63 @@ uint getCryptoByte(void)
 	}
 	return pool[index++];
 }
+void getCryptoBytes(uchar *buff, uint size)
+{
+	uint index;
+
+	for(index = 0; index < size; index++)
+	{
+		buff[index] = getCryptoByte();
+	}
+}
 uint getCryptoRand16(void)
 {
-	return getCryptoByte() | getCryptoByte() << 8;
+	uchar r[2];
+
+	getCryptoBytes(r, 2);
+
+	return
+		((uint)r[0] << 0) |
+		((uint)r[1] << 8);
 }
 uint getCryptoRand24(void)
 {
-	return getCryptoByte() | getCryptoByte() << 8 | getCryptoByte() << 16;
+	uchar r[3];
+
+	getCryptoBytes(r, 3);
+
+	return
+		((uint)r[0] << 0) |
+		((uint)r[1] << 8) |
+		((uint)r[2] << 16);
 }
 uint getCryptoRand(void)
 {
-	return getCryptoByte() | getCryptoByte() << 8 | getCryptoByte() << 16 | getCryptoByte() << 24;
+	uchar r[4];
+
+	getCryptoBytes(r, 4);
+
+	return
+		((uint)r[0] << 0) |
+		((uint)r[1] << 8) |
+		((uint)r[2] << 16) |
+		((uint)r[3] << 24);
 }
 uint64 getCryptoRand64(void)
 {
+	uchar r[8];
+
+	getCryptoBytes(r, 8);
+
 	return
-		(uint64)getCryptoByte() <<  0 |
-		(uint64)getCryptoByte() <<  8 |
-		(uint64)getCryptoByte() << 16 |
-		(uint64)getCryptoByte() << 24 |
-		(uint64)getCryptoByte() << 32 |
-		(uint64)getCryptoByte() << 40 |
-		(uint64)getCryptoByte() << 48 |
-		(uint64)getCryptoByte() << 56;
+		((uint64)r[0] << 0) |
+		((uint64)r[1] << 8) |
+		((uint64)r[2] << 16) |
+		((uint64)r[3] << 24) |
+		((uint64)r[4] << 32) |
+		((uint64)r[5] << 40) |
+		((uint64)r[6] << 48) |
+		((uint64)r[7] << 56);
 }
 autoBlock_t *makeCryptoRandBlock(uint count)
 {
