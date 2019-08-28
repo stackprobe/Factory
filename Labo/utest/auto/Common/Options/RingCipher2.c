@@ -2,9 +2,9 @@
 #include "C:\Factory\Common\Options\RingCipher2.h"
 #include "C:\Factory\DevTools\libs\RandData.h"
 
-static void Test01(void)
+static void Test01(uint lmtSize)
 {
-	autoBlock_t *p = MakeRandBinaryBlock(mt19937_rnd(mt19937_rnd(2) ? 100 : 10000));
+	autoBlock_t *p = MakeRandBinaryBlock(mt19937_rnd(lmtSize));
 	autoBlock_t *e;
 	autoBlock_t *d;
 	autoBlock_t *fe;
@@ -95,8 +95,10 @@ int main(int argc, char **argv)
 
 	mt19937_init();
 
-	for(testcnt = 0; testcnt < 100; testcnt++)
-	{
-		Test01();
-	}
+	for(testcnt = 0; testcnt < 100; testcnt++) Test01(10);
+	for(testcnt = 0; testcnt < 100; testcnt++) Test01(100);
+	for(testcnt = 0; testcnt < 100; testcnt++) Test01(1000);
+	for(testcnt = 0; testcnt <  30; testcnt++) Test01(10000);
+	for(testcnt = 0; testcnt <  30; testcnt++) Test01(100000);
+	for(testcnt = 0; testcnt <  30; testcnt++) Test01(1000000);
 }

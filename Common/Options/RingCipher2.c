@@ -38,8 +38,18 @@ autoList_t *rngcphrCreateKeyTableList(autoBlock_t *rawKey)
 
 static void AddPadding(autoBlock_t *block)
 {
-	uint padSize = ~getSize(block) & 0x0f | getCryptoByte() & 0xf0;
+	uint size = getSize(block);
+	uint padSzLow;
+	uint padSize;
 	uint count;
+
+	padSzLow = ~size & 0x0f;
+
+	do
+	{
+		padSize = padSzLow | getCryptoByte() & 0xf0;
+	}
+	while(size + padSize < 0xff);
 
 	for(count = padSize; count; count--)
 	{
@@ -191,11 +201,19 @@ fault:
 static void F_AddPadding(char *file)
 {
 	uint64 fileSize = getFileSize(file);
+	uint padSzLow;
 	uint padSize;
 	FILE *fp;
 	uint index;
 
-	padSize = ~(uint)fileSize & 0x0f | getCryptoByte() & 0xf0;
+	padSzLow = ~(uint)fileSize & 0x0f;
+
+	do
+	{
+		padSize = padSzLow | getCryptoByte() & 0xf0;
+	}
+	while(fileSize + padSize < 0xff);
+
 	fp = fileOpen(file, "ab");
 
 	for(index = 0; index < padSize; index++)
