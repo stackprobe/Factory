@@ -6,7 +6,7 @@
 
 	----
 
-	Cluster.exe [/C] [/Q] [/T] [/OAC] [/OAD] [/OW] [/E-] [/I] [クラスタファイル | 入力ディレクトリ |
+	Cluster.exe [/C] [/Q] [/T] [/OAC] [/OAD] [/OW] [/E-] [/I] [/PP- ptPtn] [クラスタファイル | 入力ディレクトリ |
 	             /K  クラスタファイル |
 	             /M  出力クラスタファイル 入力DIR |
 	             /MO 出力クラスタファイル 入力DIR |
@@ -26,6 +26,7 @@
 		/E-  ... 自動判定で C:\nnn にクラスタファイルを展開したとき、配下に一つもファイルが無かった場合はエクスプローラを開かず、出力先も削除する。
 		/E-+ ... /E- の後 FSqDiv /T DIR 10 もする。
 		/I   ... クラスタファイルを生成するときファイル属性とタイムスタンプも保存する。
+		/PP- ... パスに ptPtn を含むディレクトリ・ファイルを無視する。
 
 		/M
 			クラスタファイル生成
@@ -72,6 +73,13 @@ static int IsNoFilesDir(char *dir)
 	ret = getCount(paths) == 0;
 	releaseDim(paths, 1);
 	return ret;
+}
+
+static char *IgnoreLocalPtPtn;
+
+static int IsNoIgnoreLocalPtPtn(char *path)
+{
+	return !mbs_stristr(path, IgnoreLocalPtPtn);
 }
 
 #define EXT_CLUSTER "clu"
@@ -379,6 +387,16 @@ readArgs:
 		cout("+-------------------------------+\n");
 
 		DTS_WithInfo = 1;
+		goto readArgs;
+	}
+	if(argIs("/PP-"))
+	{
+		char *ptPtn = nextArg();
+
+		cout("[DTS]IgnoreLocalPtPtn: %s\n", ptPtn);
+
+		IgnoreLocalPtPtn = ptPtn;
+		DTS_AcceptLocalPath = IsNoIgnoreLocalPtPtn;
 		goto readArgs;
 	}
 

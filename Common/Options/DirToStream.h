@@ -4,6 +4,7 @@
 #include "VTree.h"
 
 extern int DTS_WithInfo;
+extern int (*DTS_AcceptLocalPath)(char *);
 extern int STD_TrustMode;
 extern int STD_ReadStop;
 

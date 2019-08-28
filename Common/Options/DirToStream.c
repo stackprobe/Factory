@@ -55,6 +55,7 @@ void VTreeToStream(VTree_t *vt, void (*streamWriter)(uchar *, uint))
 }
 
 int DTS_WithInfo;
+int (*DTS_AcceptLocalPath)(char *);
 
 void DirToStream(char *dir, void (*streamWriter)(uchar *, uint))
 {
@@ -111,6 +112,14 @@ enterDir:
 			FILE *fp;
 			autoBlock_t *block;
 
+			if(DTS_AcceptLocalPath && !DTS_AcceptLocalPath(path))
+			{
+				if(withInfo)
+					memFree((void *)unaddElement(infos));
+
+				memFree(path);
+				continue;
+			}
 			streamWriter(path, strlen(path) + 1);
 
 			if(withInfo)
