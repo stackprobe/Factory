@@ -1,4 +1,4 @@
-#include "MakeGZData.h"
+#include "MaskGZData.h"
 
 int main(int argc, char **argv)
 {
