@@ -48,16 +48,8 @@ static void AddToDDResFile(char *file)
 
 	fileData = readBinary(wFile);
 
-	if(getSize(fileData)) // not empty -> mask gz-signature
-	{
-		errorCase(getByte(fileData, 0) != 0x1f);
-		errorCase(getByte(fileData, 1) != 0x8b);
+	MaskFileData(fileData);
 
-		setByte(fileData, 0, 'D');
-		setByte(fileData, 1, 'D');
-
-		MaskFileData(fileData);
-	}
 	writeValue(DDResFp, getSize(fileData));
 	writeBinaryBlock(DDResFp, fileData);
 
