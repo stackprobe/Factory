@@ -33,11 +33,11 @@
 			> zip.exe /RB ZIP-FILE
 			と同じ処理を行う。
 
-	zip.exe /O OUT-DIR PROJ-NAME
+	zip.exe [/PE-] /O OUT-DIR PROJ-NAME
 
 		... OUT-DIR -> OUT-DIR \ { PROJ-NAME } .zip
 
-	zip.exe /G OUT-DIR PROJ-NAME
+	zip.exe [/PE-] /G OUT-DIR PROJ-NAME
 
 		... OUT-DIR -> OUT-DIR \ { PROJ-NAME } _v123.zip
 
@@ -382,13 +382,23 @@ static void RepackAllZipFile(char *rootDir)
 	}
 	releaseDim(files, 1);
 }
+
+static int ChangePEDisabled;
+
 static void AdjustAllPETimeDateStamp(char *dir)
 {
-	ChangeAllPETimeDateStamp(dir, 0x5aaaaaaa);
+	if(!ChangePEDisabled)
+		ChangeAllPETimeDateStamp(dir, 0x5aaaaaaa);
 }
 int main(int argc, char **argv)
 {
 	errorCase_m(!existFile(ZIP7_LOCAL_FILE) && !existFile(ZIP7_FILE), "7zさんが居ません。");
+
+	if(argIs("/PE-"))
+	{
+		LOGPOS();
+		ChangePEDisabled = 1;
+	}
 
 	/*
 		★★★ パスはこの関数内でフルパスにすること。★★★
