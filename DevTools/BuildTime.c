@@ -1,3 +1,10 @@
+/*
+	BuildTime.exe [/C [DIR-1 DIR-2] | DIR]
+
+	フォルダ内の実行ファイルのビルド日時を表示する。PE PEHeader PETime
+	実行ファイル以外はMD5の前半64bitを表示する。
+*/
+
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\OpenSource\md5.h"
 
