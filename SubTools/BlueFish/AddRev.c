@@ -68,8 +68,13 @@ static void TrimBeta(char *appDir)
 
 	trimLines(files);
 
+// test
+{
+	sortJLinesICase(files);
+
 	foreach(files, file, index)
-		cout("BETA[%u] -> %s\n", index, file); // test
+		cout("[BETA] %s\n", file);
+}
 
 	if(BETA_MAX < getCount(files))
 	{
@@ -80,9 +85,14 @@ static void TrimBeta(char *appDir)
 		{
 			file = (char *)unaddElement(files);
 
-			cout("[DEL_BETA] %s\n", file);
+			cout("[DEL_BETA.1] %s\n", file);
 
 			removeFile(file);
+			file = addExt(file, "md5");
+
+			cout("[DEL_BETA.2] %s\n", file);
+
+			removeFileIfExist(file);
 			memFree(file);
 		}
 	}
