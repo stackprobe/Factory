@@ -263,7 +263,7 @@ coutJLine_x(xcout("w: %s", w)); // test
 		}
 	}
 }
-static void DoCopyLib(char *rDir, char *wDir, int testMode)
+static void DoCopyLib(char *rDir, char *wDir, int testMode, int *p_existNewFile)
 {
 	autoList_t *rSubDirs = lssDirs(rDir);
 	autoList_t *wSubDirs = lssDirs(wDir);
@@ -287,6 +287,9 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 	foreach(rSubDirs, dir, index)
 		if(!testMode)
 			createPath_x(combine(rDir, dir), 'X');
+
+	if(p_existNewFile)
+		*p_existNewFile = 1 <= getCount(rFiles);
 
 	foreach(rFiles, file, index)
 	{
@@ -377,6 +380,8 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 }
 static void CopyLib(char *rDir, char *wDir)
 {
+	int existNewFile;
+
 	rDir = makeFullPath(rDir);
 	wDir = makeFullPath(wDir);
 
@@ -388,11 +393,17 @@ static void CopyLib(char *rDir, char *wDir)
 	errorCase(!_stricmp(rDir, wDir)); // ? 同じディレクトリ
 
 	LOGPOS();
-	DoCopyLib(rDir, wDir, 1);
+	DoCopyLib(rDir, wDir, 1, NULL);
 	LOGPOS();
-	DoCopyLib(rDir, wDir, 0);
+	DoCopyLib(rDir, wDir, 0, &existNewFile);
 	LOGPOS();
 
+	if(existNewFile) // 新規追加ファイルがあった場合は２回行う必要がある。新規追加ファイルには AutoComment が適用されない。
+	{
+		LOGPOS();
+		DoCopyLib(rDir, wDir, 0, NULL);
+		LOGPOS();
+	}
 	memFree(rDir);
 	memFree(wDir);
 }
