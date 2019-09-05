@@ -96,7 +96,20 @@ void error2(char *source, uint lineno, char *function, char *message)
 		char *mbMessage;
 
 		if(message)
+		{
 			mbMessage = strx(message);
+
+			if(
+				strchr(mbMessage, '\r') ||
+				strchr(mbMessage, '\n') ||
+				strchr(mbMessage, '"')
+				)
+			{
+				mbMessage = replaceLine(mbMessage, "\"", "\"\"", 0);
+				mbMessage = replaceLine(mbMessage, "\r", "", 0);
+				mbMessage = replaceLine(mbMessage, "\n", "\" & vbCrLf & \"", 0);
+			}
+		}
 		else
 			mbMessage = xcout("An error has occurred @ %s (%u) %s", source, lineno, function);
 
