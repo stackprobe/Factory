@@ -7,6 +7,10 @@
 
 static char *ImgFile;
 
+static void CommandPrint(char *jbuffer)
+{
+	cout("\r%79s\rIE> %s", "", jbuffer);
+}
 static void ImageEditor(void)
 {
 	errorCase(!ImgFile); // 2bs
@@ -18,17 +22,18 @@ static void ImageEditor(void)
 
 	for(; ; )
 	{
-		char *command;
-
-		cout("command ?\n");
-		command = coInputLine();
+		char *command = coInputLinePrn(CommandPrint);
 
 		if(!_stricmp(command, "q"))
 		{
 			memFree(command);
 			break;
 		}
-		if(!_stricmp(command, "s!"))
+		if(!*command)
+		{
+			// noop
+		}
+		else if(!_stricmp(command, "s!"))
 		{
 			cout("Save: %s\n", ImgFile);
 			SaveImageFile(ImgFile);
@@ -46,13 +51,15 @@ static void ImageEditor(void)
 
 		else
 		{
-			cout("unknown command !\n");
+			cout("Unknown command !\n");
 		}
 		memFree(command);
 	}
 }
 int main(int argc, char **argv)
 {
+	isJChar(0); // preloading
+
 	if(hasArgs(1))
 		ImgFile = nextArg();
 	else

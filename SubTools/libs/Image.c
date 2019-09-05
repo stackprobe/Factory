@@ -1,6 +1,6 @@
 #include "Image.h"
 
-#define IMG2CSV_EXE "C:\\app\\Kit\\BmpToCsv\\BmpToCsv.exe"
+#define IMG2CSV_EXE FILE_BMPTOCSV_EXE
 
 static char *GetImg2CsvExe(void)
 {
@@ -24,6 +24,14 @@ void SetImageId(uint id)
 	ImageId = id;
 }
 
+static uint JpegQuality = 90; // 0 Å` 100 == í·ïiéø Å` çÇïiéø
+
+void SetImageJpegQuality(uint quality)
+{
+	errorCase(100 < quality);
+	JpegQuality = quality;
+}
+
 void ConvImageFile(char *rFile, char *wFile)
 {
 	errorCase(m_isEmpty(rFile));
@@ -34,7 +42,7 @@ void ConvImageFile(char *rFile, char *wFile)
 	errorCase(!existFile(rFile));
 	errorCase(existFile(wFile));
 
-	execute_x(xcout("START \"\" /B /WAIT \"%s\" \"%s\" \"%s\"", GetImg2CsvExe(), rFile, wFile));
+	execute_x(xcout("START \"\" /B /WAIT \"%s\" /J %u /- \"%s\" \"%s\"", GetImg2CsvExe(), JpegQuality, rFile, wFile));
 
 //	errorCase(!existFile(rFile));
 	errorCase(!existFile(wFile));

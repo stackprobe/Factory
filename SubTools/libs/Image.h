@@ -4,6 +4,7 @@
 #include "C:\Factory\Common\Options\csv.h"
 #include "C:\Factory\Common\Options\autoTable.h"
 #include "C:\Factory\Common\Options\Collabo.h"
+#include "C:\Factory\Meteor\BmpToCsv.h"
 
 #define IMAGE_ID_NUM 1024
 
@@ -12,6 +13,7 @@ void LoadImageFile(char *file);
 void SaveImageFile(char *file);
 
 void SetImageId(uint id);
+void SetImageJpegQuality(uint quality);
 void SetImageSize(uint w, uint h);
 uint GetImg_W(void);
 uint GetImg_H(void);
