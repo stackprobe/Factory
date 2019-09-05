@@ -2,9 +2,11 @@
 
 #define REV_MAX 1000
 #define REV_MAX_AT_DELETED 950
+#define REV_TOTAL_SIZE_MAX 10000000000ui64 // 10 GB
 
 #define BETA_MAX 1000
 #define BETA_MAX_AT_DELETED 950
+#define BETA_TOTAL_SIZE_MAX 10000000000ui64 // 10 GB
 
 #define GAME_ORDER_FILE "order.txt"
 #define GAME_TITLE_FILE "title.txt"
@@ -33,16 +35,40 @@ static char *GetRevision(void)
 	memFree(file);
 	return revision;
 }
+static uint64 GetTotalSize_Paths(autoList_t *paths)
+{
+	uint64 totalSize = 0;
+	char *path;
+	uint index;
+
+	LOGPOS();
+	paths = copyLines(paths);
+
+	foreach(paths, path, index)
+	{
+		if(existDir(path))
+			addElements_x(paths, ls(path));
+		else
+			totalSize += getFileSize(path);
+	}
+	releaseDim(paths, 1);
+	cout("totalSize: %I64u\n", totalSize);
+	return totalSize;
+}
+static int IsTotalSizeOver_Paths(autoList_t *paths, uint64 totalSizeMax)
+{
+	return totalSizeMax < GetTotalSize_Paths(paths);
+}
 static void TrimRev(char *appDir)
 {
 	autoList_t *revDirs = lsDirs(appDir);
 
-	if(REV_MAX < getCount(revDirs))
+	if(REV_MAX < getCount(revDirs) || IsTotalSizeOver_Paths(revDirs, REV_TOTAL_SIZE_MAX))
 	{
 		sortJLinesICase(revDirs);
 		reverseElements(revDirs); // 終端 == 最も旧いリビジョン
 
-		while(REV_MAX_AT_DELETED < getCount(revDirs))
+		while(REV_MAX_AT_DELETED < getCount(revDirs) || IsTotalSizeOver_Paths(revDirs, REV_TOTAL_SIZE_MAX))
 		{
 			char *revDir = (char *)unaddElement(revDirs); // 最も旧いリビジョンを取り出す。
 
@@ -78,12 +104,12 @@ static void TrimBeta(char *appDir)
 		cout("[BETA] %s\n", file);
 }
 
-	if(BETA_MAX < getCount(files))
+	if(BETA_MAX < getCount(files) || IsTotalSizeOver_Paths(files, BETA_TOTAL_SIZE_MAX))
 	{
 		sortJLinesICase(files);
 		reverseElements(files); // 終端 == 最も旧いリビジョン
 
-		while(BETA_MAX_AT_DELETED < getCount(files))
+		while(BETA_MAX_AT_DELETED < getCount(files) || IsTotalSizeOver_Paths(files, BETA_TOTAL_SIZE_MAX))
 		{
 			file = (char *)unaddElement(files);
 
