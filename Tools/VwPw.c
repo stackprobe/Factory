@@ -7,6 +7,8 @@ static void ViewPassword(char *pw)
 
 	errorCase(!isAsciiLine(pw, 0, 0, 0));
 
+	cout("\n");
+
 	for(index = 0; index < pwLen; index++)
 	{
 		if(index && index % 4 == 0)
@@ -24,22 +26,18 @@ static void ViewPassword(char *pw)
 		if(index && index % 4 == 0)
 			cout(" ");
 
-		cout("%c", "^~ "[c ? d : 2]);
+		cout("%c", "=- "[c ? d : 2]);
 	}
 	cout("\n");
 
 	for(index = 0; index < pwLen; index++)
 	{
 		uint c = index % 16 / 12;
-		uint d = index / 16 + 1;
 
 		if(index && index % 4 == 0)
 			cout(" ");
 
-		if(c)
-			cout("%u", d);
-		else
-			cout(" ");
+		cout("%c", " #"[c]);
 	}
 	cout("\n");
 }
