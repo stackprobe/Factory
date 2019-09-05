@@ -1,6 +1,6 @@
 #include "Image.h"
 
-#define IMG2CSV_EXE "C:\\app\\Kit\\ImgToCsv\\BmpToCsv.exe"
+#define IMG2CSV_EXE "C:\\app\\Kit\\BmpToCsv\\BmpToCsv.exe"
 
 static char *GetImg2CsvExe(void)
 {
