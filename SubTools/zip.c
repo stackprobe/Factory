@@ -288,7 +288,9 @@ static char *MakeRev(void)
 	coExecute_x(xcout("C:\\Factory\\DevTools\\rev.exe //O \"%s\" /P", revFile));
 
 	rev = readFirstLine(revFile);
+	errorCase(!lineExp("<4,09>.<3,09>.<5,09>", rev)); // 2bs
 	replaceChar(rev, '.', '0');
+	errorCase(!lineExp("<14,09>", rev)); // 2bs
 	removeFile_x(revFile);
 	return rev;
 }

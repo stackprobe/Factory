@@ -3,6 +3,9 @@
 #define REV_MAX 1000
 #define REV_MAX_AT_DELETED 950
 
+#define BETA_MAX 1000
+#define BETA_MAX_AT_DELETED 950
+
 #define GAME_ORDER_FILE "order.txt"
 #define GAME_TITLE_FILE "title.txt"
 
@@ -52,6 +55,38 @@ static void TrimRev(char *appDir)
 		}
 	}
 	releaseDim(revDirs, 1);
+}
+static void TrimBeta(char *appDir)
+{
+	autoList_t *files = lsDirs(appDir);
+	char *file;
+	uint index;
+
+	foreach(files, file, index)
+		if(!lineExpICase("<>_BETA_<14,09>.zip", file))
+			*file = '\0';
+
+	trimLines(files);
+
+	foreach(files, file, index)
+		cout("BETA[%u] -> %s\n", index, file); // test
+
+	if(BETA_MAX < getCount(files))
+	{
+		sortJLinesICase(files);
+		reverseElements(files); // 終端 == 最も旧いリビジョン
+
+		while(BETA_MAX_AT_DELETED < getCount(files))
+		{
+			file = (char *)unaddElement(files);
+
+			cout("[DEL_BETA] %s\n", file);
+
+			removeFile(file);
+			memFree(file);
+		}
+	}
+	releaseDim(files, 1);
 }
 static void AddRev_File(char *arcFile, char *docRoot)
 {
@@ -152,6 +187,8 @@ static void AddGameVer(char *arcFile, char *rootDir, int beta)
 	}
 	moveFile(arcFile, wFile);
 	moveFile(md5File, wMD5File);
+
+	TrimBeta(wDir);
 
 cancel:
 	memFree(name);
