@@ -1,11 +1,9 @@
 #include "C:\Factory\Common\all.h"
 
 #define REV_MAX 1000
-#define REV_MAX_AT_DELETED 950
 #define REV_TOTAL_SIZE_MAX 10000000000ui64 // 10 GB
 
 #define BETA_MAX 1000
-#define BETA_MAX_AT_DELETED 950
 #define BETA_TOTAL_SIZE_MAX 10000000000ui64 // 10 GB
 
 #define GAME_ORDER_FILE "order.txt"
@@ -55,30 +53,23 @@ static uint64 GetTotalSize_Paths(autoList_t *paths)
 	cout("totalSize: %I64u\n", totalSize);
 	return totalSize;
 }
-static int IsTotalSizeOver_Paths(autoList_t *paths, uint64 totalSizeMax)
-{
-	return totalSizeMax < GetTotalSize_Paths(paths);
-}
 static void TrimRev(char *appDir)
 {
 	autoList_t *revDirs = lsDirs(appDir);
 
-	if(REV_MAX < getCount(revDirs) || IsTotalSizeOver_Paths(revDirs, REV_TOTAL_SIZE_MAX))
+	sortJLinesICase(revDirs);
+	reverseElements(revDirs); // 終端 == 最も旧いリビジョン
+
+	while(REV_MAX < getCount(revDirs) || REV_TOTAL_SIZE_MAX < GetTotalSize_Paths(revDirs))
 	{
-		sortJLinesICase(revDirs);
-		reverseElements(revDirs); // 終端 == 最も旧いリビジョン
+		char *revDir = (char *)unaddElement(revDirs); // 最も旧いリビジョンを取り出す。
 
-		while(REV_MAX_AT_DELETED < getCount(revDirs) || IsTotalSizeOver_Paths(revDirs, REV_TOTAL_SIZE_MAX))
-		{
-			char *revDir = (char *)unaddElement(revDirs); // 最も旧いリビジョンを取り出す。
+		cout("[DEL_REV] %s\n", revDir);
 
-			cout("[DEL_REV] %s\n", revDir);
+		errorCase(!lineExp("<4,09>.<3,09>.<5,09>", getLocal(revDir))); // 2bs
 
-			errorCase(!lineExp("<4,09>.<3,09>.<5,09>", getLocal(revDir))); // 2bs
-
-			recurRemoveDir(revDir);
-			memFree(revDir);
-		}
+		recurRemoveDir(revDir);
+		memFree(revDir);
 	}
 	releaseDim(revDirs, 1);
 }
@@ -95,34 +86,25 @@ static void TrimBeta(char *appDir)
 			*file = '\0';
 
 	trimLines(files);
-
-// test
-{
 	sortJLinesICase(files);
+	reverseElements(files); // 終端 == 最も旧いリビジョン
 
 	foreach(files, file, index)
-		cout("[BETA] %s\n", file);
-}
+		cout("[BETA] %s\n", file); // test-out
 
-	if(BETA_MAX < getCount(files) || IsTotalSizeOver_Paths(files, BETA_TOTAL_SIZE_MAX))
+	while(BETA_MAX < getCount(files) || BETA_TOTAL_SIZE_MAX < GetTotalSize_Paths(files))
 	{
-		sortJLinesICase(files);
-		reverseElements(files); // 終端 == 最も旧いリビジョン
+		file = (char *)unaddElement(files);
 
-		while(BETA_MAX_AT_DELETED < getCount(files) || IsTotalSizeOver_Paths(files, BETA_TOTAL_SIZE_MAX))
-		{
-			file = (char *)unaddElement(files);
+		cout("[DEL_BETA.1] %s\n", file);
 
-			cout("[DEL_BETA.1] %s\n", file);
+		removeFile(file);
+		file = addExt(file, "md5");
 
-			removeFile(file);
-			file = addExt(file, "md5");
+		cout("[DEL_BETA.2] %s\n", file);
 
-			cout("[DEL_BETA.2] %s\n", file);
-
-			removeFileIfExist(file);
-			memFree(file);
-		}
+		removeFileIfExist(file); // 存在するはずだけど、念の為
+		memFree(file);
 	}
 	releaseDim(files, 1);
 
