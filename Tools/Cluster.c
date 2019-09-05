@@ -25,6 +25,7 @@
 		/K   ... チェックのみ
 		/E-  ... 自動判定で C:\nnn にクラスタファイルを展開したとき、配下に一つもファイルが無かった場合はエクスプローラを開かず、出力先も削除する。
 		/E-+ ... /E- の後 FSqDiv /T DIR 10 もする。
+		/E-2 ... /E- の後 OrderStamp もする。
 		/I   ... クラスタファイルを生成するときファイル属性とタイムスタンプも保存する。
 		/PP- ... パスに ptPtn を含むディレクトリ・ファイルを無視する。
 
@@ -255,6 +256,7 @@ static int RestoreFreeDirMode;
 static int NoCheckClusterMode;
 static int UnopenEmptyClusterMode;
 static int FSqDivMode;
+static int OrderStampMode;
 
 static void AutoActCluster(char *path)
 {
@@ -309,10 +311,15 @@ static void AutoActCluster(char *path)
 			}
 			else if(FSqDivMode)
 			{
+				// memo: DSqDiv.exe は dir とは別のフォルダに出力する。
+
 				coExecute_x(xcout("C:\\Factory\\Tools\\FSqDiv.exe /T \"%s\" 5", dir));
 			}
 			else
 			{
+				if(OrderStampMode)
+					coExecute_x(xcout("C:\\Factory\\SubTools\\OrderStamp.exe \"%s\"", dir));
+
 				execute_x(xcout("START %s\n", fdir));
 			}
 			memFree(fdir);
@@ -384,6 +391,12 @@ readArgs:
 	{
 		UnopenEmptyClusterMode = 1;
 		FSqDivMode = 1;
+		goto readArgs;
+	}
+	if(argIs("/E-2"))
+	{
+		UnopenEmptyClusterMode = 1;
+		OrderStampMode = 1;
 		goto readArgs;
 	}
 	if(argIs("/I"))
