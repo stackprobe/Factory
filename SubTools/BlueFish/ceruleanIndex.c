@@ -75,7 +75,7 @@ static void MakeIndex(char *indexDir, char *templateDir)
 		char *file;
 		uint index;
 		char *gameVerListBuff = strx("");
-		int newestPassed = 0;
+		int newestPassed;
 
 		LOGPOS();
 
@@ -102,6 +102,8 @@ static void MakeIndex(char *indexDir, char *templateDir)
 		}
 
 		LOGPOS();
+
+		newestPassed = 0;
 
 		foreach(files, file, index)
 		{
@@ -142,8 +144,52 @@ static void MakeIndex(char *indexDir, char *templateDir)
 
 				LOGPOS();
 			}
+
 			LOGPOS();
 		}
+
+		LOGPOS();
+
+		newestPassed = 0;
+
+		foreach(files, file, index)
+		{
+			LOGPOS();
+
+			if(lineExpICase("<>_BETA_<14,09>.zip", file)) // ? Beta_ƒtƒ@ƒCƒ‹
+			{
+				char *verLink;
+				char *verTitle;
+				char *tmp;
+
+				LOGPOS();
+
+				verLink = changeRoot(strx(file), indexDir, NULL);
+				escapeYen(verLink);
+				verTitle = strx(getLocal(file));
+
+				if(newestPassed)
+					tmp = strx(templateVer);
+				else
+					tmp = strx(templateVerNewest);
+
+				tmp = replaceLine(tmp, "*game-ver-link*", verLink, 0);
+				tmp = replaceLine(tmp, "*game-ver-title*", verTitle, 0);
+
+				gameVerListBuff = addLine(gameVerListBuff, tmp);
+
+				memFree(verLink);
+				memFree(verTitle);
+				memFree(tmp);
+
+				newestPassed = 1;
+
+				LOGPOS();
+			}
+
+			LOGPOS();
+		}
+
 		LOGPOS();
 
 		{
@@ -156,6 +202,7 @@ static void MakeIndex(char *indexDir, char *templateDir)
 
 			memFree(tmp);
 		}
+
 		LOGPOS();
 
 		memFree(gameDir);
@@ -167,6 +214,7 @@ static void MakeIndex(char *indexDir, char *templateDir)
 
 		LOGPOS();
 	}
+
 	LOGPOS();
 
 	{
@@ -178,6 +226,7 @@ static void MakeIndex(char *indexDir, char *templateDir)
 
 		memFree(tmp);
 	}
+
 	LOGPOS();
 }
 int main(int argc, char **argv)

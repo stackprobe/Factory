@@ -101,7 +101,7 @@ endFunc:
 	memFree(revDir);
 	memFree(wFile);
 }
-static void AddGameVer(char *arcFile, char *rootDir)
+static void AddGameVer(char *arcFile, char *rootDir, int beta)
 {
 	char *arcLocalFile;
 	char *name;
@@ -113,7 +113,7 @@ static void AddGameVer(char *arcFile, char *rootDir)
 	LOGPOS();
 
 	arcLocalFile = getLocal(arcFile);
-	name = strxl(arcLocalFile, strlen(arcLocalFile) - 9); // "_v999.zip" ÇçÌÇÈÅB
+	name = strxl(arcLocalFile, strlen(arcLocalFile) - (beta ? 24 : 9)); // "_BETA_11110222033333.zip" or "_v999.zip" ÇçÌÇÈÅB
 	wDir = combine(rootDir, name);
 	wFile = combine(wDir, arcLocalFile);
 	md5File = addExt(strx(arcFile), "md5");
@@ -216,7 +216,11 @@ static void AddRev(char *rDir, char *wDir, char *gameWDir, char *extCluWDir)
 			}
 			else if(lineExpICase("<>_v<3,09>.zip", file))
 			{
-				AddGameVer(file, gameWDir);
+				AddGameVer(file, gameWDir, 0);
+			}
+			else if(lineExpICase("<>_BETA_<14,09>.zip", file))
+			{
+				AddGameVer(file, gameWDir, 1);
 			}
 			else if(!_stricmp("zip", getExt(file)))
 			{

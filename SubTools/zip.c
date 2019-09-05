@@ -280,6 +280,24 @@ static void ReplaceVersion(char *dir, uint version) // version: 1 Å` 999, VER_BE
 	releaseDim(files, 1);
 	memFree(sVersion);
 }
+static char *MakeRev(void)
+{
+	char *revFile = makeTempPath(NULL);
+	char *rev;
+
+	coExecute_x(xcout("C:\\Factory\\DevTools\\rev.exe //O \"%s\" /P", revFile));
+
+	rev = readFirstLine(revFile);
+	replaceChar(rev, '.', '0');
+	removeFile_x(revFile);
+	return rev;
+}
+static char *c_MakeRev(void)
+{
+	static char *stock;
+	memFree(stock);
+	return stock = MakeRev();
+}
 static char *GetPathTailVer(uint version) // ret: bind
 {
 	static char *pathTail;
@@ -287,7 +305,7 @@ static char *GetPathTailVer(uint version) // ret: bind
 	memFree(pathTail);
 
 	if(version == VER_BETA)
-		pathTail = xcout("_BETA_%s", c_makeCompactStamp(NULL));
+		pathTail = xcout("_BETA_%s", c_MakeRev());
 	else
 		pathTail = xcout("_v%03u", version);
 
