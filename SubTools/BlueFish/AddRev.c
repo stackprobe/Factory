@@ -58,9 +58,11 @@ static void TrimRev(char *appDir)
 }
 static void TrimBeta(char *appDir)
 {
-	autoList_t *files = lsDirs(appDir);
+	autoList_t *files = lsFiles(appDir);
 	char *file;
 	uint index;
+
+	LOGPOS();
 
 	foreach(files, file, index)
 		if(!lineExpICase("<>_BETA_<14,09>.zip", file))
@@ -97,6 +99,8 @@ static void TrimBeta(char *appDir)
 		}
 	}
 	releaseDim(files, 1);
+
+	LOGPOS();
 }
 static void AddRev_File(char *arcFile, char *docRoot)
 {
@@ -198,7 +202,9 @@ static void AddGameVer(char *arcFile, char *rootDir, int beta)
 	moveFile(arcFile, wFile);
 	moveFile(md5File, wMD5File);
 
+	LOGPOS();
 	TrimBeta(wDir);
+	LOGPOS();
 
 cancel:
 	memFree(name);
