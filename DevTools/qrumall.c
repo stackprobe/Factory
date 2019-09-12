@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 		if(argIs("/R"))
 		{
 			LOGPOS();
-			addElement(dirs, (uint)strx(rootDir));
+			addElement(dirs, (uint)makeFullPath(rootDir));
 		}
 
 		if(hasArgs(1))
