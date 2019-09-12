@@ -37,7 +37,7 @@
 
 		... OUT-DIR -> OUT-DIR \ { PROJ-NAME } .zip
 
-	zip.exe [/PE-] /G OUT-DIR PROJ-NAME
+	zip.exe [/PE-] [/RVE-] /G OUT-DIR PROJ-NAME
 
 		... OUT-DIR -> OUT-DIR \ { PROJ-NAME } _v123.zip
 
@@ -222,6 +222,9 @@ static void DestroyFindVersionPtn(autoBlock_t *text, uint startPos, uint count)
 		setByte(text, startPos + index, chr);
 	}
 }
+
+static int ReplaceVersionExeFileDisabled;
+
 static void ReplaceVersion(char *dir, uint version) // version: 1 Å` 999, VER_BETA
 {
 	autoList_t *files = lssFiles(dir);
@@ -249,6 +252,8 @@ static void ReplaceVersion(char *dir, uint version) // version: 1 Å` 999, VER_BE
 			newText = strx(text);
 			newText = replaceLine(newText, "$version$", sVersion, 1);
 
+			LOGPOS();
+
 			if(strcmp(text, newText)) // ? text != newText
 			{
 				LOGPOS();
@@ -257,13 +262,15 @@ static void ReplaceVersion(char *dir, uint version) // version: 1 Å` 999, VER_BE
 			memFree(text);
 			memFree(newText);
 		}
-		else if(!_stricmp("exe", getExt(file)))
+		else if(!ReplaceVersionExeFileDisabled && !_stricmp("exe", getExt(file)))
 		{
 			static char *CONCERT_PTN = "{a9a54906-791d-4e1a-8a71-a4c69359cf68}:0.00"; // shared_uuid@g
 			autoBlock_t *text = readBinary(file);
 			uint conPos;
 
 			conPos = FindStringInExe(text, CONCERT_PTN);
+
+			LOGPOS();
 
 			if(conPos != UINTMAX)
 			{
@@ -313,7 +320,7 @@ static char *GetPathTailVer(uint version) // ret: bind
 
 	return pathTail;
 }
-static void PackZipFileEx2(char *zipFile, char *srcDir, int srcDirRmFlag, char *baseName, uint version, int keepOneDir)
+static void PackZipFileEx_K1D(char *zipFile, char *srcDir, int srcDirRmFlag, char *baseName, uint version, int keepOneDir)
 {
 	char *workDir = makeTempDir(NULL);
 	char *destDir;
@@ -366,7 +373,7 @@ static void PackZipFileEx2(char *zipFile, char *srcDir, int srcDirRmFlag, char *
 }
 static void PackZipFileEx(char *zipFile, char *srcDir, int srcDirRmFlag, char *baseName, uint version)
 {
-	PackZipFileEx2(zipFile, srcDir, srcDirRmFlag, baseName, version, 0);
+	PackZipFileEx_K1D(zipFile, srcDir, srcDirRmFlag, baseName, version, 0);
 }
 static void RepackZipFile(char *zipFile, char *baseName)
 {
@@ -414,10 +421,18 @@ int main(int argc, char **argv)
 {
 	errorCase_m(!existFile(ZIP7_LOCAL_FILE) && !existFile(ZIP7_FILE), "7zÇ≥ÇÒÇ™ãèÇ‹ÇπÇÒÅB");
 
+readArgs:
 	if(argIs("/PE-"))
 	{
 		LOGPOS();
 		ChangePEDisabled = 1;
+		goto readArgs;
+	}
+	if(argIs("/RVE-"))
+	{
+		LOGPOS();
+		ReplaceVersionExeFileDisabled = 1;
+		goto readArgs;
 	}
 
 	/*
@@ -461,7 +476,7 @@ int main(int argc, char **argv)
 		cout("srcDir: %s\n", srcDir);
 		cout("baseName: %s\n", baseName ? baseName : "<none>");
 
-		PackZipFileEx2(zipFile, srcDir, 0, baseName, 0, 1);
+		PackZipFileEx_K1D(zipFile, srcDir, 0, baseName, 0, 1);
 
 		memFree(zipFile);
 		memFree(srcDir);
