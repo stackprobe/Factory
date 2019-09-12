@@ -14,6 +14,10 @@ static int IsNoPause(void)
 {
 	return toValue(getEnvLine("@CopyLib_NoPause")) != 0;
 }
+static int IsCSharpFile(char *file)
+{
+	return !_stricmp("cs", getExt(file));
+}
 
 static autoList_t *ResAutoComment;
 static autoList_t *ResAutoComment_CS;
@@ -263,7 +267,10 @@ coutJLine_x(xcout("w: %s", w)); // test
 		}
 	}
 }
-static void DoCopyLib(char *rDir, char *wDir, int testMode, int *p_existNewFile)
+
+static int DCL_ExistNewFile;
+
+static void DoCopyLib(char *rDir, char *wDir, int testMode)
 {
 	autoList_t *rSubDirs = lssDirs(rDir);
 	autoList_t *wSubDirs = lssDirs(wDir);
@@ -288,8 +295,7 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode, int *p_existNewFile)
 		if(!testMode)
 			createPath_x(combine(rDir, dir), 'X');
 
-	if(p_existNewFile)
-		*p_existNewFile = 1 <= getCount(rFiles);
+	DCL_ExistNewFile = 1 <= getCount(rFiles);
 
 	foreach(rFiles, file, index)
 	{
@@ -307,6 +313,7 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode, int *p_existNewFile)
 	}
 	foreach(wFiles, file, index)
 	{
+		int csMode = IsCSharpFile(file);
 		char *wFile = combine(wDir, file);
 
 		cout("D %s\n", wFile);
@@ -322,13 +329,17 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode, int *p_existNewFile)
 		}
 
 		if(!testMode)
-			writeOneLine(wFile, "// deleted");
-//			removeFile(wFile); // 削除すると .vcxproj のエントリーを消せなくなるのでng
-
+		{
+			if(csMode)
+				removeFile(wFile);
+			else
+				writeOneLine(wFile, "// deleted"); // 削除すると .vcxproj のエントリーを消せなくなるので、削除NG
+		}
 		memFree(wFile);
 	}
 	foreach(owFiles, file, index)
 	{
+		int csMode = IsCSharpFile(file);
 		char *rFile = combine(rDir, file);
 		char *wFile = combine(wDir, file);
 		autoList_t *rRanges;
@@ -345,7 +356,7 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode, int *p_existNewFile)
 
 		CheckAppSpecRangesPair(rRanges, wRanges);
 
-		(_stricmp("cs", getExt(file)) ? AutoComment : AutoComment_CS)(rRanges);
+		(csMode ? AutoComment_CS : AutoComment)(rRanges);
 
 		{
 			autoList_t *lines = newList();
@@ -380,8 +391,6 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode, int *p_existNewFile)
 }
 static void CopyLib(char *rDir, char *wDir)
 {
-	int existNewFile;
-
 	rDir = makeFullPath(rDir);
 	wDir = makeFullPath(wDir);
 
@@ -393,15 +402,15 @@ static void CopyLib(char *rDir, char *wDir)
 	errorCase(!_stricmp(rDir, wDir)); // ? 同じディレクトリ
 
 	LOGPOS();
-	DoCopyLib(rDir, wDir, 1, NULL);
+	DoCopyLib(rDir, wDir, 1);
 	LOGPOS();
-	DoCopyLib(rDir, wDir, 0, &existNewFile);
+	DoCopyLib(rDir, wDir, 0);
 	LOGPOS();
 
-	if(existNewFile) // 新規追加ファイルがあった場合は２回行う必要がある。新規追加ファイルには AutoComment が適用されない。
+	if(DCL_ExistNewFile) // 新規追加ファイルがあった場合は２回行う必要がある。新規追加ファイルには AutoComment が適用されない。
 	{
 		LOGPOS();
-		DoCopyLib(rDir, wDir, 0, NULL);
+		DoCopyLib(rDir, wDir, 0);
 		LOGPOS();
 	}
 	memFree(rDir);
