@@ -7,6 +7,17 @@
 
 #define MARGIN 3
 
+static void RemoveUnwantedFiles(autoList_t *files)
+{
+	char *file;
+	uint index;
+
+	foreach(files, file, index)
+		if(!_stricmp("log", getExt(file)))
+			*file = '\0';
+
+	trimLines(files);
+}
 static int IsDx(char *str)
 {
 	char *p = mbs_stristr(str, "D");
@@ -27,6 +38,7 @@ static void PickOutDx(char *dir)
 
 	addCwd(dir);
 	eraseParents(files);
+	RemoveUnwantedFiles(files);
 	sortJLinesICase(files);
 
 	destDir2 = combine_cx(destDir, xcout("%s_PODx", getLocal(dir)));
