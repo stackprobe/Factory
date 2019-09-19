@@ -24,8 +24,9 @@
 		/OW  ... 出力先が存在する場合上書きする。
 		/K   ... チェックのみ
 		/E-  ... 自動判定で C:\nnn にクラスタファイルを展開したとき、配下に一つもファイルが無かった場合はエクスプローラを開かず、出力先も削除する。
-		/E-+ ... /E- の後 FSqDiv /T DIR 10 もする。
-		/E-2 ... /E- の後 OrderStamp もする。
+		/E-+ ... /E- の後 FSqDiv /T DIR 10 をする。
+		/E-2 ... /E- の後 OrderStamp をする。
+		/E-3 ... /E- の後 PickedOutDx をする。
 		/I   ... クラスタファイルを生成するときファイル属性とタイムスタンプも保存する。
 		/PP- ... パスに ptPtn を含むディレクトリ・ファイルを無視する。
 
@@ -257,6 +258,7 @@ static int NoCheckClusterMode;
 static int UnopenEmptyClusterMode;
 static int FSqDivMode;
 static int OrderStampMode;
+static int PickOutDxMode;
 
 static void AutoActCluster(char *path)
 {
@@ -314,6 +316,12 @@ static void AutoActCluster(char *path)
 				// memo: DSqDiv.exe は dir とは別のフォルダに出力する。
 
 				coExecute_x(xcout("C:\\Factory\\Tools\\FSqDiv.exe /T \"%s\" 5", dir));
+			}
+			else if(PickOutDxMode)
+			{
+				// memo: PickOutDx.exe は dir とは別のフォルダに出力する。
+
+				coExecute_x(xcout("C:\\Factory\\Labo\\Tools\\PickOutDx.exe \"%s\"", dir));
 			}
 			else
 			{
@@ -397,6 +405,12 @@ readArgs:
 	{
 		UnopenEmptyClusterMode = 1;
 		OrderStampMode = 1;
+		goto readArgs;
+	}
+	if(argIs("/E-3"))
+	{
+		UnopenEmptyClusterMode = 1;
+		PickOutDxMode = 1;
 		goto readArgs;
 	}
 	if(argIs("/I"))
