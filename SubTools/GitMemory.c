@@ -186,6 +186,40 @@ static void FlushMain(void)
 	releaseDim(memDirs, 1);
 	LOGPOS();
 }
+static void TrimMain(void)
+{
+	autoList_t *memDirs = lsDirs(MEM_ROOTDIR);
+	uint index;
+	autoList_t *deletableDirs = newList();
+	char *dir;
+
+	LOGPOS();
+
+	for(index = 1; index < getCount(memDirs); index++)
+	{
+		char *memDir1 = getLine(memDirs, index - 1);
+		char *memDir2 = getLine(memDirs, index - 0);
+
+		cout("1 %s\n", memDir1);
+		cout("2 %s\n", memDir2);
+
+		if(isSameDir(memDir1, memDir2, 1))
+		{
+			LOGPOS();
+			addElement(deletableDirs, (uint)strx(memDir2));
+		}
+	}
+	LOGPOS();
+	foreach(deletableDirs, dir, index)
+	{
+		cout("* %s\n", dir);
+		semiRemovePath(dir);
+	}
+	LOGPOS();
+	releaseDim(memDirs, 1);
+	releaseDim(deletableDirs, 1);
+	LOGPOS();
+}
 int main(int argc, char **argv)
 {
 	errorCase(!existDir(GIT_ROOTDIR));
@@ -203,6 +237,10 @@ int main(int argc, char **argv)
 	else if(argIs("FLUSH"))
 	{
 		FlushMain();
+	}
+	else if(argIs("TRIM"))
+	{
+		TrimMain();
 	}
 	else
 		error_m("不明なコマンド引数");

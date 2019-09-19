@@ -93,6 +93,16 @@ int isSameDir(char *dir1, char *dir2, int ignoreCaseOfPath)
 		}
 	}
 
+	for(index = dcnt1; index < getCount(paths1); index++) // ファイルサイズの比較
+	{
+		char *file1 = getLine(paths1, index);
+		char *file2 = getLine(paths2, index);
+
+		if(getFileSize(file1) != getFileSize(file2))
+		{
+			goto endfunc;
+		}
+	}
 	for(index = dcnt1; index < getCount(paths1); index++) // ファイルの内容の比較
 	{
 		char *file1 = getLine(paths1, index);
