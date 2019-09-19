@@ -367,7 +367,9 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 
 			if(!testMode)
 			{
+				removeFile(wFile); // 2bs?
 //				semiRemovePath(wFile);
+
 				writeLines(wFile, lines);
 			}
 			releaseAutoList(lines);
