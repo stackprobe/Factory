@@ -1,7 +1,7 @@
 /*
 	.sln がある場所から実行してね。
 
-	.cpp .h ファイルを一時的に書き換える。
+	.cpp .h ファイルを書き換える。
 */
 
 #include "C:\Factory\Common\all.h"
@@ -96,7 +96,27 @@ static void CommentOutFunc_WriteFile(char *file)
 	}
 	fileClose(fp);
 }
-static void CheckBuild(void)
+
+static uint CommentedOutCount;
+
+static void CommentOutFunc_Lines(void)
+{
+	char *line;
+	uint index;
+
+	foreach(Lines, line, index)
+	{
+		if(m_isRange(index, FuncRangeBgn, FuncRangeEnd))
+		{
+			line = replaceLine(line, "*/", "＊/", 0);
+
+			setElement(Lines, index, (uint)xcout("// #### DELETED ==== %07u $$$$ //\t%s", CommentedOutCount, line));
+			memFree(line);
+		}
+	}
+	CommentedOutCount++;
+}
+static int CheckBuild(void)
 {
 	LOGPOS();
 	coExecute("> C:\\temp\\1.tmp 2> C:\\temp\\2.tmp qq");
@@ -106,13 +126,16 @@ static void CheckBuild(void)
 	{
 		LOGPOS();
 		addElement(UnusedFuncFirstLines, (uint)strx(getLine(Lines, FuncRangeBgn)));
+		return 1;
 	}
 	LOGPOS();
+	return 0;
 }
 static void ProcCppFile(char *file, int headerFlag)
 {
 	char *escFile = addExt(strx(file), "{e0f86009-6dbe-49af-a1bd-ef8f20416f20}_UnusedFunc_Escape.txt");
 	uint index;
+	int commentedOut = 0;
 
 	cout("ProcCppFile: %s %d\n", file, headerFlag);
 
@@ -128,14 +151,26 @@ static void ProcCppFile(char *file, int headerFlag)
 			cout("%s\n", getLine(Lines, FuncRangeBgn));
 
 			CommentOutFunc_WriteFile(file);
-			CheckBuild();
+
+			if(CheckBuild())
+			{
+				CommentOutFunc_Lines();
+				commentedOut = 1;
+			}
 			removeFile(file);
 		}
 	}
+	if(commentedOut)
+	{
+		writeLines(file, Lines);
+		removeFile(escFile);
+	}
+	else
+		moveFile(escFile, file);
+
 	releaseDim(Lines, 1);
 	Lines = NULL;
 
-	moveFile(escFile, file);
 	memFree(escFile);
 	LOGPOS();
 }
