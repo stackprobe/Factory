@@ -23,6 +23,8 @@ static void PickOutDx(char *dir)
 	bitList_t *copyFlags;
 	int copied = 0;
 
+	coExecute_x(xcout("C:\\Factory\\SubTools\\OrderStamp.exe \"%s\"", dir)); // Ç¬Ç¢Ç≈Ç…ÅA
+
 	addCwd(dir);
 	eraseParents(files);
 	sortJLinesICase(files);
