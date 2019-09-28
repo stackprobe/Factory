@@ -3,6 +3,7 @@
 */
 
 #include "C:\Factory\Common\all.h"
+#include "C:\Factory\Meteor\Toolkit2.h"
 
 int main(int argc, char **argv)
 {
@@ -24,7 +25,7 @@ int main(int argc, char **argv)
 	errorCase(!existFile(projectFile));
 	errorCase(!existDir(csDir));
 
-	coExecute_x(xcout("C:\\app\\Kit\\Toolkit2\\Toolkit2.exe /CS-PROJ-ADJUST-CS \"%s\" \"%s\" \"%s\" \"%s\"", projectDir, getLocal(projectFile), csRelDir, successfulFile));
+	coExecute_x(xcout(FILE_TOOLKIT2_EXE " /CS-PROJ-ADJUST-CS \"%s\" \"%s\" \"%s\" \"%s\"", projectDir, getLocal(projectFile), csRelDir, successfulFile));
 
 	errorCase(!existFile(successfulFile));
 
