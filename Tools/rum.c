@@ -18,6 +18,7 @@
 		/1  ... 最後のファイルを取得、ファイルの一覧を最後のリビジョンから取得
 		/R  ... 最後のリビジョンが修正無し且つコメント無しであれば削除する。
 		/D  ... 常に C:\NNN にリストアする。(NNN は 1～999)
+		/L  ... パスリストのみ出力する。
 
 	rum.exe (/C [COMMENT] | /C-)
 
@@ -73,6 +74,14 @@
 //#define AUTO_COMMENT_FILE "C:\\Factory\\tmp\\auto-comment.txt" // qrumall /D で消される。
 
 static uint ErrorLevel;
+
+/*
+	( ハッシュ値 + SP + パス ) のパスを比較
+*/
+static sint HashedPathComp(uint a, uint b)
+{
+	return !_stricmp((char *)a + 33, (char *)b + 33);
+}
 
 static char *GetAutoComment(void) // ret: NULL == 未登録
 {
@@ -632,6 +641,9 @@ endFunc:
 	unaddCwd();
 	unaddCwd();
 }
+
+static int RestoreListOnlyMode;
+
 static void OneRestore(char *storeDir, char *targetStamp, char *restoreDir) // storeDir: バックアップ先, restoreDir: 未作成の出力先ディレクトリ
 {
 	autoList_t *dirs;
@@ -650,40 +662,65 @@ static void OneRestore(char *storeDir, char *targetStamp, char *restoreDir) // s
 	unaddCwd();
 
 	createDir(restoreDir);
-	addCwd(restoreDir);
 
-	foreach(dirs, line, index)
-		createDir(line);
-
-	unaddCwd();
-
-	addCwd(DIR_FILES);
-
-	foreach(stocks, line, index)
+	if(RestoreListOnlyMode)
 	{
-		char *stockFile = line;
-		char *file;
+		autoList_t *lines = newList();
 
-		file = strchr(stockFile, '\x20');
-		errorCase(!file);
-
-		file[0] = '\0';
-		file++;
-
-		errorCase(!*stockFile);
-		errorCase(!*file);
-
-		file = combine(restoreDir, file);
-
-		cout("< %s\n", stockFile);
-		cout("> %s\n", file);
-
-		copyFile(stockFile, file);
-		PostRestoreFile(file);
-
-		memFree(file);
+		foreach(dirs, line, index)
+		{
+			addElement(lines, (uint)xcout("-------------------------------- %s", line));
+		}
+		foreach(stocks, line, index)
+		{
+			addElement(lines, (uint)strx(line));
+		}
+		foreach(lines, line, index) // チェックのみ
+		{
+			errorCase(
+				!lineExp("<32,--> <>", line) &&
+				!lineExp("<32,09af> <>", line)
+				);
+		}
+		rapidSort(lines, HashedPathComp);
+		writeLines_xx(combine(restoreDir, "Tree.txt"), lines);
 	}
-	unaddCwd();
+	else
+	{
+		addCwd(restoreDir);
+
+		foreach(dirs, line, index)
+			createDir(line);
+
+		unaddCwd();
+		addCwd(DIR_FILES);
+
+		foreach(stocks, line, index)
+		{
+			char *stockFile = line;
+			char *file;
+
+			file = strchr(stockFile, '\x20');
+			errorCase(!file);
+
+			file[0] = '\0';
+			file++;
+
+			errorCase(!*stockFile);
+			errorCase(!*file);
+
+			file = combine(restoreDir, file);
+
+			cout("< %s\n", stockFile);
+			cout("> %s\n", file);
+
+			copyFile(stockFile, file);
+			PostRestoreFile(file);
+
+			memFree(file);
+		}
+		unaddCwd();
+	}
 	unaddCwd();
 
 	releaseDim(dirs, 1);
@@ -1214,6 +1251,11 @@ readArgs:
 	if(argIs("/D")) // restore free Dir mode
 	{
 		RestoreFreeDirMode = 1;
+		goto readArgs;
+	}
+	if(argIs("/L")) // restore List only mode
+	{
+		RestoreListOnlyMode = 1;
 		goto readArgs;
 	}
 	if(argIs("/-COLL"))
