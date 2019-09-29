@@ -35,10 +35,6 @@ uint mt19937_rnd(uint modulo) // ret: 0 Å` (modulo - 1)
 
 	errorCase(!modulo);
 
-	if(modulo == 1)
-	{
-		return 0;
-	}
 #if 1
 	r_mod = 0x100000000ui64 % modulo;
 #else
@@ -51,7 +47,7 @@ uint mt19937_rnd(uint modulo) // ret: 0 Å` (modulo - 1)
 	}
 	while(r < r_mod);
 
-#if 1
+#if 0
 	r -= r_mod;
 	r /= 0x100000000ui64 / modulo;
 #else
@@ -77,26 +73,22 @@ uint64 mt19937_rnd64(void) // ret: 0 Å` UINT64MAX
 }
 uint64 mt19937_rnd64Mod(uint64 modulo) // ret: 0 Å` (modulo - 1)
 {
-	uint modHi = (uint)(modulo >> 32);
-	uint modLow = (uint)modulo;
-	uint rHi;
-	uint rLow;
+	uint64 r_mod;
+	uint64 r;
 
-	if(!modHi)
-		return (uint64)mt19937_rnd((uint)modulo);
+	errorCase(modulo == 0ui64);
 
-	if(!modLow)
-		return (uint64)mt19937_rnd((uint)modHi) << 32 | (uint64)mt19937_rnd32();
+	r_mod = (UINT64MAX % modulo + 1ui64) % modulo;
 
-	for(; ; )
+	do
 	{
-		rHi = modHi == UINTMAX ? mt19937_rnd32() : mt19937_rnd(modHi + 1);
-		rLow = mt19937_rnd32();
-
-		if(rHi < modHi || rLow < modLow)
-			break;
+		r = mt19937_rnd64();
 	}
-	return (uint64)rHi << 32 | (uint64)rLow;
+	while(r < r_mod);
+
+	r %= modulo;
+
+	return r;
 }
 uint64 mt19937_range64(uint64 minval, uint64 maxval) // ret: minval Å` maxval
 {

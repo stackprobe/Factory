@@ -79,6 +79,33 @@ uint64 getCryptoRand64(void)
 		((uint64)r[6] << 48) |
 		((uint64)r[7] << 56);
 }
+uint64 getCryptoRand64Mod(uint64 modulo) // ret: 0 ` (modulo - 1)
+{
+	uint64 r_mod;
+	uint64 r;
+
+	errorCase(modulo == 0ui64);
+
+	r_mod = (UINT64MAX % modulo + 1ui64) % modulo;
+
+	do
+	{
+		r = getCryptoRand64();
+	}
+	while(r < r_mod);
+
+	return r % modulo;
+}
+uint64 getCryptoRand64Range(uint64 minval, uint64 maxval) // ret: minval ` maxval
+{
+	errorCase(maxval < minval);
+
+	if(minval == 0 && maxval == UINT64MAX)
+	{
+		return getCryptoRand64();
+	}
+	return minval + getCryptoRand64Mod(maxval - minval + 1);
+}
 autoBlock_t *makeCryptoRandBlock(uint count)
 {
 	autoBlock_t *block = createBlock(count);
