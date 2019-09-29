@@ -1,11 +1,5 @@
 #include "Prime3.h"
 
-/*
-	Keisan 1 / 4 p 60 !/ 2 L 2 ---> 121
-*/
-//#define M_TEST_CNT 60
-#define M_TEST_CNT 20
-
 static uint64 ModMul(uint64 a, uint64 b, uint64 modulo)
 {
 	uint a4[4];
@@ -62,11 +56,14 @@ static uint64 ModPow(uint64 value, uint64 exponent, uint64 modulo)
 */
 int IsPrime_M(uint64 value)
 {
+	return IsPrime_M_K(value, 50);
+}
+int IsPrime_M_K(uint64 value, uint k)
+{
 	uint64 d;
 	uint64 a;
 	uint r;
 	uint c;
-	uint testCnt;
 
 	if(value <= 1)
 		return 0;
@@ -82,7 +79,7 @@ int IsPrime_M(uint64 value)
 	for(r = 0; d % 2 == 0; r++)
 		d /= 2;
 
-	for(testCnt = M_TEST_CNT; testCnt; testCnt--)
+	for(; k; k--)
 	{
 		a = ModPow(getCryptoRand64Range(2, value - 2), d, value);
 

@@ -4,6 +4,8 @@
 #include "C:\Factory\Common\Options\Prime.h"
 #include "C:\Factory\Common\Options\Prime3.h"
 
+#define TEST_K 20
+
 static void Test_01(void)
 {
 	uint correctCount = 0;
@@ -18,7 +20,7 @@ static void Test_01(void)
 		int a2;
 
 		a1 = IsPrime(value);
-		a2 = IsPrime_M(value);
+		a2 = IsPrime_M_K(value, TEST_K);
 
 		if(a1 ? a2 : !a2)
 			correctCount++;
@@ -52,7 +54,7 @@ static void Test_02b(uint64 value)
 	{
 		ProgressRate(c * 1.0 / CHECK_COUNT);
 
-		if(IsPrime_M(value) ? a : !a)
+		if(IsPrime_M_K(value, TEST_K) ? a : !a)
 		{
 			// ok
 		}

@@ -1,5 +1,6 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Prime2.h"
+#include "C:\Factory\Common\Options\Prime3.h"
 #include "C:\Factory\Common\Options\csv.h"
 #include "libs\UlamSpiral.h"
 
@@ -61,6 +62,15 @@ static void WrUI64(FILE *fp, uint64 value)
 	WrPos += s;
 }
 
+// ---- Prv_IsPrime ----
+
+static int UseMillerRabinTestMode;
+
+static int Prv_IsPrime(uint64 value)
+{
+	return ( UseMillerRabinTestMode ? IsPrime_M : IsPrime )(value);
+}
+
 // ----
 
 static uint64 GetLowPrime(uint64 value)
@@ -69,7 +79,7 @@ static uint64 GetLowPrime(uint64 value)
 	{
 		value--;
 
-		if(IsPrime(value))
+		if(Prv_IsPrime(value))
 			return value;
 	}
 	return 0;
@@ -80,7 +90,7 @@ static uint64 GetHiPrime(uint64 value)
 	{
 		value++;
 
-		if(IsPrime(value))
+		if(Prv_IsPrime(value))
 			return value;
 	}
 	return 0;
@@ -98,6 +108,9 @@ static int IsShortRange(uint64 minval, uint64 maxval)
 		maxval < 110000000000000 && range < 11000 ||
 		maxval < 1100000000000000 && range < 3100 ||
 		maxval < 11000000000000000 && range < 1100;
+
+	if(UseMillerRabinTestMode && range < 1100)
+		ret = 1;
 
 	cout("IsShortRange_ret: %d\n", ret);
 	return ret;
@@ -128,7 +141,7 @@ static void PrimeRange(uint64 minval, uint64 maxval, char *outFile, char *cancel
 	if(IsShortRange(minval, maxval))
 	{
 		for(value = minval; value <= maxval; value += 2)
-			if(IsPrime(value))
+			if(Prv_IsPrime(value))
 				WrUI64(fp, value);
 	}
 	else
@@ -217,7 +230,7 @@ static void PrimeCount(uint64 minval, uint64 maxval, char *outFile, char *cancel
 	if(IsShortRange(minval, maxval))
 	{
 		for(value = minval; value <= maxval; value += 2)
-			if(IsPrime(value))
+			if(Prv_IsPrime(value))
 				count++;
 	}
 	else
@@ -298,7 +311,7 @@ static void DoBatch(int mode, char *rFile, char *wFile) // mode: "PFC"
 				cout("%I64u -> ", value);
 				addElement(wRow, (uint)xcout("%I64u", value));
 
-				if(IsPrime(value))
+				if(Prv_IsPrime(value))
 					ans = "1";
 				else
 					ans = "0";
@@ -383,11 +396,18 @@ static void DoBatch(int mode, char *rFile, char *wFile) // mode: "PFC"
 }
 static void Main2(void)
 {
+readArgs:
+	if(argIs("/UMRTM"))
+	{
+		UseMillerRabinTestMode = 1;
+		goto readArgs;
+	}
+
 	if(argIs("/P"))
 	{
 		uint64 value = ToValue_Check(nextArg());
 
-		if(IsPrime(value))
+		if(Prv_IsPrime(value))
 			cout("%sIS_PRIME\n", majorOutputLinePrefix);
 		else
 			cout("%sIS_NOT_PRIME\n", majorOutputLinePrefix);
