@@ -100,18 +100,21 @@ static int IsShortRange(uint64 minval, uint64 maxval)
 	uint64 range = maxval - minval;
 	int ret;
 
-	ret =
-//		maxval < 11000000000 && range < 1100000 ||
-//		maxval < 110000000000 && range < 310000 ||
-		maxval < 1100000000000 && range < 110000 ||
-		maxval < 11000000000000 && range < 31000 ||
-		maxval < 110000000000000 && range < 11000 ||
-		maxval < 1100000000000000 && range < 3100 ||
-		maxval < 11000000000000000 && range < 1100;
-
-	if(UseMillerRabinTestMode && range < 1100)
-		ret = 1;
-
+	if(UseMillerRabinTestMode)
+	{
+		ret = range < 11000;
+	}
+	else
+	{
+		ret =
+//			maxval < 11000000000 && range < 1100000 ||
+//			maxval < 110000000000 && range < 310000 ||
+			maxval < 1100000000000 && range < 110000 ||
+			maxval < 11000000000000 && range < 31000 ||
+			maxval < 110000000000000 && range < 11000 ||
+			maxval < 1100000000000000 && range < 3100 ||
+			maxval < 11000000000000000 && range < 1100;
+	}
 	cout("IsShortRange_ret: %d\n", ret);
 	return ret;
 }

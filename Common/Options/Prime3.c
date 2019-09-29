@@ -61,7 +61,7 @@ int IsPrime_M(uint64 value)
 int IsPrime_M_K(uint64 value, uint k)
 {
 	uint64 d;
-	uint64 a;
+	uint64 x;
 	uint r;
 	uint c;
 
@@ -74,25 +74,24 @@ int IsPrime_M_K(uint64 value, uint k)
 	if(value % 2 == 0)
 		return 0;
 
-	d = (value - 1) / 2;
+	d = value - 1;
 
-	for(r = 0; d % 2 == 0; r++)
-		d /= 2;
+	for(r = 0; (d /= 2) % 2 == 0; r++);
 
 	for(; k; k--)
 	{
-		a = ModPow(getCryptoRand64Range(2, value - 2), d, value);
+		x = ModPow(getCryptoRand64Range(2, value - 2), d, value);
 
-		if(a != 1 && a != value - 1)
+		if(x != 1 && x != value - 1)
 		{
 			for(c = r; ; c--)
 			{
 				if(!c)
 					return 0;
 
-				a = ModPow(a, 2, value);
+				x = ModPow(x, 2, value);
 
-				if(a == value - 1)
+				if(x == value - 1)
 					break;
 			}
 		}
