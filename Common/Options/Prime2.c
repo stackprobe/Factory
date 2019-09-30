@@ -73,7 +73,7 @@ static void PutP13(uint prime)
 {
 	uint64 count;
 
-	for(count = prime; count < PBIT_P_NUM; count += prime * 2)
+	for(count = prime; count < P13_P_NUM; count += prime * 2)
 	{
 		SetPBit(count, 1);
 	}

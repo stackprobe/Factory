@@ -4,6 +4,7 @@
 #include "C:\Factory\Common\Options\Prime2.h"
 #include "C:\Factory\Common\Options\csv.h"
 #include "C:\Factory\SubTools\libs\bmp.h"
+#include "IsPrime.h"
 
 extern int US_OddMode;
 extern int US_OddUn5Mode;

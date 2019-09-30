@@ -217,7 +217,7 @@ void MakeUlamSpiral(
 			{
 				setElement(row, x, LastMulColor);
 			}
-			else if(IsPrime(numb))
+			else if(A_IsPrime(numb))
 			{
 				setElement(row, x, primeColor);
 			}
@@ -280,7 +280,7 @@ void MakeUlamSpiral_Csv(sint64 l, sint64 t, sint64 r, sint64 b, int mode, char *
 				break;
 
 			case 'P':
-				addElement(row, (uint)(IsPrime(XYToNumb(l + x, t + y)) ? "1" : "0"));
+				addElement(row, (uint)(A_IsPrime(XYToNumb(l + x, t + y)) ? "1" : "0"));
 				break;
 
 			default:

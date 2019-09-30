@@ -3,6 +3,7 @@
 #include "C:\Factory\Common\Options\Prime3.h"
 #include "C:\Factory\Common\Options\csv.h"
 #include "libs\UlamSpiral.h"
+#include "libs\IsPrime.h"
 
 #define PRIME_MAX 18446744073709551557ui64 // uint64 ç≈ëÂÇÃëfêî
 
@@ -62,15 +63,6 @@ static void WrUI64(FILE *fp, uint64 value)
 	WrPos += s;
 }
 
-// ---- Prv_IsPrime ----
-
-static int UseMillerRabinTestMode;
-
-static int Prv_IsPrime(uint64 value)
-{
-	return ( UseMillerRabinTestMode ? IsPrime_M : IsPrime )(value);
-}
-
 // ----
 
 static uint64 GetLowPrime(uint64 value)
@@ -79,7 +71,7 @@ static uint64 GetLowPrime(uint64 value)
 	{
 		value--;
 
-		if(Prv_IsPrime(value))
+		if(A_IsPrime(value))
 			return value;
 	}
 	return 0;
@@ -90,7 +82,7 @@ static uint64 GetHiPrime(uint64 value)
 	{
 		value++;
 
-		if(Prv_IsPrime(value))
+		if(A_IsPrime(value))
 			return value;
 	}
 	return 0;
@@ -144,7 +136,7 @@ static void PrimeRange(uint64 minval, uint64 maxval, char *outFile, char *cancel
 	if(IsShortRange(minval, maxval))
 	{
 		for(value = minval; value <= maxval; value += 2)
-			if(Prv_IsPrime(value))
+			if(A_IsPrime(value))
 				WrUI64(fp, value);
 	}
 	else
@@ -191,7 +183,7 @@ static void PrimeRange(uint64 minval, uint64 maxval, char *outFile, char *cancel
 					}
 				}
 			}
-			if(IsPrime_R(value))
+			if(A_IsPrime_R(value))
 //				errorCase(fprintf(fp, "%I64u\n", value) < 0); // íxÇ¢ÅI
 				WrUI64(fp, value);
 		}
@@ -233,7 +225,7 @@ static void PrimeCount(uint64 minval, uint64 maxval, char *outFile, char *cancel
 	if(IsShortRange(minval, maxval))
 	{
 		for(value = minval; value <= maxval; value += 2)
-			if(Prv_IsPrime(value))
+			if(A_IsPrime(value))
 				count++;
 	}
 	else
@@ -254,7 +246,7 @@ static void PrimeCount(uint64 minval, uint64 maxval, char *outFile, char *cancel
 
 				eventSet(reportEv);
 			}
-			if(IsPrime_R(value))
+			if(A_IsPrime_R(value))
 				count++;
 		}
 	}
@@ -314,7 +306,7 @@ static void DoBatch(int mode, char *rFile, char *wFile) // mode: "PFC"
 				cout("%I64u -> ", value);
 				addElement(wRow, (uint)xcout("%I64u", value));
 
-				if(Prv_IsPrime(value))
+				if(A_IsPrime(value))
 					ans = "1";
 				else
 					ans = "0";
@@ -399,6 +391,8 @@ static void DoBatch(int mode, char *rFile, char *wFile) // mode: "PFC"
 }
 static void Main2(void)
 {
+	// ---- common options ----
+
 readArgs:
 	if(argIs("/UMRTM"))
 	{
@@ -406,11 +400,13 @@ readArgs:
 		goto readArgs;
 	}
 
+	// ----
+
 	if(argIs("/P"))
 	{
 		uint64 value = ToValue_Check(nextArg());
 
-		if(Prv_IsPrime(value))
+		if(A_IsPrime(value))
 			cout("%sIS_PRIME\n", majorOutputLinePrefix);
 		else
 			cout("%sIS_NOT_PRIME\n", majorOutputLinePrefix);

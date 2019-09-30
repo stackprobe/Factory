@@ -1,3 +1,7 @@
+/*
+	Prime.exe (/F value | /FF value | /C minval maxval | [/P] (value | minval maxval))
+*/
+
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Prime.h"
 
@@ -63,15 +67,18 @@ int main(int argc, char **argv)
 		maxval = toValue64(nextArg());
 
 		if(maxval == 0)
-			maxval = UINT64MAX - 1;
+			maxval = UINT64MAX;
 
 		errorCase(maxval < minval);
-		errorCase(maxval == UINT64MAX);
 
-		for(value = minval; value <= maxval; value++)
+		for(value = minval; ; value++)
+		{
 			if(IsPrime(value))
 				count++;
 
+			if(value == maxval)
+				break;
+		}
 		cout("%I64u\n", count);
 		return;
 	}
@@ -89,12 +96,11 @@ int main(int argc, char **argv)
 		maxval = toValue64(nextArg());
 
 		if(maxval == 0)
-			maxval = UINT64MAX - 1;
+			maxval = UINT64MAX;
 
 		errorCase(maxval < minval);
-		errorCase(maxval == UINT64MAX);
 
-		for(value = minval; value <= maxval; value++)
+		for(value = minval; ; value++)
 		{
 			if(eqIntPulseSec(2, NULL))
 			{
@@ -111,6 +117,9 @@ int main(int argc, char **argv)
 				}
 			}
 			PrintIsPrime(value);
+
+			if(value == maxval)
+				break;
 		}
 		return;
 	}

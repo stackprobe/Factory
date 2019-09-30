@@ -1,5 +1,11 @@
 #include "Prime3.h"
 
+/*
+	Keisan 1 / 4 p 50 !/ 1 L 2  ===>  100
+	               ^^                 ^^^
+*/
+#define DEFAULT_K 50
+
 static uint64 ModMul(uint64 a, uint64 b, uint64 modulo)
 {
 	uint a4[4];
@@ -41,13 +47,17 @@ static uint64 ModPow(uint64 value, uint64 exponent, uint64 modulo)
 {
 	uint64 ret = 1;
 
-	while(1 <= exponent)
+	for(; ; )
 	{
 		if(exponent % 2 == 1)
 			ret = ModMul(ret, value, modulo);
 
-		value = ModMul(value, value, modulo);
 		exponent /= 2;
+
+		if(exponent == 0)
+			break;
+
+		value = ModMul(value, value, modulo);
 	}
 	return ret;
 }
@@ -56,7 +66,7 @@ static uint64 ModPow(uint64 value, uint64 exponent, uint64 modulo)
 */
 int IsPrime_M(uint64 value)
 {
-	return IsPrime_M_K(value, 50);
+	return IsPrime_M_K(value, DEFAULT_K);
 }
 int IsPrime_M_K(uint64 value, uint k)
 {
@@ -74,7 +84,8 @@ int IsPrime_M_K(uint64 value, uint k)
 	if(value % 2 == 0)
 		return 0;
 
-	d = value - 1;
+	d = value;
+//	d = value - 1; // ‚Ç‚¤‚¹ /= 2 ‚·‚é‚Ì‚Å
 
 	for(r = 0; (d /= 2) % 2 == 0; r++);
 
