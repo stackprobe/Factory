@@ -20,3 +20,6 @@ C:\Factory\SubTools\rept.exe /P $BIT 2048 /P $hBIT 1024 /P $SZ 64 /P $hSZ 32 uin
 
 C:\Factory\SubTools\rept.exe /P $BIT 4096 /P $hBIT 2048 /P $SZ 128 /P $hSZ 64 uintx.c.h ..\uint4096.c
 C:\Factory\SubTools\rept.exe /P $BIT 4096 /P $hBIT 2048 /P $SZ 128 /P $hSZ 64 uintx.h.h ..\uint4096.h
+
+C:\Factory\SubTools\rept.exe /P $BIT 8192 /P $hBIT 4096 /P $SZ 256 /P $hSZ 128 uintx.c.h ..\uint8192.c
+C:\Factory\SubTools\rept.exe /P $BIT 8192 /P $hBIT 4096 /P $SZ 256 /P $hSZ 128 uintx.h.h ..\uint8192.h
