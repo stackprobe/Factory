@@ -32,6 +32,10 @@ void FromUI256(UI256_t a, uint dest[8])
 	FromUI128(a.L, dest + 0);
 	FromUI128(a.H, dest + 4);
 }
+uint UI256_y(UI256_t a)
+{
+	return UI128_y(a.L);
+}
 
 UI256_t UI256_Inv(UI256_t a)
 {

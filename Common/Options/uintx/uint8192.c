@@ -32,6 +32,10 @@ void FromUI8192(UI8192_t a, uint dest[256])
 	FromUI4096(a.L, dest + 0);
 	FromUI4096(a.H, dest + 128);
 }
+uint UI8192_y(UI8192_t a)
+{
+	return UI4096_y(a.L);
+}
 
 UI8192_t UI8192_Inv(UI8192_t a)
 {

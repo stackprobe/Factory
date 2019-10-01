@@ -14,6 +14,7 @@ UI4096_t ToUI4096(uint src[128]);
 UI4096_t UI4096_x(uint x);
 UI4096_t UI4096_0(void);
 void FromUI4096(UI4096_t a, uint dest[128]);
+uint UI4096_y(UI4096_t a);
 
 UI4096_t UI4096_Inv(UI4096_t a);
 UI4096_t UI4096_Add(UI4096_t a, UI4096_t b, UI4096_t ans[2]);

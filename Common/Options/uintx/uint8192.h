@@ -14,6 +14,7 @@ UI8192_t ToUI8192(uint src[256]);
 UI8192_t UI8192_x(uint x);
 UI8192_t UI8192_0(void);
 void FromUI8192(UI8192_t a, uint dest[256]);
+uint UI8192_y(UI8192_t a);
 
 UI8192_t UI8192_Inv(UI8192_t a);
 UI8192_t UI8192_Add(UI8192_t a, UI8192_t b, UI8192_t ans[2]);

@@ -12,6 +12,7 @@ UI32_t ToUI32(uint src[1]);
 UI32_t UI32_x(uint x);
 UI32_t UI32_0(void);
 void FromUI32(UI32_t a, uint dest[1]);
+uint UI32_y(UI32_t a);
 
 UI32_t UI32_Inv(UI32_t a);
 UI32_t UI32_Add(UI32_t a, UI32_t b, UI32_t ans[2]);

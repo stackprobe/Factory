@@ -14,6 +14,7 @@ UI64_t ToUI64(uint src[2]);
 UI64_t UI64_x(uint x);
 UI64_t UI64_0(void);
 void FromUI64(UI64_t a, uint dest[2]);
+uint UI64_y(UI64_t a);
 
 UI64_t UI64_Inv(UI64_t a);
 UI64_t UI64_Add(UI64_t a, UI64_t b, UI64_t ans[2]);

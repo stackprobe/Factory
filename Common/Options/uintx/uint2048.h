@@ -14,6 +14,7 @@ UI2048_t ToUI2048(uint src[64]);
 UI2048_t UI2048_x(uint x);
 UI2048_t UI2048_0(void);
 void FromUI2048(UI2048_t a, uint dest[64]);
+uint UI2048_y(UI2048_t a);
 
 UI2048_t UI2048_Inv(UI2048_t a);
 UI2048_t UI2048_Add(UI2048_t a, UI2048_t b, UI2048_t ans[2]);

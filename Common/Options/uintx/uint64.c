@@ -32,6 +32,10 @@ void FromUI64(UI64_t a, uint dest[2])
 	FromUI32(a.L, dest + 0);
 	FromUI32(a.H, dest + 1);
 }
+uint UI64_y(UI64_t a)
+{
+	return UI32_y(a.L);
+}
 
 UI64_t UI64_Inv(UI64_t a)
 {

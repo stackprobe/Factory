@@ -32,6 +32,10 @@ void FromUI512(UI512_t a, uint dest[16])
 	FromUI256(a.L, dest + 0);
 	FromUI256(a.H, dest + 8);
 }
+uint UI512_y(UI512_t a)
+{
+	return UI256_y(a.L);
+}
 
 UI512_t UI512_Inv(UI512_t a)
 {

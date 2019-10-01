@@ -32,6 +32,10 @@ void FromUI4096(UI4096_t a, uint dest[128])
 	FromUI2048(a.L, dest + 0);
 	FromUI2048(a.H, dest + 64);
 }
+uint UI4096_y(UI4096_t a)
+{
+	return UI2048_y(a.L);
+}
 
 UI4096_t UI4096_Inv(UI4096_t a)
 {

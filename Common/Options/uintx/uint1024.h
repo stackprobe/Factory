@@ -14,6 +14,7 @@ UI1024_t ToUI1024(uint src[32]);
 UI1024_t UI1024_x(uint x);
 UI1024_t UI1024_0(void);
 void FromUI1024(UI1024_t a, uint dest[32]);
+uint UI1024_y(UI1024_t a);
 
 UI1024_t UI1024_Inv(UI1024_t a);
 UI1024_t UI1024_Add(UI1024_t a, UI1024_t b, UI1024_t ans[2]);

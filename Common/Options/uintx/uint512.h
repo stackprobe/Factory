@@ -14,6 +14,7 @@ UI512_t ToUI512(uint src[16]);
 UI512_t UI512_x(uint x);
 UI512_t UI512_0(void);
 void FromUI512(UI512_t a, uint dest[16]);
+uint UI512_y(UI512_t a);
 
 UI512_t UI512_Inv(UI512_t a);
 UI512_t UI512_Add(UI512_t a, UI512_t b, UI512_t ans[2]);

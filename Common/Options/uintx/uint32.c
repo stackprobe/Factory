@@ -28,6 +28,10 @@ void FromUI32(UI32_t a, uint dest[1])
 {
 	dest[0] = a.Value;
 }
+uint UI32_y(UI32_t a)
+{
+	return a.Value;
+}
 
 UI32_t UI32_Inv(UI32_t a)
 {

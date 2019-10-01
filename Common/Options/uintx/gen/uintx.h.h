@@ -14,6 +14,7 @@ UI$BIT_t ToUI$BIT(uint src[$SZ]);
 UI$BIT_t UI$BIT_x(uint x);
 UI$BIT_t UI$BIT_0(void);
 void FromUI$BIT(UI$BIT_t a, uint dest[$SZ]);
+uint UI$BIT_y(UI$BIT_t a);
 
 UI$BIT_t UI$BIT_Inv(UI$BIT_t a);
 UI$BIT_t UI$BIT_Add(UI$BIT_t a, UI$BIT_t b, UI$BIT_t ans[2]);

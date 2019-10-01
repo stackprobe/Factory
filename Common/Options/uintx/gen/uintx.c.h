@@ -32,6 +32,10 @@ void FromUI$BIT(UI$BIT_t a, uint dest[$SZ])
 	FromUI$hBIT(a.L, dest + 0);
 	FromUI$hBIT(a.H, dest + $hSZ);
 }
+uint UI$BIT_y(UI$BIT_t a)
+{
+	return UI$hBIT_y(a.L);
+}
 
 UI$BIT_t UI$BIT_Inv(UI$BIT_t a)
 {

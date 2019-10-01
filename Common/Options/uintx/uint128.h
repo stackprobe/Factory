@@ -14,6 +14,7 @@ UI128_t ToUI128(uint src[4]);
 UI128_t UI128_x(uint x);
 UI128_t UI128_0(void);
 void FromUI128(UI128_t a, uint dest[4]);
+uint UI128_y(UI128_t a);
 
 UI128_t UI128_Inv(UI128_t a);
 UI128_t UI128_Add(UI128_t a, UI128_t b, UI128_t ans[2]);

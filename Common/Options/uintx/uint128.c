@@ -32,6 +32,10 @@ void FromUI128(UI128_t a, uint dest[4])
 	FromUI64(a.L, dest + 0);
 	FromUI64(a.H, dest + 2);
 }
+uint UI128_y(UI128_t a)
+{
+	return UI64_y(a.L);
+}
 
 UI128_t UI128_Inv(UI128_t a)
 {

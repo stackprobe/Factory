@@ -32,6 +32,10 @@ void FromUI1024(UI1024_t a, uint dest[32])
 	FromUI512(a.L, dest + 0);
 	FromUI512(a.H, dest + 16);
 }
+uint UI1024_y(UI1024_t a)
+{
+	return UI512_y(a.L);
+}
 
 UI1024_t UI1024_Inv(UI1024_t a)
 {
