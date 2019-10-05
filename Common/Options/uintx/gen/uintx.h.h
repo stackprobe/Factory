@@ -27,3 +27,6 @@ int UI$BIT_IsZero(UI$BIT_t a);
 int UI$BIT_IsFill(UI$BIT_t a);
 sint UI$BIT_Comp(UI$BIT_t a, UI$BIT_t b);
 UI$BIT_t UI$BIT_Fill(void);
+
+UI$BIT_t UI$BIT_DivTwo_Rem(UI$BIT_t a, uint *rem);
+UI$BIT_t UI$BIT_DivTwo(UI$BIT_t a);

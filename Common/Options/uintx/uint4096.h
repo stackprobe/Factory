@@ -27,3 +27,6 @@ int UI4096_IsZero(UI4096_t a);
 int UI4096_IsFill(UI4096_t a);
 sint UI4096_Comp(UI4096_t a, UI4096_t b);
 UI4096_t UI4096_Fill(void);
+
+UI4096_t UI4096_DivTwo_Rem(UI4096_t a, uint *rem);
+UI4096_t UI4096_DivTwo(UI4096_t a);

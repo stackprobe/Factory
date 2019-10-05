@@ -236,3 +236,19 @@ UI8192_t UI8192_Fill(void)
 
 	return ans;
 }
+
+UI8192_t UI8192_DivTwo_Rem(UI8192_t a, uint *rem)
+{
+	UI8192_t ans;
+
+	ans.H = UI4096_DivTwo_Rem(a.H, rem);
+	ans.L = UI4096_DivTwo_Rem(a.L, rem);
+
+	return ans;
+}
+UI8192_t UI8192_DivTwo(UI8192_t a)
+{
+	uint rem = 0;
+
+	return UI8192_DivTwo_Rem(a, &rem);
+}

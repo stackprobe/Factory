@@ -27,3 +27,6 @@ int UI8192_IsZero(UI8192_t a);
 int UI8192_IsFill(UI8192_t a);
 sint UI8192_Comp(UI8192_t a, UI8192_t b);
 UI8192_t UI8192_Fill(void);
+
+UI8192_t UI8192_DivTwo_Rem(UI8192_t a, uint *rem);
+UI8192_t UI8192_DivTwo(UI8192_t a);

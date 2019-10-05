@@ -236,3 +236,19 @@ UI512_t UI512_Fill(void)
 
 	return ans;
 }
+
+UI512_t UI512_DivTwo_Rem(UI512_t a, uint *rem)
+{
+	UI512_t ans;
+
+	ans.H = UI256_DivTwo_Rem(a.H, rem);
+	ans.L = UI256_DivTwo_Rem(a.L, rem);
+
+	return ans;
+}
+UI512_t UI512_DivTwo(UI512_t a)
+{
+	uint rem = 0;
+
+	return UI512_DivTwo_Rem(a, &rem);
+}

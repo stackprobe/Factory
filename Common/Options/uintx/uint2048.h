@@ -27,3 +27,6 @@ int UI2048_IsZero(UI2048_t a);
 int UI2048_IsFill(UI2048_t a);
 sint UI2048_Comp(UI2048_t a, UI2048_t b);
 UI2048_t UI2048_Fill(void);
+
+UI2048_t UI2048_DivTwo_Rem(UI2048_t a, uint *rem);
+UI2048_t UI2048_DivTwo(UI2048_t a);

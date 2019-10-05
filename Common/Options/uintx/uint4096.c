@@ -236,3 +236,19 @@ UI4096_t UI4096_Fill(void)
 
 	return ans;
 }
+
+UI4096_t UI4096_DivTwo_Rem(UI4096_t a, uint *rem)
+{
+	UI4096_t ans;
+
+	ans.H = UI2048_DivTwo_Rem(a.H, rem);
+	ans.L = UI2048_DivTwo_Rem(a.L, rem);
+
+	return ans;
+}
+UI4096_t UI4096_DivTwo(UI4096_t a)
+{
+	uint rem = 0;
+
+	return UI4096_DivTwo_Rem(a, &rem);
+}

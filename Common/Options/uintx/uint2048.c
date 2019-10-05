@@ -236,3 +236,19 @@ UI2048_t UI2048_Fill(void)
 
 	return ans;
 }
+
+UI2048_t UI2048_DivTwo_Rem(UI2048_t a, uint *rem)
+{
+	UI2048_t ans;
+
+	ans.H = UI1024_DivTwo_Rem(a.H, rem);
+	ans.L = UI1024_DivTwo_Rem(a.L, rem);
+
+	return ans;
+}
+UI2048_t UI2048_DivTwo(UI2048_t a)
+{
+	uint rem = 0;
+
+	return UI2048_DivTwo_Rem(a, &rem);
+}

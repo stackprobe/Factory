@@ -27,3 +27,6 @@ int UI1024_IsZero(UI1024_t a);
 int UI1024_IsFill(UI1024_t a);
 sint UI1024_Comp(UI1024_t a, UI1024_t b);
 UI1024_t UI1024_Fill(void);
+
+UI1024_t UI1024_DivTwo_Rem(UI1024_t a, uint *rem);
+UI1024_t UI1024_DivTwo(UI1024_t a);

@@ -123,3 +123,20 @@ UI32_t UI32_Fill(void)
 
 	return ans;
 }
+
+UI32_t UI32_DivTwo_Rem(UI32_t a, uint *rem)
+{
+	uint b = a.Value & 1;
+
+	a.Value >>= 1;
+	a.Value |= *rem << 31;
+
+	*rem = b;
+
+	return a;
+}
+UI32_t UI32_DivTwo(UI32_t a)
+{
+	a.Value >>= 1;
+	return a;
+}

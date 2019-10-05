@@ -236,3 +236,19 @@ UI128_t UI128_Fill(void)
 
 	return ans;
 }
+
+UI128_t UI128_DivTwo_Rem(UI128_t a, uint *rem)
+{
+	UI128_t ans;
+
+	ans.H = UI64_DivTwo_Rem(a.H, rem);
+	ans.L = UI64_DivTwo_Rem(a.L, rem);
+
+	return ans;
+}
+UI128_t UI128_DivTwo(UI128_t a)
+{
+	uint rem = 0;
+
+	return UI128_DivTwo_Rem(a, &rem);
+}

@@ -27,3 +27,6 @@ int UI128_IsZero(UI128_t a);
 int UI128_IsFill(UI128_t a);
 sint UI128_Comp(UI128_t a, UI128_t b);
 UI128_t UI128_Fill(void);
+
+UI128_t UI128_DivTwo_Rem(UI128_t a, uint *rem);
+UI128_t UI128_DivTwo(UI128_t a);

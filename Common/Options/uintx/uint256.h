@@ -27,3 +27,6 @@ int UI256_IsZero(UI256_t a);
 int UI256_IsFill(UI256_t a);
 sint UI256_Comp(UI256_t a, UI256_t b);
 UI256_t UI256_Fill(void);
+
+UI256_t UI256_DivTwo_Rem(UI256_t a, uint *rem);
+UI256_t UI256_DivTwo(UI256_t a);

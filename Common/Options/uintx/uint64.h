@@ -27,3 +27,6 @@ int UI64_IsZero(UI64_t a);
 int UI64_IsFill(UI64_t a);
 sint UI64_Comp(UI64_t a, UI64_t b);
 UI64_t UI64_Fill(void);
+
+UI64_t UI64_DivTwo_Rem(UI64_t a, uint *rem);
+UI64_t UI64_DivTwo(UI64_t a);

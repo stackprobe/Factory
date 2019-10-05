@@ -27,3 +27,6 @@ int UI512_IsZero(UI512_t a);
 int UI512_IsFill(UI512_t a);
 sint UI512_Comp(UI512_t a, UI512_t b);
 UI512_t UI512_Fill(void);
+
+UI512_t UI512_DivTwo_Rem(UI512_t a, uint *rem);
+UI512_t UI512_DivTwo(UI512_t a);

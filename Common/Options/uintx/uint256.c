@@ -236,3 +236,19 @@ UI256_t UI256_Fill(void)
 
 	return ans;
 }
+
+UI256_t UI256_DivTwo_Rem(UI256_t a, uint *rem)
+{
+	UI256_t ans;
+
+	ans.H = UI128_DivTwo_Rem(a.H, rem);
+	ans.L = UI128_DivTwo_Rem(a.L, rem);
+
+	return ans;
+}
+UI256_t UI256_DivTwo(UI256_t a)
+{
+	uint rem = 0;
+
+	return UI256_DivTwo_Rem(a, &rem);
+}

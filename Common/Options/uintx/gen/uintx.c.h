@@ -236,3 +236,19 @@ UI$BIT_t UI$BIT_Fill(void)
 
 	return ans;
 }
+
+UI$BIT_t UI$BIT_DivTwo_Rem(UI$BIT_t a, uint *rem)
+{
+	UI$BIT_t ans;
+
+	ans.H = UI$hBIT_DivTwo_Rem(a.H, rem);
+	ans.L = UI$hBIT_DivTwo_Rem(a.L, rem);
+
+	return ans;
+}
+UI$BIT_t UI$BIT_DivTwo(UI$BIT_t a)
+{
+	uint rem = 0;
+
+	return UI$BIT_DivTwo_Rem(a, &rem);
+}

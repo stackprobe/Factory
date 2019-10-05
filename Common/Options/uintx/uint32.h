@@ -25,3 +25,6 @@ int UI32_IsZero(UI32_t a);
 int UI32_IsFill(UI32_t a);
 sint UI32_Comp(UI32_t a, UI32_t b);
 UI32_t UI32_Fill(void);
+
+UI32_t UI32_DivTwo_Rem(UI32_t a, uint *rem);
+UI32_t UI32_DivTwo(UI32_t a);

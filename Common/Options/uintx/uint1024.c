@@ -236,3 +236,19 @@ UI1024_t UI1024_Fill(void)
 
 	return ans;
 }
+
+UI1024_t UI1024_DivTwo_Rem(UI1024_t a, uint *rem)
+{
+	UI1024_t ans;
+
+	ans.H = UI512_DivTwo_Rem(a.H, rem);
+	ans.L = UI512_DivTwo_Rem(a.L, rem);
+
+	return ans;
+}
+UI1024_t UI1024_DivTwo(UI1024_t a)
+{
+	uint rem = 0;
+
+	return UI1024_DivTwo_Rem(a, &rem);
+}
