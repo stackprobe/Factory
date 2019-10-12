@@ -1,8 +1,12 @@
 /*
-	newcpp g プロジェクト名
+	newcpp g  プロジェクト名
+	newcpp g2 プロジェクト名
 */
 
 #include "C:\Factory\Common\all.h"
+#include "C:\Factory\Common\Options\CRandom.h"
+
+#define LOCAL_PROGRAM_CS "Program.cs"
 
 static void RenamePaths(char *fromPtn, char *toPtn)
 {
@@ -35,6 +39,28 @@ static void RenamePaths(char *fromPtn, char *toPtn)
 	}
 	releaseDim(paths, 1);
 }
+static void ChangeAppIdent(char *srcFile)
+{
+	char *src = readText(srcFile);
+	char *p;
+	char *q;
+	char *uuid;
+
+	p = strstrNext(src, "public const string APP_IDENT = \"");
+	errorCase(!p);
+	q = strstr(p, "\";");
+	errorCase(!q);
+	errorCase((uint)q - (uint)p != 38); // {} 付き UUID の長さ
+
+	uuid = MakeUUID(1);
+
+	memcpy(p, uuid, 38);
+
+	writeOneLineNoRet(srcFile, src);
+
+	memFree(src);
+	memFree(uuid);
+}
 static void Main2(char *tmplProject, char *tmplDir)
 {
 	char *project = nextArg();
@@ -52,6 +78,17 @@ static void Main2(char *tmplProject, char *tmplDir)
 		coExecute("qq -f");
 
 		RenamePaths(tmplProject, project);
+
+		addCwd(project);
+		{
+			addCwd(project);
+			{
+				if(existFile(LOCAL_PROGRAM_CS))
+					ChangeAppIdent(LOCAL_PROGRAM_CS);
+			}
+			unaddCwd();
+		}
+		unaddCwd();
 
 		removeFileIfExist("C:\\Factory\\tmp\\Sections.txt"); // 意図しない検索結果を trep しないように、念のため検索結果をクリア
 

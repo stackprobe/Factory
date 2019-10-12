@@ -19,7 +19,7 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\CRandom.h"
 
-#define TESTER_PROJ_LDIR "Test01"
+#define TESTER_PROJ_LOCALDIR "Test01"
 
 static uint UTIntoParentStep;
 
@@ -163,7 +163,7 @@ static void Main2(char *tmplProject, char *tmplDir, int utFlag, int m2Flag)
 
 		RenamePaths(tmplProject, project);
 
-		addCwd(existDir(TESTER_PROJ_LDIR) ? TESTER_PROJ_LDIR : project);
+		addCwd(existDir(TESTER_PROJ_LOCALDIR) ? TESTER_PROJ_LOCALDIR : project);
 		{
 			ChangeAppIdent("Program.cs");
 
