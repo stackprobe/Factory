@@ -11,7 +11,7 @@ Cで書いたツールとライブラリの寄せ集めです。
 開発環境
 --------
 
-Windows 10 Pro | Windows 7 Professional
+Windows 10 (Pro | Home)
 Visual C++ 2010 Express
 
 システムドライブ = C
