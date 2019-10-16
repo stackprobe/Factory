@@ -2,6 +2,10 @@
 	run.exe [/D] [/-R] PROGRAM-NAME
 
 		/D ... プログラムの場所へ移動して実行する。
+
+	- - -
+
+	デフォルトでは実行するプログラムと同じディレクトリへ移動しないので注意！
 */
 
 #include "C:\Factory\Common\all.h"
