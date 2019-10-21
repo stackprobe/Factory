@@ -35,6 +35,8 @@ int isEmptyJTkn(char *token);
 #define m_toupper(c) (m_islower((c)) ? m_nctoupper(c) : (c))
 #define m_tolower(c) (m_isupper((c)) ? m_nctolower(c) : (c))
 
+#define m_chricmp(c, d) ((sint)m_tolower((c)) - (sint)m_tolower((d)))
+
 #define m_isspace(c) ((c) <= ' ')
 #define m_ispunct(c) ( \
 	'!' <= (c) && (c) <= '/' || \
@@ -47,6 +49,8 @@ int isEmptyJTkn(char *token);
 
 int c2upper(int c);
 int c2lower(int c);
+
+sint chricmp(int c, int d);
 
 char *strxm(char *line, uint buffsize);
 char *strrm(char *line, uint buffsize);

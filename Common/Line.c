@@ -26,6 +26,11 @@ int c2lower(int c)
 	return m_tolower(c);
 }
 
+sint chricmp(int c, int d)
+{
+	return m_chricmp(c, d);
+}
+
 char *strxm(char *line, uint buffsize)
 {
 	return (char *)memCloneWithBuff(line, strlen(line) + 1, buffsize);
