@@ -2,6 +2,8 @@
 
 // ---- process properties ----
 
+// ただの全てのソースから見える変数、ReadSysArgs() で設定可能な値とは限らない。
+
 int sockServerMode;
 int noErrorDlgMode;
 uint sockConnectTimeoutSec = 20;
