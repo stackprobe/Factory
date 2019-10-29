@@ -50,7 +50,7 @@ static void Perform_o(SockStream_t *ss)
 }
 static void Perform_C(SockStream_t *ss)
 {
-	coExecute("C:\\Factory\\SubTools\\nrun.exe /S localhost /P 60123 /R 3 SecurityEye\\start");
+	coExecute("C:\\Factory\\SubTools\\nrun.exe /S localhost /P 60123 /R 3 KCamera\\start");
 }
 static int Perform(int sock, void *dummyPrm)
 {
