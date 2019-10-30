@@ -1,8 +1,10 @@
-/*
-	if n < 18,446,744,073,709,551,616 = 2^64, it is enough to test a = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, and 37. @ Wikipedia
-*/
+#include "Prime3_v1.h"
 
-#include "Prime3.h"
+/*
+	Keisan 1 / 4 p 50 !/ 1 L 2  ===>  100
+	               ^^                 ^^^
+*/
+#define DEFAULT_K 50
 
 static uint64 ModMul(uint64 a, uint64 b, uint64 modulo)
 {
@@ -64,12 +66,14 @@ static uint64 ModPow(uint64 value, uint64 exponent, uint64 modulo)
 */
 int IsPrime_M(uint64 value)
 {
-	static uint64 a[] = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37 };
+	return IsPrime_M_K(value, DEFAULT_K);
+}
+int IsPrime_M_K(uint64 value, uint k)
+{
 	uint64 d;
 	uint64 x;
 	uint r;
 	uint c;
-	uint t;
 
 	if(value <= 1)
 		return 0;
@@ -77,14 +81,6 @@ int IsPrime_M(uint64 value)
 	if(value <= 3)
 		return 1;
 
-	if(value <= 37)
-	{
-		for(t = 0; t < lengthof(a); t++)
-			if(a[t] == value)
-				return 1;
-
-		return 0;
-	}
 	if(value % 2 == 0)
 		return 0;
 
@@ -93,9 +89,9 @@ int IsPrime_M(uint64 value)
 
 	for(r = 0; (d /= 2) % 2 == 0; r++);
 
-	for(t = 0; t < lengthof(a); t++)
+	for(; k; k--)
 	{
-		x = ModPow(a[t], d, value);
+		x = ModPow(getCryptoRand64Range(2, value - 2), d, value);
 
 		if(x != 1 && x != value - 1)
 		{
