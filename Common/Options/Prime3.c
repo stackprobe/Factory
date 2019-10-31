@@ -71,12 +71,6 @@ int IsPrime_M(uint64 value)
 	uint c;
 	uint t;
 
-	if(value <= 1)
-		return 0;
-
-	if(value <= 3)
-		return 1;
-
 	if(value <= 37)
 	{
 		for(t = 0; t < lengthof(a); t++)
