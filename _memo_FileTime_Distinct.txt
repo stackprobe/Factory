@@ -3,3 +3,9 @@
 タイムスタンプのソート順がファイル名のソート順になるようにタイムスタンプを変更する。
 
 	---> SubTools\OrderStamp.c
+
+----
+
+Distinct
+
+	---> DevTools\TypeGroupBy /-c
