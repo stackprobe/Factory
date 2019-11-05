@@ -15,61 +15,72 @@ autoList_t *GetReferenceSolutions(char *source)
 
 	if(!_stricmp(getExt(source), "sln"))
 	{
-		char *projName = changeExt(getLocal(source), "");
-		char *projFile;
+		char *projRootDir = changeExt(source, "");
+		autoList_t *projDirs;
+		char *projDir;
+		uint projDir_index;
 
-		projFile = changeLocal(source, "");
-		projFile = addLocal(projFile, projName);
-		projFile = addLocal(projFile, projName);
-		projFile = addExt(projFile, "csproj");
+		projDirs = lsDirs(projRootDir);
 
-		if(existFile(projFile))
+		foreach(projDirs, projDir, projDir_index)
 		{
-			autoList_t *lines = readLines(projFile);
-			char *line;
-			uint index;
-			char *projFileDir = changeLocal(projFile, "");
+			char *projName = changeExt(getLocal(projDir), "");
+			char *projFile;
 
-			ucTrimEdgeAllLine(lines);
+			projFile = strx(projDir);
+			projFile = addLocal(projFile, projName);
+			projFile = addExt(projFile, "csproj");
 
-			foreach(lines, line, index)
+			if(existFile(projFile))
 			{
-				if(lineExpICase("/<HintPath><1,,>\\<1,,>\\bin\\Release\\<1,,>.dll/<//HintPath>", line))
-				//                                 ~~~~~                ~~~~~
-				//                                   ^                    ^
-				//                                   |                    |
-				//                                   +--------------------+---- プロジェクト名 (ソリューション名)
+				autoList_t *lines = readLines(projFile);
+				char *line;
+				uint index;
+				char *projFileDir = changeLocal(projFile, "");
+
+				ucTrimEdgeAllLine(lines);
+
+				foreach(lines, line, index)
 				{
-					char *solution = line + 10;
-					char *p;
-
-					p = mbs_stristr(solution, "\\bin\\Release\\"); // fixme: 最後のパターンを探すべき。
-					errorCase(!p); // 2bs
-					strcpy(p, ".sln");
-
-					addCwd(projFileDir);
+					if(lineExpICase("/<HintPath><1,,>\\<1,,>\\bin\\Release\\<1,,>.dll/<//HintPath>", line))
+					//                                 ~~~~~                ~~~~~
+					//                                   ^                    ^
+					//                                   |                    |
+					//                                   +--------------------+---- プロジェクト名 (ソリューション名)
 					{
-						solution = makeFullPath(solution); // ここで solution 複製
-					}
-					unaddCwd();
+						char *solution = line + 10;
+						char *p;
 
-					if(existFile(solution))
-					{
-						cout("> %s\n", solution);
-						addElement(solutions, (uint)strx(solution));
+						p = mbs_stristr(solution, "\\bin\\Release\\"); // fixme: 最後のパターンを探すべき。
+						errorCase(!p); // 2bs
+						strcpy(p, ".sln");
+
+						addCwd(projFileDir);
+						{
+							solution = makeFullPath(solution); // ここで solution 複製
+						}
+						unaddCwd();
+
+						if(existFile(solution))
+						{
+							cout("> %s\n", solution);
+							addElement(solutions, (uint)strx(solution));
+						}
+						memFree(solution);
 					}
-					memFree(solution);
 				}
+				releaseDim(lines, 1);
+				memFree(projFileDir);
 			}
-			releaseDim(lines, 1);
-			memFree(projFileDir);
+			memFree(projName);
+			memFree(projFile);
 		}
-		memFree(projName);
-		memFree(projFile);
+		memFree(projRootDir);
+		releaseDim(projDirs, 1);
 	}
 	return solutions;
 }
-static uint FindLastReference(autoList_t *infos, SourceInfo_t *info, uint index)
+static uint FindLastReference(autoList_t *infos, SourceInfo_t *targInfo, uint index)
 {
 	uint lastRefIndex = 0;
 
@@ -80,7 +91,7 @@ static uint FindLastReference(autoList_t *infos, SourceInfo_t *info, uint index)
 
 		for(i = 0; i < getCount(info->RefSolutions); i++)
 		{
-			if(!_stricmp(info->Source, getLine(info->RefSolutions, i)))
+			if(!_stricmp(targInfo->Source, getLine(info->RefSolutions, i)))
 			{
 				LOGPOS();
 				lastRefIndex = index;
@@ -90,7 +101,7 @@ static uint FindLastReference(autoList_t *infos, SourceInfo_t *info, uint index)
 	}
 	return lastRefIndex;
 }
-void SolutionOrder(autoList_t *sources) // sources: 全てフルパスを想定する。
+void SolutionOrder(autoList_t *sources) // sources: 全てフルパスであることを想定する。
 {
 	autoList_t *infos = newList();
 	char *source;

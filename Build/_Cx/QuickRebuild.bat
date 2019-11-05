@@ -1,2 +1,2 @@
-..\Cx.exe _Cx.c
+..\Cx.exe *
 COPY _Cx.exe ..\Cx.exe
