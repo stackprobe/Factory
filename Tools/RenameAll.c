@@ -165,6 +165,7 @@ static void RenameEx(void)
 		cout("* %s\n", getLine(tmpPaths, index));
 		moveFile(path, getLine(tmpPaths, index));
 	}
+
 	// ŽŽ‚µˆÚ“®
 	{
 		PubFiles1 = tmpPaths;
@@ -182,6 +183,7 @@ static void RenameEx(void)
 		PubFiles1 = NULL;
 		PubFiles2 = NULL;
 	}
+
 	foreach(tmpPaths, path, index)
 	{
 		cout("* %s\n", path);
