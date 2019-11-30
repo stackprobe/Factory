@@ -3,6 +3,7 @@
 
 	OrderStamp.exe [/R] [/-I] [対象ディレクトリ]
 
+		/R  ... Reverse
 		/-I ... case sensitive
 */
 
