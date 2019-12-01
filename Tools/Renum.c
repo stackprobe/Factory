@@ -1,9 +1,10 @@
 /*
-	Renum.exe [/N] [/K 桁数] 開始番号 ステップ [対象DIR]
+	Renum.exe [/R] [/N] [/K 桁数] 開始番号 ステップ [対象DIR]
 */
 
 #include "C:\Factory\Common\all.h"
 
+static int ReverseMode;
 static int ToNumOnly;
 static uint Ketasuu = 4;
 
@@ -53,6 +54,9 @@ static void DoFRenum(void)
 	eraseParents(files);
 	sortJLinesICase(files);
 
+	if(ReverseMode)
+		reverseElements(files);
+
 	foreach(files, file, index)
 	{
 		char *dest;
@@ -90,7 +94,7 @@ static void DoFRenum(void)
 
 	LOGPOS();
 
-	for(index = 0; index < getCount(files); index++) // 移動テスト①
+	for(index = 0; index < getCount(files); index++) // 移動テスト(1)
 	{
 		char *rFile = getLine(files, index);
 		char *wFile = getLine(midFiles, index);
@@ -119,7 +123,7 @@ static void DoFRenum(void)
 
 	LOGPOS();
 
-	// 移動テスト②
+	// 移動テスト(2)
 	{
 		int errorFlag = 0;
 
@@ -171,6 +175,11 @@ static void DoFRenum(void)
 int main(int argc, char **argv)
 {
 readArgs:
+	if(argIs("/R"))
+	{
+		ReverseMode = 1;
+		goto readArgs;
+	}
 	if(argIs("/N"))
 	{
 		ToNumOnly = 1;

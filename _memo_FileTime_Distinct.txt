@@ -2,10 +2,21 @@
 
 タイムスタンプのソート順がファイル名のソート順になるようにタイムスタンプを変更する。
 
-	---> SubTools\OrderStamp.c
+	SubTools\OrderStamp.c
 
 ----
 
 Distinct
 
-	---> DevTools\TypeGroupBy /-c
+	DevTools\TypeGroupBy /-c
+
+----
+
+ファイル名のソート順が逆になるようにファイル名を変更する。
+
+	Renum /R
+
+	又は
+
+	SubTools\OrderStamp /R　してから　SubTools\RenumStamp
+
