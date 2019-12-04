@@ -15,7 +15,7 @@ autoList_t *GetReferenceSolutions(char *source)
 
 	if(!_stricmp(getExt(source), "sln"))
 	{
-		char *projRootDir = changeExt(source, "");
+		char *projRootDir = changeLocal(source, "");
 		autoList_t *projDirs;
 		char *projDir;
 		uint projDir_index;
@@ -89,9 +89,9 @@ static uint FindLastReference(autoList_t *infos, SourceInfo_t *targInfo, uint in
 		SourceInfo_t *info = (SourceInfo_t *)getElement(infos, index);
 		uint i;
 
-		for(i = 0; i < getCount(info->RefSolutions); i++)
+		for(i = 0; i < getCount(targInfo->RefSolutions); i++)
 		{
-			if(!_stricmp(targInfo->Source, getLine(info->RefSolutions, i)))
+			if(!_stricmp(info->Source, getLine(targInfo->RefSolutions, i)))
 			{
 				LOGPOS();
 				lastRefIndex = index;
@@ -125,12 +125,12 @@ void SolutionOrder(autoList_t *sources) // sources: 全てフルパスであることを想定
 		SourceInfo_t *info = (SourceInfo_t *)getElement(infos, index - 1);
 		uint lastRefIndex;
 
-		lastRefIndex = FindLastReference(infos, info, index + 1);
+		lastRefIndex = FindLastReference(infos, info, index);
 
 		if(lastRefIndex)
 		{
 			LOGPOS();
-			insertElement(infos, lastRefIndex, desertElement(infos, index));
+			insertElement(infos, lastRefIndex, desertElement(infos, index - 1));
 		}
 	}
 	LOGPOS();
