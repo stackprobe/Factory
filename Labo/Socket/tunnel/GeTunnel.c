@@ -93,16 +93,16 @@ enum
 {
 	EMBED_MIN_PREV,
 
-	EMBED_PATH_BODY,
+	EMBED_QUERY_BODY,
 	EMBED_COOKIE,
 	EMBED_XFIELD,
-	EMBED_QUERY,
+	EMBED_PATH,
 
 	EMBED_MAX_NEXT,
 };
 
 static int ServerMode;
-static int EmbedMode = EMBED_PATH_BODY;
+static int EmbedMode = EMBED_QUERY_BODY;
 static uint BuffFull = 65000;
 
 // ---- Info ----
@@ -439,7 +439,7 @@ static void HTTPEncode(autoBlock_t *buff)
 	{
 		ab_addLine(wBuff, "HTTP/1.1 200 OK\r\n");
 
-		if(*CurrInfo->P_EmbedMode == EMBED_PATH_BODY || *CurrInfo->P_EmbedMode == EMBED_QUERY)
+		if(*CurrInfo->P_EmbedMode == EMBED_QUERY_BODY || *CurrInfo->P_EmbedMode == EMBED_PATH)
 		{
 			resText = HE_ToBody_x(resText);
 
@@ -475,17 +475,17 @@ static void HTTPEncode(autoBlock_t *buff)
 		if(ProxyEnabled)
 			urlBeforePath = xcout("http://%s", c_GetHostFieldValue());
 
-		if(*CurrInfo->P_EmbedMode == EMBED_PATH_BODY || *CurrInfo->P_EmbedMode == EMBED_QUERY)
+		if(*CurrInfo->P_EmbedMode == EMBED_QUERY_BODY || *CurrInfo->P_EmbedMode == EMBED_PATH)
 		{
 			char *urlLnFmt;
 
-			if(*CurrInfo->P_EmbedMode == EMBED_PATH_BODY)
-			{
-				urlLnFmt = "GET %s/_blueSteel/%s.html HTTP/1.1\r\n";
-			}
-			else // ? Query
+			if(*CurrInfo->P_EmbedMode == EMBED_QUERY_BODY)
 			{
 				urlLnFmt = "GET %s/index.html?blueSteel=%s HTTP/1.1\r\n";
+			}
+			else // ? Path
+			{
+				urlLnFmt = "GET %s/_blueSteel/%s.html HTTP/1.1\r\n";
 			}
 			ab_addLine_x(wBuff, xcout(urlLnFmt, urlBeforePath, resText));
 			ab_addLine_x(wBuff, xcout("Host: %s\r\n", c_GetHostFieldValue()));
