@@ -276,9 +276,9 @@ static int HTTPDecode(autoBlock_t *rBuff, autoBlock_t *wBuff)
 
 		DecodeUrl(url);
 
-		// 本当にアクセスしたいパスと被ったときのために Path は case sensitive とする。/_BlueSteel/ とか .Html とかでアクセスしてね。
+		// 本当にアクセスしたいパスと被ったときのために Path は case sensitive とする。/BlueSteel/ とか .Html とかでアクセスしてね。
 
-		if(updateTagRng(url, "/_blueSteel/", ".html", 0)) // from Path
+		if(updateTagRng(url, "/blueSteel/", ".html", 0)) // from Path
 		{
 			HD_Decode(url, &lastTagRng, wBuff);
 			memFree(url);
@@ -485,7 +485,7 @@ static void HTTPEncode(autoBlock_t *buff)
 			}
 			else // ? Path
 			{
-				urlLnFmt = "GET %s/_blueSteel/%s.html HTTP/1.1\r\n";
+				urlLnFmt = "GET %s/blueSteel/%s.html HTTP/1.1\r\n";
 			}
 			ab_addLine_x(wBuff, xcout(urlLnFmt, urlBeforePath, resText));
 			ab_addLine_x(wBuff, xcout("Host: %s\r\n", c_GetHostFieldValue()));
