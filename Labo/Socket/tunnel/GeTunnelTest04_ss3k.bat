@@ -1,5 +1,5 @@
 start tunnel 80 localhost 81
-start boomClient 81 localhost 60000
+start boomClient 81 localhost 60000 /ss 3000
 start tunnel 60000 localhost 60001
 start GeTunnel 60001 localhost 60002 /e 4
 start tunnel 60002 localhost 60003

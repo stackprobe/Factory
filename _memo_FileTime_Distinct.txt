@@ -20,3 +20,8 @@ Distinct
 
 	SubTools\OrderStamp /R　してから　SubTools\RenumStamp
 
+----
+
+Encluded
+
+	updateTagRng

@@ -58,17 +58,18 @@ static char *c_GetHostFieldValue(void)
 
 enum
 {
-	EMBED_OOR_L,
+	EMBED_MIN_PREV,
 
-	EMBED_QUERY_BODY,
+	EMBED_PATH_BODY,
 	EMBED_COOKIE,
 	EMBED_XFIELD,
+	EMBED_QUERY,
 
-	EMBED_OOR_H,
+	EMBED_MAX_NEXT,
 };
 
 static int ServerMode;
-static int EmbedMode = EMBED_QUERY_BODY;
+static int EmbedMode = EMBED_PATH_BODY;
 static uint BuffFull = 65000;
 
 // ---- Info ----
@@ -114,7 +115,17 @@ static void HD_Trim(char *str)
 
 	while(*rp)
 	{
-		if(m_isBase64Char(*rp))
+		if(*rp == '-')
+		{
+			*wp = '+';
+			wp++;
+		}
+		else if(*rp == '_')
+		{
+			*wp = '/';
+			wp++;
+		}
+		else if(m_isBase64Char(*rp))
 		{
 			*wp = *rp;
 			wp++;
@@ -226,17 +237,37 @@ static int HTTPDecode(autoBlock_t *rBuff, autoBlock_t *wBuff)
 		}
 	}
 
-	// from Query
+	// from Path | Query
 	{
 		autoList_t *tokens = ucTokenize(HttpDat.H_Request);
 		char *url;
 
+#if 1
+		if(2 <= getCount(tokens))
+		{
+			url = (char *)getElement(tokens, 1);
+			setElement(tokens, 1, 0);
+		}
+		else
+			url = strx("");
+#else // old
 		url = strx(refLine(tokens, 1));
+#endif
 		releaseDim(tokens, 1);
 		DecodeUrl(url);
+
+		// 本当にアクセスしたいパスと被ったときのために Path は case sensitive とする。/_BlueSteel/ とか .Html とかでアクセスしてね。
+
+		if(updateTagRng(url, "/_blueSteel/", ".html", 0)) // from Path
+		{
+			HD_Decode(url, &lastTagRng, wBuff);
+			memFree(url);
+			LOGPOS();
+			return 1;
+		}
 		url = addChar(url, '&');
 
-		if(updateTagRng(url, "blueSteel=", "&", 1))
+		if(updateTagRng(url, "blueSteel=", "&", 1)) // from Query
 		{
 			HD_Decode(url, &lastTagRng, wBuff);
 			memFree(url);
@@ -257,6 +288,29 @@ static int HTTPDecode(autoBlock_t *rBuff, autoBlock_t *wBuff)
 static char *HE_Encode(autoBlock_t *buff)
 {
 	buff = encodeBase64(buff);
+
+	{
+		uint size = getSize(buff);
+		uint index;
+
+		for(index = 0; index < size; index++)
+		{
+			if(b_(buff)[index] == '+')
+			{
+				b_(buff)[index] = '-';
+			}
+			else if(b_(buff)[index] == '/')
+			{
+				b_(buff)[index] = '_';
+			}
+			else if(b_(buff)[index] == '=')
+			{
+				b_(buff)[index] = '\0'; // パディング ('=') が無くても decodeBase64 出来る。
+				return unbindBlock(buff);
+			}
+		}
+	}
+
 	return unbindBlock2Line(buff);
 }
 static char *HE_DivText_xc(char *text, char *indent)
@@ -365,7 +419,7 @@ static void HTTPEncode(autoBlock_t *buff)
 	{
 		ab_addLine(wBuff, "HTTP/1.1 200 OK\r\n");
 
-		if(*CurrInfo->P_EmbedMode == EMBED_QUERY_BODY)
+		if(*CurrInfo->P_EmbedMode == EMBED_PATH_BODY || *CurrInfo->P_EmbedMode == EMBED_QUERY)
 		{
 			resText = HE_ToBody_x(resText);
 
@@ -401,9 +455,19 @@ static void HTTPEncode(autoBlock_t *buff)
 		if(ProxyEnabled)
 			urlBeforePath = xcout("http://%s", c_GetHostFieldValue());
 
-		if(*CurrInfo->P_EmbedMode == EMBED_QUERY_BODY)
+		if(*CurrInfo->P_EmbedMode == EMBED_PATH_BODY || *CurrInfo->P_EmbedMode == EMBED_QUERY)
 		{
-			ab_addLine_x(wBuff, xcout("GET %s/index.html?blueSteel=%s HTTP/1.1\r\n", urlBeforePath, resText));
+			char *urlLnFmt;
+
+			if(*CurrInfo->P_EmbedMode == EMBED_PATH_BODY)
+			{
+				urlLnFmt = "GET %s/_blueSteel/%s.html HTTP/1.1\r\n";
+			}
+			else // ? Query
+			{
+				urlLnFmt = "GET %s/index.html?blueSteel=%s HTTP/1.1\r\n";
+			}
+			ab_addLine_x(wBuff, xcout(urlLnFmt, urlBeforePath, resText));
 			ab_addLine_x(wBuff, xcout("Host: %s\r\n", c_GetHostFieldValue()));
 			AddExtraHeaderLines(wBuff);
 			ab_addLine(wBuff, "\r\n");
@@ -738,7 +802,7 @@ static int ReadArgs(void)
 	errorCase(m_isEmpty(H_FwdHost) || HOST_LENMAX < strlen(H_FwdHost));
 	errorCase(!m_isRange(H_FwdPortNo, 1, 0xffff));
 	// ServerMode
-	errorCase(!m_isRange(EmbedMode, EMBED_OOR_L + 1, EMBED_OOR_H - 1));
+	errorCase(!m_isRange(EmbedMode, EMBED_MIN_PREV + 1, EMBED_MAX_NEXT - 1));
 	errorCase(!m_isRange(BuffFull, 1, IMAX));
 
 	return 0;
