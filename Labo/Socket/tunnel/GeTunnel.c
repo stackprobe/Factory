@@ -42,6 +42,20 @@ static uint H_FwdPortNo;
 static autoList_t *ExtraHeaderLines;
 static int ProxyEnabled;
 
+static char *PullOutXLine(autoList_t *xLines, uint index, char *dummyLine)
+{
+	char *pulledOutLine;
+
+	if(index < getCount(xLines))
+	{
+		pulledOutLine = (char *)getElement(xLines, index);
+		setElement(xLines, index, (uint)NULL);
+	}
+	else
+		pulledOutLine = strx(dummyLine);
+
+	return pulledOutLine;
+}
 static char *c_GetHostFieldValue(void)
 {
 	static char *value;
@@ -239,21 +253,14 @@ static int HTTPDecode(autoBlock_t *rBuff, autoBlock_t *wBuff)
 
 	// from Path | Query
 	{
-		autoList_t *tokens = ucTokenize(HttpDat.H_Request);
 		char *url;
 
-#if 1
-		if(2 <= getCount(tokens))
 		{
-			url = (char *)getElement(tokens, 1);
-			setElement(tokens, 1, 0);
+			autoList_t *hRqTkns = tokenize(HttpDat.H_Request, ' ');
+			url = PullOutXLine(hRqTkns, 1, "");
+			releaseDim(hRqTkns, 1);
 		}
-		else
-			url = strx("");
-#else // old
-		url = strx(refLine(tokens, 1));
-#endif
-		releaseDim(tokens, 1);
+
 		DecodeUrl(url);
 
 		// 本当にアクセスしたいパスと被ったときのために Path は case sensitive とする。/_BlueSteel/ とか .Html とかでアクセスしてね。
@@ -612,9 +619,9 @@ static void DataFltr(autoBlock_t *buff, uint prm)
 					*strchrEnd(domain, ':') = '\0';
 
 					{
-						autoList_t *tmp = tokenize(HttpDat.H_Request, ' ');
-						path = strx(refLine(tmp, 1));
-						releaseDim(tmp, 1);
+						autoList_t *hRqTkns = tokenize(HttpDat.H_Request, ' ');
+						path = PullOutXLine(hRqTkns, 1, "");
+						releaseDim(hRqTkns, 1);
 					}
 
 					if(startsWithICase(path, "http://"))
