@@ -42,19 +42,38 @@ static uint H_FwdPortNo;
 static autoList_t *ExtraHeaderLines;
 static int ProxyEnabled;
 
-static char *PullOutXLine(autoList_t *xLines, uint index, char *dummyLine)
+static char *GetUrlByReqFirstLine(char *reqFirstLine)
 {
-	char *pulledOutLine;
+#if 1
+	char *p = strchr(reqFirstLine, ' ');
+	char *q;
+	char *url;
 
-	if(index < getCount(xLines))
-	{
-		pulledOutLine = (char *)getElement(xLines, index);
-		setElement(xLines, index, (uint)NULL);
-	}
-	else
-		pulledOutLine = strx(dummyLine);
+	if(!p)
+		goto noUrl;
 
-	return pulledOutLine;
+	p++;
+	q = strchr(p, ' ');
+
+	if(!q)
+		goto noUrl;
+
+	url = strxl(p, (uint)q - (uint)p);
+	goto endFunc;
+
+noUrl:
+	url = strx("");
+
+endFunc:
+	return url;
+#else // old
+	autoList_t *tokens = tokenize(reqFirstLine, ' ');
+	char *url;
+
+	url = strx(refLine(tokens, 1));
+	releaseDim(tokens, 1);
+	return url;
+#endif
 }
 static char *c_GetHostFieldValue(void)
 {
@@ -253,13 +272,7 @@ static int HTTPDecode(autoBlock_t *rBuff, autoBlock_t *wBuff)
 
 	// from Path | Query
 	{
-		char *url;
-
-		{
-			autoList_t *hRqTkns = tokenize(HttpDat.H_Request, ' ');
-			url = PullOutXLine(hRqTkns, 1, "");
-			releaseDim(hRqTkns, 1);
-		}
+		char *url = GetUrlByReqFirstLine(HttpDat.H_Request);
 
 		DecodeUrl(url);
 
@@ -617,12 +630,7 @@ static void DataFltr(autoBlock_t *buff, uint prm)
 					hostname = strx(refLine(HttpDat.H_Values, findLineCase(HttpDat.H_Keys, "host", 1)));
 					domain = strx(hostname);
 					*strchrEnd(domain, ':') = '\0';
-
-					{
-						autoList_t *hRqTkns = tokenize(HttpDat.H_Request, ' ');
-						path = PullOutXLine(hRqTkns, 1, "");
-						releaseDim(hRqTkns, 1);
-					}
+					path = GetUrlByReqFirstLine(HttpDat.H_Request);
 
 					if(startsWithICase(path, "http://"))
 						copyLine(path, strchrEnd(path + 7, '/'));
