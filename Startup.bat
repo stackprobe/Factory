@@ -1,14 +1,7 @@
 TITLE Factory
 
-IF EXIST "C:\Program Files\Microsoft Visual Studio 10.0\VC\vcvarsall.bat" (
-	CALL "C:\Program Files\Microsoft Visual Studio 10.0\VC\vcvarsall.bat"
-) ELSE (
-	IF EXIST "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat" (
-		CALL "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat"
-	) ELSE (
-		rem orz
-	)
-)
+CALL "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat"
+
 ECHO ON
 
 PATH=%PATH%;C:\Factory\Build
