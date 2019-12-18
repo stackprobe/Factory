@@ -1,3 +1,5 @@
+-- OpenSource\aes128\
+
 /**
  * rijndael-alg-fst.c
  *
@@ -24,6 +26,8 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+
+-- OpenSource\camellia\
 
 /* camellia.c ver 1.2.0
  *
@@ -52,6 +56,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+
+-- OpenSource\md5\
 
 /*
  **********************************************************************
@@ -86,6 +92,8 @@
  **********************************************************************
  */
 
+
+-- OpenSource\mt19937\
 
 /*
    A C-program for MT19937, with initialization improved 2002/1/26.
@@ -130,6 +138,8 @@
    email: m-mat @ math.sci.hiroshima-u.ac.jp (remove space)
 */
 
+
+-- OpenSource\sha512\
 
 /* ====================================================================
  * Copyright (c) 2004 The OpenSSL Project.  All rights reserved
@@ -195,6 +205,8 @@
  */
 
 
+-- Resource\JIS0208.txt
+
 #
 #	Name:             JIS X 0208 (1990) to Unicode
 #	Unicode version:  1.1
@@ -219,6 +231,8 @@
 #	to third parties or other organizations whether for profit or not.
 #
 
+
+-- Resource\CP932.txt
 
 #
 #    Name:     cp932 to Unicode table
