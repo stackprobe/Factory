@@ -1,3 +1,7 @@
+/*
+	CamelliaRingCBC.exe /K 鍵ファイル /R 入力ファイル (/EB | /DB | /E | /D) /W 出力ファイル
+*/
+
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\RingCipher2.h"
 
@@ -25,14 +29,24 @@ readArgs:
 		rData = readBinary(nextArg());
 		goto readArgs;
 	}
-	if(argIs("/E"))
+	if(argIs("/EB"))
 	{
 		mode = 'E';
 		goto readArgs;
 	}
-	if(argIs("/D"))
+	if(argIs("/DB"))
 	{
 		mode = 'D';
+		goto readArgs;
+	}
+	if(argIs("/E"))
+	{
+		mode = 'e';
+		goto readArgs;
+	}
+	if(argIs("/D"))
+	{
+		mode = 'd';
 		goto readArgs;
 	}
 	if(argIs("/W"))
@@ -47,20 +61,19 @@ readArgs:
 	errorCase(!rData);
 	errorCase(!mode);
 	errorCase(!wFile);
-LOGPOS();
 
 	keyTableList = rngcphrCreateKeyTableList(rawKey);
 	wData = copyAutoBlock(rData);
-	( mode == 'E' ? rngcphrEncryptBlock : rngcphrDecryptBlock )(wData, keyTableList);
-LOGPOS();
+	(	mode == 'E' ? rngcphrEncryptBlock :
+		mode == 'D' ? rngcphrDecryptBlock :
+		mode == 'e' ? rngcphrEncrypt : rngcphrDecrypt )(wData, keyTableList);
 
 	writeBinary(wFile, wData);
-LOGPOS();
 
 	releaseAutoBlock(rawKey);
 	releaseAutoBlock(rData);
 	releaseAutoBlock(wData);
+//	mode
 //	wFile
 	cphrReleaseKeyTableList(keyTableList);
-LOGPOS();
 }

@@ -175,7 +175,8 @@ int rngcphrDecrypt(autoBlock_t *block, autoList_t *keyTableList)
 	errorCase(!getCount(keyTableList));
 
 	if(
-		getSize(block) < 32 ||
+		getSize(block) < 16 + 64 + 64 + 64 ||
+//		getSize(block) < 256 + 64 + 64 + 64 || // while(fileSize + padSize < 0xff); ‚µ‚Ä‚È‚©‚Á‚½Žž‚ÌˆÃ†•¶‚Í‚±‚ê‚æ‚è’Z‚¢
 		getSize(block) % 16 != 0
 		)
 		goto fault;
