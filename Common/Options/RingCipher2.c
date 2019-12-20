@@ -176,7 +176,7 @@ int rngcphrDecrypt(autoBlock_t *block, autoList_t *keyTableList)
 
 	if(
 		getSize(block) < 16 + 64 + 64 + 64 ||
-//		getSize(block) < 256 + 64 + 64 + 64 || // while(fileSize + padSize < 0xff); ‚µ‚Ä‚È‚©‚Á‚½Žž‚ÌˆÃ†•¶‚Í‚±‚ê‚æ‚è’Z‚¢
+//		getSize(block) < 256 + 64 + 64 + 64 || // while(size + padSize < 0xff); ‚µ‚Ä‚È‚©‚Á‚½Žž‚ÌˆÃ†•¶‚Í‚±‚ê‚æ‚è’Z‚¢ (Å¬padding ‹Œ->V: 16->256)
 		getSize(block) % 16 != 0
 		)
 		goto fault;
@@ -462,7 +462,8 @@ static int F_Decrypt(char *file, autoList_t *keyTableList)
 	uint index;
 
 	if(
-		fileSize < 32 ||
+		fileSize < 16 + 64 + 64 + 64 ||
+//		fileSize < 256 + 64 + 64 + 64 || // while(fileSize + padSize < 0xff); ‚µ‚Ä‚È‚©‚Á‚½Žž‚ÌˆÃ†•¶‚Í‚±‚ê‚æ‚è’Z‚¢ (Å¬padding ‹Œ->V: 16->256)
 		fileSize % 16 != 0
 		)
 		return 0;
