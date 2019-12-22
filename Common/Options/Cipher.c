@@ -119,7 +119,7 @@ static autoBlock_t *InputPassphrase2KeyBundle(char *passEx)
 
 	if(lineExp("<>[<1,,><2,09>]", passphrase_k))
 	{
-		char *p = strrchr(passphrase, '[');
+		char *p = strchr(passphrase, '\0') - 5;
 		int xChr;
 		uint xExp;
 		char *xPtn;
