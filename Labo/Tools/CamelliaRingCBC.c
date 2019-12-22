@@ -10,7 +10,7 @@ int main(int argc, char **argv)
 	autoBlock_t *rawKey = NULL;
 	autoBlock_t *rData = NULL;
 	autoBlock_t *wData;
-	int mode = 0;
+	int mode = 0; // "EDed"
 	char *wFile = NULL;
 	autoList_t *keyTableList;
 
