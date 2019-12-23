@@ -5,11 +5,15 @@ static uint CRC_FileFltr(char *file, uint (*startFunc)(void), uint (*updateFunc)
 	FILE *fp = fileOpen(file, "rb");
 	autoBlock_t *block;
 	uint counter = startFunc();
+	uint buffSize = 1024;
 
-	while(block = readBinaryStream(fp, 128 * 1024 * 1024))
+	while(block = readBinaryStream(fp, buffSize))
 	{
 		counter = updateFunc(counter, directGetBuffer(block), getSize(block));
 		releaseAutoBlock(block);
+
+		if(buffSize < 1024 * 1024 * 128)
+			buffSize <<= 1;
 	}
 	fileClose(fp);
 	return finishFunc(counter);
@@ -145,18 +149,17 @@ uint crc16Start(void)
 }
 uint crc16Update(uint counter, uint byte)
 {
-	errorCase(0x10000 <= counter);
-	errorCase(0x100 <= byte);
-
 	return RefSwap16Table()[(counter ^ byte) & 0xff] ^ counter >> 8;
 }
 uint crc16UpdateBlock(uint counter, void *block, uint blockSize)
 {
+	uint16 *table = RefSwap16Table();
 	uint index;
 
 	for(index = 0; index < blockSize; index++)
 	{
-		counter = crc16Update(counter, ((uchar *)block)[index]);
+		counter = table[(counter ^ ((uchar *)block)[index]) & 0xff] ^ counter >> 8;
+//		counter = crc16Update(counter, ((uchar *)block)[index]); // old_same
 	}
 	return counter;
 }
