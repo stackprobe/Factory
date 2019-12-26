@@ -276,9 +276,7 @@ static int HTTPDecode(autoBlock_t *rBuff, autoBlock_t *wBuff)
 
 		DecodeUrl(url);
 
-		// 本当にアクセスしたいパスと被ったときのために Path は case sensitive とする。/BlueSteel/ とか .Html とかでアクセスしてね。
-
-		if(updateTagRng(url, "/blueSteel/", ".html", 0)) // from Path
+		if(updateTagRng(url, "/blueSteel/", ".html", 1)) // from Path
 		{
 			HD_Decode(url, &lastTagRng, wBuff);
 			memFree(url);
