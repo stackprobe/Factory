@@ -1,9 +1,16 @@
+/*
+	VwPw.exe [PASSWORD]
+*/
+
 #include "C:\Factory\Common\all.h"
 
 static void ViewPassword(char *pw)
 {
 	uint pwLen = strlen(pw);
 	uint index;
+
+	if(!pwLen)
+		return;
 
 	errorCase(!isAsciiLine(pw, 0, 0, 0));
 
@@ -43,5 +50,12 @@ static void ViewPassword(char *pw)
 }
 int main(int argc, char **argv)
 {
-	ViewPassword(nextArg());
+	if(hasArgs(1))
+	{
+		ViewPassword(nextArg());
+	}
+	else
+	{
+		ViewPassword(inputLine());
+	}
 }

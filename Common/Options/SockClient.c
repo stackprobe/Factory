@@ -14,7 +14,7 @@
 
 	- - -
 
-	今後は SClient() を使うようにしてね。
+	★★★ 今後は SClient() を使うようにしてね。
 */
 
 #include "SockClient.h"
