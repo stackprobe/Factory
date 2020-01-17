@@ -208,6 +208,11 @@ static void DecodeUrl(char *url)
 	*wp = '\0';
 }
 
+/*
+	応答方法
+		リクエストが Cookie 又は X-Field  ---> Cookie 又は X-Field で応答する。
+		リクエストが Path 又は Query --------> プロセスの設定に従って応答する。
+*/
 static int HTTPDecode(autoBlock_t *rBuff, autoBlock_t *wBuff)
 {
 	if(!HTTPParse(rBuff))
@@ -250,7 +255,7 @@ static int HTTPDecode(autoBlock_t *rBuff, autoBlock_t *wBuff)
 
 				if(updateTagRng(value, "blueSteel=", ";", 1))
 				{
-					*CurrInfo->P_EmbedMode = EMBED_COOKIE;
+					*CurrInfo->P_EmbedMode = EMBED_COOKIE; // 埋め込み方法強制変更する。
 
 					HD_Decode(value, &lastTagRng, wBuff);
 					memFree(value);
@@ -261,7 +266,7 @@ static int HTTPDecode(autoBlock_t *rBuff, autoBlock_t *wBuff)
 			}
 			else if(!_stricmp(key, "X-BlueSteel"))
 			{
-				*CurrInfo->P_EmbedMode = EMBED_XFIELD;
+				*CurrInfo->P_EmbedMode = EMBED_XFIELD; // 埋め込み方法強制変更する。
 
 				HD_Decode(getLine(HttpDat.H_Values, index), NULL, wBuff);
 				LOGPOS();
@@ -278,6 +283,8 @@ static int HTTPDecode(autoBlock_t *rBuff, autoBlock_t *wBuff)
 
 		if(updateTagRng(url, "/blueSteel/", ".html", 1)) // from Path
 		{
+//			*CurrInfo->P_EmbedMode = EMBED_PATH; // 埋め込み方法強制変更しない。
+
 			HD_Decode(url, &lastTagRng, wBuff);
 			memFree(url);
 			LOGPOS();
@@ -287,6 +294,8 @@ static int HTTPDecode(autoBlock_t *rBuff, autoBlock_t *wBuff)
 
 		if(updateTagRng(url, "blueSteel=", "&", 1)) // from Query
 		{
+//			*CurrInfo->P_EmbedMode = EMBED_QUERY_BODY; // 埋め込み方法強制変更しない。
+
 			HD_Decode(url, &lastTagRng, wBuff);
 			memFree(url);
 			LOGPOS();
