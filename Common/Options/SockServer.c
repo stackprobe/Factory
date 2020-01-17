@@ -235,7 +235,8 @@ static void Transmission(void)
 			*(uint *)sockClientIp = *(uint *)t->ClientIp;
 			sockUserTransmitIndex = index;
 
-			if(!t->UserInfoInited) {
+			if(!t->UserInfoInited)
+			{
 				t->UserInfoInited = 1;
 				t->UserInfo = FuncCreateUserInfo();
 			}

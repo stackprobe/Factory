@@ -109,7 +109,8 @@ static void BoomerangRecv(SockStream_t *ss)
 	uint crc16;
 	uint r_crc16;
 
-	if(!RecvCredential) {
+	if(!RecvCredential)
+	{
 		RecvCredential = nobCreateBlock(CREDENTIAL_SIZE);
 		RecvData = newBlock();
 	}
@@ -201,7 +202,8 @@ static int Perform(int sock, void *prm)
 
 	// init
 	{
-		if(!SendCredential) {
+		if(!SendCredential)
+		{
 			SendCredential = nobCreateBlock(CREDENTIAL_SIZE);
 			SendData = newBlock();
 		}

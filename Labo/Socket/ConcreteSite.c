@@ -6,24 +6,44 @@
 
 #include "C:\Factory\Common\Options\SockServer.h"
 #include "C:\Factory\Common\Options\SockStream.h"
+#include "tunnel\libs\TimeWaitMonitor.h"
 
 #define HTTP_NEWLINE "\r\n"
 
 #define SESSION_TIMEOUT_SEC 2
-#define TIMEWAIT_WAIT_MILLIS 30
 
 static uint PortNo = 80;
 static autoBlock_t *ResData;
 
+static void RecvHTTPHeader(SockStream_t *ss)
+{
+	for(; ; )
+	{
+		char *line = SockRecvLine(ss, 65536);
+
+		if(!*line)
+		{
+			memFree(line);
+			break;
+		}
+		memFree(line);
+	}
+}
 static int Perform(int sock, void *dummy)
 {
 	SockStream_t *ss = CreateSockStream(sock, SESSION_TIMEOUT_SEC);
+
+	LOGPOS();
+	cout("%s\n", SockIp2Line(sockClientIp));
+
+	RecvHTTPHeader(ss);
 
 	SockSendBlock(ss, directGetBuffer(ResData), getSize(ResData));
 	SockFlush(ss);
 
 	ReleaseSockStream(ss);
 
+	AddTimeWait();
 	return 0; // í êMèIóπ
 }
 static int Idle(void)
