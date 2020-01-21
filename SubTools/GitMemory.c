@@ -179,7 +179,8 @@ static void FlushMain(void)
 		releaseDim(memRepoDirs, 1);
 		LOGPOS();
 
-		semiRemovePath(memDir);
+		recurRemoveDir(memDir);
+//		semiRemovePath(memDir); // del @ 2020.1.19
 		LOGPOS();
 	}
 	LOGPOS();
@@ -213,7 +214,8 @@ static void TrimMain(void)
 	foreach(deletableDirs, dir, index)
 	{
 		cout("* %s\n", dir);
-		semiRemovePath(dir);
+		recurRemoveDir(dir);
+//		semiRemovePath(dir); // del @ 2020.1.19
 	}
 	LOGPOS();
 	releaseDim(memDirs, 1);
