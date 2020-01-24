@@ -3,6 +3,13 @@
 
 		ID ... 大文字小文字を区別する。
 			/CTT を指定する場合は、使用しない。適当な文字列をセットすること。
+
+	----
+	例
+
+	全クリア
+
+		Period a /ctt
 */
 
 #include "C:\Factory\Common\all.h"
