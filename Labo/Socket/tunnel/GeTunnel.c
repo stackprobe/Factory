@@ -452,6 +452,7 @@ static void HTTPEncode(autoBlock_t *buff)
 
 			ab_addLine_x(wBuff, xcout("Content-Length: %u\r\n", strlen(resText)));
 			ab_addLine(wBuff, "Content-Type: text/html; charset=Shift_JIS\r\n");
+			ab_addLine(wBuff, "Connection: close\r\n");
 			AddExtraHeaderLines(wBuff);
 			ab_addLine(wBuff, "\r\n");
 			ab_addLine(wBuff, resText);
@@ -470,6 +471,7 @@ static void HTTPEncode(autoBlock_t *buff)
 			}
 			ab_addLine_x(wBuff, xcout("Content-Length: %u\r\n", strlen(DUMMY_BODY)));
 			ab_addLine(wBuff, "Content-Type: text/html; charset=Shift_JIS\r\n");
+			ab_addLine(wBuff, "Connection: close\r\n");
 			AddExtraHeaderLines(wBuff);
 			ab_addLine(wBuff, "\r\n");
 			ab_addLine(wBuff, DUMMY_BODY);
