@@ -69,14 +69,14 @@ static void PreDataFltr(autoBlock_t *buff, uint uPData)
 
 	if(*pData)
 	{
-		autoBlock_t *nb = newBlock();
+		autoBlock_t *b = newBlock();
 
-		ab_addLine(nb, *pData);
-		ab_addBytes(nb, buff);
+		ab_addLine(b, *pData);
+		ab_addBytes(b, buff);
 
-		ab_swap(nb, buff);
+		ab_swap(b, buff);
 
-		releaseAutoBlock(nb);
+		releaseAutoBlock(b);
 
 		*pData = NULL;
 	}
@@ -86,7 +86,7 @@ static void TransmitTh(int sock, char *fwdHost, uint fwdPortNo, char *data)
 	uchar ip[4] = { 0 };
 	int fwdSock;
 
-	cout("%s %s(%u)\n", c_makeJStamp(NULL, 0), fwdHost, fwdPortNo);
+	cout("%s %s(%u) %d\n", c_makeJStamp(NULL, 0), fwdHost, fwdPortNo, data ? (sint)strlen(data) : -1);
 
 	fwdSock = sockConnect(ip, fwdHost, fwdPortNo);
 
