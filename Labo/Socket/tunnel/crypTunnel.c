@@ -158,8 +158,12 @@ restart:
 					addBytes(buff, buffPart);
 					ChannelDeadFlag = 0;
 				}
+else
+LOGPOS();
 				releaseAutoBlock(wc);
 			}
+else
+LOGPOS();
 			releaseAutoBlock(buffPart);
 
 			if(!ChannelDeadFlag)
