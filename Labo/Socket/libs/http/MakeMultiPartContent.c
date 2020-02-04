@@ -127,7 +127,7 @@ autoBlock_t *makeMultiPartContent(void)
 	releaseDim(TextList, 1);
 	releaseDim(FileNameList, 1);
 	releaseDim(BodyList, 1);
-	TextList =NULL;
+	TextList = NULL;
 
 	return content;
 }
