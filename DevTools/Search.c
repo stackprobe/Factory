@@ -1,7 +1,7 @@
 /*
 	検索対象 == カレントの配下
 
-	Search.exe [/E SPEC-EXTS] [/I] [/T] [/SVN] [/-] FIND-PATTERN
+	Search.exe [/E SPEC-EXTS] [/I] [/T] [/SVN] [/8] [/-] FIND-PATTERN
 
 		SPEC-EXTS ... 検索対象の拡張子を '.' 区切りで記述する。
 
@@ -12,6 +12,7 @@
 */
 
 #include "C:\Factory\Common\all.h"
+#include "C:\Factory\Common\Options\UTF.h"
 
 static void FSeek(FILE *fp, uint64 index)
 {
@@ -185,6 +186,7 @@ int main(int argc, char **argv)
 	autoList_t files;
 	char *file;
 	uint index;
+	int utf8mode = 0;
 
 	antiSubversion = 1;
 
@@ -209,6 +211,11 @@ readArgs:
 		antiSubversion = 0;
 		goto readArgs;
 	}
+	if(argIs("/8"))
+	{
+		utf8mode = 1;
+		goto readArgs;
+	}
 	argIs("/-");
 
 	FindPattern = nextArg();
@@ -217,6 +224,18 @@ readArgs:
 
 	errorCase(FindPattern[0] == '\0');
 
+	if(utf8mode)
+	{
+		char *tmpFile = makeTempPath(NULL);
+
+		writeOneLineNoRet_b(tmpFile, FindPattern);
+		SJISToUTF8File(tmpFile, tmpFile);
+		FindPattern = readText_b(tmpFile); // gomi
+		removeFile(tmpFile);
+		memFree(tmpFile);
+
+		cout("UTF-8\n");
+	}
 	paths = lss(".");
 	files = gndFollowElements(paths, lastDirCount);
 
