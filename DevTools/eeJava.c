@@ -19,6 +19,19 @@ static void DecodeJP(char *file)
 		for(index = 0; index + 2 <= getSize(text); index += 2)
 		{
 			if(
+				index + 4 <= getSize(text) &&
+				b_(text)[index + 0] == '\\' && b_(text)[index + 1] == 0x00 &&
+				b_(text)[index + 2] == '\\' && b_(text)[index + 3] == 0x00
+				)
+			{
+				addByte(dest, '\\');
+				addByte(dest, 0x00);
+				addByte(dest, '\\');
+				addByte(dest, 0x00);
+
+				index += 2;
+			}
+			else if(
 				index + 12 <= getSize(text) &&
 				b_(text)[index + 0] == '\\' && b_(text)[index + 1] == 0x00 &&
 				b_(text)[index + 2] == 'u'  && b_(text)[index + 3] == 0x00 &&
