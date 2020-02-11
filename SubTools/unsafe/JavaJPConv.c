@@ -1,31 +1,31 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\UTF.h"
 
-static char *WkFileA;
-static char *WkFileB;
+static char *WkFile_A;
+static char *WkFile_B;
 
 static autoBlock_t *Prv_UTF8ToUTF16Line(char *line)
 {
-	writeOneLineNoRet_b(WkFileA, line);
+	writeOneLineNoRet_b(WkFile_A, line);
 
-	UTF8ToSJISFile(WkFileA, WkFileA);
+	UTF8ToSJISFile(WkFile_A, WkFile_A);
 
 	UTF_BE = 0;
 	UTF_NoWriteBOM = 1;
-	SJISToUTF16File(WkFileA, WkFileB);
+	SJISToUTF16File(WkFile_A, WkFile_B);
 
-	return readBinary(WkFileB);
+	return readBinary(WkFile_B);
 }
 static char *Prv_UTF16ToUTF8Line(autoBlock_t *u16Line)
 {
-	writeBinary(WkFileA, u16Line);
+	writeBinary(WkFile_A, u16Line);
 
 	UTF_BE = 0;
-	UTF16ToSJISFile(WkFileA, WkFileB);
+	UTF16ToSJISFile(WkFile_A, WkFile_B);
 
-	SJISToUTF8File(WkFileB, WkFileB);
+	SJISToUTF8File(WkFile_B, WkFile_B);
 
-	return readText_b(WkFileB);
+	return readText_b(WkFile_B);
 }
 static void U16Line_LTrim(autoBlock_t *u16Line)
 {
@@ -55,8 +55,8 @@ static void JavaJPConvFile(char *file)
 
 	cout("file: %s\n", file);
 
-	WkFileA = makeTempPath(NULL);
-	WkFileB = makeTempPath(NULL);
+	WkFile_A = makeTempPath(NULL);
+	WkFile_B = makeTempPath(NULL);
 
 	foreach(lines, line, line_index)
 	{
@@ -121,10 +121,10 @@ static void JavaJPConvFile(char *file)
 			setElement(lines, line_index, (uint)line);
 		}
 	}
-	removeFile_x(WkFileA);
-	removeFile_x(WkFileB);
-	WkFileA = NULL;
-	WkFileB = NULL;
+	removeFile_x(WkFile_A);
+	removeFile_x(WkFile_B);
+	WkFile_A = NULL;
+	WkFile_B = NULL;
 
 	if(modified)
 	{
@@ -133,15 +133,20 @@ static void JavaJPConvFile(char *file)
 	}
 	releaseDim(lines, 1);
 }
+static int AcceptName(char *name)
+{
+//cout("%s\n", name); // test
+	return name[0] != '.'; // .git Ç»Ç«èúäOÇ∑ÇÈÅB
+}
 static void JavaJPConv(char *rootDir)
 {
 	autoList_t *files;
 	char *file;
 	uint index;
 
-	antiSubversion = 1;
+	findAcceptName = AcceptName;
 	files = lssFiles(rootDir);
-	antiSubversion = 0; // restore
+	findAcceptName = NULL; // restore
 
 	foreach(files, file, index)
 		if(!_stricmp(getExt(file), "java"))
