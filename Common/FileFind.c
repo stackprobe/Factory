@@ -54,6 +54,7 @@ static void AddPath(autoList_t *paths, char *path, FILE *extra_fp, void (*lsActi
 int antiSubversion; // extra-prm
 int ignoreUtfPath; // extra-prm
 uint findLimiter; // extra-prm
+int (*findAcceptName)(char *name); // extra-prm
 
 /*
 	unsigned attrib;
@@ -130,6 +131,10 @@ autoList_t *ls(char *dir)
 					continue;
 
 				findLimiter--;
+			}
+			if(findAcceptName && !findAcceptName(name))
+			{
+				continue;
 			}
 			path = combine(absDir, name);
 

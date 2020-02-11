@@ -18,6 +18,7 @@ extern autoList_t *lsInfos;
 extern int antiSubversion;
 extern int ignoreUtfPath;
 extern uint findLimiter;
+extern int (*findAcceptName)(char *name);
 extern struct _finddata_t lastFindData;
 extern uint lastDirCount;
 
