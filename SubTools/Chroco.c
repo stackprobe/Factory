@@ -143,7 +143,7 @@ static void ProcCopy(void)
 
 	errorCase_m(!existDir(RootDir), "コピー元のディレクトリにアクセスできません。");
 	errorCase_m(!existDir(DestDir), "コピー先のディレクトリにアクセスできません。");
-	errorCase_m(!getCount(PathList), "パスリストが空です。\nしかし、これをエラーにする必要はあるのだろうか。");
+	errorCase_m(!getCount(PathList), "パスリストが空です。");
 
 	cout("[R] %s\n", RootDir);
 	cout("[D] %s\n", DestDir);
