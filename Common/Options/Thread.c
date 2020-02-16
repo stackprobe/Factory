@@ -46,7 +46,7 @@ uint runThread(void (*userFunc)(void *), void *userInfo)
 	errorCase(!userFunc);
 
 	if(!Infos)
-		Infos = na(Info_t, INFO_MAX);
+		Infos = na_(Info_t, INFO_MAX);
 
 	info = Infos + InfoIndex;
 

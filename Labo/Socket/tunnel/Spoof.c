@@ -33,7 +33,7 @@ static uint CloggedTimeoutSec = 2;
 
 static FltrInfo_t *GetFltrInfo(char *path, char *header)
 {
-	FltrInfo_t *i = nb(FltrInfo_t);
+	FltrInfo_t *i = nb_(FltrInfo_t);
 	autoList_t *lines;
 	uint index;
 

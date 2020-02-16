@@ -21,7 +21,7 @@ static autoList_t *FileInfos;
 
 static FileInfo_t *CreateFileInfo(char *file)
 {
-	FileInfo_t *i = nb(FileInfo_t);
+	FileInfo_t *i = nb_(FileInfo_t);
 	uint64 c;
 	uint64 w;
 	uint64 cw;

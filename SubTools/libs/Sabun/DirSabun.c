@@ -6,7 +6,7 @@
 
 DirSabun_t *CreateDirSabun(char *path, DirSabunKind_t kind, autoList_t *lDiff, autoList_t *rDiff)
 {
-	DirSabun_t *i = nb(DirSabun_t);
+	DirSabun_t *i = nb_(DirSabun_t);
 
 	i->Path = path; // bind
 	i->Kind = kind;

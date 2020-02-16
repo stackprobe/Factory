@@ -16,7 +16,7 @@ static void ReleaseTree(PriceDayCache_t *i)
 
 PriceDayCache_t *CreatePriceDayCache(void)
 {
-	PriceDayCache_t *i = nb(PriceDayCache_t);
+	PriceDayCache_t *i = nb_(PriceDayCache_t);
 
 	CreateTree(i);
 

@@ -2,7 +2,7 @@
 
 MvAvg_t *CreateMvAvg(uint fxTime, uint span, char *pair)
 {
-	MvAvg_t *i = nb(MvAvg_t);
+	MvAvg_t *i = nb_(MvAvg_t);
 
 	errorCase(fxTime & 1);
 	errorCase(!span);

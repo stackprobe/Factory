@@ -108,7 +108,7 @@ static void Search_File(char *file)
 		{
 			errorCase(range);
 
-			range = nb(Range_t);
+			range = nb_(Range_t);
 			range->IndentLen = LastRangeIndentLen;
 			range->Lines = newList();
 			range->StartSymLineIndex = index;

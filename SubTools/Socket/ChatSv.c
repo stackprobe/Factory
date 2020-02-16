@@ -76,7 +76,7 @@ static int Perform(char *prmFile, char *ansFile)
 		}
 
 		{
-			Remark_t *remark = nb(Remark_t);
+			Remark_t *remark = nb_(Remark_t);
 
 			remark->Stamp = makeCompactStamp(NULL);
 			remark->UserName = userName;
@@ -141,7 +141,7 @@ static int Perform(char *prmFile, char *ansFile)
 		{
 			cout("LOGIN MEMBER [%s]\n", userName);
 
-			member = nb(Member_t);
+			member = nb_(Member_t);
 			member->UserName = strx(userName);
 			addElement(Members, (uint)member);
 		}

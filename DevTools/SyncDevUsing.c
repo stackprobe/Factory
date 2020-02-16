@@ -82,7 +82,7 @@ static void Search(void)
 				autoList_t gal;
 
 				errorCase(header); // ? already exists in the file
-				header = nb(Header_t);
+				header = nb_(Header_t);
 
 				header->File = strx(file);
 				getFileStamp(file, NULL, NULL, &header->Stamp);

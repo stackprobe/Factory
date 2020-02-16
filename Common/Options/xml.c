@@ -59,7 +59,7 @@ static autoList_t *RAttrValues;
 
 static XNode_t *CreateNode(char *name, char *text, int mkcflg)
 {
-	XNode_t *node = nb(XNode_t);
+	XNode_t *node = nb_(XNode_t);
 
 	if(name)
 		node->Name = strx(name);

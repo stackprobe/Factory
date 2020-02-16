@@ -124,7 +124,7 @@ static void HttpNamedChannelFltr(autoBlock_t *buff, uint prm)
 }
 static void Perform(int sock, int fwdSock)
 {
-	ChInfo_t *i = nb(ChInfo_t);
+	ChInfo_t *i = nb_(ChInfo_t);
 
 	i->RecvBuff = newBlock();
 

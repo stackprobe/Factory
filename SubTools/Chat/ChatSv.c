@@ -184,7 +184,7 @@ static int Perform(char *prmFile, char *ansFile)
 		}
 
 		{
-			Remark_t *remark = nb(Remark_t);
+			Remark_t *remark = nb_(Remark_t);
 
 			remark->Stamp = stamp;
 			remark->Message = message;
@@ -262,7 +262,7 @@ static int Perform(char *prmFile, char *ansFile)
 		{
 			cout("LOGIN MEMBER [%s]\n", ident);
 
-			member = nb(Member_t);
+			member = nb_(Member_t);
 			member->Ident = strx(ident);
 			member->Message = strx(message);
 			addElement(Members, (uint)member);

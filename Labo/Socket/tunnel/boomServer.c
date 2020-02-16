@@ -55,7 +55,7 @@ static int IsNoConnectTimeout(Session_t *i)
 
 static Session_t *CreateSession(int sock)
 {
-	Session_t *i = nb(Session_t);
+	Session_t *i = nb_(Session_t);
 
 	i->Sock = sock; // bind
 	i->Comm = CreateComm(sock);
@@ -290,7 +290,7 @@ errorEnd:
 }
 static void *CreateInfo(void)
 {
-	return nb(SockStream_t *);
+	return nb_(SockStream_t *);
 }
 static void ReleaseInfo(void *prm)
 {

@@ -111,7 +111,7 @@ void SolutionOrder(autoList_t *sources) // sources: 全てフルパスであることを想定
 
 	foreach(sources, source, index)
 	{
-		SourceInfo_t *info = nb(SourceInfo_t);
+		SourceInfo_t *info = nb_(SourceInfo_t);
 
 		info->Source = source;
 		info->RefSolutions = GetReferenceSolutions(source);

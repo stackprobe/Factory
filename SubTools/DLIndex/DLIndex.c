@@ -203,7 +203,7 @@ static void LoadRevInfos(char *rootDir, autoList_t *riList)
 
 	foreach(revDirs, dir, index)
 	{
-		RevInfo_t *ri = nb(RevInfo_t);
+		RevInfo_t *ri = nb_(RevInfo_t);
 
 		ri->Rev = strx(getLocal(dir));
 		errorCase(!IsAsciiStr(ri->Rev));
@@ -299,7 +299,7 @@ static void LoadAppInfos(char *rootDir)
 
 	foreach(appDirs, dir, index)
 	{
-		AppInfo_t *ai = nb(AppInfo_t);
+		AppInfo_t *ai = nb_(AppInfo_t);
 
 		cout("%s\n", dir);
 

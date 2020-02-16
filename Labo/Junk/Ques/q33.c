@@ -77,7 +77,7 @@ static void Analysis(Numb_t *s, int snum)
 			ans = MkNumb_x(xcout("(%s %c %s)", sa->Caption, "+-*/"[e], sb->Caption), n, d);
 
 			{
-				Numb_t *t = na(Numb_t, snum - 1);
+				Numb_t *t = na_(Numb_t, snum - 1);
 				int si;
 				int ti = 0;
 

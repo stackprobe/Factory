@@ -89,7 +89,7 @@ static void CollectUUIDByFile(char *file)
 
 			if(!startsWith(uuidP, UUID_FMT)) // ? not UUID_FMT
 			{
-				UUID_t *i = nb(UUID_t);
+				UUID_t *i = nb_(UUID_t);
 				char *pp;
 
 				i->File = strx(file);

@@ -2,7 +2,7 @@
 
 Sabun_t *CreateSabun(uint pos, uint length, uchar *data)
 {
-	Sabun_t *i = nb(Sabun_t);
+	Sabun_t *i = nb_(Sabun_t);
 
 	i->Pos = pos;
 	i->Length = length;

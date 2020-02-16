@@ -220,7 +220,7 @@ PairPos_t;
 
 static PairPos_t *CreatePairPos(void)
 {
-	return nb(PairPos_t);
+	return nb_(PairPos_t);
 }
 static void ReleasePairPos(PairPos_t *i)
 {

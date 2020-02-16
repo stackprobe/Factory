@@ -15,7 +15,7 @@ static void CsvRowColCount(char *csvFile)
 	FILE *fp = fileOpen(csvFile, "rt");
 	uint index;
 
-	ColCounts = na(uint64, COLCOUNT_MAX);
+	ColCounts = na_(uint64, COLCOUNT_MAX);
 
 	for(; ; )
 	{

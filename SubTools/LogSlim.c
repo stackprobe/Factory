@@ -32,7 +32,7 @@ static autoList_t *DirInfos;
 
 static FileInfo_t *CreateFileInfo(char *file)
 {
-	FileInfo_t *i = nb(FileInfo_t);
+	FileInfo_t *i = nb_(FileInfo_t);
 
 	i->File = strx(file);
 	i->Size = getFileSize(file);
@@ -46,7 +46,7 @@ static void ReleaseFileInfo(FileInfo_t *i)
 }
 static void AddDirInfo(char *dir)
 {
-	DirInfo_t *i = nb(DirInfo_t);
+	DirInfo_t *i = nb_(DirInfo_t);
 
 	i->Dir = strx(dir);
 	i->FileInfos = newList();

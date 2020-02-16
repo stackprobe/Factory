@@ -44,7 +44,7 @@ static autoList_t *TrackInfoList;
 
 static void AddTrackInfo(char *trackName, char *fwdHost, char *sFwdPortNo)
 {
-	TrackInfo_t *i = nb(TrackInfo_t);
+	TrackInfo_t *i = nb_(TrackInfo_t);
 
 	errorCase(m_isEmpty(trackName) || TRACKNAME_LENMAX < strlen(trackName));
 	errorCase(m_isEmpty(fwdHost) || HOST_LENMAX < strlen(fwdHost));

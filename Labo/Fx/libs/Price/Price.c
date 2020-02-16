@@ -2,7 +2,7 @@
 
 Price_t *CreatePrice(double bid, double ask)
 {
-	Price_t *i = nb(Price_t);
+	Price_t *i = nb_(Price_t);
 
 	i->Bid = bid;
 	i->Ask = ask;

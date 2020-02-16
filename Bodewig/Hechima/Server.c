@@ -85,7 +85,7 @@ static void LoadRemarks(void)
 
 			errorCase(REMARK_MAX + 10 < getCount(Remarks)); // + margin <
 
-			i = nb(Remark_t);
+			i = nb_(Remark_t);
 			i->Stamp = toValue64_x(line);
 			i->Ident = nnReadLine(fp);
 			i->Message = nnReadLine(fp);

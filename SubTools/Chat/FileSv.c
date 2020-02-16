@@ -163,7 +163,7 @@ ConnInfo_t;
 
 static void *CreateConnInfo(void)
 {
-	ConnInfo_t *i = nb(ConnInfo_t);
+	ConnInfo_t *i = nb_(ConnInfo_t);
 
 	i->ConnectedTime = now();
 	i->RecvBuff = newBlock();

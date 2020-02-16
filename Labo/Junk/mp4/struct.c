@@ -52,7 +52,7 @@ static autoList_t *LoadByImage(autoBlock_t *image)
 			broken = 1;
 			break;
 		}
-		i = nb(Box_t);
+		i = nb_(Box_t);
 		*(uint *)i->Name = name;
 		i->Image = ab_makeSubBytes(image, rPos, size);
 		i->SubBoxes = LoadByImage(i->Image);
@@ -77,7 +77,7 @@ static void LoadByFile(char *file)
 
 	boxes = LoadByImage(image);
 
-	Root = nb(Box_t);
+	Root = nb_(Box_t);
 	strcpy(Root->Name, ROOT_NAME);
 	Root->Image = image;
 	Root->SubBoxes = LoadByImage(image);

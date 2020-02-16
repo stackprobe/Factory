@@ -16,7 +16,7 @@ Frtwv_t *Frtwv_Create(uchar *ident)
 }
 Frtwv_t *Frtwv_CreateIH(uchar *identHash)
 {
-	Frtwv_t *i = nb(Frtwv_t);
+	Frtwv_t *i = nb_(Frtwv_t);
 	char *ident;
 	char *mIdent;
 	char *eIdent;

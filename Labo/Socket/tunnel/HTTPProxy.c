@@ -924,7 +924,7 @@ static int ReadArgs(void)
 
 	errorCase(IMAX / sizeof(Session_t) < ConnectMax);
 
-	SessionList = na(Session_t, ConnectMax);
+	SessionList = na_(Session_t, ConnectMax);
 	SessionStock = newList();
 
 	{

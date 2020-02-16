@@ -2,8 +2,8 @@ void *memCalloc(uint size);
 void *memCloneWithBuff(void *block, uint size, uint buffsize);
 void *memClone(void *block, uint size);
 
-#define na(TYPE_T, num) \
+#define na_(TYPE_T, num) \
 	((TYPE_T *)memCalloc(sizeof(TYPE_T) * (num)))
 
-#define nb(TYPE_T) \
-	(na(TYPE_T, 1))
+#define nb_(TYPE_T) \
+	(na_(TYPE_T, 1))
