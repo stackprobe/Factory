@@ -28,8 +28,9 @@ typedef struct Range_st
 	char *File;
 	uint64 Stamp;
 	char *Name;
+	uint IndentLen;
 	autoList_t *Lines;
-	char *Text; // { 行1 + CRLF + 行2 + CRLF + ... + 行(n-1) + CRLF + 行n + CRLF }
+	char *Text; // { 行1 + LF + 行2 + LF + ... + 行(n-1) + LF + 行n + LF }
 	char *TextMD5;
 	uint StartSymLineIndex;
 	uint EndSymLineIndex;
@@ -40,6 +41,7 @@ static autoList_t *Ranges;
 
 // ---- Search ----
 
+static uint LastRangeIndentLen;
 static char *LastRangeName;
 
 static int GetLineKind(char *line) // ret: "SE-"
@@ -48,6 +50,7 @@ static int GetLineKind(char *line) // ret: "SE-"
 	{
 		errorCase(!lineExp("<\t\t>//// sync > @ <1,,__09AZaz>", line)); // ? StartSymLine ではない。
 
+		LastRangeIndentLen = (uint)strchr(line, '/') - (uint)line;
 		memFree(LastRangeName);
 		LastRangeName = strx(strchr(line, '@') + 2);
 
@@ -74,6 +77,22 @@ static char *LinesToText(autoList_t *lines)
 	}
 	return text;
 }
+static int IsFairRangeLine(char *line, uint indentLen)
+{
+	uint index;
+
+	if(!*line)
+		return 1;
+
+	for(index = 0; index < indentLen; index++)
+		if(line[index] != '\t')
+			return 0;
+
+	if(!line[indentLen])
+		return 0;
+
+	return 1;
+}
 static void Search_File(char *file)
 {
 	autoList_t *lines = readLines(file);
@@ -90,6 +109,7 @@ static void Search_File(char *file)
 			errorCase(range);
 
 			range = nb(Range_t);
+			range->IndentLen = LastRangeIndentLen;
 			range->Lines = newList();
 			range->StartSymLineIndex = index;
 		}
@@ -110,7 +130,9 @@ static void Search_File(char *file)
 		}
 		else if(range)
 		{
-			addElement(range->Lines, (uint)strx(line));
+			errorCase(!IsFairRangeLine(line, range->IndentLen));
+
+			addElement(range->Lines, (uint)strx(*line ? line + range->IndentLen : ""));
 		}
 	}
 	errorCase(range);
@@ -251,6 +273,29 @@ static void Confirm(void)
 
 // ---- SyncRangeGroup ----
 
+static void SRG_AddIndent(autoBlock_t *buff, uint indentLen)
+{
+	uint index;
+
+	for(index = 0; index < indentLen; index++)
+		addByte(buff, '\t');
+}
+static char *SRG_PutIndentToText(char *text, uint indentLen)
+{
+	autoBlock_t *buff = newBlock();
+	char *p;
+	int postLf = 1;
+
+	for(p = text; *p; p++)
+	{
+		if(postLf && *p != '\n')
+			SRG_AddIndent(buff, indentLen);
+
+		addByte(buff, *p);
+		postLf = *p == '\n';
+	}
+	return unbindBlock2Line(buff);
+}
 static void SRG_SyncFile(Range_t *masterRange, Range_t *targetRange)
 {
 	autoList_t *lines = readLines(targetRange->File);
@@ -266,7 +311,13 @@ static void SRG_SyncFile(Range_t *masterRange, Range_t *targetRange)
 	for(index = 0; index <= targetRange->StartSymLineIndex; index++)
 		writeLine(fp, getLine(lines, index));
 
-	writeToken(fp, masterRange->Text);
+	{
+		char *wkText = masterRange->Text;
+
+		wkText = SRG_PutIndentToText(wkText, targetRange->IndentLen);
+
+		writeToken_x(fp, wkText);
+	}
 
 	for(index = targetRange->EndSymLineIndex; index < getCount(lines); index++)
 		writeLine(fp, getLine(lines, index));
