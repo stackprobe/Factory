@@ -1,6 +1,19 @@
+/*
+	使い方
+
+		lss [...]
+		lssColl [/K]
+
+	例) C:\Dev 配下の *.cs のみを階層を維持して抽出する。
+
+		CD /D C:\Dev
+		lss /e .cs*
+		lssColl /K
+*/
+
 #include "C:\Factory\Common\all.h"
 
-static void CollectKeepTree(void)
+static void Collect(int keepHierarchy)
 {
 	autoList_t *paths = readLines(FOUNDLISTFILE);
 	char *path;
@@ -9,28 +22,15 @@ static void CollectKeepTree(void)
 
 	foreach(paths, path, index)
 	{
-		char *outPath = combine_cx(outDir, lineToFairRelPath(path, strlen(outDir)));
+		char *outPath;
 
-		cout("< %s\n", path);
-		cout("> %s\n", outPath);
-
-		createPath(outPath, 'X');
-		copyPath(path, outPath);
-		memFree(outPath);
-	}
-	execute_x(xcout("START %s", outDir));
-	memFree(outDir);
-}
-static void Collect(void)
-{
-	autoList_t *paths = readLines(FOUNDLISTFILE);
-	char *path;
-	uint index;
-	char *outDir = makeFreeDir();
-
-	foreach(paths, path, index)
-	{
-		char *outPath = toCreatablePath(combine(outDir, getLocal(path)), getCount(paths) + 10);
+		if(keepHierarchy)
+		{
+			outPath = combine_cx(outDir, lineToFairRelPath(path, strlen(outDir)));
+			createPath(outPath, 'X');
+		}
+		else
+			outPath = toCreatablePath(combine(outDir, getLocal(path)), index + 10); // index + margin
 
 		cout("< %s\n", path);
 		cout("> %s\n", outPath);
@@ -43,12 +43,5 @@ static void Collect(void)
 }
 int main(int argc, char **argv)
 {
-	if(argIs("/K"))
-	{
-		CollectKeepTree();
-	}
-	else
-	{
-		Collect();
-	}
+	Collect(argIs("/K"));
 }
