@@ -2,11 +2,11 @@
 	newcs c プロジェクト名
 	newcs f プロジェクト名
 	newcs t プロジェクト名
-	newcs d プロジェクト名
+	newcs d プロジェクト名 [名前空間]
 	newcs c2 プロジェクト名
 	newcs f2 プロジェクト名
 	newcs t2 プロジェクト名
-	newcs d2 プロジェクト名
+	newcs d2 プロジェクト名 [名前空間]
 	newcs tt プロジェクト名
 
 	newcs
@@ -145,9 +145,18 @@ static void ResolveRelHintPath(char *file)
 
 	memFree(text);
 }
-static void Main2(char *tmplProject, char *tmplDir, int utFlag, int m2Flag)
+static void Main2(char *tmplProject, char *tmplDir, int utFlag, int m2Flag, char *tmplProjNS)
 {
 	char *project = nextArg();
+	char *projNS;
+
+	if(!tmplProjNS)
+		tmplProjNS = tmplProject;
+
+	if(hasArgs(1))
+		projNS = nextArg();
+	else
+		projNS = project;
 
 	errorCase(!existDir(tmplDir)); // 2bs ?
 
@@ -162,6 +171,7 @@ static void Main2(char *tmplProject, char *tmplDir, int utFlag, int m2Flag)
 		coExecute("qq -f");
 
 		RenamePaths(tmplProject, project);
+		RenamePaths(tmplProjNS,  projNS);
 
 		addCwd(existDir(TESTER_PROJ_LOCALDIR) ? TESTER_PROJ_LOCALDIR : project);
 		{
@@ -184,6 +194,9 @@ static void Main2(char *tmplProject, char *tmplDir, int utFlag, int m2Flag)
 
 		coExecute_x(xcout("Search.exe %s", tmplProject));
 		coExecute_x(xcout("trep.exe /F %s", project));
+
+		coExecute_x(xcout("Search.exe %s", tmplProjNS));
+		coExecute_x(xcout("trep.exe /F %s", projNS));
 
 //		execute("START .");
 
@@ -279,48 +292,49 @@ int main(int argc, char **argv)
 
 	if(argIs("C"))
 	{
-		Main2("CCCCTMPL", "C:\\Dev\\CSharp\\Template\\CUIProgramTemplate", 0, 1);
+		Main2("CCCCTMPL", "C:\\Dev\\CSharp\\Template\\CUIProgramTemplate", 0, 1, NULL);
 		return;
 	}
 	if(argIs("F"))
 	{
-		Main2("FFFFTMPL", "C:\\Dev\\CSharp\\Template\\FormApplicationTemplate", 0, 1);
+		Main2("FFFFTMPL", "C:\\Dev\\CSharp\\Template\\FormApplicationTemplate", 0, 1, NULL);
 		return;
 	}
 	if(argIs("T"))
 	{
-		Main2("TTTTTMPL", "C:\\Dev\\CSharp\\Template\\TaskTrayTemplate", 0, 1);
+		Main2("TTTTTMPL", "C:\\Dev\\CSharp\\Template\\TaskTrayTemplate", 0, 1, NULL);
 		return;
 	}
 	if(argIs("D"))
 	{
-		Main2("DDDDTMPL", "C:\\Dev\\CSharp\\Template\\DLLTemplate", 0, 1);
+		Main2("DDDDTMPL", "C:\\Dev\\CSharp\\Template\\DLLTemplate", 0, 1, "DDDDTMNS");
 		return;
 	}
 	if(argIs("C2"))
 	{
-		Main2("CCCCTMPL", "C:\\Dev\\CSharp\\Template2\\CUIProgramTemplate", 0, 0);
+		Main2("CCCCTMPL", "C:\\Dev\\CSharp\\Template2\\CUIProgramTemplate", 0, 0, NULL);
 		return;
 	}
 	if(argIs("F2"))
 	{
-		Main2("FFFFTMPL", "C:\\Dev\\CSharp\\Template2\\FormApplicationTemplate", 0, 0);
+		Main2("FFFFTMPL", "C:\\Dev\\CSharp\\Template2\\FormApplicationTemplate", 0, 0, NULL);
 		return;
 	}
 	if(argIs("T2"))
 	{
-		Main2("TTTTTMPL", "C:\\Dev\\CSharp\\Template2\\TaskTrayTemplate", 0, 0);
+		Main2("TTTTTMPL", "C:\\Dev\\CSharp\\Template2\\TaskTrayTemplate", 0, 0, NULL);
 		return;
 	}
 	if(argIs("D2"))
 	{
-		Main2("DDDDTMPL", "C:\\Dev\\CSharp\\Template2\\DLLTemplate", 0, 0);
+		Main2("DDDDTMPL", "C:\\Dev\\CSharp\\Template2\\DLLTemplate", 0, 0, "DDDDTMNS");
 		return;
 	}
 	if(argIs("TT"))
 	{
-		Main2("UUUUTMPL", FindUserTemplate(), 1, 0); // g
+		Main2("UUUUTMPL", FindUserTemplate(), 1, 0, NULL); // g
 		return;
 	}
-	cout("usage: newcs (C｜F｜T｜D｜C2｜F2｜T2｜D2｜TT) プロジェクト名\n");
+	cout("usage: newcs (C｜F｜T｜D｜C2｜F2｜T2｜D2｜TT) プロジェクト名 [名前空間]\n");
+	cout("名前空間は D D2 の時のみ\n");
 }
