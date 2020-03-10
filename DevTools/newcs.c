@@ -150,9 +150,6 @@ static void Main2(char *tmplProject, char *tmplDir, int utFlag, int m2Flag, char
 	char *project = nextArg();
 	char *projNS;
 
-	if(!tmplProjNS)
-		tmplProjNS = tmplProject;
-
 	if(hasArgs(1))
 		projNS = nextArg();
 	else
@@ -171,7 +168,9 @@ static void Main2(char *tmplProject, char *tmplDir, int utFlag, int m2Flag, char
 		coExecute("qq -f");
 
 		RenamePaths(tmplProject, project);
-		RenamePaths(tmplProjNS,  projNS);
+
+		if(tmplProjNS)
+			RenamePaths(tmplProjNS,  projNS);
 
 		addCwd(existDir(TESTER_PROJ_LOCALDIR) ? TESTER_PROJ_LOCALDIR : project);
 		{
@@ -195,8 +194,11 @@ static void Main2(char *tmplProject, char *tmplDir, int utFlag, int m2Flag, char
 		coExecute_x(xcout("Search.exe %s", tmplProject));
 		coExecute_x(xcout("trep.exe /F %s", project));
 
-		coExecute_x(xcout("Search.exe %s", tmplProjNS));
-		coExecute_x(xcout("trep.exe /F %s", projNS));
+		if(tmplProjNS)
+		{
+			coExecute_x(xcout("Search.exe %s", tmplProjNS));
+			coExecute_x(xcout("trep.exe /F %s", projNS));
+		}
 
 //		execute("START .");
 
