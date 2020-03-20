@@ -64,19 +64,23 @@ static void Main2(char *regTextFile)
 
 	{
 		char *value = GetValue("HKCU\\Software\\Hidemaruo\\Hidemaru\\Default\\ColorSet");
-		autoBlock_t *bVal;
-		uint r;
 
-		errorCase(!value);
+		if(!value)
+		{
+			cout("強調表示の設定がありません。\n");
+		}
+		else
+		{
+			autoBlock_t *bVal = ab_fromHexLine(value);
+			uint r;
 
-		bVal = ab_fromHexLine(value);
+			ShowColor("強調表示1", bVal, 48);
+			ShowColor("強調表示2", bVal, 84);
+			ShowColor("強調表示3", bVal, 264);
+			ShowColor("強調表示4", bVal, 276);
 
-		ShowColor("強調表示1", bVal, 48);
-		ShowColor("強調表示2", bVal, 84);
-		ShowColor("強調表示3", bVal, 264);
-		ShowColor("強調表示4", bVal, 276);
-
-		releaseAutoBlock(bVal);
+			releaseAutoBlock(bVal);
+		}
 	}
 
 	cout("\n");
