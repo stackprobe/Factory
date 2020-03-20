@@ -85,52 +85,56 @@ static void Main2(char *regTextFile)
 
 	{
 		char *value = GetValue("HKCU\\Software\\Hidemaruo\\Hidemaru\\Default\\HilightWord");
-		autoBlock_t *bVal;
-		uint r;
 
-		errorCase(!value);
-
-		bVal = ab_fromHexLine(value);
-
-		for(r = 0; r < getSize(bVal); )
+		if(!value)
 		{
-			uint len = getByte(bVal, r++);
-			uint hh;
-			uint c;
-			char *word = strx("");
-			char *shh;
-
-			hh = getByte(bVal, r++);
-
-			for(c = 0; c < len; c++)
-				word = addChar(word, getByte(bVal, r++));
-
-			hh = ((hh << 2) & 0xff) | (hh >> 6); // ROT: << 2
-
-			cout("大文字小文字区別:%c ", hh & 0x20 ? 'N' : 'Y');
-			cout("単語の検索:%c ",       hh & 0x80 ? 'Y' : 'N');
-			cout("正規表現:%c ",         hh & 0x40 ? 'Y' : 'N');
-
-			hh &= 0x1f;
-
-			switch(hh)
-			{
-			case 0x04: shh = strx("強調表示1"); break;
-			case 0x05: shh = strx("強調表示2"); break;
-			case 0x06: shh = strx("強調表示3"); break;
-			case 0x07: shh = strx("強調表示4"); break;
-
-			default:
-				shh = xcout("不明な表示方法(%02u)", hh); // xxx
-				break;
-			}
-			cout("%s ", shh);
-			cout("%s\n", word);
-
-			memFree(word);
-			memFree(shh);
+			cout("単語の設定がありません。\n");
 		}
-		releaseAutoBlock(bVal);
+		else
+		{
+			autoBlock_t *bVal = ab_fromHexLine(value);
+			uint r;
+
+			for(r = 0; r < getSize(bVal); )
+			{
+				uint len = getByte(bVal, r++);
+				uint hh;
+				uint c;
+				char *word = strx("");
+				char *shh;
+
+				hh = getByte(bVal, r++);
+
+				for(c = 0; c < len; c++)
+					word = addChar(word, getByte(bVal, r++));
+
+				hh = ((hh << 2) & 0xff) | (hh >> 6); // ROT: << 2
+
+				cout("大文字小文字区別:%c ", hh & 0x20 ? 'N' : 'Y');
+				cout("単語の検索:%c ",       hh & 0x80 ? 'Y' : 'N');
+				cout("正規表現:%c ",         hh & 0x40 ? 'Y' : 'N');
+
+				hh &= 0x1f;
+
+				switch(hh)
+				{
+				case 0x04: shh = strx("強調表示1"); break;
+				case 0x05: shh = strx("強調表示2"); break;
+				case 0x06: shh = strx("強調表示3"); break;
+				case 0x07: shh = strx("強調表示4"); break;
+
+				default:
+					shh = xcout("不明な表示方法(%02u)", hh); // xxx
+					break;
+				}
+				cout("%s ", shh);
+				cout("%s\n", word);
+
+				memFree(word);
+				memFree(shh);
+			}
+			releaseAutoBlock(bVal);
+		}
 	}
 
 	cout("\n");
