@@ -239,16 +239,25 @@ static void Main3(char *rFile, char *wFile)
 }
 static void Main2(char *rFile, char *wFile)
 {
-	char *midFile = makeTempPath(NULL);
+	if(existFile(rFile))
+	{
+		char *midFile = makeTempPath(NULL);
 
-	LOGPOS();
-	UTF16ToSJISFile(rFile, midFile);
-	LOGPOS();
-	Main3(midFile, wFile);
-	LOGPOS();
+		LOGPOS();
+		UTF16ToSJISFile(rFile, midFile);
+		LOGPOS();
+		Main3(midFile, wFile);
+		LOGPOS();
 
-	removeFile(midFile);
-	memFree(midFile);
+		removeFile(midFile);
+		memFree(midFile);
+	}
+	else
+	{
+		cout("regファイルがありません。\n");
+
+		createFile(wFile);
+	}
 }
 int main(int argc, char **argv)
 {
