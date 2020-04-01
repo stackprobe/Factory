@@ -1,5 +1,9 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Collabo.h"
+#include "C:\Factory\SubTools\libs\wav.h"
+
+#define JIHO_DELAY_SEC 5
+#define MUON_SEC 15
 
 static char *GetToolkitExeFile(void)
 {
@@ -10,14 +14,39 @@ static char *GetToolkitExeFile(void)
 
 	return file;
 }
+static void InsertTopMuon(char *rFile, char *wFile)
+{
+	autoList_t *wavData = readWAVFile(rFile);
+	autoList_t *dest = newList();
+	uint count;
+	uint wavTop;
+
+	wavTop = getElement(wavData, 0);
+
+	for(count = 0; count < lastWAV_Hz * (MUON_SEC + JIHO_DELAY_SEC); count++)
+		addElement(dest, wavTop);
+
+	addElements(dest, wavData);
+
+	writeWAVFile(wFile, dest, lastWAV_Hz);
+
+	releaseAutoList(wavData);
+	releaseAutoList(dest);
+}
 
 static char *JihoWavFile;
 
 static void PlayJiho(void)
 {
+	char *wkJWFile = makeTempPath("wav");
+
+	InsertTopMuon(JihoWavFile, wkJWFile);
+
 	LOGPOS();
-	coExecute_x(xcout("START \"\" /B /WAIT \"%s\" /PLAY-WAV \"%s\"", GetToolkitExeFile(), JihoWavFile));
+	coExecute_x(xcout("START \"\" /B /WAIT \"%s\" /PLAY-WAV \"%s\"", GetToolkitExeFile(), wkJWFile));
 	LOGPOS();
+
+	removeFile_x(wkJWFile);
 }
 int main(int argc, char **argv)
 {
@@ -36,7 +65,7 @@ int main(int argc, char **argv)
 
 	for(; ; )
 	{
-		uint rem = (3600 - (uint)((time(NULL) + 2260) % 3600)) % 3600;
+		uint rem = (3600 - (uint)((time(NULL) + JIHO_DELAY_SEC) % 3600)) % 3600;
 		uint millis;
 
 		if(rem == 0)
