@@ -3,7 +3,8 @@
 #include "C:\Factory\SubTools\libs\wav.h"
 
 #define JIHO_DELAY_SEC 5
-#define MUON_SEC 15
+#define MUON_SEC 1
+//#define MUON_SEC 15
 
 static char *GetToolkitExeFile(void)
 {
@@ -23,7 +24,7 @@ static void InsertTopMuon(char *rFile, char *wFile)
 
 	wavTop = getElement(wavData, 0);
 
-	for(count = 0; count < lastWAV_Hz * (MUON_SEC + JIHO_DELAY_SEC); count++)
+	for(count = 0; count < lastWAV_Hz * MUON_SEC; count++)
 		addElement(dest, wavTop);
 
 	addElements(dest, wavData);
@@ -65,7 +66,7 @@ int main(int argc, char **argv)
 
 	for(; ; )
 	{
-		uint rem = (3600 - (uint)((time(NULL) + JIHO_DELAY_SEC) % 3600)) % 3600;
+		uint rem = (3600 - (uint)((time(NULL) + MUON_SEC + JIHO_DELAY_SEC) % 3600)) % 3600;
 		uint millis;
 
 		if(rem == 0)
