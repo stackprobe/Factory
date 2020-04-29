@@ -308,7 +308,21 @@ static void LoadAppInfos(char *rootDir)
 		ai->RevInfos = newList();
 
 		LoadRevInfos(dir, ai->RevInfos);
+#if 1
+		if(!getCount(ai->RevInfos))
+		{
+			RevInfo_t *ri = nb_(RevInfo_t);
+
+			ri->Rev = strx("0000.000.00000");
+			ri->DLFile = strx("none");
+			ri->Size = 0;
+			ri->Hash = strx("00000000000000000000000000000000");
+
+			addElement(ai->RevInfos, (uint)ri);
+		}
+#else
 		errorCase_m(!getCount(ai->RevInfos), "リリースされたリビジョンが１つもありません。");
+#endif
 
 		{
 			char *file = combine(dir, DESCRIPTION_FILE);
