@@ -598,8 +598,16 @@ readArgs:
 			removeFile(midZipFile);
 		}
 		else
+		{
 			cout("ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚Ü‚µ‚½B\n");
 
+#if 0
+			recurClearDir(outDir);
+#else
+			semiRemovePath(outDir);
+			createDir(outDir);
+#endif
+		}
 		memFree(outDir);
 		memFree(projName);
 		memFree(destZipFile);
