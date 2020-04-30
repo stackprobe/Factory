@@ -1,5 +1,5 @@
 /*
-	zcp.exe [/F] [/M | /R] [/EF] SOURCE-PATH DESTINATION-PATH
+	zcp.exe [/F] [/M | /R] [/EF] [/B] SOURCE-PATH DESTINATION-PATH
 
 		/F ... ã≠êßÉÇÅ[Éh
 
