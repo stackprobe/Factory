@@ -1,8 +1,10 @@
 /*
-	Period.exe [/EI] ID [/CTT | /C | /R MIN-SEC MAX-SEC | /RH MIN-HOUR MAX-HOUR | /T SEC | /TM MINUTE | /TH HOUR | /TD DAY]
+	Period.exe [/EI] ID [/V | /CTT | /C | /R MIN-SEC MAX-SEC | /RH MIN-HOUR MAX-HOUR | /T SEC | /TM MINUTE | /TH HOUR | /TD DAY]
 
 		ID ... 大文字小文字を区別する。
 			/CTT を指定する場合は、使用しない。適当な文字列をセットすること。
+
+		/V ... 表示のみ
 
 	----
 	例
@@ -10,15 +12,18 @@
 	全クリア
 
 		Period a /ctt
+
+	表示のみ
+
+		Period a /v
+		Period a /t 0   ... 定刻に達しても、現時刻で再設定されるので「定刻に達した」状態は維持される。
 */
 
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\CRRandom.h"
 
 static int EqualInterval;
-
 static time_t P_CurrTime;
-
 static char *S_Id;
 
 // ---- time table ----
@@ -55,6 +60,8 @@ static void SaveTimeTable(void)
 {
 	writeLines(TIME_TABLE_FILE, TTbl);
 }
+
+// ---- time table tools ----
 
 static time_t GetTime(void)
 {
@@ -139,8 +146,14 @@ static void UpdateTime(time_t addTime)
 
 	termination(0); // 時間キタ
 }
+static void UpdateTime_NoUpdate(void)
+{
+	cout("時間キタ！表示のみ\n");
 
-// ---- update ----
+	termination(0); // 時間キタ
+}
+
+// ---- UpdateTime() wrap ----
 
 static void Update_Range(uint minSec, uint maxSec)
 {
@@ -182,9 +195,7 @@ int main(int argc, char **argv)
 	{
 		EqualInterval = 1;
 	}
-
 	P_CurrTime = time(NULL) + 9 * 3600; // JST
-
 	S_Id = nextArg();
 
 	errorCase(m_isEmpty(S_Id));
@@ -204,6 +215,10 @@ int main(int argc, char **argv)
 
 	CheckTime();
 
+	if(argIs("/V"))
+	{
+		UpdateTime_NoUpdate();
+	}
 	if(argIs("/R"))
 	{
 		uint minSec;

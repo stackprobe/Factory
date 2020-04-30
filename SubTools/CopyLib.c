@@ -160,9 +160,11 @@ static void AutoComment_CS(autoList_t *ranges)
 
 		if(!startsWith(prevLine, "\t\t/// "))
 		if(!startsWith(prevLine, "\t\t[DllImport"))
+		if(!startsWith(prevLine, "\t\t[StructLayout"))
 		if(
 			startsWith(line, "\t\t/// ") ||
 			startsWith(line, "\t\t[DllImport") ||
+			startsWith(line, "\t\t[StructLayout") ||
 			startsWith(line, "\t\tpublic ") ||
 			startsWith(line, "\t\tprivate ") ||
 			startsWith(line, "\t\tprotected ")
