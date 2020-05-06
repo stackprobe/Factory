@@ -38,11 +38,6 @@ uint64 lastDiskSize;
 void updateDiskSpace(int drive)
 {
 	char dir[4];
-	ULARGE_INTEGER a;
-	ULARGE_INTEGER f;
-	ULARGE_INTEGER t;
-
-	errorCase(!m_isalpha(drive));
 
 	dir[0] = drive;
 	dir[1] = ':';
@@ -50,7 +45,20 @@ void updateDiskSpace(int drive)
 	dir[3] = '\0';
 
 	/*
-		ドライブが存在しない || 準備出来ていない -> 失敗する。
+		ドライブが存在しない || 準備出来ていない -> error();
+	*/
+	updateDiskSpace_Dir(dir);
+}
+void updateDiskSpace_Dir(char *dir)
+{
+	ULARGE_INTEGER a;
+	ULARGE_INTEGER f;
+	ULARGE_INTEGER t;
+
+	errorCase(m_isEmpty(dir));
+
+	/*
+		ドライブが存在しない || 準備出来ていない || ディレクトリが存在しない -> 失敗する。
 	*/
 	if(!(int)GetDiskFreeSpaceEx((LPCTSTR)dir, &a, &t, &f)) // ? 失敗
 	{
