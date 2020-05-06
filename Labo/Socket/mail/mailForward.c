@@ -379,7 +379,7 @@ static void RecvLoop(void)
 			waitMax = 3; // 9 sec
 		*/
 
-		cout("lastHTm: %f\n", lastHTm);
+//		cout("lastHTm: %f\n", lastHTm);
 		cout("currHTm: %f\n", currHTm);
 		cout("diffHTm: %f\n", diffHTm);
 		cout("waitMax: %u (%u sec)\n", waitMax, waitMax * 3);
