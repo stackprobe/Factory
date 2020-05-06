@@ -80,6 +80,40 @@ static void CheckAutoRelease(char *dir)
 		}
 	}
 
+	{
+		char *rumDir = addExt(getCwd(), "rum");
+
+		if(!existDir(rumDir))
+		{
+			FoundError(".rum が見つかりません。");
+		}
+		else
+		{
+			char *revRootDir = combine(rumDir, "revisions");
+			autoList_t *revDirs;
+			char *lastRevDir;
+			char *lastCommentFile;
+			char *lastComment;
+
+			revDirs = lsDirs(revRootDir);
+			sortJLinesICase(revDirs);
+			lastRevDir = (char *)getLastElement(revDirs);
+			lastCommentFile = combine(lastRevDir, "comment.txt");
+			lastComment = readFirstLine(lastCommentFile);
+
+			if(strcmp(lastComment, "rel"))
+			{
+				FoundError("最終コメントが rel ではありません。");
+			}
+
+			memFree(revRootDir);
+			releaseDim(revDirs, 1);
+//			lastRevDir
+			memFree(lastCommentFile);
+			memFree(lastComment);
+		}
+	}
+
 	unaddCwd();
 }
 
