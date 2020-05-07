@@ -5,11 +5,11 @@ int main(int argc, char **argv)
 	updateMemory();
 
 	cout("メモリ使用率 = %u %%\n", lastMemoryLoad);
-	cout("物理メモリ空き = %I64u バイト\n", lastMemoryFree);
-	cout("物理メモリ容量 = %I64u バイト\n", lastMemorySize);
-	cout("仮想メモリ空き = %I64u バイト\n", lastVirtualFree);
-	cout("仮想メモリ拡張 = %I64u バイト\n", lastExVirtualFree);
-	cout("仮想メモリ容量 = %I64u バイト\n", lastVirtualSize);
-	cout("ページサイズ空き = %I64u バイト\n", lastPageFileFree);
-	cout("ページサイズ最大 = %I64u バイト\n", lastPageFileSize);
+	cout("物理メモリ空き = %s バイト\n", c_thousandComma(xcout("%I64u", lastMemoryFree)));
+	cout("物理メモリ容量 = %s バイト\n", c_thousandComma(xcout("%I64u", lastMemorySize)));
+	cout("仮想メモリ空き = %s バイト\n", c_thousandComma(xcout("%I64u", lastVirtualFree)));
+	cout("仮想メモリ拡張 = %s バイト\n", c_thousandComma(xcout("%I64u", lastExVirtualFree)));
+	cout("仮想メモリ容量 = %s バイト\n", c_thousandComma(xcout("%I64u", lastVirtualSize)));
+	cout("ページサイズ空き = %s バイト\n", c_thousandComma(xcout("%I64u", lastPageFileFree)));
+	cout("ページサイズ最大 = %s バイト\n", c_thousandComma(xcout("%I64u", lastPageFileSize)));
 }

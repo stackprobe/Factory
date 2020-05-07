@@ -42,7 +42,7 @@ static int RecvPrmData(SockStream_t *ss, char *dataFile, uint64 dataSize) // ret
 
 			if(count % 30000000ui64 == 0ui64) // 30 MB
 			{
-				updateDiskSpace(RootDir[0]);
+				updateDiskSpace_Dir(RootDir);
 
 				if(lastDiskFree < KeepDiskFree)
 				{
@@ -179,7 +179,7 @@ static void PerformTh(int sock, char *strip)
 			memFree(tmp);
 			goto fault;
 		}
-		updateDiskSpace(RootDir[0]);
+		updateDiskSpace_Dir(RootDir);
 
 		if(lastDiskFree < KeepDiskFree)
 		{

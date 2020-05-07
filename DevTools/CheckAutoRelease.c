@@ -190,11 +190,15 @@ int main(int argc, char **argv)
 
 		fp = fileOpen(NEED_RELEASE_BAT, "wt");
 
+		writeLine(fp, "CD /D C:\\temp"); // ˆÀ‘S‚Ì‚½‚ß
+		writeLine(fp, "");
+
 		foreach(NeedReleaseDirs, dir, index)
 		{
-			writeLine(fp, "CD /D C:\\temp"); // ˆÀ‘S‚Ì‚½‚ß
 			writeLine_x(fp, xcout("CD /D \"%s\"", dir));
+			writeLine(fp, "PAUSE");
 			writeLine(fp, "CALL AutoRelease.bat");
+			writeLine(fp, "CD /D C:\\temp"); // ˆÀ‘S‚Ì‚½‚ß
 			writeLine(fp, "");
 		}
 		fileClose(fp);
