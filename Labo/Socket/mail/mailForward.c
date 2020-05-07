@@ -338,18 +338,14 @@ static void RecvEvent(autoList_t *mail)
 }
 static void RecvLoop(void)
 {
-	double lastHTm = -IMAX;
-	double currHTm;
-	double diffHTm;
 	uint stopEv = eventOpen(STOP_EV_NAME);
+	uint waitSec = IMAX;
 
 	for(; ; )
 	{
 		autoList_t *mails = mailRecv(PopServer, PopPortno, PopUserName, PopPassphrase, 3, 1024 * 1024 * 64, 1);
 		autoList_t *mail;
 		uint index;
-		uint currTime;
-		uint waitMax;
 
 		foreach(mails, mail, index)
 		{
@@ -362,41 +358,18 @@ static void RecvLoop(void)
 		}
 		releaseDim(mails, 2);
 
-		currHTm = now() / 3600.0;
-
 		if(index) // ? 何かメールを受信した。
-			lastHTm = currHTm;
-
-		diffHTm = currHTm - lastHTm;
-		m_range(diffHTm, 0.0, 24.0);
-		waitMax = 2 + (uint)d2i(diffHTm * 1.5);
-
-		// old
-		/*
-		if(lastHTm + 1.0 < currHTm) // ? 最後の受信からかなり経った。
-			waitMax = 15; // 45 sec
+			waitSec = 10;
 		else
-			waitMax = 3; // 9 sec
-		*/
+			waitSec++;
 
-//		cout("lastHTm: %f\n", lastHTm);
-		cout("currHTm: %f\n", currHTm);
-		cout("diffHTm: %f\n", diffHTm);
-		cout("waitMax: %u (%u sec)\n", waitMax, waitMax * 3);
+		m_minim(waitSec, 100);
 
-		for(index = 0; index < waitMax; index++)
-		{
-			while(hasKey())
-				if(getKey() == 0x1b)
-					goto endLoop;
+		cout("waitSec: %u\n", waitSec);
 
-#if 1
-			if(handleWaitForMillis(stopEv, 3000))
+		for(index = 0; index < waitSec; index += 3)
+			if(checkKey(0x1b) || handleWaitForMillis(stopEv, 3000))
 				goto endLoop;
-#else // old
-			sleep(3000);
-#endif
-		}
 	}
 endLoop:
 	handleClose(stopEv);
