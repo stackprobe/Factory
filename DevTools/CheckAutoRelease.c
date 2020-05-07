@@ -5,8 +5,10 @@
 #include "C:\Factory\Common\all.h"
 
 #define AUTO_RELEASE_BAT_TEMPLATE_FILE "C:\\Factory\\Resource\\AutoRelease.bat_template.txt"
+#define NEED_RELEASE_BAT "C:\\Factory\\tmp\\NeedRelease.bat"
 
 static autoList_t *AutoReleaseBatTemplateLines;
+static autoList_t *NeedReleaseDirs;
 
 #define LOCAL_AUTO_RELEASE_BAT "AutoRelease.bat"
 #define LOCAL_LEGACY_RELEASE_BAT "Release.bat"
@@ -40,6 +42,8 @@ static void RemoveIndentedLines(autoList_t *lines)
 }
 static void CheckAutoRelease(char *dir)
 {
+	dir = makeFullPath(dir);
+
 	cout("チェック対象ディレクトリ ⇒ %s\n", dir);
 
 	addCwd(dir);
@@ -104,6 +108,8 @@ static void CheckAutoRelease(char *dir)
 			if(strcmp(lastComment, "rel"))
 			{
 				FoundError("最終コメントが rel ではありません。");
+
+				addElement(NeedReleaseDirs, (uint)strx(dir));
 			}
 
 			memFree(revRootDir);
@@ -115,6 +121,8 @@ static void CheckAutoRelease(char *dir)
 	}
 
 	unaddCwd();
+
+	memFree(dir);
 }
 
 static void CheckDir(char *dir);
@@ -148,6 +156,7 @@ static void CheckDir(char *dir)
 int main(int argc, char **argv)
 {
 	AutoReleaseBatTemplateLines = readLines(AUTO_RELEASE_BAT_TEMPLATE_FILE);
+	NeedReleaseDirs = newList();
 
 	if(argIs("/C"))
 	{
@@ -171,5 +180,26 @@ int main(int argc, char **argv)
 	else
 	{
 		cout("エラーは見つかりませんでした。\n");
+	}
+
+	if(getCount(NeedReleaseDirs))
+	{
+		char *dir;
+		uint index;
+		FILE *fp;
+
+		fp = fileOpen(NEED_RELEASE_BAT, "wt");
+
+		foreach(NeedReleaseDirs, dir, index)
+		{
+			writeLine(fp, "CD /D C:\\temp"); // 安全のため
+			writeLine_x(fp, xcout("CD /D \"%s\"", dir));
+			writeLine(fp, "CALL AutoRelease.bat");
+			writeLine(fp, "");
+		}
+		fileClose(fp);
+
+		cout("\n");
+		cout(NEED_RELEASE_BAT " を出力しました。\n");
 	}
 }
