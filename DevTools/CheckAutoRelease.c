@@ -1,5 +1,7 @@
 /*
-	CheckAutoRelease [/C 直接チェックDIR | ルートDIR]
+	CheckAutoRelease [/-C] [/D 直接チェックDIR | ルートDIR]
+
+		/-C ... 最終コメントをチェックしない。
 */
 
 #include "C:\Factory\Common\all.h"
@@ -10,11 +12,13 @@
 static autoList_t *AutoReleaseBatTemplateLines;
 static autoList_t *NeedReleaseDirs;
 
+static int IgnoreLastCommentError;
+
 #define LOCAL_AUTO_RELEASE_BAT "AutoRelease.bat"
-#define LOCAL_LEGACY_RELEASE_BAT "Release.bat"
-#define LOCAL_LEGACY_CLEAN_BAT "Clean.bat"
-#define LOCAL_RELEASE_BAT "_Release.bat"
-#define LOCAL_CLEAN_BAT "_Clean.bat"
+#define LOCAL_LEGACY_RELEASE_BAT "_Release.bat"
+#define LOCAL_LEGACY_CLEAN_BAT "_Clean.bat"
+#define LOCAL_RELEASE_BAT "Release.bat"
+#define LOCAL_CLEAN_BAT "Clean.bat"
 
 static uint ErrorCount;
 
@@ -105,7 +109,7 @@ static void CheckAutoRelease(char *dir)
 			lastCommentFile = combine(lastRevDir, "comment.txt");
 			lastComment = readFirstLine(lastCommentFile);
 
-			if(strcmp(lastComment, "rel"))
+			if(strcmp(lastComment, "rel") && !IgnoreLastCommentError)
 			{
 				FoundError("最終コメントが rel ではありません。");
 
@@ -155,10 +159,19 @@ static void CheckDir(char *dir)
 }
 int main(int argc, char **argv)
 {
+	removeFileIfExist(NEED_RELEASE_BAT);
+
 	AutoReleaseBatTemplateLines = readLines(AUTO_RELEASE_BAT_TEMPLATE_FILE);
 	NeedReleaseDirs = newList();
 
-	if(argIs("/C"))
+	if(argIs("/-C"))
+	{
+		IgnoreLastCommentError = 1;
+	}
+
+	errorCase_m(argIs("/C"), "廃止オプション"); // zantei
+
+	if(argIs("/D"))
 	{
 		CheckAutoRelease(nextArg());
 	}

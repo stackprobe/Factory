@@ -1,5 +1,5 @@
 /*
-	CheckGitRelease [/C 直接チェックDIR | ルートDIR]
+	CheckGitRelease [/D 直接チェックDIR | ルートDIR]
 */
 
 #include "C:\Factory\Common\all.h"
@@ -124,7 +124,9 @@ static void CheckDir(char *dir)
 }
 int main(int argc, char **argv)
 {
-	if(argIs("/C"))
+	errorCase_m(argIs("/C"), "廃止オプション"); // zantei
+
+	if(argIs("/D"))
 	{
 		CheckGitRelease(nextArg());
 	}
