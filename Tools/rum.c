@@ -1071,6 +1071,7 @@ endNestingCheck:
 		}
 		unaddCwd();
 		execute("Compact.exe /C /S:" DIR_FILES); // 再圧縮
+		execute("Compact.exe /C /S:. > NUL"); // .rum 再圧縮 -- コピーするなどして圧縮が解除された場合などのため
 
 		changeRoots(paths, dir, NULL); // リスト出力用に、相対化
 
