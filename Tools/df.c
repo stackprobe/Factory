@@ -6,8 +6,9 @@ static void DispDiskFree(int drive, char *dir)
 
 	cout("%cドライブ\n", m_toupper(drive));
 	cout("ディスク使用率 = %.3f %%\n", (lastDiskSize - lastDiskFree) * 100.0 / lastDiskSize);
-	cout("ディスク空き = %s バイト\n", c_thousandComma(xcout("%I64u", lastDiskFree)));
+	cout("ディスク使用 = %s バイト\n", c_thousandComma(xcout("%I64u", lastDiskSize - lastDiskFree)));
 	cout("ディスク容量 = %s バイト\n", c_thousandComma(xcout("%I64u", lastDiskSize)));
+	cout("ディスク空き = %s バイト\n", c_thousandComma(xcout("%I64u", lastDiskFree)));
 	cout("利用不可領域 = %s バイト\n", c_thousandComma(xcout("%I64u", lastDiskFree - lastDiskFree_User)));
 	cout("利用可能領域 = %s バイト\n", c_thousandComma(xcout("%I64u", lastDiskFree_User)));
 
