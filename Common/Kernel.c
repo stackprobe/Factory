@@ -75,7 +75,7 @@ void updateDiskSpace_Dir(char *dir)
 #else
 	int drive;
 
-errorCase(!*dir); // 2bs
+	errorCase(!*dir); // 2bs
 
 	if(dir[1] == ':')
 	{
@@ -85,12 +85,12 @@ errorCase(!*dir); // 2bs
 	{
 #if 1
 		dir = getCwd();
-else
+#else
 		dir = makeFullPath(dir);
 #endif
 		drive = dir[0];
 		memFree(dir);
 	}
-	return updateDiskSpace(drive);
+	updateDiskSpace(drive);
 #endif
 }
