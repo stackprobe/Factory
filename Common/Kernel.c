@@ -35,36 +35,62 @@ uint64 lastDiskFree_User; // このプロセスが使用出来る空き領域サイズ
 uint64 lastDiskFree;
 uint64 lastDiskSize;
 
+static void S_UpdateDiskSpace(char *dir)
+{
+	ULARGE_INTEGER a;
+	ULARGE_INTEGER f;
+	ULARGE_INTEGER t;
+
+	/*
+		ドライブが存在しない || 準備出来ていない || ディレクトリが存在しない -> 失敗する。
+	*/
+	if (!(int)GetDiskFreeSpaceEx((LPCTSTR)dir, &a, &t, &f)) // ? 失敗
+	{
+		error();
+	}
+	lastDiskFree_User = (uint64)a.LowPart | (uint64)a.HighPart << 32;
+	lastDiskFree      = (uint64)f.LowPart | (uint64)f.HighPart << 32;
+	lastDiskSize      = (uint64)t.LowPart | (uint64)t.HighPart << 32;
+}
+/*
+	ドライブが存在しない || 準備出来ていない -> error();
+*/
 void updateDiskSpace(int drive)
 {
 	char dir[4];
+
+	errorCase(!m_isalpha(drive));
 
 	dir[0] = drive;
 	dir[1] = ':';
 	dir[2] = '\\';
 	dir[3] = '\0';
 
-	/*
-		ドライブが存在しない || 準備出来ていない -> error();
-	*/
-	updateDiskSpace_Dir(dir);
+	S_UpdateDiskSpace(dir);
 }
 void updateDiskSpace_Dir(char *dir)
 {
-	ULARGE_INTEGER a;
-	ULARGE_INTEGER f;
-	ULARGE_INTEGER t;
+#if 0 // zantei
+	return S_UpdateDiskSpace(dir);
+#else
+	int drive;
 
-	errorCase(m_isEmpty(dir));
+errorCase(!*dir); // 2bs
 
-	/*
-		ドライブが存在しない || 準備出来ていない || ディレクトリが存在しない -> 失敗する。
-	*/
-	if(!(int)GetDiskFreeSpaceEx((LPCTSTR)dir, &a, &t, &f)) // ? 失敗
+	if(dir[1] == ':')
 	{
-		error();
+		drive = dir[0];
 	}
-	lastDiskFree_User = (uint64)a.LowPart | (uint64)a.HighPart << 32;
-	lastDiskFree = (uint64)f.LowPart | (uint64)f.HighPart << 32;
-	lastDiskSize = (uint64)t.LowPart | (uint64)t.HighPart << 32;
+	else
+	{
+#if 1
+		dir = getCwd();
+else
+		dir = makeFullPath(dir);
+#endif
+		drive = dir[0];
+		memFree(dir);
+	}
+	return updateDiskSpace(drive);
+#endif
 }

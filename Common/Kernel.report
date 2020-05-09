@@ -1,0 +1,6 @@
+Microsoft(R) 32-bit C/C++ Optimizing Compiler Version 16.00.40219.01 for 80x86
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+Kernel.c
+Kernel.c(88) : error C2181: else 文が if と一致しません。
+Kernel.c(94) : warning C4098: 'updateDiskSpace_Dir' : 戻り値の型が 'void' で宣言された関数が、値を返しました。
