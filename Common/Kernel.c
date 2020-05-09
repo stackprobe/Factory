@@ -21,17 +21,17 @@ void updateMemory(void)
 	{
 		error();
 	}
-	lastMemoryLoad = (uint)ms.dwMemoryLoad;
-	lastMemoryFree = (uint64)ms.ullAvailPhys;
-	lastMemorySize = (uint64)ms.ullTotalPhys;
-	lastPageFileFree = (uint64)ms.ullAvailPageFile;
-	lastPageFileSize = (uint64)ms.ullTotalPageFile;
-	lastVirtualFree = (uint64)ms.ullAvailVirtual;
-	lastVirtualSize = (uint64)ms.ullTotalVirtual;
+	lastMemoryLoad    = (uint)ms.dwMemoryLoad;
+	lastMemoryFree    = (uint64)ms.ullAvailPhys;
+	lastMemorySize    = (uint64)ms.ullTotalPhys;
+	lastPageFileFree  = (uint64)ms.ullAvailPageFile;
+	lastPageFileSize  = (uint64)ms.ullTotalPageFile;
+	lastVirtualFree   = (uint64)ms.ullAvailVirtual;
+	lastVirtualSize   = (uint64)ms.ullTotalVirtual;
 	lastExVirtualFree = (uint64)ms.ullAvailExtendedVirtual;
 }
 
-uint64 lastDiskFree_User; // このプロセスが使用出来る空き領域サイズ
+uint64 lastDiskFree_User; // 現在のユーザーが利用できるディスクの空きバイト数
 uint64 lastDiskFree;
 uint64 lastDiskSize;
 
