@@ -1,107 +1,91 @@
 /*
-	cp.exe [コピー元DIR コピー先DIR]
+	ファイルのコピー
 
-		コピー元DIR ... 存在するディレクトリであること。
-		コピー先DIR ... 存在するディレクトリであること。
+	----
 
-		コピー先の直下にコピー元のローカル名を作成して、そこへコピーする。
+	cp.exe SOURCE-FILE DESTINATION-PATH
 
-	cp.exe /D [コピー先DIR]
+		/F ... 強制モード
 
-		コピー先DIR ... 存在するディレクトリであること。
+			コピー先が既に存在する場合、問い合わせすることなく削除する。
 
-		コピー先を固定して、複数のコピー元を指定する。
+		/M, /R ... 移動モード
+
+			コピー元を削除する。つまり移動する。
 */
 
 #include "C:\Factory\Common\all.h"
 
-static void DoCopy(char *rDir, char *wDir)
-{
-	rDir = makeFullPath(rDir);
-	wDir = makeFullPath(wDir);
-
-	cout("0.< %s\n", rDir);
-	cout("0.> %s\n", wDir);
-
-	errorCase_m(!existDir(rDir), "コピー元ディレクトリは存在しません。");
-	errorCase_m(!existDir(wDir), "コピー先ディレクトリ(ルート)は存在しません。");
-
-	{
-		char *rLDir = getLocal(rDir);
-
-		if(*rLDir)
-			rLDir = strx(rLDir);
-		else
-			rLDir = xcout("%c$$", rDir[0]);
-
-		wDir = combine_xx(wDir, rLDir);
-		wDir = toCreatableTildaPath(wDir, IMAX);
-	}
-
-	cout("1.> %s\n", wDir);
-
-	createDir(wDir);
-	coExecute_x(xcout("START \"\" /MIN ROBOCOPY.EXE \"%s\" \"%s\" /MIR", rDir, wDir));
-
-	memFree(rDir);
-	memFree(wDir);
-}
 int main(int argc, char **argv)
 {
-	if(argIs("/D"))
+	char *srcFile;
+	char *destFile;
+	int force_mode = 0;
+	int move_mode = 0;
+	int ef_mode = 0;
+	int b_mode = 0;
+
+readArgs:
+	if(argIs("/F"))
 	{
-		char *rDir;
-		char *wDir;
-
-		cout("+------------------------------+\n");
-		cout("| コピー先を固定して複数コピー |\n");
-		cout("+------------------------------+\n");
-
-		if(hasArgs(1))
-		{
-			wDir = strx(nextArg());
-		}
-		else
-		{
-			cout("固定されたコピー先ディレクトリ(ルート):\n");
-			wDir = dropDir();
-		}
-
-		for(; ; )
-		{
-			cout("コピー元ディレクトリ:\n");
-			rDir = dropDir();
-
-			DoCopy(rDir, wDir);
-
-			memFree(rDir);
-
-			cout("\n");
-		}
-		return; // dummy
+		force_mode = 1;
+		goto readArgs;
+	}
+	if(argIs("/M") || argIs("/R"))
+	{
+		move_mode = 1;
+		goto readArgs;
 	}
 
-	if(hasArgs(2))
+	srcFile  = nextArg();
+	destFile = nextArg();
+
+	/*
+		オプションを間違えた？ -> 念のため error
+	*/
+	errorCase(srcFile[0]  == '/');
+	errorCase(destFile[0] == '/');
+	errorCase(hasArgs(1));
+
+	srcFile  = makeFullPath(srcFile);
+	destFile = makeFullPath(destFile);
+
+	errorCase(!existFile(srcFile));
+
+	if(existDir(destFile))
 	{
-		DoCopy(getArg(0), getArg(1));
-		return;
+		destFile = addLocal(destFile, getLocal(srcFile));
+
+		errorCase(existDir(destFile));
 	}
 
-	for(; ; )
+	cout("< %s\n", srcFile);
+	cout("> %s\n", destFile);
+
+	if(existFile(destFile))
 	{
-		char *rDir;
-		char *wDir;
+		if(!force_mode)
+		{
+			cout("コピー先ファイルが存在します。\n");
+			cout("削除？\n");
 
-		cout("コピー元ディレクトリ:\n");
-		rDir = dropDir();
-		cout("コピー先ディレクトリ(ルート):\n");
-		wDir = dropDir();
+			if(clearGetKey() == 0x1b)
+				termination(0);
 
-		DoCopy(rDir, wDir);
-
-		memFree(rDir);
-		memFree(wDir);
-
-		cout("\n");
+			cout("削除します。\n");
+		}
+		recurRemovePath(destFile);
 	}
+
+	if(move_mode)
+	{
+		moveFile(srcFile, destFile);
+	}
+	else
+	{
+		copyFile(srcFile, destFile);
+	}
+
+	memFree(srcFile);
+	memFree(destFile);
 }

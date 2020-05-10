@@ -1,5 +1,6 @@
+// smpl
 /*
-	これは smpl -> 機能追加は zcp へ
+	ディレクトリのコピー
 
 	----
 
@@ -47,7 +48,7 @@ readArgs:
 		goto readArgs;
 	}
 
-	srcDir = nextArg();
+	srcDir  = nextArg();
 	destDir = nextArg();
 
 	if(create_mode)

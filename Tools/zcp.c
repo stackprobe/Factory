@@ -1,4 +1,8 @@
 /*
+	ファイル・ディレクトリのコピー
+
+	----
+
 	zcp.exe [/F] [/M | /R] [/EF] [/B] SOURCE-PATH DESTINATION-PATH
 
 		/F ... 強制モード
@@ -11,7 +15,7 @@
 
 		/EF ... 拡張子フィルタ
 
-			コピー先のファイル・ディレクトリ名の終端の '_' を除去する。
+			コピー先のファイル・ディレクトリ名の拡張子終端の '_' を除去する。
 
 		/B ... コピー先の親ディレクトリを指定する。
 
@@ -70,17 +74,17 @@ readArgs:
 		goto readArgs;
 	}
 
-	srcPath = nextArg();
+	srcPath  = nextArg();
 	destPath = nextArg();
 
 	/*
 		オプションを間違えた？ -> 念のため error
 	*/
-	errorCase(srcPath[0] == '/');
+	errorCase(srcPath[0]  == '/');
 	errorCase(destPath[0] == '/');
 	errorCase(hasArgs(1));
 
-	srcPath = makeFullPath(srcPath);
+	srcPath  = makeFullPath(srcPath);
 	destPath = makeFullPath(destPath);
 
 	if(b_mode)
