@@ -13,7 +13,7 @@ static void CopyLatest(char *rDir, char *rLocalFile, char *wFile)
 	errorCase(!existDir(rDir));
 	errorCase(!existFile(wFile) && !creatable(wFile));
 
-	rSubDirs = lsFiles(rDir);
+	rSubDirs = lsDirs(rDir);
 	sortJLinesICase(rSubDirs);
 	rSubDir = (char *)getLastElement(rSubDirs);
 	rFile = combine(rSubDir, rLocalFile);
