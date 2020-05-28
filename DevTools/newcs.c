@@ -339,4 +339,5 @@ int main(int argc, char **argv)
 	}
 	cout("usage: newcs (C｜F｜T｜D｜C2｜F2｜T2｜D2｜TT) プロジェクト名 [名前空間]\n");
 	cout("名前空間は D D2 の時のみ\n");
+	cout("(特にDLLの)名前空間はクラス名と被らないように複数形にしている模様 @ 2020.x.x\n");
 }
