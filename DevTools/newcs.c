@@ -205,7 +205,8 @@ static void Main2(char *tmplProject, char *tmplDir, int utFlag, int m2Flag, char
 		execute_x(xcout("%s.sln", project));
 
 		if(m2Flag)
-			execute("START C:\\Dev\\CSharp\\Module2\\Module2");
+			execute("START C:\\Dev\\CSharp\\Module2");
+//			execute("START C:\\Dev\\CSharp\\Module2\\Module2"); // del @ 2020.5.23
 	}
 	unaddCwd();
 }
