@@ -2,6 +2,11 @@
 	DLIndex.exe [/S] ルートDIR
 
 	----
+	テストデータ
+
+	C:\wb2\20200604_DLIndexTest
+
+	----
 	フォルダ構成
 
 		<実行時のカレントDIR>   **1

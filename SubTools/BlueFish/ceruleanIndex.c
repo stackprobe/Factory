@@ -1,5 +1,10 @@
 /*
 	ceruleanIndex.exe INDEX-DIR TEMPLATE-DIR
+
+	----
+	テストデータ
+
+	C:\wb2\20200604_ceruleanIndexTest
 */
 
 #include "C:\Factory\Common\all.h"
