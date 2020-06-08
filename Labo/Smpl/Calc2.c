@@ -1,23 +1,26 @@
 /*
 	Calc2.exe [/R <Radix>] [/E <Effect>] /EM <Number>
 
-	Calc2.exe [/R <Radix>] [/S] [/E <Effect>] [/-R] /P <Number> <UInt32>
+	Calc2.exe [/R <Radix>] [/S] [/E <Effect>] [/-R] /P <Number> <Exponent>
 
-	Calc2.exe [/R <Radix>] [/S] [/E <Effect>] [/-R] /R <Number> <UInt32>
+	Calc2.exe [/R <Radix>] [/B <Basement>] [/S] [/E <Effect>] [/-R] /R <Number> <Exponent>
 
-	Calc2.exe [/R <Radix>] [/B <Basement>] [/-R] <Number.1> <Operator> <Number.2> <Effect>
+	Calc2.exe [/R <Radix>] [/B <Basement>] [/-R] <Number> <Operator> <Number> <Effect>
 
-	Calc2.exe [/R <Radix>] [/B <Basement>] [/S] [/E <Effect>] [/-R] <Number.1> <Operator> <Number.2>
+	Calc2.exe [/R <Radix>] [/B <Basement>] [/S] [/E <Effect>] [/-R] <Number> <Operator> <Number>
 
 	Calc2.exe [/R <Radix>] [/-R] <Number> <Effect>
 
 	Calc2.exe [/R <Radix>] [/S] [/E <Effect>] [/-R] <Number>
 
-		Radix    ...     2 `   36
+		Radix    ...     2 ` 36
 		Basement ... -IMAX ` IMAX
 		Effect   ...     0 ` IMAX
+		Exponent ...     0 ` 4294967295
 
 		Number ... ŽÀ” | ŽÀ”‚ÌŽw”•\‹L
+
+			‘å‚«‚ÈŽw”‚ðŽw’è‚·‚é‚±‚Æ‚É‚æ‚Á‚Äƒƒ‚ƒŠ•s‘«‚âˆ—‚ÉŽžŠÔ‚ªŠ|‚©‚éó‹µ‚ðˆø‚«‹N‚±‚¹‚é‚±‚Æ‚É’ˆÓI
 
 		Operator ... + - * /
 
@@ -27,6 +30,22 @@
 	Calc2 /S 123.456   ==>   1.23456E+02
 
 	Calc2 /E 10 /EM 123.456   ==>   123.4560000
+
+	- - -
+
+	Calc2 /B 20 2 / 3 21   ==>   6.66666666666666666660E-01
+
+	Calc2 /B 20 2 / 3 20   ==>   6.6666666666666666666E-01
+
+	Calc2 /B 20 2 / 3 19   ==>   6.666666666666666667E-01
+
+	- - -
+
+	Calc2 /B 19 2 / 3 20   ==>   6.6666666666666666660E-01
+
+	Calc2 /B 20 2 / 3 20   ==>   6.6666666666666666666E-01
+
+	Calc2 /B 21 2 / 3 20   ==>   6.6666666666666666667E-01
 */
 
 #include "C:\Factory\Common\all.h"
