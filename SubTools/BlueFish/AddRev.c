@@ -3,6 +3,9 @@
 #define REV_MAX 1000
 #define REV_TOTAL_SIZE_MAX 10000000000ui64 // 10 GB
 
+#define VER_MAX 1000
+#define VER_TOTAL_SIZE_MAX 10000000000ui64 // 10 GB
+
 #define BETA_MAX 1000
 #define BETA_TOTAL_SIZE_MAX 10000000000ui64 // 10 GB
 
@@ -73,6 +76,43 @@ static void TrimRev(char *appDir)
 	}
 	releaseDim(revDirs, 1);
 }
+static void TrimVer(char *appDir)
+{
+	autoList_t *files = lsFiles(appDir);
+	char *file;
+	uint index;
+
+	LOGPOS();
+
+	foreach(files, file, index)
+		if(!lineExpICase("<>_v<3,09>.zip", file))
+			*file = '\0';
+
+	trimLines(files);
+	sortJLinesICase(files);
+	reverseElements(files); // 終端 == 最も旧いリビジョン
+
+	foreach(files, file, index)
+		cout("[VER] %s\n", file); // test-out
+
+	while(VER_MAX < getCount(files) || VER_TOTAL_SIZE_MAX < GetTotalSize_Paths(files))
+	{
+		file = (char *)unaddElement(files);
+
+		cout("[DEL_VER.1] %s\n", file);
+
+		removeFile(file);
+		file = addExt(file, "md5");
+
+		cout("[DEL_VER.2] %s\n", file);
+
+		removeFileIfExist(file); // 存在するはずだけど、念の為 *IfExist にする。
+		memFree(file);
+	}
+	releaseDim(files, 1);
+
+	LOGPOS();
+}
 static void TrimBeta(char *appDir)
 {
 	autoList_t *files = lsFiles(appDir);
@@ -103,7 +143,7 @@ static void TrimBeta(char *appDir)
 
 		cout("[DEL_BETA.2] %s\n", file);
 
-		removeFileIfExist(file); // 存在するはずだけど、念の為
+		removeFileIfExist(file); // 存在するはずだけど、念の為 *IfExist にする。
 		memFree(file);
 	}
 	releaseDim(files, 1);
@@ -210,6 +250,8 @@ static void AddGameVer(char *arcFile, char *rootDir, int beta)
 	moveFile(arcFile, wFile);
 	moveFile(md5File, wMD5File);
 
+	LOGPOS();
+	TrimVer(wDir);
 	LOGPOS();
 	TrimBeta(wDir);
 	LOGPOS();
