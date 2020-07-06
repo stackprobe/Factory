@@ -133,7 +133,7 @@ static void CleanSolution(char *file) // file - ソリューションファイル
 	RemoveFileEx(opensdfFile);
 
 	// vs2015
-	RemoveDirEx(".vs");
+	RemoveDirEx(".vs"); // vs2015 vs2019
 	RemoveDirEx("x64"); // vc2015
 	RemoveFileEx(vcdbFile); // vc2015
 	RemoveFileEx(vcvcopendbFile); // vc2015

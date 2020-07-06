@@ -3,10 +3,17 @@
 	newcs f プロジェクト名
 	newcs t プロジェクト名
 	newcs d プロジェクト名 [名前空間]
+
 	newcs c2 プロジェクト名
 	newcs f2 プロジェクト名
 	newcs t2 プロジェクト名
 	newcs d2 プロジェクト名 [名前空間]
+
+	newcs c3 プロジェクト名
+	newcs f3 プロジェクト名
+	newcs t3 プロジェクト名
+	newcs d3 プロジェクト名 [名前空間]
+
 	newcs tt プロジェクト名
 
 	newcs
@@ -14,12 +21,18 @@
 
 	newcs /d
 	newcs /dr
+
+	newcs /r /d
+	newcs /r /dr
+	newcsrr
 */
 
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\CRandom.h"
 
-#define TESTER_PROJ_LOCALDIR "Test01"
+#define TEMPLATE_3_DIR_ENV_NAME "TEMPLATE-3-DIR"
+
+#define TESTPROJ_LOCALDIR "Test01"
 
 static uint UTIntoParentStep;
 
@@ -155,7 +168,7 @@ static void Main2(char *tmplProject, char *tmplDir, int utFlag, int m2Flag, char
 	else
 		projNS = project;
 
-	errorCase(!existDir(tmplDir)); // 2bs ?
+	errorCase(!existDir(tmplDir));
 
 	errorCase_m(!lineExp("<1,30,__09AZaz>", project), "不正なプロジェクト名です。");
 	errorCase_m(existPath(project), "既に存在します。");
@@ -172,7 +185,7 @@ static void Main2(char *tmplProject, char *tmplDir, int utFlag, int m2Flag, char
 		if(tmplProjNS)
 			RenamePaths(tmplProjNS,  projNS);
 
-		addCwd(existDir(TESTER_PROJ_LOCALDIR) ? TESTER_PROJ_LOCALDIR : project);
+		addCwd(existDir(TESTPROJ_LOCALDIR) ? TESTPROJ_LOCALDIR : project);
 		{
 			ChangeAppIdent("Program.cs");
 
@@ -209,6 +222,20 @@ static void Main2(char *tmplProject, char *tmplDir, int utFlag, int m2Flag, char
 //			execute("START C:\\Dev\\CSharp\\Module2\\Module2"); // del @ 2020.5.23
 	}
 	unaddCwd();
+}
+static void Main2_TDEN(char *tmplProject, char *tmplRootDirEnvName, char *tmplLocalDir, int utFlag, int m2Flag, char *tmplProjNS)
+{
+	char *tmplRootDir = getAppDataEnv(tmplRootDirEnvName, NULL);
+	char *tmplDir;
+
+	errorCase_m(!tmplRootDir, "env に [" TEMPLATE_3_DIR_ENV_NAME "] が設定されていません。");
+	errorCase(!existDir(tmplRootDir));
+
+	tmplDir = combine(tmplRootDir, tmplLocalDir);
+
+	Main2(tmplProject, tmplDir, utFlag, m2Flag, tmplProjNS);
+
+	memFree(tmplDir);
 }
 static uint64 GetChocolateSourceLeastStamp(void)
 {
@@ -331,6 +358,26 @@ int main(int argc, char **argv)
 	if(argIs("D2"))
 	{
 		Main2("DDDDTMPL", "C:\\Dev\\CSharp\\Template2\\DLLTemplate", 0, 0, "DDDDTMNS");
+		return;
+	}
+	if(argIs("C3"))
+	{
+		Main2_TDEN("CCCCTMPL", TEMPLATE_3_DIR_ENV_NAME, "CUIProgramTemplate", 0, 0, NULL);
+		return;
+	}
+	if(argIs("F3"))
+	{
+		Main2_TDEN("FFFFTMPL", TEMPLATE_3_DIR_ENV_NAME, "FormApplicationTemplate", 0, 0, NULL);
+		return;
+	}
+	if(argIs("T3"))
+	{
+		Main2_TDEN("TTTTTMPL", TEMPLATE_3_DIR_ENV_NAME, "TaskTrayTemplate", 0, 0, NULL);
+		return;
+	}
+	if(argIs("D3"))
+	{
+		Main2_TDEN("DDDDTMPL", TEMPLATE_3_DIR_ENV_NAME, "DLLTemplate", 0, 0, "DDDDTMNS");
 		return;
 	}
 	if(argIs("TT"))

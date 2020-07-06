@@ -853,7 +853,7 @@ char *getAppDataEnv(char *name, char *defval)
 		LOGPOS();
 
 		if(existFile(APPDATA_ENVSFILE))
-			envs = readLines(APPDATA_ENVSFILE);
+			envs = readResourceLines(APPDATA_ENVSFILE);
 		else
 			envs = newList();
 	}

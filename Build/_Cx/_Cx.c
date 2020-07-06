@@ -197,10 +197,11 @@ static uint GetVSEditionYear(char *slnFile)
 	memFree(neReadLine(fp));
 	line = neReadLine(fp);
 
-	     if(!strcmp(line, "# Visual C# Express 2008" )) ret = 2008;
-	else if(!strcmp(line, "# Visual C++ Express 2008")) ret = 2008;
-	else if(!strcmp(line, "# Visual C# Express 2010" )) ret = 2010;
-	else if(!strcmp(line, "# Visual C++ Express 2010")) ret = 2010;
+	     if(!strcmp(line, "# Visual C# Express 2008"  )) ret = 2008;
+	else if(!strcmp(line, "# Visual C++ Express 2008" )) ret = 2008;
+	else if(!strcmp(line, "# Visual C# Express 2010"  )) ret = 2010;
+	else if(!strcmp(line, "# Visual C++ Express 2010" )) ret = 2010;
+	else if(!strcmp(line, "# Visual Studio Version 16")) ret = 2019;
 	else
 		error_m("Unknown VS Edition");
 
@@ -237,7 +238,7 @@ static void Build(char *module, uint remCount) // remCount: 0 == –³Œø
 
 			cout("solution file's Visual Studio Editon (Year) == %u\n", vsEditionYear);
 
-			if(vsEditionYear == 2010)
+			if(vsEditionYear == 2010 || vsEditionYear == 2019)
 			{
 				char *slncacheFile = addExt(strx(solution), "cache");
 				int successful;
