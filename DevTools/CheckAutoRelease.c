@@ -1,7 +1,9 @@
 /*
-	CheckAutoRelease [/-C] [/D 直接チェックDIR | ルートDIR]
+	CheckAutoRelease [/LCC] [/D 直接チェックDIR | ルートDIR]
 
-		/-C ... 最終コメントをチェックしない。
+		/LCC ... 最終コメントをチェックする。エラーがあれば NEED_RELEASE_BAT を出力する。
+
+			HTT_RPC は AutoRelease.bat 未設置なので注意 @ 2020.6.19
 */
 
 #include "C:\Factory\Common\all.h"
@@ -12,7 +14,7 @@
 static autoList_t *AutoReleaseBatTemplateLines;
 static autoList_t *NeedReleaseDirs;
 
-static int IgnoreLastCommentError;
+static int LastCommentCheck;
 
 #define LOCAL_AUTO_RELEASE_BAT "AutoRelease.bat"
 #define LOCAL_LEGACY_RELEASE_BAT "_Release.bat"
@@ -109,7 +111,7 @@ static void CheckAutoRelease(char *dir)
 			lastCommentFile = combine(lastRevDir, "comment.txt");
 			lastComment = readFirstLine(lastCommentFile);
 
-			if(strcmp(lastComment, "rel") && !IgnoreLastCommentError)
+			if(strcmp(lastComment, "rel") && LastCommentCheck)
 			{
 				FoundError("最終コメントが rel ではありません。");
 
@@ -164,12 +166,13 @@ int main(int argc, char **argv)
 	AutoReleaseBatTemplateLines = readLines(AUTO_RELEASE_BAT_TEMPLATE_FILE);
 	NeedReleaseDirs = newList();
 
-	if(argIs("/-C"))
+	if(argIs("/LCC"))
 	{
-		IgnoreLastCommentError = 1;
+		LastCommentCheck = 1;
 	}
 
-	errorCase_m(argIs("/C"), "廃止オプション"); // zantei
+	errorCase_m(argIs("/C"),  "廃止オプション"); // zantei
+	errorCase_m(argIs("/-C"), "廃止オプション"); // zantei
 
 	if(argIs("/D"))
 	{
