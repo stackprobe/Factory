@@ -30,7 +30,7 @@ Visual C++ 2010 Express
 ビルド手順
 ----------
 
--1. Windows 10 Pro 又は Windows 7 Professional 環境を用意する。
+-1. Windows 10 Pro または Windows 10 Home 環境を用意する。
 
 	-1.1. アップデートを全て適用する。
 
