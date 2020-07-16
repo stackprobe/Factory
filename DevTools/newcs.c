@@ -178,7 +178,7 @@ static void Main2(char *tmplProject, char *tmplDir, int utFlag, int m2Flag, char
 
 	addCwd(project);
 	{
-		coExecute("qq -f");
+		coExecute("qq -f"); // テンプレート側が qq していなくても、ここで qq しているので安心。
 
 		RenamePaths(tmplProject, project);
 
