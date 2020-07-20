@@ -19,7 +19,6 @@
 
 #include "C:\Factory\Common\all.h"
 
-static int JSMode;
 static autoList_t *Tags;
 
 static void AddTag(char *symbol, char *comment, char *srcFile, uint srcLineNo)
@@ -304,26 +303,18 @@ static void FindTags(char *rootDir)
 	{
 		char *ext = getExt(file);
 
-		if(JSMode)
-		{
-			if(!_stricmp(ext, "js"))
-				FindTagsByJSFile(file);
-		}
-		else
-		{
-			if(
-				!_stricmp(ext, "c") ||
-				!_stricmp(ext, "h") &&
-//				!existFile(c_changeExt(file, "cpp")) // .h ÇÃÇ›Ç∆Ç©Ç†ÇÈÅB
-				/*
-				!existFile(c_changeLocal(file, "Main.cpp")) &&
-				!existFile(c_changeLocal(file, "_Main.cpp")) &&
-				!existFile(c_changeLocal(file, "AAMain.cpp"))
-				*/
-				!fileSearchExist(c_changeLocal(file, "*.cpp"))
-				)
-				FindTagsByFile(file);
-		}
+		if(
+			!_stricmp(ext, "c") ||
+			!_stricmp(ext, "h") &&
+//			!existFile(c_changeExt(file, "cpp")) // .h ÇÃÇ›Ç∆Ç©Ç†ÇÈÅB
+			/*
+			!existFile(c_changeLocal(file, "Main.cpp")) &&
+			!existFile(c_changeLocal(file, "_Main.cpp")) &&
+			!existFile(c_changeLocal(file, "AAMain.cpp"))
+			*/
+			!fileSearchExist(c_changeLocal(file, "*.cpp"))
+			)
+			FindTagsByFile(file);
 	}
 	releaseDim(files, 1);
 }
@@ -345,12 +336,43 @@ static void MakeTags(char *rootDir)
 	releaseDim(Tags, 1);
 	memFree(tagsFile);
 }
+static void MakeJSTags(char *jsFile, char *tagsFile)
+{
+	jsFile = makeFullPath(jsFile);
+
+	Tags = newList();
+
+	FindTagsByJSFile(jsFile);
+
+	writeLines(tagsFile, Tags);
+
+	memFree(jsFile);
+}
+static void MakeJSTags_Dir(char *dir)
+{
+	char *jsFile   = combine(dir, "module.js");
+	char *tagsFile = combine(dir, "tags");
+
+	MakeJSTags(jsFile, tagsFile);
+
+	memFree(jsFile);
+	memFree(tagsFile);
+}
 int main(int argc, char **argv)
 {
 	if(argIs("/JS"))
 	{
-		JSMode = 1;
+		if(hasArgs(2))
+		{
+			MakeJSTags(getArg(0), getArg(1));
+		}
+		else
+		{
+			MakeJSTags_Dir(nextArg());
+		}
 	}
-
-	MakeTags(hasArgs(1) ? nextArg() : c_dropDir());
+	else
+	{
+		MakeTags(hasArgs(1) ? nextArg() : c_dropDir());
+	}
 }
