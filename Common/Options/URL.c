@@ -72,6 +72,20 @@ char *urlDecoder(char *url)
 	return url;
 }
 
+// c_
+char *c_urlEncoder(char *url)
+{
+	static char *stock;
+	memFree(stock);
+	return stock = urlEncoder(url);
+}
+char *c_urlDecoder(char *url)
+{
+	static char *stock;
+	memFree(stock);
+	return stock = urlDecoder(url);
+}
+
 // _x
 char *urlEncoder_x(char *url)
 {

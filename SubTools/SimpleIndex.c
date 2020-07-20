@@ -1,4 +1,5 @@
 #include "C:\Factory\Common\all.h"
+#include "C:\Factory\Common\Options\URL.h"
 #include "C:\Factory\OpenSource\md5.h"
 
 #define DEF_INDEXTEMPLATE "C:\\Factory\\Resource\\index.html_"
@@ -25,7 +26,7 @@ static int IsSimpleName(char *localPath)
 }
 static char *MkDivLine(char *href, char *lref, char *trailer)
 {
-	return xcout("<div><a href=\"%s\">%s</a>%s</div>", href, lref, trailer);
+	return xcout("<div><a href=\"%s\">%s</a>%s</div>", c_urlEncoder(href), lref, trailer);
 }
 
 static void MakeIndex(char *, uint);
@@ -118,7 +119,7 @@ static char *MakeDivList(uint depth)
 					!_stricmp("PNG", ext)
 					)
 				{
-					char *div = xcout("<div><a href=\"%s\"><img src=\"%s\"/></a></div>", href, href);
+					char *div = xcout("<div><a href=\"%s\"><img src=\"%s\"/></a></div>", c_urlEncoder(href), href);
 
 					addElement(divs, (uint)div);
 				}

@@ -19,6 +19,7 @@
 
 #include "C:\Factory\Common\all.h"
 
+static int JSMode;
 static autoList_t *Tags;
 
 static void AddTag(char *symbol, char *comment, char *srcFile, uint srcLineNo)
@@ -241,6 +242,56 @@ static void FindTagsByFile(char *file)
 
 	releaseDim(lines, 1);
 }
+
+#define IGNORE_JS_NAME_PREFIX "@@_"
+
+static void FindTagsByJSFile(char *file)
+{
+	autoList_t *lines = readLines(file);
+	char *line;
+	uint index;
+
+	RemoveComments(lines);
+	ucTrimSqTrailAllLine(lines);
+
+	foreach(lines, line, index)
+	{
+		if(lineExp("var <>;<>", line))
+		{
+			char *p = ne_strchr(line, ' ') + 1;
+			char *q;
+			char *q2;
+
+			q = ne_strchr(p, ';');
+			q2 = strchr(p, '=');
+
+			if(q2)
+				q = m_min(q, q2);
+
+			*q = '\0';
+			trimTrail(p, ' ');
+
+			if(!startsWith(p, IGNORE_JS_NAME_PREFIX))
+			{
+				AddTag(p, "ïœêî", file, index + 1);
+			}
+		}
+		else if(lineExp("function <>(<>", line))
+		{
+			char *p = ne_strchr(line, ' ') + 1;
+			char *q;
+
+			q = ne_strchr(p, '(');
+			*q = '\0';
+
+			if(!startsWith(p, IGNORE_JS_NAME_PREFIX))
+			{
+				AddTag(p, "ä÷êî", file, index + 1);
+			}
+		}
+	}
+	releaseDim(lines, 1);
+}
 static void FindTags(char *rootDir)
 {
 	autoList_t *files = lssFiles(rootDir);
@@ -253,18 +304,26 @@ static void FindTags(char *rootDir)
 	{
 		char *ext = getExt(file);
 
-		if(
-			!_stricmp(ext, "c") ||
-			!_stricmp(ext, "h") &&
-//			!existFile(c_changeExt(file, "cpp")) // .h ÇÃÇ›Ç∆Ç©Ç†ÇÈÅB
-			/*
-			!existFile(c_changeLocal(file, "Main.cpp")) &&
-			!existFile(c_changeLocal(file, "_Main.cpp")) &&
-			!existFile(c_changeLocal(file, "AAMain.cpp"))
-			*/
-			!fileSearchExist(c_changeLocal(file, "*.cpp"))
-			)
-			FindTagsByFile(file);
+		if(JSMode)
+		{
+			if(!_stricmp(ext, "js"))
+				FindTagsByJSFile(file);
+		}
+		else
+		{
+			if(
+				!_stricmp(ext, "c") ||
+				!_stricmp(ext, "h") &&
+//				!existFile(c_changeExt(file, "cpp")) // .h ÇÃÇ›Ç∆Ç©Ç†ÇÈÅB
+				/*
+				!existFile(c_changeLocal(file, "Main.cpp")) &&
+				!existFile(c_changeLocal(file, "_Main.cpp")) &&
+				!existFile(c_changeLocal(file, "AAMain.cpp"))
+				*/
+				!fileSearchExist(c_changeLocal(file, "*.cpp"))
+				)
+				FindTagsByFile(file);
+		}
 	}
 	releaseDim(files, 1);
 }
@@ -288,5 +347,10 @@ static void MakeTags(char *rootDir)
 }
 int main(int argc, char **argv)
 {
+	if(argIs("/JS"))
+	{
+		JSMode = 1;
+	}
+
 	MakeTags(hasArgs(1) ? nextArg() : c_dropDir());
 }
