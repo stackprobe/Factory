@@ -111,7 +111,11 @@ static void CheckAutoRelease(char *dir)
 			lastCommentFile = combine(lastRevDir, "comment.txt");
 			lastComment = readFirstLine(lastCommentFile);
 
-			if(strcmp(lastComment, "rel") && LastCommentCheck)
+			if(
+				LastCommentCheck &&
+				strcmp(lastComment, "rel") &&
+				!startsWith(lastComment, "rel, ")
+				)
 			{
 				FoundError("最終コメントが rel ではありません。");
 
