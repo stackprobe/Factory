@@ -1,9 +1,16 @@
 /*
 	GitHisRemove.exe リポジトリ名
 
+		実行中に選択 (selectLines) されたファイルを全履歴から削除する。
+
 	GitHisRemove.exe /AUTO リポジトリ名
 
+		エスケープされているリソースファイル (*._git-escape) について、
+		エスケープされていなかった時代のファイルを全て削除する。
+
 	GitHisRemove.exe /AUTOALL
+
+		/AUTO を全てのリポジトリについて行う。
 
 	----
 
