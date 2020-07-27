@@ -3,7 +3,9 @@
 
 	- - -
 
-	Master.exe [/E EV-CANCEL-NAME] INPUT-WAV-FILE OUTPUT-WAV-FILE REPORT-CSV-FILE
+	Master.exe [/E EV-CANCEL-NAME] [/-LV] INPUT-WAV-FILE OUTPUT-WAV-FILE REPORT-CSV-FILE
+
+		/-LV ... レポートに Lvs を出力しない。
 
 	- - -
 
@@ -20,6 +22,8 @@
 #define DEST_RATE 0.5 // 0.0 ～ 1.0
 #define NOOP_RATE_HI 1.07
 #define NOOP_RATE_LOW 0.93
+
+static int NoReportLvs;
 
 static double Lvs[LV_RANGE + 1];
 static int OutputCancelled = 0;
@@ -263,8 +267,9 @@ outputReport:
 	writeLine_x(wfp, xcout("message,%s", message));
 	writeLine_x(wfp, xcout("OutputCancelled,%d", OutputCancelled));
 
-	for(index = 0; index < LV_RANGE; index++)
-		writeLine_x(wfp, xcout("Lvs,%u,%f", index, Lvs[index]));
+	if(!NoReportLvs)
+		for(index = 0; index < LV_RANGE; index++)
+			writeLine_x(wfp, xcout("Lvs,%u,%f", index, Lvs[index]));
 
 	fileClose(rfp);
 	fileClose(wfp);
@@ -293,11 +298,19 @@ int main(int argc, char **argv)
 
 	addFinalizer(Fnlz); // エラーダイアログ抑止！
 
+readArgs:
 	if(argIs("/E"))
 	{
 		LOGPOS();
 		EvCancel = eventOpen(nextArg());
 		addFinalizer(ReleaseEvCancel);
+		goto readArgs;
+	}
+	if(argIs("/-LV"))
+	{
+		LOGPOS();
+		NoReportLvs = 1;
+		goto readArgs;
 	}
 	rFile = nextArg();
 	wFile = nextArg();
