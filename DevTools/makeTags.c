@@ -12,9 +12,23 @@
 
 				[○] 行単位
 				[レ] tagsファイル
-				[　] ファイル名 -- チェックしてないよね？？？
+				[　] ファイル名
 
 		動作環境 / その他のコマンド / タグジャンプ / 上の階層もチェックする [レ]
+
+	----
+
+	makeTags.exe 対象ルートDIR
+
+		対象ルートDIRとその配下にあるC言語のソースのタグ情報を <対象ルートDIR>\tags に出力する。
+
+		対象となるファイル：
+			*.c
+			*.h (*.cpp のあるフォルダを除外)
+
+	makeTags.exe /JS 入力JSファイル 出力tagsファイル
+
+		入力JSファイルのタグ情報を出力tagsファイルに出力する。
 */
 
 #include "C:\Factory\Common\all.h"
@@ -348,6 +362,7 @@ static void MakeJSTags(char *jsFile, char *tagsFile)
 
 	memFree(jsFile);
 }
+#if 0 // old
 static void MakeJSTags_Dir(char *dir)
 {
 	char *jsFile   = combine(dir, "module.js");
@@ -358,10 +373,14 @@ static void MakeJSTags_Dir(char *dir)
 	memFree(jsFile);
 	memFree(tagsFile);
 }
+#endif
 int main(int argc, char **argv)
 {
 	if(argIs("/JS"))
 	{
+#if 1
+		MakeJSTags(getArg(0), getArg(1));
+#else // old
 		if(hasArgs(2))
 		{
 			MakeJSTags(getArg(0), getArg(1));
@@ -370,6 +389,7 @@ int main(int argc, char **argv)
 		{
 			MakeJSTags_Dir(nextArg());
 		}
+#endif
 	}
 	else
 	{

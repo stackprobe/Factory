@@ -6,6 +6,8 @@
 	----
 
 	中身が空の場合はコピー元にならないようにした。
+
+	★空かどうかの判定 -> Eval_NotEmptyEmpty()
 */
 
 #include "C:\Factory\Common\all.h"

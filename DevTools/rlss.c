@@ -1,3 +1,7 @@
+/*
+	rlss.exe [/D | /F] [SEARCH-PTN | TARGET-DIR SEARCH-PTN...]
+*/
+
 #include "C:\Factory\Common\all.h"
 
 #define RUM_DIR_EXT "rum"
@@ -57,7 +61,7 @@ static void DispList_RumDir(char *rumDir, autoList_t *searchPtns)
 	{
 		char *revision = getLocal(revDir);
 
-		if(DirFileMode != 'F') // ディレクトリを表示
+		if(DirFileMode != 'D') // ディレクトリを表示
 		{
 			char *treeFile = combine(revDir, FILE_TREE);
 			autoList_t *lines;
@@ -72,7 +76,7 @@ static void DispList_RumDir(char *rumDir, autoList_t *searchPtns)
 			releaseDim(lines, 1);
 			memFree(treeFile);
 		}
-		if(DirFileMode != 'D') // ファイルを表示
+		if(DirFileMode != 'F') // ファイルを表示
 		{
 			char *filesFile = combine(revDir, FILE_FILES);
 			autoList_t *lines;

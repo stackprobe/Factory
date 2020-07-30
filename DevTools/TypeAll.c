@@ -1,3 +1,7 @@
+/*
+	TypeAll.exe [/P] (/LSS | [/S] TARGET-DIR)
+*/
+
 #include "C:\Factory\Common\all.h"
 
 static int ShowPathMode;

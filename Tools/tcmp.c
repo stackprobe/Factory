@@ -1,3 +1,7 @@
+/*
+	tcmp.exe [/I] [INPUT-FILE OUTPUT-FILE]
+*/
+
 #include "C:\Factory\Common\all.h"
 
 static void CompareFiles(char *file1, char *file2, int ignoreCase)

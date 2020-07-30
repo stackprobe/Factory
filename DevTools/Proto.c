@@ -1,3 +1,7 @@
+/*
+	Proto.exe [TARGET-FILE]
+*/
+
 #include "C:\Factory\Common\all.h"
 
 static autoList_t *MakeProtoList(char *file)

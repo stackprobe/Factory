@@ -1,3 +1,7 @@
+/*
+	SolClean.exe [TARGET-PATH]
+*/
+
 #include "C:\Factory\Common\all.h"
 
 static void RemoveFileEx(char *file)

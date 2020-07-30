@@ -5,11 +5,12 @@
 
 	mkrnd.exe ... [/CB | /CO | /CD | /CH | /CS | /CC CHAR-SET | /CR CHAR-MIN CHAR-MAX] /T OUTPUT-FILE ROW-NUM (COL-NUM | COL-MIN COL-MAX)
 
-	- - -
+	----
+	実行例
 
 	mkrnd.exe /ch /t 1.txt 32 64
 
-		mkcrと同じ書式の 1.txt を出力する。CSPRNG ではないので注意！
+		mkcrと同じ書式の 1.txt を出力する。この場合 CSPRNG ではないことに注意！
 */
 
 #include "C:\Factory\Common\all.h"

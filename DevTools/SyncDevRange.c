@@ -11,6 +11,10 @@
 
 		// < sync
 
+	- - -
+
+	★空かどうかの判定 -> IsRangeEmptyText()
+
 	----
 
 	更新によって using の構成が変わった場合は SyncDevUsing を使うこと。

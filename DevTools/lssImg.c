@@ -1,6 +1,9 @@
 /*
-	lss .png* ‚È‚Ç
-	lssImg
+	> lss .png*
+	> lssImg
+
+	> lss . .bmp* .jpg* .jpeg* .png* .gif*
+	> lssImg
 */
 
 #include "C:\Factory\Common\all.h"

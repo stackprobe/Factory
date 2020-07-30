@@ -1,3 +1,7 @@
+/*
+	md5TenLine.exe [TARGET-PATH]
+*/
+
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\OpenSource\md5.h"
 
@@ -17,6 +21,7 @@ static char *GetPartHash(autoList_t *lines, uint bgnLIdx, uint endLIdx)
 
 		fileClose(fp);
 	}
+
 	ret = c_md5_makeHexHashFile(file);
 
 	removeFile(file);

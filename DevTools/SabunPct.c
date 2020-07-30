@@ -1,3 +1,7 @@
+/*
+	SabunPct.exe [TARGET-DIR-1 TARGET-DIR-2]
+*/
+
 #include "C:\Factory\Common\all.h"
 
 static sint SWL_Comp(uint prm1, uint prm2)

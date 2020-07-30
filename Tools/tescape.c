@@ -1,3 +1,7 @@
+/*
+	tescape.exe [/E | /U] [INPUT-FILE [OUTPUT-FILE]]
+*/
+
 #include "C:\Factory\Common\all.h"
 
 static FILE *RFp;
@@ -126,7 +130,6 @@ static void EscapeMain(int doEscapeFlag)
 		return;
 	}
 
-	// x for
 	{
 		DoEscapeMain(doEscapeFlag, c_dropFile(), c_getOutFile("tescape_out.txt"));
 		openOutDir();

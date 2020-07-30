@@ -1,3 +1,7 @@
+/*
+	AntiSVN.exe [/F] [TARGET-DIR]
+*/
+
 #include "C:\Factory\Common\all.h"
 
 static int ForceMode;
