@@ -1,5 +1,5 @@
 /*
-	BatToriai.exe TARGET-DIR [/L]
+	BatToriai.exe TARGET-DIR [/L | /S]
 */
 
 #include "C:\Factory\Common\all.h"
@@ -10,6 +10,7 @@
 #define EXT_UNDONE "bat_undone"
 #define EXT_BAT "bat"
 #define EXT_DONE "bat_done"
+#define EXT_ZZZ "bat_zzz"
 
 static char *GetNextBatFile(void)
 {
@@ -59,13 +60,7 @@ static void BatToriai(void)
 {
 	for(; ; )
 	{
-		char *batFile;
-
-		while(hasKey())
-			if(getKey() == 0x1b) // ? ESC_‰Ÿ‰º -> ’†Ž~
-				goto endLoop;
-
-		batFile = GetNextBatFile();
+		char *batFile = GetNextBatFile();
 
 		if(!batFile)
 			break;
@@ -74,7 +69,32 @@ static void BatToriai(void)
 		BatFile_Done(batFile);
 		memFree(batFile);
 	}
-endLoop:;
+}
+static void BatToriai_Stop(void)
+{
+	FILE *lFp;
+
+	lFp = FLockLoop(LOCK_FILE);
+	{
+		autoList_t *files = lsFiles(".");
+		char *file;
+		uint index;
+
+		sortJLinesICase(files); // 2bs
+
+		foreach(files, file, index)
+		{
+			if(!_stricmp(EXT_UNDONE, getExt(file)))
+			{
+				char *zzzFile = changeExt(file, EXT_ZZZ);
+
+				moveFile(file, zzzFile);
+				memFree(zzzFile);
+			}
+		}
+		releaseDim(files, 1);
+	}
+	FUnlock(lFp);
 }
 int main(int argc, char **argv)
 {
@@ -83,6 +103,10 @@ int main(int argc, char **argv)
 	if(argIs("/L"))
 	{
 		createFile(LOCK_FILE);
+	}
+	else if(argIs("/S"))
+	{
+		BatToriai_Stop();
 	}
 	else
 	{

@@ -66,18 +66,19 @@ static void MkBatUndone(void)
 
 		writeOneLine("_Go_1.bat", "BatToriai.exe .");
 		writeOneLine("_Go.bat", "FOR /L %%C IN (1,1,%NUMBER_OF_PROCESSORS%) DO START CMD /C _Go_1.bat");
+		writeOneLine("_Stop.bat", "BatToriai.exe . /S");
 
 		if(CountMode)
 		{
-			copyFile("C:\\Factory\\Labo\\Tools\\Prime64\\sub\\Summary.exe", "Summary.exe");
-			coExecute("C:\\Factory\\SubTools\\EmbedConfig.exe --factory-dir-disabled Summary.exe");
-			writeOneLine("_Summary.bat", "Summary.exe out out\\_Summary.txt\nSTART out\\_Summary.txt");
+			copyFile("C:\\Factory\\Labo\\Tools\\Prime64\\sub\\MakeSum.exe", "MakeSum.exe");
+			coExecute("C:\\Factory\\SubTools\\EmbedConfig.exe --factory-dir-disabled MakeSum.exe");
+			writeOneLine("_MakeSum.bat", "MakeSum.exe out out\\_Sum.txt\nSTART out\\_MakeSum.txt");
 		}
 		else
 		{
-			copyFile("C:\\Factory\\Labo\\Tools\\Prime64\\sub\\Join.exe", "Join.exe");
-			coExecute("C:\\Factory\\SubTools\\EmbedConfig.exe --factory-dir-disabled Join.exe");
-			writeOneLine("_Join.bat", "Join.exe out out\\_Join.txt\nSTART out"); // でか過ぎてエディタで開けないのでフォルダを開く。
+			copyFile("C:\\Factory\\Labo\\Tools\\Prime64\\sub\\MakeJoined.exe", "MakeJoined.exe");
+			coExecute("C:\\Factory\\SubTools\\EmbedConfig.exe --factory-dir-disabled MakeJoined.exe");
+			writeOneLine("_MakeJoined.bat", "MakeJoined.exe out out\\_Joined.txt\nSTART out"); // でか過ぎてエディタで開けないのでフォルダを開く。
 		}
 		createDir("out");
 		createDir("tmp");
