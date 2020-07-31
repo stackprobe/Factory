@@ -56,11 +56,11 @@ void CsvSortComp(char *srcFile, char *destFile, uint sortColumnIndex, sint (*fun
 	MS_GetRecordWeightSize = NULL;
 }
 
-static sint (*Comp)(char *, char *);
+static sint (*CI_Comp)(char *, char *);
 
 static sint CompInv(char *a, char *b)
 {
-	return Comp(a, b) * -1;
+	return CI_Comp(a, b) * -1;
 }
 
 /*
@@ -91,7 +91,7 @@ void CsvSort(char *srcFile, char *destFile, uint sortColumnIndex, int sortDirect
 	{
 	case 'A': break;
 	case 'D':
-		Comp = funcComp;
+		CI_Comp = funcComp;
 		funcComp = CompInv;
 		break;
 

@@ -250,13 +250,23 @@ uint strlen_max(char *str, uint retmax)
 
 	return count;
 }
+sint getNumStrSign(char *str)
+{
+	return strchr(str, '-') ? -1 : 1;
+}
 sint numstrcmp(char *str1, char *str2)
 {
-	sint ret = (sint)strlen(str1) - (sint)strlen(str2);
+	sint ret = getNumStrSign(str1) - getNumStrSign(str2);
 
-	if(!ret)
-		ret = strcmp(str1, str2);
+	if(ret)
+		return ret;
 
+	ret = (sint)strlen(str1) - (sint)strlen(str2); // Œ…”‚ª‘½‚¢•û‚Í•¶š—ñ‚Æ‚µ‚Ä’·‚¢‚Í‚¸B
+
+	if(ret)
+		return ret;
+
+	ret = strcmp(str1, str2);
 	return ret;
 }
 

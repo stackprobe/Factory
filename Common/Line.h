@@ -80,6 +80,7 @@ char *ne_strstr(char *line, char *findPtn);
 char *nn_strchr(char *line, int findChr);
 char *nn_strstr(char *line, char *findPtn);
 uint strlen_max(char *str, uint retmax);
+sint getNumStrSign(char *str);
 sint numstrcmp(char *str1, char *str2);
 
 int mbsStartsWithICase(char *line1, char *line2);
