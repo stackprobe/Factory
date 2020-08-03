@@ -20,7 +20,7 @@ static char *ChgEnc_SJISToUTF8_x(char *str, int inverse)
 	memFree(wFile);
 	return str;
 }
-static int IsNoPctChar(int chr) // ret: ? パーセント化しない文字
+static int IsNoPctChar(int chr) // ret: ? パーセントエンコーディングしない文字
 {
 	return
 		m_isalpha(chr) ||
