@@ -72,7 +72,7 @@ static void MkBatUndone(void)
 		{
 			copyFile("C:\\Factory\\Labo\\Tools\\Prime64\\sub\\MakeSum.exe", "MakeSum.exe");
 			coExecute("C:\\Factory\\SubTools\\EmbedConfig.exe --factory-dir-disabled MakeSum.exe");
-			writeOneLine("_MakeSum.bat", "MakeSum.exe out out\\_Sum.txt\nSTART out\\_MakeSum.txt");
+			writeOneLine("_MakeSum.bat", "MakeSum.exe out out\\_Sum.txt\nSTART out\\_Sum.txt");
 		}
 		else
 		{
