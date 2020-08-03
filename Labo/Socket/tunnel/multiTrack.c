@@ -114,7 +114,7 @@ static void PerformTh(int sock, char *strip)
 
 		if(retval == 1)
 		{
-			if(cBuff[0] == 0x00) // fixme: トラック名の部分に '\0' がある場合は未対応 -> デフォルト転送せずに切断
+			if(cBuff[0] == 0x00) // todo: トラック名の部分に '\0' がある場合は未対応 -> デフォルト転送せずに切断
 				goto disconnect;
 
 			buff = addChar(buff, cBuff[0]);

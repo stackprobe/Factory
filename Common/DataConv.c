@@ -390,7 +390,7 @@ char *lineToJDoc(char *line, int okRet)
 //		line = replaceLine(line, "　", " ", 0); // 全角SPC -> 半角SPC // 廃止
 //		replaceChar(line, '\r', ' '); // CR は line2JLine() が何とかしてくれたはず。
 //		replaceChar(line, '\t', ' ');
-		line = replaceLine(line, "\t", "　　", 0); // XXX
+		line = replaceLine(line, "\t", "　　", 0); // todo
 
 //		line2JLine(line, 1, 0, 0, 1); // moved
 		trimEdge(line, ' ');

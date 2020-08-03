@@ -192,7 +192,7 @@ static void RecvDataParse(void)
 static void TimeParse(void)
 {
 #if 1
-	// fixme: UTC
+	// todo: UTC
 	addElement(Row, (uint)xcout(
 		"%04u/%02u/%02u %02u:%02u:%02u.%03u"
 		,Time->wYear

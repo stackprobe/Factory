@@ -122,7 +122,7 @@ static void HeaderParse(void)
 			{
 				char *value = (char *)getLastElement(HttpDat.H_Values);
 
-				value = addChar(value, ' '); // fixme
+				value = addChar(value, ' '); // todo
 				value = addLine(value, line);
 				setElement(HttpDat.H_Values, getCount(HttpDat.H_Values) - 1, (uint)value);
 			}

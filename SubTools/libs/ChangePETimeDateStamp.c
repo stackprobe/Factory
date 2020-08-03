@@ -32,7 +32,7 @@ void ChangePETimeDateStamp(char *file, uint t)
 
 	cout("PE optional header size: %u\n", optHedSize);
 
-errorCase(optHedSize != 224); // fixme: これ以外のサイズに出会うかもしれない。
+errorCase(optHedSize != 224); // todo: これ以外のサイズに出会うかもしれない。
 
 	if(0x44 <= optHedSize)
 	{

@@ -6,7 +6,7 @@ static void Test2Th(void *prm)
 	uint ev = (uint)prm;
 
 	LOGPOS();
-	handleWaitForever(ev); // XXX no crit
+	handleWaitForever(ev); // todo no crit
 	LOGPOS();
 }
 int main(int argc, char **argv)
@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 	sleep(100);
 
 	LOGPOS();
-	eventSet(ev); // XXX no crit
+	eventSet(ev); // todo no crit
 
 	sleep(100);
 
@@ -55,17 +55,17 @@ int main(int argc, char **argv)
 	sleep(100);
 
 	LOGPOS();
-	eventSet(ev); // XXX no crit
+	eventSet(ev); // todo no crit
 
 	sleep(100);
 
 	LOGPOS();
-	eventSet(ev); // XXX no crit
+	eventSet(ev); // todo no crit
 
 	sleep(100);
 
 	LOGPOS();
-	eventSet(ev); // XXX no crit
+	eventSet(ev); // todo no crit
 
 	sleep(100);
 

@@ -200,7 +200,7 @@ static void DecodeUrl(char *url)
 		else
 			*wp = *rp;
 
-		// fixme: '+' -> ' ' ‚µ‚È‚­‚Ä‚¢‚¢‚Ì‚©H
+		// todo: '+' -> ' ' ‚µ‚È‚­‚Ä‚¢‚¢‚Ì‚©H
 
 		rp++;
 		wp++;

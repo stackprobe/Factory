@@ -187,13 +187,13 @@ static void MakeCluster(char *file, char *dir)
 	if(OutputAndCleanMode)
 	{
 		cout("CLEAN DIR\n");
-		recurClearDir(dir); // fixme: 超ファイル数に対応する？
+		recurClearDir(dir); // todo: 超ファイル数に対応する？
 		cout("CLEAN DIR Ok.\n");
 	}
 	else if(OutputAndDeleteMode)
 	{
 		cout("DELETE DIR\n");
-		recurRemoveDir(dir); // fixme: 超ファイル数に対応する？
+		recurRemoveDir(dir); // todo: 超ファイル数に対応する？
 		cout("DELETE DIR Ok.\n");
 	}
 }

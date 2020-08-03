@@ -56,7 +56,7 @@ static char *ChangeHeader(char *header) // ret: ? NULL == Ž¸”s
 
 	*nameEnd = '\0';
 	name = strx(nameBgn);
-	toUpperLine(name); // fixme
+	toUpperLine(name); // todo
 	copyLine(nameBgn, nameEnd + 1);
 
 	url = urlEncoder_x(url);

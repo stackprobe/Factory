@@ -239,7 +239,7 @@ static void Distribute(autoList_t *mail, autoList_t *memberList, char *groupName
 	{
 		int sendonly = findLine(SendOnlyMemberList, member) < getCount(SendOnlyMemberList); // ? 'member' is sendonly member
 
-		coutJLine_x(xcout("member: %s", member)); // fixme: memberって大丈夫じゃね？
+		coutJLine_x(xcout("member: %s", member)); // todo: memberって大丈夫じゃね？
 		cout("unreturn: %d\n", unreturn);
 		cout("sendonly: %d\n", sendonly);
 

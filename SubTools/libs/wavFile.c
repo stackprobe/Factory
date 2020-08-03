@@ -92,7 +92,7 @@ void readWAVFileToCSVFile(char *rFile, char *wFile)
 		name[4] = '\0';
 		size = readValue(rfp);
 
-		errorCase(4200000000 < size); // XXX
+		errorCase(4200000000 < size); // todo
 
 		if(!strcmp(name, "fmt "))
 		{

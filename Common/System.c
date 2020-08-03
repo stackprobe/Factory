@@ -780,7 +780,7 @@ go_search:
 		goto foundPath;
 	}
 	cout("res_nf: %s\n", path);
-writeOneLine(getOutFile("innerResPathFltr_path.txt"), path); // XXX
+writeOneLine(getOutFile("innerResPathFltr_path.txt"), path); // todo
 	error(); // not found
 
 foundPath:

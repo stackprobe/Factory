@@ -211,7 +211,7 @@ void MergeSort(
 			break;
 
 		if(!elements)
-			elements = createAutoList(partSize / 1024); // XXX
+			elements = createAutoList(partSize / 1024); // todo
 
 		if(MS_GetRecordWeightSize)
 			totalRecordWeightSize += MS_GetRecordWeightSize(element);

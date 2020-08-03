@@ -338,7 +338,7 @@ static void Perform_FindPtn(ConnInfo_t *i, char *ttlPath, char *findPtn)
 }
 static void Perform_Dir(ConnInfo_t *i, char *dir)
 {
-	char *wCard = strx(dir);//combine(dir, "*"); // fixme: combine() はネットワークパスを考慮しない。
+	char *wCard = strx(dir);//combine(dir, "*"); // todo: combine() はネットワークパスを考慮しない。
 
 	if(endsWith(wCard, "\\"))
 		wCard = addChar(wCard, '*');

@@ -17,7 +17,7 @@ static char *ActiveDir;
 static int CheckPath(char *path, char *parentDir)
 {
 #if 1
-	// fixme: S‹–‚È‚¢‚¾‚ë‚¤‚©...
+	// todo: S‹–‚È‚¢‚¾‚ë‚¤‚©...
 	return !m_isEmpty(path) && strlen(parentDir) + 1 + strlen(path) <= PATH_SIZE;
 #else
 	return isFairRelPath(path, strlen(parentDir));

@@ -122,7 +122,7 @@ static void FlushMain(void)
 			cout("< %s\n", memRepoDir);
 			cout("> %s\n", repoDir);
 
-			errorCase(!existDir(repoDir)); // fixme: リポジトリを削除することは無いという前提、、、
+			errorCase(!existDir(repoDir)); // todo: リポジトリを削除することは無いという前提、、、
 
 			paths = ls(repoDir);
 			sortJLinesICase(paths);

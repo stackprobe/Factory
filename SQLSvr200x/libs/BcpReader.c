@@ -26,7 +26,7 @@ autoList_t *SqlBcpReader(char *bcpFile, int chrT, int chrR)
 			{
 				char *cell = unbindBlock2Line(buff);
 
-				line2JLine(cell, 1, 0, 1, 1); // fixme: â¸çsã÷é~
+				line2JLine(cell, 1, 0, 1, 1); // todo: â¸çsã÷é~
 
 				addElement(row, (uint)cell);
 				buff = newBlock();
