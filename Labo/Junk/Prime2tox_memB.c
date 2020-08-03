@@ -63,9 +63,9 @@ int main(int argc, char **argv)
 	CountMax = toValue64(nextArg());
 
 	errorCase(CountMax < 3);
-	errorCase(68000000000 < CountMax); // todo
+	errorCase(68000000000 < CountMax); // HACK
 
-	SosuMap = newBitList_A(CountMax / 2 + 100); // todo
+	SosuMap = newBitList_A(CountMax / 2 + 100); // HACK
 
 	rootCntMax = Root(CountMax);
 

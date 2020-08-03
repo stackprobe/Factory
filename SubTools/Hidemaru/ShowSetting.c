@@ -128,7 +128,7 @@ static void Main2(char *regTextFile)
 				case 0x07: shh = strx("強調表示4"); break;
 
 				default:
-					shh = xcout("不明な表示方法(%02u)", hh); // todo
+					shh = xcout("不明な表示方法(%02u)", hh); // HACK
 					break;
 				}
 				cout("%s ", shh);

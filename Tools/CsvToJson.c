@@ -14,7 +14,7 @@ static void CsvToJson(char *rFile, char *wFile)
 
 	head = getList(csv, 0);
 
-	// todo: 出力フォーマット適当..
+	// HACK: 出力フォーマット適当..
 
 	wfp = fileOpen(wFile, "wt");
 	writeLine(wfp, "[");

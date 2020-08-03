@@ -33,7 +33,7 @@
 
 	戻り値は xxx である。
 
-// todo: yyy == zzz
+// HACK: yyy == zzz
 
 	xxx が yyy のときは zzz である。
 
@@ -60,7 +60,7 @@
 
 	元は "// 2bs" だったけど、今は実装する必要がある。
 
-// todo
+// HACK
 
 	一般的なアノテーションにおける TODO, FIXME, HACK あたりの意味で記載
 	弱いTODO

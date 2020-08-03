@@ -119,17 +119,17 @@ int main(int argc, char **argv)
 	}
 	if(argIs("/D"))
 	{
-		error(); // todo: DELETE
+		error(); // HACK: DELETE
 		return;
 	}
 	if(argIs("/I"))
 	{
-		error(); // todo: INSERT
+		error(); // HACK: INSERT
 		return;
 	}
 	if(argIs("/C"))
 	{
-		error(); // todo: CREATE
+		error(); // HACK: CREATE
 		return;
 	}
 

@@ -780,7 +780,7 @@ go_search:
 		goto foundPath;
 	}
 	cout("res_nf: %s\n", path);
-writeOneLine(getOutFile("innerResPathFltr_path.txt"), path); // todo
+writeOneLine(getOutFile("innerResPathFltr_path.txt"), path); // HACK
 	error(); // not found
 
 foundPath:

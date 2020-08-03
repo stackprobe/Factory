@@ -218,7 +218,7 @@ static void SyncFiles(autoList_t *dirs)
 			char *dir2 = getLine(dirs, index);
 
 			cout("%s > %s\n", dir1, dir2);
-			copyDir(dir1, dir2); // todo: ディレクトリがあると多分落ちる。
+			copyDir(dir1, dir2); // HACK: ディレクトリがあると多分落ちる。
 		}
 		cout("auto copy ok.\n");
 	}

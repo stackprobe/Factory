@@ -127,7 +127,7 @@ static void ResolveRelHintPath(char *file)
 	char *p;
 	int modified = 0;
 
-	text = strrm(text, 128000000); // todo
+	text = strrm(text, 128000000); // HACK
 	p = text;
 
 	while(p = strstrNext(p, "<HintPath>"))

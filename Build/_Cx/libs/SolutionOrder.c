@@ -51,7 +51,7 @@ autoList_t *GetReferenceSolutions(char *source)
 						char *solution = line + 10;
 						char *p;
 
-						p = mbs_stristr(solution, "\\bin\\Release\\"); // todo: 最後のパターンを探すべき。
+						p = mbs_stristr(solution, "\\bin\\Release\\"); // HACK: 最後のパターンを探すべき。
 						errorCase(!p); // 2bs
 						strcpy(p, ".sln");
 
