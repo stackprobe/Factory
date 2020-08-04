@@ -70,7 +70,7 @@ autoList_t *readBMPFile(char *file)
 
 	errorCase(!Bfi.Width);
 	errorCase(!Bfi.Height);
-	errorCase(PIXNUMMAX / Bfi.Width < Bfi.Height); // HACK これ必要か？
+	errorCase(PIXNUMMAX / Bfi.Width < Bfi.Height); // HACK: これ必要か？
 
 	switch(Bfi.BitCount)
 	{
