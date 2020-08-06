@@ -183,7 +183,7 @@ int main(int argc, char **argv)
 	}
 	else if(argIs("/1"))
 	{
-		error(); // HACK: request at once
+		error(); // HACK: request once
 	}
 	else
 	{
