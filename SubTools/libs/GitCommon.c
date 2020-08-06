@@ -37,3 +37,29 @@ void EscapeUnusableResPath(char *path)
 
 	memFree(destPath);
 }
+void PostGitMaskFile(char *file)
+{
+	char *maskedMarkFile = changeLocal(file, "====== MASKED ======");
+
+	cout("[MASKED] %s\n", file);
+	cout("-------> %s\n", maskedMarkFile);
+
+	if(!existDir(maskedMarkFile)) // ディレクトリがあれば諦める。
+	{
+		createFile(maskedMarkFile); // 上書きする場合もある。
+	}
+	memFree(maskedMarkFile);
+}
+void PostGitIgnoreFile(char *file)
+{
+	char *ignoredMarkFile = changeLocal(file, "====== IGNORED ======");
+
+	cout("[IGNORED] %s\n", file);
+	cout("--------> %s\n", ignoredMarkFile);
+
+	if(!existDir(ignoredMarkFile)) // ディレクトリがあれば諦める。
+	{
+		createFile(ignoredMarkFile); // 上書きする場合もある。
+	}
+	memFree(ignoredMarkFile);
+}

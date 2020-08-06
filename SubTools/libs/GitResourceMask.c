@@ -346,6 +346,10 @@ static void MaskResourceFile(char *file)
 	else if(!_stricmp(ext, "ogv"  )) MaskResOther(file); // movie
 	else if(!_stricmp(ext, "otf"  )) MaskResOther(file); // open-type font
 	else if(!_stricmp(ext, "ttf"  )) MaskResOther(file); // true-type font
+	else
+		return;
+
+	PostGitMaskFile(file);
 }
 void GitResourceMask(char *rootDir)
 {

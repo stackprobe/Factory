@@ -40,6 +40,8 @@ static void MskSrcFile(char *file, int eurpFlag)
 
 	if(eurpFlag)
 		EscapeUnusableResPath(file);
+
+	PostGitMaskFile(file);
 }
 static void MaskSourceFile(char *file)
 {
@@ -114,6 +116,7 @@ static void MaskSourceByResFile(autoList_t *files)
 				errorCase(!existFile(ignfile));
 
 				removeFile(ignfile);
+				PostGitIgnoreFile(ignfile);
 
 				memFree(ignfile);
 			}

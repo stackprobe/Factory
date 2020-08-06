@@ -212,6 +212,14 @@ static void GitFactory(char *rDir, char *wDir, int allowOverwrite)
 			copyFile(rFile, wFile);
 		}
 
+		if(!_stricmp(getLocal(wFile), IGNORE_FILE))
+		{
+			char *dmyfile = changeLocal(wFile, "*");
+
+			PostGitIgnoreFile(dmyfile);
+			memFree(dmyfile);
+		}
+
 	skipfile:
 		memFree(rFile);
 		memFree(wFile);
