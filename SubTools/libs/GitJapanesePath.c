@@ -1,6 +1,7 @@
 #include "GitJapanesePath.h"
 
-#define ESC_LOCALPATH "[Japanese-path-name]_0001"
+#define ESC_LOCALPATH "[Includes-Non-ASCII-characters]_0001"
+//#define ESC_LOCALPATH "[Japanese-path-name]_0001"
 //#define ESC_LOCALPATH "JP_0001"
 
 static autoList_t *RBLines; // restore batch lines
