@@ -8,6 +8,9 @@ static struct
 }
 Header;
 
+//#define FORMAT_ID_UNKNOWN 0
+#define FORMAT_ID_PCM 1
+
 static struct
 {
 	uint FormatID;
@@ -81,6 +84,7 @@ void readWAVFileToCSVFile(char *rFile, char *wFile)
 		int chr = readChar(rfp);
 		char name[5];
 		uint size;
+		uint64 rPos;
 
 		if(chr == EOF)
 			break;
@@ -92,7 +96,7 @@ void readWAVFileToCSVFile(char *rFile, char *wFile)
 		name[4] = '\0';
 		size = readValue(rfp);
 
-		errorCase(4200000000 < size); // HACK
+		errorCase_m(4200000000 < size, "チャンクサイズが大きすぎます。"); // HACK: 厳密な上限ではない。
 
 		if(!strcmp(name, "fmt "))
 		{
@@ -107,6 +111,8 @@ void readWAVFileToCSVFile(char *rFile, char *wFile)
 		}
 		else if(!strcmp(name, "data"))
 		{
+			errorCase_m(RawData.Pos != 0, "複数のデータチャンクは処理出来ません。"); // ? 2回目のデータチャンク
+
 			RawData.Pos = getSeekPos(rfp);
 			RawData.Size = size;
 
@@ -119,7 +125,7 @@ void readWAVFileToCSVFile(char *rFile, char *wFile)
 			fileSeek(rfp, SEEK_CUR, size);
 		}
 	}
-	errorCase(Fmt.FormatID != 1); // ? ! PCM
+	errorCase(Fmt.FormatID != FORMAT_ID_PCM);
 	errorCase(!m_isRange(Fmt.ChannelNum, 1, 2));
 	errorCase(!m_isRange(Fmt.Hz, 1, IMAX));
 	errorCase(!m_isRange(Fmt.BitPerSample, 8, 16) || Fmt.BitPerSample % 8);
@@ -154,7 +160,7 @@ void readWAVFileToCSVFile(char *rFile, char *wFile)
 
 	lastWAV_Hz = Fmt.Hz;
 
-	errorCase(AV_Return != ','); // ? ステレオ左音で終わってる。
+	errorCase(AV_Return != ','); // ? ステレオ左音で終わってる。モノラルの場合、常に AV_Return == ','
 	errorCase(getFileSize(wFile) % 12 != 0); // 2bs
 }
 void writeWAVFileFromCSVFile(char *rFile, char *wFile, uint hz)

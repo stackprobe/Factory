@@ -64,7 +64,7 @@ autoList_t *readWAVFile(char *file)
 		name[4] = '\0';
 		size = readValue(fp);
 
-		errorCase(IMAX < size);
+		errorCase_m(IMAX < size, "チャンクサイズが大きすぎます。"); // HACK: 厳密な上限ではない。実際の上限はもっと低いはず。
 
 		if(!strcmp(name, "fmt "))
 		{
@@ -79,8 +79,7 @@ autoList_t *readWAVFile(char *file)
 		}
 		else if(!strcmp(name, "data"))
 		{
-			if(RawData)
-				releaseAutoBlock(RawData);
+			errorCase_m(RawData, "複数のデータチャンクは処理出来ません。"); // ? 2回目のデータチャンク
 
 			RawData = neReadBinaryBlock(fp, size);
 		}
