@@ -15,9 +15,9 @@
 #define MAILSIZEMAX 108000000 // 108 MB
 
 static char *PopServer;
-static uint PopPortno = 465;
+static uint PopPortno = 995;
 static char *SmtpServer;
-static uint SmtpPortno = 995;
+static uint SmtpPortno = 465;
 static char *UserName;
 static char *Passphrase;
 static char *SelfMailAddress;
@@ -101,7 +101,7 @@ static void DistributeOne(char *groupName, char *memberFrom, char *memberTo, uin
 	ab_addLine(mail, "\r\n");
 
 	ab_addLine(mail, "From: ");
-	ab_addLine(mail, memberFrom);
+	ab_addLine(mail, SelfMailAddress);
 	ab_addLine(mail, "\r\n");
 
 	ab_addLine(mail, "Subject: ");
@@ -122,7 +122,7 @@ static void DistributeOne(char *groupName, char *memberFrom, char *memberTo, uin
 
 	ab_addBytes(mail, c_MP_GetBody());
 
-	SendMail(SmtpServer, SmtpPortno, UserName, Passphrase, memberFrom, memberTo, mail);
+	SendMail(SmtpServer, SmtpPortno, UserName, Passphrase, SelfMailAddress, memberTo, mail);
 
 	releaseAutoBlock(mail);
 	memFree(contentType);
@@ -163,13 +163,13 @@ static void Distribute(autoList_t *memberList, char *groupName, char *mailFrom)
 	{
 		int sendonly = findLine(SendOnlyMemberList, member) < getCount(SendOnlyMemberList); // ? 'member' is sendonly member
 
-		cout("member: %s", member);
+		cout("member: %s\n", member);
 		cout("unreturn: %d\n", unreturn);
 		cout("sendonly: %d\n", sendonly);
 
 		if(unreturn && member == memberFrom)
 		{
-			cout("■打ち返し拒否メンバーなので飛ばす。\n");
+			cout("■送り返し拒否メンバーなので飛ばす。\n");
 		}
 		else if(sendonly)
 		{
@@ -275,10 +275,13 @@ static void RecvLoop(void)
 		if(getCount(mailList))
 		{
 			uint mailSize = getElement(mailList, 0);
+			int del = 1;
 
 			if(mailSize <= MAILSIZEMAX)
 			{
 				autoBlock_t *mail = RecvMail(PopServer, PopPortno, UserName, Passphrase, 1, MAILSIZEMAX);
+
+				del = RecvAndDeleteMode;
 
 				MailParser(mail);
 				LOGPOS();
@@ -286,7 +289,7 @@ static void RecvLoop(void)
 				LOGPOS();
 				releaseAutoBlock(mail);
 			}
-			if(RecvAndDeleteMode)
+			if(del)
 				DeleteMail(PopServer, PopPortno, UserName, Passphrase, 1);
 
 			mailRecved = 1;

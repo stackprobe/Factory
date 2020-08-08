@@ -11,6 +11,8 @@ void SendMail(char *smtpServer, uint portno, char *user, char *pass, char *fromM
 	CheckMailAddress(toMailAddress);
 	errorCase(!mail);
 
+	writeBinary(upFile, mail);
+
 	mailLock();
 	LOGPOS_T();
 

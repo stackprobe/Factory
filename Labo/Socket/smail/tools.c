@@ -23,6 +23,7 @@ void MailParser(autoBlock_t *mail)
 	{
 		uint i = rPos;
 		char *headerLine;
+		int folding;
 
 		for(; i < getSize(mail); i++)
 			if(b_(mail)[i] == '\n')
@@ -36,12 +37,15 @@ void MailParser(autoBlock_t *mail)
 		b_(mail)[i] = '\0';
 		headerLine = (char *)b_(mail) + rPos;
 		rPos = i + 1;
+		folding = m_isspace(headerLine[0]) && getCount(MP_HeaderKeys);
+		ucTrimEdge(headerLine);
 
-		if(headerLine[0] <= ' ' && getCount(MP_HeaderKeys)) // ? folding
+		if(!*headerLine)
+			break;
+
+		if(folding)
 		{
 			char *lastValue = (char *)unaddElement(MP_HeaderValues);
-
-			ucTrimEdge(headerLine);
 
 			lastValue = addChar(lastValue, ' ');
 			lastValue = addLine(lastValue, headerLine);
@@ -68,13 +72,8 @@ void MailParser(autoBlock_t *mail)
 			}
 			else
 			{
-				ucTrimEdge(headerLine);
-
-				if(!*headerLine)
-					break;
-
 				line2JLine(headerLine, 1, 0, 0, 1); // 表示のため
-				cout("不明なヘッダ行 = [%s]", headerLine);
+				cout("不明なヘッダ行 = [%s]\n", headerLine);
 			}
 		}
 	}

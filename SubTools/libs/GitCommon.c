@@ -44,10 +44,12 @@ void PostGitMaskFile(char *file)
 	cout("[MASKED] %s\n", file);
 	cout("-------> %s\n", maskedMarkFile);
 
-	if(!existDir(maskedMarkFile)) // ディレクトリがあれば諦める。
-	{
-		createFile(maskedMarkFile); // 上書きする場合もある。
-	}
+	// NOTE:
+	// ディレクトリがあれば諦める。
+	// 既に作成済みの場合もある。
+	if(!accessible(maskedMarkFile))
+		createFile(maskedMarkFile);
+
 	memFree(maskedMarkFile);
 }
 void PostGitIgnoreFile(char *file)
@@ -57,9 +59,11 @@ void PostGitIgnoreFile(char *file)
 	cout("[IGNORED] %s\n", file);
 	cout("--------> %s\n", ignoredMarkFile);
 
-	if(!existDir(ignoredMarkFile)) // ディレクトリがあれば諦める。
-	{
-		createFile(ignoredMarkFile); // 上書きする場合もある。
-	}
+	// NOTE:
+	// ディレクトリがあれば諦める。
+	// 既に作成済みの場合もある。
+	if(!accessible(ignoredMarkFile))
+		createFile(ignoredMarkFile);
+
 	memFree(ignoredMarkFile);
 }

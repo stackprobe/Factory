@@ -7,7 +7,7 @@
 	                [/F メンバーリストファイル]...
 	                [/G グループリストファイル]...
 	                /N  グループ名リストファイル
-	                /UR 打ち返し禁止メンバーリストファイル
+	                /UR 送り返し拒否メンバーリストファイル
 	                /SO 送信専用メンバーリストファイル
 	                /C  カウンターファイルのベース名
 					/-D
@@ -42,7 +42,7 @@
 		読み込み方 -> readResourceLines();
 		グループ名の書式は <1,9,09AZaz> を想定する。
 
-	打ち返し拒否メンバーリストファイル
+	送り返し拒否メンバーリストファイル
 		自分のメールを自分自身に配信しないようにするメンバー(メールアドレス)のリストを改行区切りで記載する。
 		グループを問わず「メンバーリストファイル」のメールアドレスとの完全一致によって有効になる。
 		読み込み方 -> readResourceLines();
@@ -309,13 +309,13 @@ static void Distribute(autoList_t *mail, autoList_t *memberList, char *groupName
 	{
 		int sendonly = findLine(SendOnlyMemberList, member) < getCount(SendOnlyMemberList); // ? 'member' is sendonly member
 
-		cout("member: %s", member);
+		cout("member: %s\n", member);
 		cout("unreturn: %d\n", unreturn);
 		cout("sendonly: %d\n", sendonly);
 
 		if(unreturn && member == memberFrom)
 		{
-			cout("■打ち返し拒否メンバーなので飛ばす。\n");
+			cout("■送り返し拒否メンバーなので飛ばす。\n");
 		}
 		else if(sendonly)
 		{
