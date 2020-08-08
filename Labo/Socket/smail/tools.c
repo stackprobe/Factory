@@ -1,5 +1,40 @@
 #include "tools.h"
 
+static char *GetFqdn(char *mailAddr)
+{
+	char *p;
+
+	if(mailAddr)
+	{
+		p = mbs_strchr(mailAddr, '@');
+
+		if(p)
+			p++;
+		else
+			p = mailAddr;
+	}
+	else
+		p = "";
+
+	if(!*p)
+		p = "default";
+
+	return strx(p);
+}
+char *MakeMailMessageID(char *senderMailAddr)
+{
+	char *randPart = makeHexLine_x(makeCryptoRandBlock(16)); // 128bit
+	char *fqdn = GetFqdn(senderMailAddr);
+	char *messageID;
+
+	messageID = xcout("<%s@%s>", randPart, fqdn);
+	memFree(randPart);
+	memFree(fqdn);
+	return messageID;
+}
+
+// ---- MailParser ----
+
 static autoList_t *MP_HeaderKeys;
 static autoList_t *MP_HeaderValues;
 static autoBlock_t *MP_Body;
@@ -86,6 +121,7 @@ char *MP_GetHeaderValue(char *targKey) // ret: strx(), NULL == 見つからない。
 
 	errorCase(m_isEmpty(targKey));
 
+	// ? メール未展開
 	errorCase(!MP_HeaderKeys);
 //	errorCase(!MP_HeaderValues);
 
@@ -97,7 +133,10 @@ char *MP_GetHeaderValue(char *targKey) // ret: strx(), NULL == 見つからない。
 }
 autoBlock_t *c_MP_GetBody(void)
 {
+	// ? メール未展開
 	errorCase(!MP_Body);
 
 	return MP_Body;
 }
+
+// ----

@@ -67,6 +67,21 @@ static char *MakeSubjectFrom(char *groupName, char *mailFrom, uint counter)
 	memFree(name);
 	return subject;
 }
+static char *MakeDateField(void)
+{
+	stampData_t tmpsd = *getStampDataTime(0L);
+
+	return xcout(
+		"%s, %u %s %04u %02u:%02u:%02u +0900"
+		,getEWeekDay(tmpsd.weekday)
+		,tmpsd.day
+		,getEMonth(tmpsd.month)
+		,tmpsd.year
+		,tmpsd.hour
+		,tmpsd.minute
+		,tmpsd.second
+		);
+}
 static char *ToFairMailAddress(char *mailAddress) // ret: strr(mailAddress)
 {
 	char *p = strrchr(mailAddress, '<'); // 最後の '<'
@@ -104,6 +119,14 @@ static void DistributeOne(char *groupName, char *memberFrom, char *memberTo, uin
 	ab_addLine(mail, SelfMailAddress);
 	ab_addLine(mail, "\r\n");
 
+	ab_addLine(mail, "Date: ");
+	ab_addLine_x(mail, MakeDateField());
+	ab_addLine(mail, "\r\n");
+
+	ab_addLine(mail, "Message-Id: ");
+	ab_addLine_x(mail, MakeMailMessageID(SelfMailAddress));
+	ab_addLine(mail, "\r\n");
+
 	ab_addLine(mail, "Subject: ");
 	ab_addLine_x(mail, MakeSubjectFrom(groupName, memberFrom, counter));
 	ab_addLine(mail, "\r\n");
@@ -118,7 +141,11 @@ static void DistributeOne(char *groupName, char *memberFrom, char *memberTo, uin
 		ab_addLine(mail, contentTransferEncoding);
 		ab_addLine(mail, "\r\n");
 	}
+	ab_addLine(mail, "X-Mailer: ");
+	ab_addLine(mail, "mf-S");
 	ab_addLine(mail, "\r\n");
+
+	ab_addLine(mail, "\r\n"); // ヘッダ終端の空行
 
 	ab_addBytes(mail, c_MP_GetBody());
 
