@@ -500,6 +500,11 @@ autoBlock_t *getSubBytes(autoBlock_t *i, uint index, uint count)
 	autoBlock_t gab;
 	return copyAutoBlock(gndSubBytesVar(i, index, count, gab));
 }
+autoBlock_t *getFollowBytes(autoBlock_t *i, uint index)
+{
+	autoBlock_t gab;
+	return copyAutoBlock(gndFollowBytesVar(i, index, gab));
+}
 char *unbindBlock2Line(autoBlock_t *i)
 {
 	addByte(i, '\0');

@@ -1,33 +1,86 @@
 #include "tools.h"
 
-static char *GetMailAddressByHeaderValue(char *value)
-{
-	char *mailAddress = NULL;
-	char *p = strrchr(value, '<'); // 最後の
-
-	if(p)
-	{
-		char *q = strchr(p + 1, '>');
-
-		if(q)
-			mailAddress = strxl(p, (uint)q - (uint)p);
-	}
-	if(!mailAddress)
-		mailAddress = strx(value);
-
-	ucTrim(mailAddress);
-	return mailAddress;
-}
-
 static autoList_t *MP_HeaderKeys;
 static autoList_t *MP_HeaderValues;
 static autoBlock_t *MP_Body;
 
 void MailParser(autoBlock_t *mail)
 {
-	error(); // TODO
+	uint rPos;
+
+	errorCase(!mail);
+
+	if(MP_HeaderKeys) // 前回の内容をクリア
+	{
+		releaseDim(MP_HeaderKeys, 1);
+		releaseDim(MP_HeaderValues, 1);
+		releaseAutoBlock(MP_Body);
+	}
+	MP_HeaderKeys = newList();
+	MP_HeaderValues = newList();
+
+	for(rPos = 0; ; )
+	{
+		uint i = rPos;
+		char *headerLine;
+
+		for(; i < getSize(mail); i++)
+			if(b_(mail)[i] == '\n')
+				break;
+
+		if(i == getSize(mail))
+		{
+			cout("ヘッダの終端が見つかりません。\n");
+			break;
+		}
+		b_(mail)[i] = '\0';
+		headerLine = (char *)b_(mail) + rPos;
+		rPos = i + 1;
+
+		if(headerLine[0] <= ' ' && getCount(MP_HeaderKeys)) // ? folding
+		{
+			char *lastValue = (char *)unaddElement(MP_HeaderValues);
+
+			ucTrimEdge(headerLine);
+
+			lastValue = addChar(lastValue, ' ');
+			lastValue = addLine(lastValue, headerLine);
+
+			addElement(MP_HeaderValues, (uint)lastValue);
+		}
+		else
+		{
+			char *p = strchr(headerLine, ':');
+
+			if(p)
+			{
+				char *key = headerLine;
+				char *value;
+
+				*p = '\0';
+				value = p + 1;
+
+				ucTrimEdge(key);
+				ucTrimEdge(value);
+
+				addElement(MP_HeaderKeys,   (uint)strx(key));
+				addElement(MP_HeaderValues, (uint)strx(value));
+			}
+			else
+			{
+				ucTrimEdge(headerLine);
+
+				if(!*headerLine)
+					break;
+
+				line2JLine(headerLine, 1, 0, 0, 1); // 表示のため
+				cout("不明なヘッダ行 = [%s]", headerLine);
+			}
+		}
+	}
+	MP_Body = getFollowBytes(mail, rPos);
 }
-char *MP_GetHeaderValue(char *targKey)
+char *MP_GetHeaderValue(char *targKey) // ret: strx(), NULL == 見つからない。
 {
 	char *key;
 	uint index;
@@ -35,15 +88,15 @@ char *MP_GetHeaderValue(char *targKey)
 	errorCase(m_isEmpty(targKey));
 
 	errorCase(!MP_HeaderKeys);
-	errorCase(!MP_HeaderValues); // 2bs
+//	errorCase(!MP_HeaderValues);
 
 	foreach(MP_HeaderKeys, key, index)
 		if(!_stricmp(key, targKey))
-			return getLine(MP_HeaderValues, index);
+			return strx(getLine(MP_HeaderValues, index));
 
 	return NULL;
 }
-autoBlock_t *MP_GetBody(void)
+autoBlock_t *c_MP_GetBody(void)
 {
 	errorCase(!MP_Body);
 

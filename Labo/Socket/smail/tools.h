@@ -5,4 +5,4 @@
 
 void MailParser(autoBlock_t *mail);
 char *MP_GetHeaderValue(char *targKey);
-autoBlock_t *MP_GetBody(void);
+autoBlock_t *c_MP_GetBody(void);

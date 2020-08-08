@@ -1,35 +1,77 @@
 /*
-	Members File
-		グループを構成するメンバーのメールアドレスのリスト
-		シンプルなメールアドレスであること。< > で括るとか認めない。ex. aaa@bbb.com
-		グループ内でメールアドレスの重複は認めない。
+	mailForward.exe /PD POP3サーバー [/PP POP3サーバーのポート番号]
+	                /SD SMTPサーバー [/SP SMTPサーバーのポート番号]
+	                /U  メールアカウントのユーザー名
+	                /P  メールアカウントのパスワード
+	                /M  メールアカウントのメールアドレス
+	                [/F メンバーリストファイル]...
+	                [/G グループリストファイル]...
+	                /N  グループ名リストファイル
+	                /UR 打ち返し禁止メンバーリストファイル
+	                /SO 送信専用メンバーリストファイル
+	                /C  カウンターファイルのベース名
 
-	Group Names File
-		グループ名のリスト
-		並びと個数は Members File の指定順に一致する。
-		<1,,09AZaz> を想定する。長さを特に制限しないが、件名に挿入するので数文字程度にしてね。
-		グループ名の重複は認めない。
+		起動する。
+		エスケープキーの押下または「停止のリクエスト」により停止する。
 
-	Unreturn Members File
-		自分のメールを自分自身に配信しないようにするメンバーのリスト
-		グループを問わず Members File のメールアドレスとの完全一致
+	mailForward.exe /S
 
-	Send Only Members File
-		送信しかしないメンバーのリスト
-		グループを問わず Members File のメールアドレスとの完全一致
+		停止をリクエストする。
 
 	----
+	ファイル一覧
 
-	メンバーからのメールをグループ全員に送信
-	複数のグループに属するメンバーは件名の "[グループ名]" から判断 ex. "[ML]"
-	判断できなかった場合は "[]" を件名にして送信者だけに送信
+	メンバーリストファイル
+		グループを構成するメンバーのメールアドレスのリストを改行区切りで記載する。
+		同じグループ内でメールアドレスが重複してはならない。異なるグループ間での重複は可。
+		読み込み方 -> readResourceLines();
+		メールアドレスの書式は <1,300,@@__-.09AZaz> を想定する。
+
+	グループリストファイル
+		メンバーリストファイルのリストを改行区切りで記載する。
+		読み込み方 -> readResourceFilesLines();
+
+	グループ名リストファイル
+		グループ名のリストを改行区切りで記載する。
+		グループ名の並びと個数は「メンバーリストファイル」の指定順に一致しなければならない。
+		グループ名は重複してはならない。
+		読み込み方 -> readResourceLines();
+		グループ名の書式は <1,9,09AZaz> を想定する。
+
+	打ち返し拒否メンバーリストファイル
+		自分のメールを自分自身に配信しないようにするメンバー(メールアドレス)のリストを改行区切りで記載する。
+		グループを問わず「メンバーリストファイル」のメールアドレスとの完全一致によって有効になる。
+		読み込み方 -> readResourceLines();
+		メールアドレスの書式は <1,300,@@__-.09AZaz> を想定する。
+
+	送信専用メンバーリストファイル
+		送信しかしないメンバー(メールアドレス)のリストを改行区切りで記載する。
+		グループを問わず「メンバーリストファイル」のメールアドレスとの完全一致によって有効になる。
+		読み込み方 -> readResourceLines();
+		メールアドレスの書式は <1,300,@@__-.09AZaz> を想定する。
+
+	----
+	メール受信時の動作
+
+	1つのグループに属するメンバーからのメール
+
+		そのグループ全員に配信する。
+
+	複数のグループに属するメンバーからのメール
+
+		件名の "[グループ名]" からグループを特定し、そのグループ全員に配信する。
+		グループを特定できなかった場合は "[]" を件名にして送信者に送り返す。
+
+	どのグループにも属さないメール
+
+		破棄する。
 */
 
 #include "pop3.h"
 #include "smtp.h"
 #include "tools.h"
-#include "C:\Factory\Common\Options\CRRandom.h"
 #include "C:\Factory\Common\Options\Sequence.h"
+#include "C:\Factory\OpenSource\mt19937.h"
 
 #define STOP_EV_NAME "{c991a7e5-24bf-4ab0-a657-fc0a44827620}"
 
@@ -99,6 +141,25 @@ static char *MakeDateField(void)
 		,tmpsd.minute
 		,tmpsd.second
 		);
+}
+static char *ToFairMailAddress(char *mailAddress) // ret: strr(mailAddress)
+{
+	char *p = strrchr(mailAddress, '<'); // 最後の '<'
+
+	if(p)
+	{
+		char *q = strchr(++p, '>');
+
+		if(q)
+		{
+			char *tmp = strxl(p, (uint)q - (uint)p);
+
+			memFree(mailAddress);
+			mailAddress = tmp;
+		}
+	}
+	ucTrim(mailAddress);
+	return mailAddress;
 }
 
 static void DistributeOne(autoList_t *mail, char *groupName, char *memberFrom, char *memberTo, uint counter)
@@ -210,23 +271,27 @@ endfunc:
 }
 static void Distribute(autoList_t *mail, autoList_t *memberList, char *groupName, char *mailFrom)
 {
-	char *memberFrom = NULL;
+	char *memberFrom;
 	char *member;
 	uint index;
 	int unreturn;
 	uint counter;
 	autoList_t *shuffledMemberList;
 
+#if 1
+	memberFrom = (char *)refElement(memberList, findLineComp(memberList, mailFrom, strcmp));
+#else // same
+	memberFrom = NULL;
+
 	foreach(memberList, member, index)
 	{
-		if(strstr(mailFrom, member))
+		if(!strcmp(mailFrom, member))
 		{
 			memberFrom = member;
 			break;
 		}
 	}
-
-//	memberFrom = refElement(memberList, findLineComp(memberList, member, strstr)); // これと同じはずだけど分かりにくいなぁ...
+#endif
 	errorCase(!memberFrom); // ? not found
 	unreturn = findLine(UnreturnMemberList, memberFrom) < getCount(UnreturnMemberList); // ? 'memberFrom' is unreturn member
 
@@ -239,13 +304,13 @@ static void Distribute(autoList_t *mail, autoList_t *memberList, char *groupName
 	{
 		int sendonly = findLine(SendOnlyMemberList, member) < getCount(SendOnlyMemberList); // ? 'member' is sendonly member
 
-		coutJLine_x(xcout("member: %s", member)); // HACK: memberって大丈夫じゃね？
+		cout("member: %s", member);
 		cout("unreturn: %d\n", unreturn);
 		cout("sendonly: %d\n", sendonly);
 
 		if(unreturn && member == memberFrom)
 		{
-			cout("■折り返し配信拒否メンバーなので飛ばす。\n");
+			cout("■打ち返し拒否メンバーなので飛ばす。\n");
 		}
 		else if(sendonly)
 		{
@@ -270,6 +335,7 @@ static void RecvEvent(autoList_t *mail)
 		cout("No mailFrom!\n");
 		return;
 	}
+	mailFrom = ToFairMailAddress(mailFrom);
 
 	{
 		autoList_t *indexes = newList();
@@ -285,7 +351,7 @@ static void RecvEvent(autoList_t *mail)
 
 			foreach(memberList, member, member_index)
 			{
-				if(strstr(mailFrom, member))
+				if(!strcmp(mailFrom, member))
 				{
 					addElement(indexes, index);
 					mail_myself = member;
@@ -330,7 +396,7 @@ static void RecvEvent(autoList_t *mail)
 
 		foreach(indexes, index, index_index)
 		{
-			Distribute(mail, (autoList_t *)getElement(GroupList, index), getLine(GroupNameList, index), mailFrom);
+			Distribute(mail, getList(GroupList, index), getLine(GroupNameList, index), mailFrom);
 		}
 		releaseAutoList(indexes);
 	}
@@ -370,13 +436,15 @@ static void RecvLoop(void)
 		for(index = 0; index < waitSec; index += 3)
 			if(checkKey(0x1b) || handleWaitForMillis(stopEv, 3000))
 				goto endLoop;
+
+		mt19937_rnd32(); // 乱数のカウンタを回す。
 	}
 endLoop:
 	handleClose(stopEv);
 }
 int main(int argc, char **argv)
 {
-	mt19937_initCRnd();
+	mt19937_init();
 
 	GroupList = newList();
 	UnreturnMemberList = newList();
@@ -385,7 +453,7 @@ int main(int argc, char **argv)
 readArgs:
 	if(argIs("/S"))
 	{
-LOGPOS();
+		LOGPOS();
 		eventWakeup(STOP_EV_NAME);
 		return;
 	}
@@ -426,31 +494,31 @@ LOGPOS();
 	}
 	if(argIs("/F")) // members File
 	{
-LOGPOS();
+		LOGPOS();
 		addElement(GroupList, (uint)readResourceLines(nextArg()));
 		goto readArgs;
 	}
 	if(argIs("/G")) // Groups file
 	{
-LOGPOS();
+		LOGPOS();
 		addElements_x(GroupList, readResourceFilesLines(nextArg()));
 		goto readArgs;
 	}
 	if(argIs("/N")) // group Names file
 	{
-LOGPOS();
+		LOGPOS();
 		GroupNameList = readResourceLines(nextArg());
 		goto readArgs;
 	}
 	if(argIs("/UR")) // Un-Return members file
 	{
-LOGPOS();
+		LOGPOS();
 		addElements_x(UnreturnMemberList, readResourceLines(nextArg()));
 		goto readArgs;
 	}
 	if(argIs("/SO")) // Send Only members file
 	{
-LOGPOS();
+		LOGPOS();
 		addElements_x(SendOnlyMemberList, readResourceLines(nextArg()));
 		goto readArgs;
 	}
@@ -459,8 +527,8 @@ LOGPOS();
 		CounterFileBase = nextArg();
 		goto readArgs;
 	}
-LOGPOS();
 
+	LOGPOS();
 	errorCase(m_isEmpty(PopServer));
 	errorCase(!PopPortno || 0xffff < PopPortno);
 	errorCase(m_isEmpty(SmtpServer));
@@ -469,7 +537,7 @@ LOGPOS();
 	errorCase(m_isEmpty(PopPassphrase));
 	errorCase(m_isEmpty(SelfMailAddress));
 	errorCase(!getCount(GroupList));
-LOGPOS();
+	LOGPOS();
 
 	{
 		autoList_t *memberList;
@@ -480,16 +548,16 @@ LOGPOS();
 			errorCase(getCount(memberList) < 2);
 		}
 	}
-LOGPOS();
 
+	LOGPOS();
 	errorCase(!GroupNameList);
 	errorCase(getCount(GroupList) != getCount(GroupNameList));
 	errorCase(m_isEmpty(CounterFileBase));
-LOGPOS();
 
+	LOGPOS();
 	GetCounter("test"); // カウンタ取得テスト
-LOGPOS();
 
+	LOGPOS();
 	cmdTitle("mailForward");
 
 	SockStartup();

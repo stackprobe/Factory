@@ -76,6 +76,7 @@ autoBlock_t *unaddBytes(autoBlock_t *i, uint count);
 void unaddBytesRevToBlock(autoBlock_t *i, void *block, uint size);
 void unaddBytesToBlock(autoBlock_t *i, void *block, uint size);
 autoBlock_t *getSubBytes(autoBlock_t *i, uint index, uint count);
+autoBlock_t *getFollowBytes(autoBlock_t *i, uint index);
 char *unbindBlock2Line(autoBlock_t *i);
 
 /*

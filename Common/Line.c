@@ -558,10 +558,6 @@ void trimTrail(char *line, int delimChr)
 }
 void trimSequ(char *line, int delimChr)
 {
-	/*
-		debug segv @ 2016.4.7
-	*/
-
 	char *n = line;
 
 	errorCase(delimChr == '\0');

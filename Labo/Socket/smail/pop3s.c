@@ -12,6 +12,7 @@ autoList_t *GetMailList(char *popServer, uint portno, char *user, char *pass)
 
 	CheckMailCommonParams(popServer, portno, user, pass);
 
+	mailLock();
 	LOGPOS_T();
 
 	coExecute(xcout(
@@ -24,6 +25,7 @@ autoList_t *GetMailList(char *popServer, uint portno, char *user, char *pass)
 		));
 
 	LOGPOS_T();
+	mailUnlock();
 
 	createFileIfNotExist(outFile); // リストが空でも作成されるはずだが、念の為
 
@@ -54,7 +56,7 @@ autoList_t *GetMailList(char *popServer, uint portno, char *user, char *pass)
 			break;
 		}
 		cout("mail: %u %I64u\n", mailno, size);
-		size = m_min(size, UINTMAX);
+		m_minim(size, UINTMAX);
 		addElement(mails, (uint)size);
 	}
 	removeFile(outFile);
@@ -74,6 +76,7 @@ autoBlock_t *RecvMail(char *popServer, uint portno, char *user, char *pass, uint
 	errorCase(!m_isRange(mailno, 1, IMAX));
 	errorCase(!m_isRange(mailSizeMax, 1, UINTMAX));
 
+	mailLock();
 	LOGPOS_T();
 
 	coExecute(xcout(
@@ -87,6 +90,7 @@ autoBlock_t *RecvMail(char *popServer, uint portno, char *user, char *pass, uint
 		));
 
 	LOGPOS_T();
+	mailUnlock();
 
 	createFileIfNotExist(outFile); // メールが無ければ作成されない。-- メールの有無は GetMailList() で確認すること。本関数は何かしら返す。
 
@@ -113,6 +117,7 @@ void DeleteMail(char *popServer, uint portno, char *user, char *pass, uint mailn
 	CheckMailCommonParams(popServer, portno, user, pass);
 	errorCase(!m_isRange(mailno, 1, IMAX));
 
+	mailLock();
 	LOGPOS_T();
 
 	coExecute(xcout(
@@ -125,4 +130,5 @@ void DeleteMail(char *popServer, uint portno, char *user, char *pass, uint mailn
 		));
 
 	LOGPOS_T();
+	mailUnlock();
 }

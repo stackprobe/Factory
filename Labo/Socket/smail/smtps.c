@@ -7,25 +7,11 @@ void SendMail(char *smtpServer, uint portno, char *user, char *pass, char *fromM
 	LOGPOS();
 
 	CheckMailCommonParams(smtpServer, portno, user, pass);
-	errorCase(m_isEmpty(fromMailAddress));
-	errorCase(m_isEmpty(toMailAddress));
+	CheckMailAddress(fromMailAddress);
+	CheckMailAddress(toMailAddress);
 	errorCase(!mail);
 
-	LOGPOS();
-
-	writeBinary(upFile, mail);
-
-	if(!IsFairMailAddress(fromMailAddress))
-	{
-		coutJLine_x(xcout("送信元メールアドレスに問題があるためメール送信を行いません。[%s]\n", fromMailAddress));
-		goto endFunc;
-	}
-	if(!IsFairMailAddress(toMailAddress))
-	{
-		coutJLine_x(xcout("送信先メールアドレスに問題があるためメール送信を行いません。[%s]\n", toMailAddress));
-		goto endFunc;
-	}
-
+	mailLock();
 	LOGPOS_T();
 
 	coExecute(xcout(
@@ -40,8 +26,8 @@ void SendMail(char *smtpServer, uint portno, char *user, char *pass, char *fromM
 		));
 
 	LOGPOS_T();
+	mailUnlock();
 
-endFunc:
 	removeFile(upFile);
 	memFree(upFile);
 
