@@ -1,4 +1,4 @@
-#include "pop.h"
+#include "pop3.h"
 
 static char *RecvLineDisp(SockStream_t *ss)
 {

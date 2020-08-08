@@ -19,6 +19,7 @@ static void Perform(int sock, int fwdSock)
 	Comm_t *b;
 	uint waitMillis = 0;
 	uint connectNo = ConnectNoCounter;
+	uint stress = 0;
 
 	if(ConnectNoCounter == UINTMAX)
 		ConnectNoCounter = 0;
@@ -50,6 +51,16 @@ static void Perform(int sock, int fwdSock)
 
 		if(m_01(IsCommDeadAndEmpty(a)) & m_01(IsCommDeadAndEmpty(b))) // 両方実行したい。
 			break;
+
+		// FIXME
+		// やっつけ対策
+		// この問題に関係あるかも --> C:\Dev\wb\t20200122_GBCTunnelTest\memo.txt
+		{
+			stress += m_01(IsCommDeadAndEmpty(a)) | m_01(IsCommDeadAndEmpty(b));
+
+			if(100 < stress) // しきい値は適当。調整が必要
+				break;
+		}
 
 		inner_uncritical();
 		{

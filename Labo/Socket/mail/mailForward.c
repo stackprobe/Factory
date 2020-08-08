@@ -25,7 +25,7 @@
 	”»’f‚Å‚«‚È‚©‚Á‚½ê‡‚Í "[]" ‚ğŒ–¼‚É‚µ‚Ä‘—MÒ‚¾‚¯‚É‘—M
 */
 
-#include "pop.h"
+#include "pop3.h"
 #include "smtp.h"
 #include "tools.h"
 #include "C:\Factory\Common\Options\CRRandom.h"

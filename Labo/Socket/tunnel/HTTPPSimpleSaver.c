@@ -2,7 +2,7 @@
 	Žg—p—á
 
 		HTTPProxy 80 a 1 /f- "HTTPPSimpleSaver.exe C:\temp"
-		SmplProxy /f- HTTPPSimpleSaver.exe
+		SimpleProxy /f- HTTPPSimpleSaver.exe
 */
 
 #include "C:\Factory\Common\all.h"

@@ -10,7 +10,7 @@
 	‚±‚ê‚ÌŒJ‚è•Ô‚µ
 */
 
-#include "pop.h"
+#include "pop3.h"
 #include "smtp.h"
 #include "tools.h"
 
