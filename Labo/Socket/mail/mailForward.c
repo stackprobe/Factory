@@ -10,9 +10,13 @@
 	                /UR 打ち返し禁止メンバーリストファイル
 	                /SO 送信専用メンバーリストファイル
 	                /C  カウンターファイルのベース名
+					/-D
 
 		起動する。
 		エスケープキーの押下または「停止のリクエスト」により停止する。
+
+		/-D ... メールの削除を行わない。
+		        受信しただけで当該メールを削除するメールサーバーもある。
 
 	mailForward.exe /S
 
@@ -87,6 +91,7 @@ static autoList_t *GroupNameList;
 static autoList_t *UnreturnMemberList;
 static autoList_t *SendOnlyMemberList;
 static char *CounterFileBase;
+static int RecvAndDeleteMode = 1;
 
 static char *GetCounterFile(char *groupName)
 {
@@ -409,7 +414,7 @@ static void RecvLoop(void)
 
 	for(; ; )
 	{
-		autoList_t *mails = mailRecv(PopServer, PopPortno, PopUserName, PopPassphrase, 3, 1024 * 1024 * 64, 1);
+		autoList_t *mails = mailRecv(PopServer, PopPortno, PopUserName, PopPassphrase, 3, 1024 * 1024 * 64, RecvAndDeleteMode);
 		autoList_t *mail;
 		uint index;
 
@@ -527,6 +532,12 @@ readArgs:
 		CounterFileBase = nextArg();
 		goto readArgs;
 	}
+	if(argIs("/-D")) // no recv and Delete
+	{
+		LOGPOS();
+		RecvAndDeleteMode = 0;
+		goto readArgs;
+	}
 
 	LOGPOS();
 	errorCase(m_isEmpty(PopServer));
@@ -553,6 +564,7 @@ readArgs:
 	errorCase(!GroupNameList);
 	errorCase(getCount(GroupList) != getCount(GroupNameList));
 	errorCase(m_isEmpty(CounterFileBase));
+	// RecvAndDeleteMode
 
 	LOGPOS();
 	GetCounter("test"); // カウンタ取得テスト

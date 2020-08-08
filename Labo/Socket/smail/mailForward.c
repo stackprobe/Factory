@@ -26,6 +26,7 @@ static autoList_t *GroupNameList;
 static autoList_t *UnreturnMemberList;
 static autoList_t *SendOnlyMemberList;
 static char *CounterFileBase;
+static int RecvAndDeleteMode = 1;
 
 static char *GetCounterFile(char *groupName)
 {
@@ -285,7 +286,9 @@ static void RecvLoop(void)
 				LOGPOS();
 				releaseAutoBlock(mail);
 			}
-			DeleteMail(PopServer, PopPortno, UserName, Passphrase, 1);
+			if(RecvAndDeleteMode)
+				DeleteMail(PopServer, PopPortno, UserName, Passphrase, 1);
+
 			mailRecved = 1;
 		}
 		releaseAutoList(mailList);
@@ -393,6 +396,12 @@ readArgs:
 		CounterFileBase = nextArg();
 		goto readArgs;
 	}
+	if(argIs("/-D")) // no recv and Delete
+	{
+		LOGPOS();
+		RecvAndDeleteMode = 0;
+		goto readArgs;
+	}
 
 	LOGPOS();
 	CheckMailServer(PopServer);
@@ -428,6 +437,7 @@ readArgs:
 	errorCase(!GroupNameList);
 	errorCase(getCount(GroupList) != getCount(GroupNameList));
 	errorCase(m_isEmpty(CounterFileBase));
+	// RecvAndDeleteMode
 	LOGPOS();
 
 	{
