@@ -162,6 +162,8 @@ static void DistributeOne(char *groupName, char *memberFrom, char *memberTo, uin
 
 	ab_addBytes(mail, c_MP_GetBody());
 
+	PrintMailEntity(mail);
+
 	SendMail(SmtpServer, SmtpPortno, UserName, Passphrase, SelfMailAddress, memberTo, mail);
 
 	releaseAutoBlock(mail);
@@ -333,6 +335,7 @@ static void RecvLoop(void)
 
 				del = RecvAndDeleteMode;
 
+				PrintMailEntity(mail);
 				MailParser(mail);
 				LOGPOS();
 				RecvEvent();

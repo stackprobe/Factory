@@ -42,6 +42,7 @@ void line2fsym(char *line);
 
 int toHalf(int chr);
 char *toPrintLine(autoBlock_t *block, int insRet);
+char *toPrintLine_x(autoBlock_t *block, int insRet);
 char *lineToPrintLine(char *line, int insRet);
 char *lineToPrintLine_x(char *line, int insRet);
 void line2JLine(char *line, int okJpn, int okRet, int okTab, int okSpc);

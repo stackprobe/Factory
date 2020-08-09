@@ -153,3 +153,32 @@ autoBlock_t *c_MP_GetBody(void)
 }
 
 // ----
+
+void PrintMailEntity(autoBlock_t *mail)
+{
+	char *line;
+
+	if(31000 < getSize(mail)) // ? 31 KB より大きい
+	{
+		autoBlock_t *buff = newBlock();
+
+		ab_addSubBytes(buff, mail, 0, 20000);                 // 最初の 20 KB
+		ab_addLine(buff, " ... ");
+		ab_addFollowBytes(buff, mail, getSize(mail) - 10000); // 最後の 10 KB
+
+		line = toPrintLine_x(buff, 1);
+	}
+	else
+		line = toPrintLine(mail, 1);
+
+	cout(
+		"mail-size: %u bytes\n"
+		"▼▼▼メールの内容ここから▼▼▼\n"
+		"%s\n"
+		"▲▲▲メールの内容ここまで▲▲▲\n"
+		,getSize(mail)
+		,line
+		);
+
+	memFree(line);
+}

@@ -272,6 +272,13 @@ char *toPrintLine(autoBlock_t *block, int insRet)
 	}
 	return unbindBlock2Line(lineBuff);
 }
+char *toPrintLine_x(autoBlock_t *block, int insRet)
+{
+	char *retLine = toPrintLine(block, insRet);
+
+	releaseAutoBlock(block);
+	return retLine;
+}
 char *lineToPrintLine(char *line, int insRet)
 {
 	autoBlock_t gab;
