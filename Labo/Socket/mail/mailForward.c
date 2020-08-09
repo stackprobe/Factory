@@ -7,7 +7,7 @@
 	                [/F メンバーリストファイル]...
 	                [/G グループリストファイル]...
 	                /N  グループ名リストファイル
-	                /UR 送り返し拒否メンバーリストファイル
+	                /UR 折り返し拒否メンバーリストファイル
 	                /SO 送信専用メンバーリストファイル
 	                /C  カウンターファイルのベース名
 					/-D
@@ -15,7 +15,7 @@
 		起動する。
 		エスケープキーの押下または「停止のリクエスト」により停止する。
 
-		/-D ... メールの削除を行わない。
+		/-D ... 受信したメールの削除を行わない。
 		        受信しただけで当該メールを削除するメールサーバーもある。
 
 	mailForward.exe /S
@@ -42,7 +42,7 @@
 		読み込み方 -> readResourceLines();
 		グループ名の書式は <1,9,09AZaz> を想定する。
 
-	送り返し拒否メンバーリストファイル
+	折り返し拒否メンバーリストファイル
 		自分のメールを自分自身に配信しないようにするメンバー(メールアドレス)のリストを改行区切りで記載する。
 		グループを問わず「メンバーリストファイル」のメールアドレスとの完全一致によって有効になる。
 		読み込み方 -> readResourceLines();
@@ -315,7 +315,7 @@ static void Distribute(autoList_t *mail, autoList_t *memberList, char *groupName
 
 		if(unreturn && member == memberFrom)
 		{
-			cout("■送り返し拒否メンバーなので飛ばす。\n");
+			cout("■折り返し拒否メンバーなので飛ばす。\n");
 		}
 		else if(sendonly)
 		{
@@ -405,6 +405,7 @@ static void RecvEvent(autoList_t *mail)
 		}
 		releaseAutoList(indexes);
 	}
+
 	memFree(mailFrom);
 }
 static void RecvLoop(void)
@@ -552,9 +553,9 @@ readArgs:
 
 	{
 		autoList_t *memberList;
-		uint index;
+		uint memberList_index;
 
-		foreach(GroupList, memberList, index)
+		foreach(GroupList, memberList, memberList_index)
 		{
 			errorCase(getCount(memberList) < 2);
 		}

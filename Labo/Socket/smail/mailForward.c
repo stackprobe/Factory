@@ -196,7 +196,7 @@ static void Distribute(autoList_t *memberList, char *groupName, char *mailFrom)
 
 		if(unreturn && member == memberFrom)
 		{
-			cout("■送り返し拒否メンバーなので飛ばす。\n");
+			cout("■折り返し拒否メンバーなので飛ばす。\n");
 		}
 		else if(sendonly)
 		{
@@ -286,6 +286,7 @@ static void RecvEvent(void)
 		}
 		releaseAutoList(indexes);
 	}
+
 	memFree(mailFrom);
 }
 static void RecvLoop(void)
@@ -302,7 +303,7 @@ static void RecvLoop(void)
 		if(getCount(mailList))
 		{
 			uint mailSize = getElement(mailList, 0);
-			int del = 1;
+			int del = 1; // NOTE: 存在するけど受信出来ないメールがあった場合それを削除するために、デフォルトで 1 (削除)
 
 			if(mailSize <= MAILSIZEMAX)
 			{

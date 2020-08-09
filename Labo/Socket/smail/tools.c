@@ -27,7 +27,7 @@ char *MakeMailMessageID(char *senderMailAddr)
 	char *fqdn = GetFqdn(senderMailAddr);
 	char *messageID;
 
-	messageID = xcout("<%s@%s>", randPart, fqdn);
+	messageID = xcout("<%I64u.%s@%s>", time(NULL), randPart, fqdn);
 	memFree(randPart);
 	memFree(fqdn);
 	return messageID;

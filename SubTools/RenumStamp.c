@@ -78,7 +78,7 @@ static void DoFRenumStmp(void)
 	char *file;
 	uint index;
 	uint fileCount;
-	char *unqptn = xcout("_$u=%08x_", time(NULL)); // 適当..
+	char *unqptn = xcout("_$u=%08I64x_", time(NULL)); // HACK: ユニークか
 
 	eraseParents(files);
 	sortJLinesICase(files);
