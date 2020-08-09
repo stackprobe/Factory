@@ -9,6 +9,7 @@ char *MakeMailMessageID(char *senderMailAddr);
 // ---- MailParser ----
 
 void MailParser(autoBlock_t *mail);
+void MP_Clear(void);
 char *MP_GetHeaderValue(char *targKey);
 autoBlock_t *c_MP_GetBody(void);
 

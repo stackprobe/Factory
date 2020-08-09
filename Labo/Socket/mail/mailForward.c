@@ -29,7 +29,7 @@
 		グループを構成するメンバーのメールアドレスのリストを改行区切りで記載する。
 		同じグループ内でメールアドレスが重複してはならない。異なるグループ間での重複は可。
 		読み込み方 -> readResourceLines();
-		メールアドレスの書式は <1,300,@@__-.09AZaz> を想定する。
+		メールアドレスの書式は <1,300,@@__-.09AZaz> を想定する。大文字小文字を区別する。
 
 	グループリストファイル
 		メンバーリストファイルのリストを改行区切りで記載する。
@@ -40,19 +40,19 @@
 		グループ名の並びと個数は「メンバーリストファイル」の指定順に一致しなければならない。
 		グループ名は重複してはならない。
 		読み込み方 -> readResourceLines();
-		グループ名の書式は <1,9,09AZaz> を想定する。
+		グループ名の書式は <1,9,09AZaz> を想定する。大文字小文字を区別しない。
 
 	折り返し拒否メンバーリストファイル
 		自分のメールを自分自身に配信しないようにするメンバー(メールアドレス)のリストを改行区切りで記載する。
 		グループを問わず「メンバーリストファイル」のメールアドレスとの完全一致によって有効になる。
 		読み込み方 -> readResourceLines();
-		メールアドレスの書式は <1,300,@@__-.09AZaz> を想定する。
+		メールアドレスの書式は <1,300,@@__-.09AZaz> を想定する。大文字小文字を区別する。
 
 	送信専用メンバーリストファイル
 		送信しかしないメンバー(メールアドレス)のリストを改行区切りで記載する。
 		グループを問わず「メンバーリストファイル」のメールアドレスとの完全一致によって有効になる。
 		読み込み方 -> readResourceLines();
-		メールアドレスの書式は <1,300,@@__-.09AZaz> を想定する。
+		メールアドレスの書式は <1,300,@@__-.09AZaz> を想定する。大文字小文字を区別する。
 
 	----
 	メール受信時の動作
@@ -167,7 +167,7 @@ static char *ToFairMailAddress(char *mailAddress) // ret: strr(mailAddress)
 	return mailAddress;
 }
 
-static void DistributeOne(autoList_t *mail, char *groupName, char *memberFrom, char *memberTo, uint counter)
+static void DistributeOne(autoList_t *mail, char *groupName, char *memberFrom, char *memberTo, uint counter) // mail 以外の引数は全て安全(書式を満たす文字列か数値)である。
 {
 	char *date;
 	char *sendFrom;
@@ -181,6 +181,12 @@ static void DistributeOne(autoList_t *mail, char *groupName, char *memberFrom, c
 	char *xMailer;
 	autoList_t *sendData = newList();
 	uint count;
+
+	cout("D1.M %u lines\n", getCount(mail));
+	cout("D1.G [%s]\n", groupName);
+	cout("D1.< [%s]\n", memberFrom);
+	cout("D1.> [%s]\n", memberTo);
+	cout("D1.C %u\n", counter);
 
 	date = GetMailHeader(mail, "Date");
 	sendFrom = strx(memberFrom);
@@ -202,7 +208,7 @@ static void DistributeOne(autoList_t *mail, char *groupName, char *memberFrom, c
 	}
 
 	if(!contentTransferEncoding)
-		contentTransferEncoding = strx("7bit");
+		contentTransferEncoding = strx("7bit"); // NOTE: Content-Transfer-Encoding のデフォルトは "7bit", 強制的に指定している理由は不明
 
 	if(
 		!date ||
@@ -274,7 +280,7 @@ endfunc:
 	memFree(xMailer);
 	releaseDim(sendData, 1);
 }
-static void Distribute(autoList_t *mail, autoList_t *memberList, char *groupName, char *mailFrom)
+static void Distribute(autoList_t *mail, autoList_t *memberList, char *groupName, char *mailFrom) // mail 以外の引数は全て安全(書式を満たす文字列)である。
 {
 	char *memberFrom;
 	char *member;
@@ -282,6 +288,14 @@ static void Distribute(autoList_t *mail, autoList_t *memberList, char *groupName
 	int unreturn;
 	uint counter;
 	autoList_t *shuffledMemberList;
+
+	cout("D.M %u lines\n", getCount(mail));
+
+	foreach(memberList, member, index)
+		cout("D.B [%s]\n", member);
+
+	cout("D.G [%s]\n", groupName);
+	cout("D.< [%s]\n", mailFrom);
 
 #if 1
 	memberFrom = (char *)refElement(memberList, findLineComp(memberList, mailFrom, strcmp));

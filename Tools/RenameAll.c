@@ -16,7 +16,7 @@ static void MovePubFiles(void)
 	}
 }
 
-#define MIDFILE_PREF "_$$$_" // HACK: ユニークか
+#define MIDFILE_PREF "_$$$_" // HACK: より確実にユニークになるように
 
 static int RenumberPaths(autoList_t *paths)
 {

@@ -45,12 +45,8 @@ void MailParser(autoBlock_t *mail)
 
 	errorCase(!mail);
 
-	if(MP_HeaderKeys) // 前回の内容をクリア
-	{
-		releaseDim(MP_HeaderKeys, 1);
-		releaseDim(MP_HeaderValues, 1);
-		releaseAutoBlock(MP_Body);
-	}
+	MP_Clear();
+
 	MP_HeaderKeys = newList();
 	MP_HeaderValues = newList();
 
@@ -114,6 +110,24 @@ void MailParser(autoBlock_t *mail)
 	}
 	MP_Body = getFollowBytes(mail, rPos);
 }
+void MP_Clear(void)
+{
+	if(!MP_HeaderKeys) // ? メール未展開
+		return;
+
+	// 2bs
+	errorCase(!MP_HeaderKeys);
+	errorCase(!MP_HeaderValues);
+	errorCase(!MP_Body);
+
+	releaseDim(MP_HeaderKeys, 1);
+	releaseDim(MP_HeaderValues, 1);
+	releaseAutoBlock(MP_Body);
+
+	MP_HeaderKeys = NULL;
+	MP_HeaderValues = NULL;
+	MP_Body = NULL;
+}
 char *MP_GetHeaderValue(char *targKey) // ret: strx(), NULL == 見つからない。
 {
 	char *key;
@@ -123,7 +137,7 @@ char *MP_GetHeaderValue(char *targKey) // ret: strx(), NULL == 見つからない。
 
 	// ? メール未展開
 	errorCase(!MP_HeaderKeys);
-//	errorCase(!MP_HeaderValues);
+	errorCase(!MP_HeaderValues); // 2bs
 
 	foreach(MP_HeaderKeys, key, index)
 		if(!_stricmp(key, targKey))
@@ -133,8 +147,7 @@ char *MP_GetHeaderValue(char *targKey) // ret: strx(), NULL == 見つからない。
 }
 autoBlock_t *c_MP_GetBody(void)
 {
-	// ? メール未展開
-	errorCase(!MP_Body);
+	errorCase(!MP_Body); // ? メール未展開
 
 	return MP_Body;
 }

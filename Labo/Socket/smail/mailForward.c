@@ -102,45 +102,58 @@ static char *ToFairMailAddress(char *mailAddress) // ret: strr(mailAddress)
 	return mailAddress;
 }
 
-static void DistributeOne(char *groupName, char *memberFrom, char *memberTo, uint counter)
+static void DistributeOne(char *groupName, char *memberFrom, char *memberTo, uint counter) // 引数は全て安全(書式を満たす文字列か数値)である。
 {
 	autoBlock_t *mail = newBlock();
+	char *mimeVersion = MP_GetHeaderValue("MIME-Version");
 	char *contentType = MP_GetHeaderValue("Content-Type");
 	char *contentTransferEncoding = MP_GetHeaderValue("Content-Transfer-Encoding");
 
-	if(!contentType)
-		contentType = strx("text/plain");
+	cout("D1.M %u bytes\n", getSize(c_MP_GetBody()));
+	cout("D1.G [%s]\n", groupName);
+	cout("D1.< [%s]\n", memberFrom);
+	cout("D1.> [%s]\n", memberTo);
+	cout("D1.C %u\n", counter);
 
-	ab_addLine(mail, "To: ");
-	ab_addLine(mail, memberTo);
+	if(!contentTransferEncoding)
+		contentTransferEncoding = strx("7bit"); // NOTE: Content-Transfer-Encoding のデフォルトは "7bit", 強制的に指定している理由は不明 (..\mail\mailForward.c に倣った)
+
+	ab_addLine(mail, "Date: ");
+	ab_addLine_x(mail, MakeDateField());
 	ab_addLine(mail, "\r\n");
 
 	ab_addLine(mail, "From: ");
 	ab_addLine(mail, SelfMailAddress);
 	ab_addLine(mail, "\r\n");
 
-	ab_addLine(mail, "Date: ");
-	ab_addLine_x(mail, MakeDateField());
-	ab_addLine(mail, "\r\n");
-
-	ab_addLine(mail, "Message-Id: ");
-	ab_addLine_x(mail, MakeMailMessageID(SelfMailAddress));
+	ab_addLine(mail, "To: ");
+	ab_addLine(mail, memberTo);
 	ab_addLine(mail, "\r\n");
 
 	ab_addLine(mail, "Subject: ");
 	ab_addLine_x(mail, MakeSubjectFrom(groupName, memberFrom, counter));
 	ab_addLine(mail, "\r\n");
 
-	ab_addLine(mail, "Content-Type: ");
-	ab_addLine(mail, contentType);
+	ab_addLine(mail, "Message-Id: ");
+	ab_addLine_x(mail, MakeMailMessageID(SelfMailAddress));
 	ab_addLine(mail, "\r\n");
 
-	if(contentTransferEncoding)
+	if(mimeVersion)
 	{
-		ab_addLine(mail, "Content-Transfer-Encoding: ");
-		ab_addLine(mail, contentTransferEncoding);
+		ab_addLine(mail, "MIME-Version: ");
+		ab_addLine(mail, mimeVersion);
 		ab_addLine(mail, "\r\n");
 	}
+	if(contentType)
+	{
+		ab_addLine(mail, "Content-Type: ");
+		ab_addLine(mail, contentType);
+		ab_addLine(mail, "\r\n");
+	}
+	ab_addLine(mail, "Content-Transfer-Encoding: ");
+	ab_addLine(mail, contentTransferEncoding);
+	ab_addLine(mail, "\r\n");
+
 	ab_addLine(mail, "X-Mailer: ");
 	ab_addLine(mail, "mf-S");
 	ab_addLine(mail, "\r\n");
@@ -152,10 +165,11 @@ static void DistributeOne(char *groupName, char *memberFrom, char *memberTo, uin
 	SendMail(SmtpServer, SmtpPortno, UserName, Passphrase, SelfMailAddress, memberTo, mail);
 
 	releaseAutoBlock(mail);
+	memFree(mimeVersion);
 	memFree(contentType);
 	memFree(contentTransferEncoding);
 }
-static void Distribute(autoList_t *memberList, char *groupName, char *mailFrom)
+static void Distribute(autoList_t *memberList, char *groupName, char *mailFrom) // 引数は全て安全(書式を満たす文字列)である。
 {
 	char *memberFrom;
 	char *member;
@@ -163,6 +177,14 @@ static void Distribute(autoList_t *memberList, char *groupName, char *mailFrom)
 	int unreturn;
 	uint counter;
 	autoList_t *shuffledMemberList;
+
+	cout("D.M %u bytes\n", getSize(c_MP_GetBody()));
+
+	foreach(memberList, member, index)
+		cout("D.B [%s]\n", member);
+
+	cout("D.G [%s]\n", groupName);
+	cout("D.< [%s]\n", mailFrom);
 
 #if 1
 	memberFrom = (char *)refElement(memberList, findLineComp(memberList, mailFrom, strcmp));
@@ -315,6 +337,7 @@ static void RecvLoop(void)
 				LOGPOS();
 				RecvEvent();
 				LOGPOS();
+				MP_Clear();
 				releaseAutoBlock(mail);
 			}
 			if(del)
