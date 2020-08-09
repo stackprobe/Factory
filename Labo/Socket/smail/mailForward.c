@@ -116,7 +116,7 @@ static void DistributeOne(char *groupName, char *memberFrom, char *memberTo, uin
 	cout("D1.C %u\n", counter);
 
 	if(!contentTransferEncoding)
-		contentTransferEncoding = strx("7bit"); // NOTE: Content-Transfer-Encoding のデフォルトは "7bit", 強制的に指定している理由は不明 (..\mail\mailForward.c に倣った)
+		contentTransferEncoding = strx("7bit"); // Content-Transfer-Encoding のデフォルトは "7bit", 強制的に指定している理由は不明 (..\mail\mailForward.c に倣った)
 
 	ab_addLine(mail, "Date: ");
 	ab_addLine_x(mail, MakeDateField());
@@ -327,7 +327,7 @@ static void RecvLoop(void)
 		if(getCount(mailList))
 		{
 			uint mailSize = getElement(mailList, 0);
-			int del = 1; // NOTE: 存在するけど受信出来ないメールがあった場合それを削除するために、デフォルトで 1 (削除)
+			int del = 1; // 存在するけど受信出来ないメールがあった場合それを削除するために、デフォルトで 1 (削除)
 
 			if(mailSize <= MAILSIZEMAX)
 			{

@@ -208,7 +208,7 @@ static void DistributeOne(autoList_t *mail, char *groupName, char *memberFrom, c
 	}
 
 	if(!contentTransferEncoding)
-		contentTransferEncoding = strx("7bit"); // NOTE: Content-Transfer-Encoding のデフォルトは "7bit", 強制的に指定している理由は不明
+		contentTransferEncoding = strx("7bit"); // Content-Transfer-Encoding のデフォルトは "7bit", 強制的に指定している理由は不明
 
 	if(
 		!date ||

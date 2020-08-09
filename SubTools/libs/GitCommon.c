@@ -44,7 +44,6 @@ void PostGitMaskFile(char *file)
 	cout("[MASKED] %s\n", file);
 	cout("-------> %s\n", maskedMarkFile);
 
-	// NOTE:
 	// ディレクトリがあれば諦める。
 	// 既に作成済みの場合もある。
 	if(!accessible(maskedMarkFile))
@@ -59,7 +58,6 @@ void PostGitIgnoreFile(char *file)
 	cout("[IGNORED] %s\n", file);
 	cout("--------> %s\n", ignoredMarkFile);
 
-	// NOTE:
 	// ディレクトリがあれば諦める。
 	// 既に作成済みの場合もある。
 	if(!accessible(ignoredMarkFile))
