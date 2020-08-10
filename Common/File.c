@@ -85,7 +85,8 @@ char *getExt(char *path)
 	return GetExtEx(path, 1);
 }
 /*
-	newLocal == "" のとき、"C:\\abc" -> "C:" になることに注意！
+	newLocal == "" のとき、"C:\\abc" -> "C:" になる。
+	newLocal は相対パスでも良い。
 */
 char *changeLocal(char *path, char *newLocal)
 {

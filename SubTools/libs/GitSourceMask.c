@@ -4,6 +4,7 @@
 #define FLAG_TXT_FILE  "_gittxtmsk"
 #define MSK_FILES_FILE "_gitsrcmsk_files"
 #define IGN_FILES_FILE "_gitignore_files"
+#define IGN_DIRS_FILE  "_gitignore_dirs"
 
 static void MskSrcFile(char *file, int eurpFlag)
 {
@@ -75,7 +76,11 @@ static void MaskSourceByResFile(autoList_t *files)
 	{
 		cout("* %s\n", file);
 
-		if(!_stricmp(MSK_FILES_FILE, getLocal(file)))
+		if(!existFile(file))
+		{
+			cout("Å°Å°Å°çÌèúçœÇ›Å°Å°Å°\n"); // IGN_FILES_FILE, IGN_DIRS_FILE Ç…ÇÊÇËÅAä˘Ç…çÌèúÇ≥ÇÍÇƒÇ¢ÇÈâ¬î\ê´Ç‡Ç†ÇÈÅB
+		}
+		else if(!_stricmp(MSK_FILES_FILE, getLocal(file)))
 		{
 			autoList_t *mskfiles = readResourceLines(file);
 			char *mskfile;
@@ -109,7 +114,7 @@ static void MaskSourceByResFile(autoList_t *files)
 
 			foreach(ignfiles, ignfile, ignfile_index)
 			{
-				cout("*! %s\n", ignfile);
+				cout("*!F %s\n", ignfile);
 
 				errorCase(!isFairRelPath(ignfile, 0));
 				ignfile = changeLocal(file, ignfile);
@@ -121,6 +126,37 @@ static void MaskSourceByResFile(autoList_t *files)
 				memFree(ignfile);
 			}
 			releaseDim(ignfiles, 1);
+
+			LOGPOS();
+		}
+		else if(!_stricmp(IGN_DIRS_FILE, getLocal(file)))
+		{
+			autoList_t *igndirs = readResourceLines(file);
+			char *igndir;
+			uint igndir_index;
+
+			LOGPOS();
+
+			foreach(igndirs, igndir, igndir_index)
+			{
+				cout("*!D %s\n", igndir);
+
+				errorCase(!isFairRelPath(igndir, 0));
+				igndir = changeLocal(file, igndir);
+				errorCase(!existDir(igndir));
+
+				recurClearDir(igndir);
+
+				{
+					char *dmyfile = combine(igndir, "*");
+
+					PostGitIgnoreFile(dmyfile);
+					memFree(dmyfile);
+				}
+
+				memFree(igndir);
+			}
+			releaseDim(igndirs, 1);
 
 			LOGPOS();
 		}

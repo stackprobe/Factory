@@ -17,6 +17,14 @@ static void FoundError(char *message)
 
 	ErrorCount++;
 }
+static char *ProjectLocalDirToRepositoryName(char *localDir)
+{
+	if(lineExp("<1,azAZ><8,09>_<1,,>", localDir))
+	{
+		localDir += 10;
+	}
+	return localDir;
+}
 static void CheckGitRelease(char *dir)
 {
 	cout("チェック対象ディレクトリ ⇒ %s\n", dir);
@@ -37,7 +45,7 @@ static void CheckGitRelease(char *dir)
 				"C:\\Factory\\SubTools\\GitFactory.exe /ow . C:\\huge\\GitHub\\%s\r\n"
 				"rem CALL C:\\var\\go.bat\r\n"
 				":END\r\n"
-				,getLocal(dir)
+				,ProjectLocalDirToRepositoryName(getLocal(dir))
 				);
 
 			if(strcmp(text, text2))
@@ -49,7 +57,7 @@ static void CheckGitRelease(char *dir)
 		}
 
 		{
-			char *repoDir = combine("C:\\huge\\GitHub", getLocal(dir));
+			char *repoDir = combine("C:\\huge\\GitHub", ProjectLocalDirToRepositoryName(getLocal(dir)));
 
 			if(!existDir(repoDir))
 			{

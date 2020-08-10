@@ -19,6 +19,48 @@ static int IsCSharpFile(char *file)
 	return !_stricmp("cs", getExt(file));
 }
 
+// ---- AutoComment-SyncEntered ----
+
+static int ACSE_SyncEntered;
+
+static void ACSE_Reset(void)
+{
+	ACSE_SyncEntered = 0;
+}
+static void ACSE_SetLine(char *line)
+{
+	int enter;
+	int leave;
+
+	{
+		char *tmp = strx(line);
+
+		ucTrim(tmp);
+
+		enter = startsWith(tmp, "// sync >");
+		leave = startsWith(tmp, "// < sync");
+
+		memFree(tmp);
+	}
+
+	if(enter)
+	{
+		errorCase(ACSE_SyncEntered);
+		ACSE_SyncEntered = 1;
+	}
+	else if(leave)
+	{
+		errorCase(!ACSE_SyncEntered);
+		ACSE_SyncEntered = 0;
+	}
+}
+static int ACSE_IsOutSync(void)
+{
+	return !ACSE_SyncEntered;
+}
+
+// ----
+
 static autoList_t *ResAutoComment;
 static autoList_t *ResAutoComment_CS;
 
@@ -31,10 +73,14 @@ static void AutoComment(autoList_t *ranges)
 	int commentEntered = 0;
 	int classEntered = 0;
 
+	ACSE_Reset();
+
 	foreach(ranges, range, range_index)
 	foreach(range, line, index)
 	{
 		int insCmt;
+
+		ACSE_SetLine(line);
 
 		line = strx(line);
 		nn_strstr(line, "//")[0] = '\0'; // インラインコメントの除去
@@ -98,7 +144,7 @@ static void AutoComment(autoList_t *ranges)
 
 		// < set insCmt
 
-		if(insCmt)
+		if(insCmt && ACSE_IsOutSync())
 		{
 			char *comment;
 			uint comment_index;
@@ -143,11 +189,15 @@ static void AutoComment_CS(autoList_t *ranges)
 	char *line;
 	uint index;
 
+	ACSE_Reset();
+
 	foreach(ranges, range, range_index)
 	foreach(range, line, index)
 	{
 		char *prevLine = index ? getLine(range, index - 1) : "";
 		char *insCmtIndent = NULL;
+
+		ACSE_SetLine(line);
 
 		if(!startsWith(prevLine, "\t/// "))
 		if(
@@ -171,7 +221,7 @@ static void AutoComment_CS(autoList_t *ranges)
 			)
 			insCmtIndent = "\t\t";
 
-		if(insCmtIndent)
+		if(insCmtIndent && ACSE_IsOutSync())
 		{
 			char *comment;
 			uint comment_index;
@@ -308,8 +358,10 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 		cout("> %s\n", wFile);
 
 		if(!testMode)
+		{
+			createPath(wFile, 'X');
 			copyFile(rFile, wFile);
-
+		}
 		memFree(rFile);
 		memFree(wFile);
 	}
