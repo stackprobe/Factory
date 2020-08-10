@@ -209,6 +209,24 @@ static uint GetVSEditionYear(char *slnFile)
 	fileClose(fp);
 	return ret;
 }
+static int IsGitMaskedSource(char *source)
+{
+	FILE *fp = fileOpen(source, "rt");
+	char *line;
+
+	while(line = readLine(fp))
+	{
+		if(*line && (line[0] != '/' || line[1] != '/')) // ? ! (‹ós || "//" ‚ÅŽn‚Ü‚és)
+		{
+			memFree(line);
+			fileClose(fp);
+			return 0;
+		}
+		memFree(line);
+	}
+	fileClose(fp);
+	return 1;
+}
 
 static void Build(char *module, uint remCount) // remCount: 0 == –³Œø
 {
@@ -311,6 +329,14 @@ static void Build(char *module, uint remCount) // remCount: 0 == –³Œø
 		remove(objfile);
 		remove(exefile);
 
+		if(IsGitMaskedSource(source))
+		{
+			cout("SKIP_MASKED_OBJ\n");
+			SkippedObjCount++;
+			addElement(BuiltLines, (uint)xcout("SKIPPED_OBJ %s (MASKED)", objfile));
+			goto endfunc;
+		}
+
 		execute_x(xcout("2> " CLSTDERR " > " CLSTDOUT " CL " CLOPTIONS " /c %s", source));
 
 		BuiltObjCount++;
@@ -339,6 +365,14 @@ static void Build(char *module, uint remCount) // remCount: 0 == –³Œø
 		}
 		remove(objfile);
 		remove(exefile);
+
+		if(IsGitMaskedSource(source))
+		{
+			cout("SKIP_MASKED_EXE\n");
+			SkippedExeCount++;
+			addElement(BuiltLines, (uint)xcout("SKIPPED_EXE %s (MASKED)", objfile));
+			goto endfunc;
+		}
 
 		execute_x(xcout("2> " CLSTDERR " > " CLSTDOUT " CL " CLOPTIONS " %s @%s", source, response));
 
