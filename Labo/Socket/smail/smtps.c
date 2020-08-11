@@ -17,7 +17,8 @@ void SendMail(char *smtpServer, uint portno, char *user, char *pass, char *fromM
 	LOGPOS_T();
 
 	coExecute(xcout(
-		"curl smtps://%s:%u -u %s:%s --mail-from %s --mail-rcpt %s -T \"%s\""
+//		"curl -m 300 smtps://%s:%u -u %s:%s --mail-from %s --mail-rcpt %s -T \"%s\"" // test
+		"curl"     " smtps://%s:%u -u %s:%s --mail-from %s --mail-rcpt %s -T \"%s\""
 		,smtpServer
 		,portno
 		,user

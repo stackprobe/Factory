@@ -101,14 +101,14 @@ static char *ToFairMailAddress(char *mailAddress) // ret: strr(mailAddress)
 	ucTrim(mailAddress);
 	return mailAddress;
 }
-static int IsKnownMail(void) // ret: ? 既知のメール
+static int IsKnownMessageId(void) // ret: ? 既知のメール
 {
 	static char *lastMessageId;
 	char *messageId = MP_GetHeaderValue("Message-Id");
 
 	if(!messageId) // ? Message-Id 無し
 	{
-		LOGPOS();
+		cout("メッセージIDなし\n");
 		return 0;
 	}
 	line2JLine(messageId, 1, 0, 0, 0); // 表示するため
@@ -117,7 +117,7 @@ static int IsKnownMail(void) // ret: ? 既知のメール
 
 	if(!lastMessageId)
 	{
-		LOGPOS();
+		cout("初回メール\n");
 		lastMessageId = messageId;
 		return 0;
 	}
@@ -372,10 +372,10 @@ static void RecvLoop(void)
 				MailParser(mail);
 				LOGPOS();
 
-				if(IsKnownMail())
-					cout("既知のメールであるため無視します。");
-				else
+				if(!IsKnownMessageId())
 					RecvEvent();
+				else
+					cout("既知のメールであるため無視します。\n");
 
 				LOGPOS();
 				MP_Clear();
