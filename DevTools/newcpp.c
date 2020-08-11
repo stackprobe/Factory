@@ -1,6 +1,7 @@
 /*
 	newcpp g  プロジェクト名
 	newcpp g2 プロジェクト名
+	newcpp g3 プロジェクト名
 */
 
 #include "C:\Factory\Common\all.h"
@@ -113,5 +114,10 @@ int main(int argc, char **argv)
 		Main2("GGGGTMPL", "C:\\Dev\\Annex\\Template\\GameTemplate2");
 		return;
 	}
-	cout("usage: newcpp (G｜G2｜?｜?) プロジェクト名\n");
+	if(argIs("G3"))
+	{
+		Main2("GGGGTMPL", "C:\\Dev\\Annex\\Template\\GameTemplate3");
+		return;
+	}
+	cout("usage: newcpp (G｜G2｜G3｜?) プロジェクト名\n");
 }

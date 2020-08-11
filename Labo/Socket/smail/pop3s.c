@@ -16,7 +16,8 @@ autoList_t *GetMailList(char *popServer, uint portno, char *user, char *pass)
 	LOGPOS_T();
 
 	coExecute(xcout(
-		"curl pop3s://%s:%u -u %s:%s --list-only -o \"%s\""
+		"curl -m %u pop3s://%s:%u -u %s:%s --list-only -o \"%s\""
+		,NETWORK_TIMEOUT_SEC
 		,popServer
 		,portno
 		,user
@@ -80,7 +81,8 @@ autoBlock_t *RecvMail(char *popServer, uint portno, char *user, char *pass, uint
 	LOGPOS_T();
 
 	coExecute(xcout(
-		"curl pop3s://%s:%u/%u -u %s:%s -o \"%s\""
+		"curl -m %u pop3s://%s:%u/%u -u %s:%s -o \"%s\""
+		,NETWORK_TIMEOUT_SEC
 		,popServer
 		,portno
 		,mailno
@@ -121,7 +123,8 @@ void DeleteMail(char *popServer, uint portno, char *user, char *pass, uint mailn
 	LOGPOS_T();
 
 	coExecute(xcout(
-		"curl pop3s://%s:%u/%u -u %s:%s --request DELE --list-only"
+		"curl -m %u pop3s://%s:%u/%u -u %s:%s --request DELE --list-only"
+		,NETWORK_TIMEOUT_SEC
 		,popServer
 		,portno
 		,mailno

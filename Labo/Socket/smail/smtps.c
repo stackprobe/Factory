@@ -17,7 +17,8 @@ void SendMail(char *smtpServer, uint portno, char *user, char *pass, char *fromM
 	LOGPOS_T();
 
 	coExecute(xcout(
-		"curl smtps://%s:%u -u %s:%s --mail-from %s --mail-rcpt %s -T \"%s\""
+		"curl -m %u smtps://%s:%u -u %s:%s --mail-from %s --mail-rcpt %s -T \"%s\""
+		,NETWORK_TIMEOUT_SEC
 		,smtpServer
 		,portno
 		,user
