@@ -23,9 +23,13 @@ static int IsCSharpFile(char *file)
 
 static int ACSE_SyncEntered;
 
-static void ACSE_Reset(void)
+static void ACSE_Start(void)
 {
-	ACSE_SyncEntered = 0;
+	errorCase(ACSE_SyncEntered);
+}
+static void ACSE_End(void)
+{
+	errorCase(ACSE_SyncEntered);
 }
 static void ACSE_SetLine(char *line)
 {
@@ -73,7 +77,7 @@ static void AutoComment(autoList_t *ranges)
 	int commentEntered = 0;
 	int classEntered = 0;
 
-	ACSE_Reset();
+	ACSE_Start();
 
 	foreach(ranges, range, range_index)
 	foreach(range, line, index)
@@ -157,7 +161,7 @@ static void AutoComment(autoList_t *ranges)
 
 		{
 			char *tmp = strx(getLine(range, index));
-//			char *tmp = strx(line); // インラインコメントが削除されているのでng
+//			char *tmp = strx(line); // line はインラインコメントが削除されている。
 
 			ucTrim(tmp);
 
@@ -181,6 +185,8 @@ static void AutoComment(autoList_t *ranges)
 	}
 	errorCase(commentEntered);
 	errorCase(classEntered);
+
+	ACSE_End();
 }
 static void AutoComment_CS(autoList_t *ranges)
 {
@@ -189,7 +195,7 @@ static void AutoComment_CS(autoList_t *ranges)
 	char *line;
 	uint index;
 
-	ACSE_Reset();
+	ACSE_Start();
 
 	foreach(ranges, range, range_index)
 	foreach(range, line, index)
@@ -234,6 +240,8 @@ static void AutoComment_CS(autoList_t *ranges)
 
 		// TODO @" など、いずれ対応が必要になると思う。
 	}
+
+	ACSE_End();
 }
 static autoList_t *ReadCommonAndAppSpecRanges(char *file)
 {
@@ -287,9 +295,181 @@ static autoList_t *ReadCommonAndAppSpecRanges(char *file)
 	fileClose(fp);
 	return ranges;
 }
+static int IsEmptyRange(autoList_t *ranges, uint rangeIndex)
+{
+	autoList_t *range;
+	char *line;
+	uint index;
+
+	errorCase(getCount(ranges) % 2 != 1);
+	errorCase(rangeIndex % 2 != 1);
+	errorCase(getCount(ranges) <= rangeIndex);
+
+	LOGPOS();
+
+	range = getList(ranges, rangeIndex);
+
+	foreach(range, line, index)
+	{
+		if(!lineExp("<\t\t  >", line)) // ? ! (空行 || 空白のみの行)
+		{
+
+cout("[%s]\n", c_getHexStr(line, strlen(line))); // test
+
+			cout("コードの記述有り\n");
+			return 0;
+		}
+	}
+	cout("コードの記述無し\n");
+	return 1;
+}
+static void WeldRange(autoList_t *ranges, uint rangeIndex)
+{
+	errorCase(getCount(ranges) % 2 != 1);
+	errorCase(rangeIndex % 2 != 1);
+	errorCase(getCount(ranges) <= rangeIndex);
+
+	LOGPOS();
+
+	addElements(getList(ranges, rangeIndex - 1), getList(ranges, rangeIndex + 0));
+	addElements(getList(ranges, rangeIndex - 1), getList(ranges, rangeIndex + 1));
+
+	desertElement(ranges, rangeIndex);
+	desertElement(ranges, rangeIndex);
+
+	LOGPOS();
+}
+/*
+	既存のアプリ固有コードが rRanges 側から削除された場合の対応
+*/
+static void AdjustAppSpecRangesPair_Deleted(autoList_t *rRanges, autoList_t *wRanges)
+{
+	uint index;
+
+	LOGPOS();
+
+	errorCase(getCount(rRanges) % 2 != 1); // 2bs
+	errorCase(getCount(wRanges) % 2 != 1); // 2bs
+
+	for(index = 2; index < getCount(wRanges); )
+	{
+		cout("index: %u\n", index);
+
+		if(index < getCount(rRanges))
+		{
+			char *r = (char *)getLastElement(getList(rRanges, index - 2));
+			char *w = (char *)getLastElement(getList(wRanges, index - 2));
+
+			coutJLine_x(xcout("r: %s", r));
+			coutJLine_x(xcout("w: %s", w));
+
+			if(!strcmp(r, w))
+			{
+				cout("同じアプリ固有コード\n");
+
+				index += 2;
+			}
+			else
+			{
+				cout("違うアプリ固有コード -> 削除された可能性\n");
+
+				if(IsEmptyRange(wRanges, index - 1))
+				{
+					cout("コードの記述無し -> 削除して続行\n");
+
+					WeldRange(wRanges, index - 1);
+				}
+				else
+				{
+					cout("コードの記述有り -> 処理不能\n");
+
+					break;
+				}
+			}
+		}
+		else
+		{
+			char *w = (char *)getLastElement(getList(wRanges, index - 2));
+
+			cout("r-\n");
+			coutJLine_x(xcout("w: %s", w));
+
+			cout("多すぎるアプリ固有コード -> 削除された可能性\n");
+
+			if(IsEmptyRange(wRanges, index - 1))
+			{
+				cout("コードの記述無し -> 削除して続行\n");
+
+				WeldRange(wRanges, index - 1);
+			}
+			else
+			{
+				cout("コードの記述有り -> 処理不能\n");
+
+				break;
+			}
+		}
+	}
+	LOGPOS();
+}
+/*
+	新しいアプリ固有コードが rRanges 側に追加された場合の対応
+*/
+static void AdjustAppSpecRangesPair_Added(autoList_t *rRanges, autoList_t *wRanges)
+{
+	uint index;
+
+	LOGPOS();
+
+	errorCase(getCount(rRanges) % 2 != 1); // 2bs
+	errorCase(getCount(wRanges) % 2 != 1); // 2bs
+
+	for(index = 2; index < getCount(rRanges); )
+	{
+		cout("index: %u\n", index);
+
+		if(index < getCount(wRanges))
+		{
+			char *r = (char *)getLastElement(getList(rRanges, index - 2));
+			char *w = (char *)getLastElement(getList(wRanges, index - 2));
+
+			coutJLine_x(xcout("r: %s", r));
+			coutJLine_x(xcout("w: %s", w));
+
+			if(!strcmp(r, w))
+			{
+				cout("同じアプリ固有コード\n");
+
+				index += 2;
+			}
+			else
+			{
+				cout("違うアプリ固有コード -> 新しく追加された可能性\n");
+				cout("削除して続行\n");
+
+				WeldRange(rRanges, index - 1);
+			}
+		}
+		else
+		{
+			char *r = (char *)getLastElement(getList(rRanges, index - 2));
+
+			coutJLine_x(xcout("r: %s", r));
+			cout("w-\n");
+
+			cout("多すぎるアプリ固有コード -> 新しく追加された可能性\n");
+			cout("削除して続行\n");
+
+			WeldRange(rRanges, index - 1);
+		}
+	}
+	LOGPOS();
+}
 static void CheckAppSpecRangesPair(autoList_t *rRanges, autoList_t *wRanges)
 {
 	uint index;
+
+	LOGPOS();
 
 	errorCase_m(getCount(rRanges) != getCount(wRanges), "アプリ固有コードの数が合わないため上書き出来ません。");
 
@@ -302,8 +482,8 @@ static void CheckAppSpecRangesPair(autoList_t *rRanges, autoList_t *wRanges)
 			char *r = (char *)getLastElement(getList(rRanges, index - 2));
 			char *w = (char *)getLastElement(getList(wRanges, index - 2));
 
-coutJLine_x(xcout("r: %s", r)); // test
-coutJLine_x(xcout("w: %s", w)); // test
+			coutJLine_x(xcout("r: %s", r));
+			coutJLine_x(xcout("w: %s", w));
 
 			errorCase_m(strcmp(r, w), "アプリ固有コード開始行不一致");
 		}
@@ -312,12 +492,13 @@ coutJLine_x(xcout("w: %s", w)); // test
 			char *r = getLine(getList(rRanges, index), 0);
 			char *w = getLine(getList(wRanges, index), 0);
 
-coutJLine_x(xcout("r: %s", r)); // test
-coutJLine_x(xcout("w: %s", w)); // test
+			coutJLine_x(xcout("r: %s", r));
+			coutJLine_x(xcout("w: %s", w));
 
 			errorCase_m(strcmp(r, w), "アプリ固有コード終了行不一致");
 		}
 	}
+	LOGPOS();
 }
 
 static int DCL_ExistNewFile;
@@ -345,7 +526,7 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 
 	foreach(rSubDirs, dir, index)
 		if(!testMode)
-			createPath_x(combine(rDir, dir), 'X');
+			createPath_x(combine(wDir, dir), 'D');
 
 	DCL_ExistNewFile = 1 <= getCount(rFiles);
 
@@ -358,10 +539,8 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 		cout("> %s\n", wFile);
 
 		if(!testMode)
-		{
-			createPath(wFile, 'X');
 			copyFile(rFile, wFile);
-		}
+
 		memFree(rFile);
 		memFree(wFile);
 	}
@@ -405,8 +584,18 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 		rRanges = ReadCommonAndAppSpecRanges(rFile);
 		wRanges = ReadCommonAndAppSpecRanges(wFile);
 
-		cout("<r %u\n", getCount(rRanges));
-		cout(">r %u\n", getCount(wRanges));
+		cout("1.<r %u\n", getCount(rRanges));
+		cout("1.>r %u\n", getCount(wRanges));
+
+		AdjustAppSpecRangesPair_Deleted(rRanges, wRanges);
+
+		cout("2.<r %u\n", getCount(rRanges));
+		cout("2.>r %u\n", getCount(wRanges));
+
+		AdjustAppSpecRangesPair_Added(rRanges, wRanges);
+
+		cout("3.<r %u\n", getCount(rRanges));
+		cout("3.>r %u\n", getCount(wRanges));
 
 		CheckAppSpecRangesPair(rRanges, wRanges);
 
@@ -436,8 +625,7 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 	}
 	foreach(wSubDirs, dir, index)
 		if(!testMode)
-			LOGPOS();
-//			removeDir_x(combine(wDir, dir)); // ファイルを削除しないのでDIRも削除しない。
+			removeDirIfEmpty_x(combine(wDir, dir)); // .cpp の場合ファイルを削除しないのでDIRを削除出来ない場合もある。
 
 	releaseDim(rSubDirs, 1);
 	releaseDim(wSubDirs, 1);

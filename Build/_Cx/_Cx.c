@@ -426,7 +426,7 @@ static void Build(char *module, uint remCount) // remCount: 0 == –³Œø
 		writeOneLine_cx(FOUNDLISTFILE, xcout("%s\\%s", c_getCwd(), source));
 
 		if(remCount)
-			cout(" (%u)", remCount);
+			cout(" (remaining %u sources)", remCount);
 
 		cout("\n");
 		termination(1);

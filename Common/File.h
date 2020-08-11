@@ -120,6 +120,7 @@ char *combine_xx(char *dir, char *file);
 char *makeFullPath_x(char *path);
 void removeDir_x(char *dir);
 void removeFile_x(char *file);
+void removeDirIfEmpty_x(char *dir);
 void removeFileIfExist_x(char *file);
 void removePath_x(char *path);
 void removePathIfExist_x(char *path);

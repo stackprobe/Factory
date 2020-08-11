@@ -1189,6 +1189,11 @@ void removeFile_x(char *file)
 	removeFile(file);
 	memFree(file);
 }
+void removeDirIfEmpty_x(char *dir)
+{
+	removeDirIfEmpty(dir);
+	memFree(dir);
+}
 void removeFileIfExist_x(char *file)
 {
 	removeFileIfExist(file);
