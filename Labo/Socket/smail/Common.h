@@ -12,8 +12,3 @@ void CheckMailUser(char *user);
 void CheckMailPass(char *pass);
 void CheckMailCommonParams(char *server, uint portno, char *user, char *pass);
 void CheckMailAddress(char *mailAddress);
-
-#define NETWORK_TIMEOUT_SEC 300
-//#define NETWORK_TIMEOUT_SEC 120
-//#define NETWORK_TIMEOUT_SEC 60
-//#define NETWORK_TIMEOUT_SEC 30

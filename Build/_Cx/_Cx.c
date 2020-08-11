@@ -213,10 +213,16 @@ static int IsGitMaskedSource(char *source)
 {
 	FILE *fp = fileOpen(source, "rt");
 	char *line;
+	char *p;
 
 	while(line = readLine(fp))
 	{
-		if(*line && (line[0] != '/' || line[1] != '/')) // ? ! (空行 || "//" で始まる行)
+		p = line;
+
+		while(*p && *p <= ' ') // 行頭のインデント等の空白をスキップ
+			p++;
+
+		if(*p && (p[0] != '/' || p[1] != '/')) // ? ! (空行 || "//" で始まる行)
 		{
 			memFree(line);
 			fileClose(fp);

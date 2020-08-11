@@ -101,6 +101,36 @@ static char *ToFairMailAddress(char *mailAddress) // ret: strr(mailAddress)
 	ucTrim(mailAddress);
 	return mailAddress;
 }
+static int CheckMessageId(void) // ret: ? ! 既知のメール
+{
+	static char *lastMessageId;
+	char *messageId = MP_GetHeaderValue("Message-Id");
+
+	if(!messageId) // ? Message-Id 無し
+	{
+		LOGPOS();
+		return 1;
+	}
+	line2JLine(messageId, 1, 0, 0, 0); // 表示するため
+
+	cout("MID.1: %s\n", messageId);
+
+	if(lastMessageId)
+	{
+		cout("MID.2: %s\n", lastMessageId);
+
+		if(!strcmp(messageId, lastMessageId))
+		{
+			cout("前回のメッセージIDと同じ -> 既知のメール\n");
+			memFree(messageId);
+			return 0;
+		}
+	}
+	cout("前回のメッセージIDと違う -> 新しいメール\n");
+	memFree(lastMessageId);
+	lastMessageId = messageId;
+	return 1;
+}
 
 static void DistributeOne(char *groupName, char *memberFrom, char *memberTo, uint counter) // 引数は全て安全(書式を満たす文字列か数値)である。
 {
@@ -338,7 +368,12 @@ static void RecvLoop(void)
 				PrintMailEntity(mail);
 				MailParser(mail);
 				LOGPOS();
-				RecvEvent();
+
+				if(CheckMessageId()) // ? ! 既知のメール
+					RecvEvent();
+				else
+					cout("既知のメールであるため無視します。");
+
 				LOGPOS();
 				MP_Clear();
 				releaseAutoBlock(mail);
