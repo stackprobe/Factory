@@ -313,9 +313,6 @@ static int IsEmptyRange(autoList_t *ranges, uint rangeIndex)
 	{
 		if(!lineExp("<\t\t  >", line)) // ? ! (空行 || 空白のみの行)
 		{
-
-cout("[%s]\n", c_getHexStr(line, strlen(line))); // test
-
 			cout("コードの記述有り\n");
 			return 0;
 		}
@@ -339,82 +336,35 @@ static void WeldRange(autoList_t *ranges, uint rangeIndex)
 
 	LOGPOS();
 }
-/*
-	既存のアプリ固有コードが rRanges 側から削除された場合の対応
-*/
-static void AdjustAppSpecRangesPair_Deleted(autoList_t *rRanges, autoList_t *wRanges)
+static void WeldAllEmptyRange(autoList_t *ranges)
 {
 	uint index;
 
 	LOGPOS();
 
-	errorCase(getCount(rRanges) % 2 != 1); // 2bs
-	errorCase(getCount(wRanges) % 2 != 1); // 2bs
+	errorCase(getCount(ranges) % 2 != 1); // 2bs
 
-	for(index = 2; index < getCount(wRanges); )
+	for(index = 2; index < getCount(ranges); )
 	{
-		cout("index: %u\n", index);
+		char *h = (char *)getLastElement(getList(ranges, index - 2));
 
-		if(index < getCount(rRanges))
+		coutJLine_x(xcout("h: %s", h));
+
+		if(IsEmptyRange(ranges, index - 1))
 		{
-			char *r = (char *)getLastElement(getList(rRanges, index - 2));
-			char *w = (char *)getLastElement(getList(wRanges, index - 2));
+			cout("コードの記述無し -> 削除\n");
 
-			coutJLine_x(xcout("r: %s", r));
-			coutJLine_x(xcout("w: %s", w));
-
-			if(!strcmp(r, w))
-			{
-				cout("同じアプリ固有コード\n");
-
-				index += 2;
-			}
-			else
-			{
-				cout("違うアプリ固有コード -> 削除された可能性\n");
-
-				if(IsEmptyRange(wRanges, index - 1))
-				{
-					cout("コードの記述無し -> 削除して続行\n");
-
-					WeldRange(wRanges, index - 1);
-				}
-				else
-				{
-					cout("コードの記述有り -> 処理不能\n");
-
-					break;
-				}
-			}
+			WeldRange(ranges, index - 1);
 		}
 		else
 		{
-			char *w = (char *)getLastElement(getList(wRanges, index - 2));
+			cout("コードの記述有り -> 何もしない\n");
 
-			cout("r-\n");
-			coutJLine_x(xcout("w: %s", w));
-
-			cout("多すぎるアプリ固有コード -> 削除された可能性\n");
-
-			if(IsEmptyRange(wRanges, index - 1))
-			{
-				cout("コードの記述無し -> 削除して続行\n");
-
-				WeldRange(wRanges, index - 1);
-			}
-			else
-			{
-				cout("コードの記述有り -> 処理不能\n");
-
-				break;
-			}
+			index += 2;
 		}
 	}
 	LOGPOS();
 }
-/*
-	新しいアプリ固有コードが rRanges 側に追加された場合の対応
-*/
 static void AdjustAppSpecRangesPair_Added(autoList_t *rRanges, autoList_t *wRanges)
 {
 	uint index;
@@ -587,7 +537,7 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 		cout("1.<r %u\n", getCount(rRanges));
 		cout("1.>r %u\n", getCount(wRanges));
 
-		AdjustAppSpecRangesPair_Deleted(rRanges, wRanges);
+		WeldAllEmptyRange(wRanges);
 
 		cout("2.<r %u\n", getCount(rRanges));
 		cout("2.>r %u\n", getCount(wRanges));
