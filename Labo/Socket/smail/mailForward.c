@@ -101,7 +101,7 @@ static char *ToFairMailAddress(char *mailAddress) // ret: strr(mailAddress)
 	ucTrim(mailAddress);
 	return mailAddress;
 }
-static int CheckMessageId(void) // ret: ? ! 既知のメール
+static int IsKnownMail(void) // ret: ? 既知のメール
 {
 	static char *lastMessageId;
 	char *messageId = MP_GetHeaderValue("Message-Id");
@@ -109,27 +109,30 @@ static int CheckMessageId(void) // ret: ? ! 既知のメール
 	if(!messageId) // ? Message-Id 無し
 	{
 		LOGPOS();
-		return 1;
+		return 0;
 	}
 	line2JLine(messageId, 1, 0, 0, 0); // 表示するため
 
 	cout("MID.1: %s\n", messageId);
 
-	if(lastMessageId)
+	if(!lastMessageId)
 	{
-		cout("MID.2: %s\n", lastMessageId);
+		LOGPOS();
+		lastMessageId = messageId;
+		return 0;
+	}
+	cout("MID.2: %s\n", lastMessageId);
 
-		if(!strcmp(messageId, lastMessageId))
-		{
-			cout("前回のメッセージIDと同じ -> 既知のメール\n");
-			memFree(messageId);
-			return 0;
-		}
+	if(!strcmp(messageId, lastMessageId))
+	{
+		cout("前回のメッセージIDと同じ -> 既知のメール\n");
+		memFree(messageId);
+		return 1;
 	}
 	cout("前回のメッセージIDと違う -> 新しいメール\n");
 	memFree(lastMessageId);
 	lastMessageId = messageId;
-	return 1;
+	return 0;
 }
 
 static void DistributeOne(char *groupName, char *memberFrom, char *memberTo, uint counter) // 引数は全て安全(書式を満たす文字列か数値)である。
@@ -369,10 +372,10 @@ static void RecvLoop(void)
 				MailParser(mail);
 				LOGPOS();
 
-				if(CheckMessageId()) // ? ! 既知のメール
-					RecvEvent();
-				else
+				if(IsKnownMail())
 					cout("既知のメールであるため無視します。");
+				else
+					RecvEvent();
 
 				LOGPOS();
 				MP_Clear();
