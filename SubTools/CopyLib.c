@@ -148,7 +148,7 @@ static void AutoComment(autoList_t *ranges)
 
 		// < set insCmt
 
-		if(insCmt && ACSE_IsOutSync())
+		if(insCmt && ACSE_IsOutSync() && range_index % 2 != 1) // ? .. && .. && アプリ固有コード以外
 		{
 			char *comment;
 			uint comment_index;
@@ -227,7 +227,7 @@ static void AutoComment_CS(autoList_t *ranges)
 			)
 			insCmtIndent = "\t\t";
 
-		if(insCmtIndent && ACSE_IsOutSync())
+		if(insCmtIndent && ACSE_IsOutSync() && range_index % 2 != 1) // ? .. && .. && アプリ固有コード以外
 		{
 			char *comment;
 			uint comment_index;
@@ -536,6 +536,8 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 		rRanges = ReadCommonAndAppSpecRanges(rFile);
 		wRanges = ReadCommonAndAppSpecRanges(wFile);
 
+		(csMode ? AutoComment_CS : AutoComment)(rRanges); // rRanges が WeldRange() されるより先に実行する。
+
 		cout("1.<r %u\n", getCount(rRanges));
 		cout("1.>r %u\n", getCount(wRanges));
 
@@ -551,8 +553,6 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 
 		CheckAppSpecRangesPair(rRanges, wRanges);
 
-		(csMode ? AutoComment_CS : AutoComment)(rRanges);
-
 		{
 			autoList_t *lines = newList();
 			uint index;
@@ -562,7 +562,7 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 
 			if(!testMode)
 			{
-				semiRemovePath(wFile); // zantei
+//				semiRemovePath(wFile); // zantei
 				writeLines(wFile, lines);
 			}
 			releaseAutoList(lines);

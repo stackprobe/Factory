@@ -4,11 +4,23 @@
 #define INDEX_FILE_ON_INDEX "_index"
 
 static char *RootDir;
+static autoList_t *ResSubDirs;
 static char *DDResFile;
 static char *MaskingExeFile;
 
 static FILE *DDResFp;
 
+static int FF_FindStartPtn(autoList_t *startPtns, char *file)
+{
+	char *stPtn;
+	uint stPtn_index;
+
+	foreach(startPtns, stPtn, stPtn_index)
+		if(startsWithICase(file, stPtn))
+			return 1;
+
+	return 0;
+}
 static void FilesFilter(autoList_t *files)
 {
 	char *file;
@@ -18,10 +30,50 @@ static void FilesFilter(autoList_t *files)
 	{
 		if(*getLocal(file) == '_') // '_' で始まるファイルは DDResFile に含めない。
 		{
+			cout("_d: %s\n", file);
+
 			memFree((char *)fastDesertElement(files, index));
 			index--;
 		}
 	}
+	sortJLinesICase(files);
+
+	if(getCount(ResSubDirs)) // ? サブディレクトリ指定有り
+	{
+		autoList_t *startPtns = newList();
+		char *subDir;
+		uint subDir_index;
+
+		cout("サブディレクトリの指定有り.1\n");
+
+		foreach(ResSubDirs, subDir, subDir_index)
+		{
+			char *stPtn = xcout("%s\\%s\\", RootDir, subDir);
+
+			trimPath(stPtn);
+			cout("stPtn: %s\n", stPtn);
+			addElement(startPtns, (uint)stPtn);
+		}
+		foreach(files, file, index)
+		{
+			if(FF_FindStartPtn(startPtns, file))
+			{
+				cout("[○] %s\n", file);
+			}
+			else
+			{
+				cout("[×] %s\n", file);
+
+				file[0] = '\0';
+			}
+		}
+		trimLines(files);
+		releaseDim(startPtns, 1);
+
+		cout("サブディレクトリの指定有り.2\n");
+	}
+	else
+		cout("サブディレクトリの指定無し\n");
 }
 static void MaskFileData(autoBlock_t *fileData)
 {
@@ -88,11 +140,19 @@ static void MakeDDResFile(void)
 }
 int main(int argc, char **argv)
 {
-	RootDir        = makeFullPath(nextArg());
+	RootDir = makeFullPath(nextArg());
+	ResSubDirs = newList();
+
+	while(argIs("/SD"))
+		addElement(ResSubDirs, (uint)nextArg());
+
 	DDResFile      = makeFullPath(nextArg());
 	MaskingExeFile = makeFullPath(nextArg());
 
+	errorCase_m(hasArgs(1), "不明なコマンド引数");
+
 	errorCase(!existDir(RootDir));
+//	ResSubDirs
 //	DDResFile
 	errorCase(!existFile(MaskingExeFile));
 
