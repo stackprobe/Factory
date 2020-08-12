@@ -365,7 +365,7 @@ static void WeldAllEmptyRange(autoList_t *ranges)
 	}
 	LOGPOS();
 }
-static void AdjustAppSpecRangesPair_Added(autoList_t *rRanges, autoList_t *wRanges)
+static void WeldAllNewlyAddedRange(autoList_t *rRanges, autoList_t *wRanges)
 {
 	uint index;
 
@@ -469,16 +469,16 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 	changeRoots(rFiles, rDir, NULL);
 	changeRoots(wFiles, wDir, NULL);
 
-	releaseDim(mergeLinesICase(rSubDirs, wSubDirs), 1);
-	reverseElements(wSubDirs); // ★★★ 削除は後ろから行うため、ここで逆転しておく。★★★
+	releaseDim(mergeLinesICase(rSubDirs, wSubDirs), 1); // 何もすることは無いので owDirs は不要
+	reverseElements(wSubDirs); // 削除は後ろから行うため、ここで逆転しておく。
 
 	owFiles = mergeLinesICase(rFiles, wFiles);
+
+	DCL_ExistNewFile = 1 <= getCount(rFiles);
 
 	foreach(rSubDirs, dir, index)
 		if(!testMode)
 			createPath_x(combine(wDir, dir), 'D');
-
-	DCL_ExistNewFile = 1 <= getCount(rFiles);
 
 	foreach(rFiles, file, index)
 	{
@@ -504,9 +504,11 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 		{
 			autoList_t *ranges = ReadCommonAndAppSpecRanges(wFile);
 
-			cout("Dr %u\n", getCount(ranges));
+			cout("Dr.1 %u\n", getCount(ranges));
+			WeldAllEmptyRange(ranges);
+			cout("Dr.2 %u\n", getCount(ranges));
 
-			errorCase_m(1 < getCount(ranges), "アプリ固有コードを含むため削除出来ません。手動で削除してね。");
+			errorCase_m(1 < getCount(ranges), "アプリ固有コードを含むため削除出来ません。\nファイルを手動で削除して下さい。");
 
 			releaseDim(ranges, 2);
 		}
@@ -516,7 +518,7 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 			if(csMode)
 				removeFile(wFile);
 			else
-				writeOneLine(wFile, "// deleted"); // 削除すると .vcxproj のエントリーを消せなくなるので、削除NG
+				writeOneLine(wFile, "// deleted"); // 削除すると .vcxproj のエントリーを消せなくなるので、削除しない。
 		}
 		memFree(wFile);
 	}
@@ -542,7 +544,7 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 		cout("2.<r %u\n", getCount(rRanges));
 		cout("2.>r %u\n", getCount(wRanges));
 
-		AdjustAppSpecRangesPair_Added(rRanges, wRanges);
+		WeldAllNewlyAddedRange(rRanges, wRanges);
 
 		cout("3.<r %u\n", getCount(rRanges));
 		cout("3.>r %u\n", getCount(wRanges));
@@ -560,9 +562,7 @@ static void DoCopyLib(char *rDir, char *wDir, int testMode)
 
 			if(!testMode)
 			{
-				removeFile(wFile); // 2bs?
-//				semiRemovePath(wFile);
-
+				semiRemovePath(wFile); // zantei
 				writeLines(wFile, lines);
 			}
 			releaseAutoList(lines);
@@ -603,6 +603,8 @@ static void CopyLib(char *rDir, char *wDir)
 
 	if(DCL_ExistNewFile) // 新規追加ファイルがあった場合は２回行う必要がある。新規追加ファイルには AutoComment が適用されない。
 	{
+		LOGPOS();
+		DoCopyLib(rDir, wDir, 1);
 		LOGPOS();
 		DoCopyLib(rDir, wDir, 0);
 		LOGPOS();

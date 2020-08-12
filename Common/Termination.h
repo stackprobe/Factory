@@ -14,6 +14,9 @@ void error2(char *module, uint lineno, char *section, char *message);
 #define error() \
 	error2(__FILE__, __LINE__, __FUNCTION__, NULL)
 
+/*
+	message: "\n" Ç≈â¸çs
+*/
 #define error_m(message) \
 	error2(__FILE__, __LINE__, __FUNCTION__, (message))
 
@@ -22,6 +25,9 @@ void error2(char *module, uint lineno, char *section, char *message);
 	if((cond)) error(); \
 	} while(0)
 
+/*
+	message: "\n" Ç≈â¸çs
+*/
 #define errorCase_m(cond, message) \
 	do { \
 	if((cond)) error_m((message)); \
