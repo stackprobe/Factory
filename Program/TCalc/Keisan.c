@@ -189,14 +189,16 @@ static char *InsSepOp(char *line, uint ranks)
 		uint decpidx = (uint)strchrEnd(line, '.') - (uint)line;
 		uint index;
 
-		for(index = decpidx + ranks + 1; index < strlen(line); index += ranks + 1) {
+		for(index = decpidx + ranks + 1; index < strlen(line); index += ranks + 1)
 			line = insertChar(line, index, ',');
-		}
-		for(index = decpidx; ranks < index; ) {
+
+		for(index = decpidx; ranks < index; )
+		{
 			index -= ranks;
 			line = insertChar(line, index, ',');
 		}
-		if(startsWith(line, "-,")) eraseChar(line + 1);
+		if(startsWith(line, "-,"))
+			eraseChar(line + 1);
 	}
 	else // x , 0 -> ’·‚³‚ğ•Ô‚·B
 	{

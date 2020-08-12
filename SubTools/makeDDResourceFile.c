@@ -1,3 +1,29 @@
+/*
+	makeDDResourceFile.exe 入力リソースDIR [/SD リソースSUB-DIR]... 出力リソースファイル マスキングプログラム
+
+		入力リソースDIR
+			このフォルダの直下と配下のファイルをリソースと見なす。
+			リソースのパスは、このフォルダからの相対パスになる。
+
+		リソースSUB-DIR　(省略可能, 複数指定可能)
+			このパスの直下と配下のファイルを「出力リソースファイル」に収録する。
+			入力リソースDIRからの相対パスであること。
+			省略した場合は、入力リソースDIRの直下と配下の全てのファイルを「出力リソースファイル」に収録する。
+
+		出力リソースファイル
+			出力ファイル
+
+		マスキングプログラム
+			リソース毎にデータのマスキングを行うプログラム
+			C:\Factory\SubTools\libs\MaskGZData.h を #include したプログラムであること。
+
+	----
+	出力リソースファイルの読み込み
+
+	https://github.com/stackprobe/Fairy/blob/master/Donut2/Donut2/Donut2/Common/DDResource.cs
+	https://github.com/stackprobe/Fairy/blob/master/Donut3/Donut3/Donut3/Common/DDResource.cs
+*/
+
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Meteor\ZCluster.h"
 

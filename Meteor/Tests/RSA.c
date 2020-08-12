@@ -109,8 +109,9 @@ static void Test_02(void)
 		releaseAutoBlock(badDecryptData);
 	}
 	else // ? •œ†¸”s
-	{ }
-
+	{
+		// noop
+	}
 	releaseAutoBlock(badEncryptData);
 
 	// ---- ˆÙíŒnEŒöŠJŒ®”j‘¹ all 0x00 ----
@@ -132,8 +133,9 @@ static void Test_02(void)
 		releaseAutoBlock(badDecryptData);
 	}
 	else // ? •œ†¸”s
-	{ }
-
+	{
+		// noop
+	}
 	releaseAutoBlock(badEncryptData);
 
 	// ---- ˆÙíŒnEŒöŠJŒ®”j‘¹ all 0xff ----
@@ -155,8 +157,9 @@ static void Test_02(void)
 		releaseAutoBlock(badDecryptData);
 	}
 	else // ? •œ†¸”s
-	{ }
-
+	{
+		// noop
+	}
 	releaseAutoBlock(badEncryptData);
 
 	// ---- ˆÙíŒnEˆÃ†ƒf[ƒ^”j‘¹ ----
@@ -175,8 +178,9 @@ static void Test_02(void)
 		releaseAutoBlock(badDecryptData);
 	}
 	else // ? •œ†¸”s
-	{ }
-
+	{
+		// noop
+	}
 	releaseAutoBlock(badEncryptData);
 
 	// ----
@@ -232,8 +236,9 @@ static void Test_03(void)
 		releaseAutoBlock(anotherDecryptData);
 	}
 	else // ? •œ†¸”s
-	{ }
-
+	{
+		// noop
+	}
 	releaseAutoBlock(anotherEncryptData);
 
 	// ----

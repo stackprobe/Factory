@@ -32,14 +32,18 @@ static void DispRange(FILE *fp, sint64 start, sint64 end, sint64 fileSize)
 	{
 		if(0 <= index && index < fileSize)
 		{
-			if(!disped) {
+			if(!disped)
+			{
 				disped = 1;
 				FSeek(fp, index);
 			}
 			chr = readChar(fp);
 
 			if(0x20 <= chr && chr <= 0x7e || 0xa1 <= chr && chr <= 0xdf)
-			{} else
+			{
+				// noop
+			}
+			else
 			{
 				chr = 0xc0 | chr & 0x1f;
 			}
@@ -135,30 +139,30 @@ static void SearchFile(char *file)
 				cout("%9I64u %9I64u ", fndcnt, m_max(crcnt, lfcnt));
 
 				{
-				sint64 ndx1b;
-				sint64 ndx1e;
-				sint64 ndx2b;
-				sint64 ndx2e;
+					sint64 ndx1b;
+					sint64 ndx1e;
+					sint64 ndx2b;
+					sint64 ndx2e;
 
-				ndx2b = rIndex;
-				ndx2e = ndx2b + 28;
-				ndx1e = ndx2b - matchidx - 1;
-				ndx1b = ndx1e - 28;
+					ndx2b = rIndex;
+					ndx2e = ndx2b + 28;
+					ndx1e = ndx2b - matchidx - 1;
+					ndx1b = ndx1e - 28;
 
-				DispRange(fp, ndx1b, ndx1e, (sint64)fileSize);
-				cout(" ");
-				DispRange(fp, ndx2b, ndx2e, (sint64)fileSize);
-				cout("\n");
+					DispRange(fp, ndx1b, ndx1e, (sint64)fileSize);
+					cout(" ");
+					DispRange(fp, ndx2b, ndx2e, (sint64)fileSize);
+					cout("\n");
 
-				/*
-					ファイル名 + \t + 開始位置 + \t + 終了位置
+					/*
+						ファイル名 + \t + 開始位置 + \t + 終了位置
 
-						開始位置 ... このバイトを含む。
-						終了位置 ... このバイトを含まない。
-				*/
-				addElement(Sections, (uint)xcout("%s\t%I64u\t%I64u", file, ndx1e + 1, ndx2b));
+							開始位置 ... このバイトを含む。
+							終了位置 ... このバイトを含まない。
+					*/
+					addElement(Sections, (uint)xcout("%s\t%I64u\t%I64u", file, ndx1e + 1, ndx2b));
 
-				FSeek(fp, rIndex);
+					FSeek(fp, rIndex);
 				}
 
 			resetmatch:
@@ -230,7 +234,7 @@ readArgs:
 
 		writeOneLineNoRet_b(tmpFile, FindPattern);
 		SJISToUTF8File(tmpFile, tmpFile);
-		FindPattern = readText_b(tmpFile); // gomi
+		FindPattern = readText_b(tmpFile); // g
 		removeFile(tmpFile);
 		memFree(tmpFile);
 

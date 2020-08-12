@@ -1,3 +1,7 @@
+/*
+	rept.exe [/F] [/I] [/P 置き換え前パターン 置き換え後パターン]... 入力ファイル 出力ファイル
+*/
+
 #include "C:\Factory\Common\all.h"
 
 static autoList_t *FindPtns;

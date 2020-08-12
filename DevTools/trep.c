@@ -1,9 +1,9 @@
 /*
-	Search.exe で見つかった sections について、任意の文字列に置き換えを行います。
+	Search.exe で見つかった Sections (SECTIONLISTFILE) について、任意の文字列への置き換えを行います。
 
 	- - -
 
-	trep.exe [/-C] [/F] [/-] dest-ptn
+	trep.exe [/-C] [/F] [/-] 置き換え後の文字列
 */
 
 #include "C:\Factory\Common\all.h"
@@ -172,9 +172,9 @@ readArgs:
 			errorCase_m(endPos < bgnPos, "始点より終点が前になっています。");
 
 			/*
-			memo:
-				ファイル内容 "aaa" を Search aa したとき、最初（1文字目～2文字目）しか検出されない。
-				-> 重なっているセクションは無い。
+				memo:
+					ファイル内容 "aaa" を Search aa したとき、最初（1文字目～2文字目）しか検出されない。
+					-> 重なっているセクションは無い。
 			*/
 
 			{
@@ -219,8 +219,9 @@ readArgs:
 			cout("##########################\n");
 		}
 		else if(multiSrcPtn)
+		{
 			cout("Ignore case かな？\n");
-
+		}
 		if(foundOuterPath)
 			cout("カレントの配下じゃないのもあるよ。\n");
 

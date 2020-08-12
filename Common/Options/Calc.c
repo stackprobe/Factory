@@ -580,13 +580,14 @@ char *changeRadixCalcLine(char *line, uint radix, uint newRadix, uint basement) 
 
 		value = 0;
 
-		for(index = 7; ; index--) {
+		for(index = 7; ; index--)
+		{
 			value *= radix;
 			value += refByte(wop3->Figures, index);
 
-			if(!index) break;
+			if(!index)
+				break;
 		}
-
 		calcRadix = newRadix;
 		AddInt(newOp, shiftCnt, value);
 

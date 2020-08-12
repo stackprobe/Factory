@@ -489,7 +489,8 @@ static void PerformTh(int sock, char *strip)
 	memFree(header);
 	httpReleaseParts(parts);
 
-	if(i->Extra.SaveFile) {
+	if(i->Extra.SaveFile)
+	{
 		memFree(i->Extra.SaveFile);
 		i->Extra.SaveFile = NULL;
 	}

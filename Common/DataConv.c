@@ -196,7 +196,8 @@ void line2csym_ext(char *line, char *extra)
 
 	errorCase(!*line); // "" •s‰Â
 
-	if(!altchrs) {
+	if(!altchrs)
+	{
 		altchrs = strx("");
 
 		for(chr = '0'; chr <= '9'; chr++) { altchrs = addChar(altchrs, chr); }
@@ -213,7 +214,10 @@ void line2csym_ext(char *line, char *extra)
 		chr = *p;
 
 		if('0' <= chr && chr <= '9' || 'A' <= chr && chr <= 'Z' || 'a' <= chr && chr <= 'z' || chr == '_' || extra && strchr(extra, chr))
-		{} else
+		{
+			// noop
+		}
+		else
 		{
 			*p = altchrs[chr & 0x3f];
 		}
@@ -261,7 +265,10 @@ char *toPrintLine(autoBlock_t *block, int insRet)
 		doInsRet = insRet && (chr == '\n' || chr == '\r' && refByte(block, index + 1) != '\n') && index + 1 < getSize(block);
 
 		if(0x20 <= chr && chr <= 0x7e || 0xa1 <= chr && chr <= 0xdf)
-		{} else
+		{
+			// noop
+		}
+		else
 		{
 			chr = (chr & 0x1f) | 0xc0;
 		}
@@ -339,21 +346,25 @@ void line2JLine(char *line, int okJpn, int okRet, int okTab, int okSpc)
 		else if(*p == '\n') // LF
 		{
 		found_lf:
-			if(!okRet) goto enc_char;
+			if(!okRet) { goto enc_char; }
 		}
 		else if(*p == '\t')
 		{
-			if(!okTab) goto enc_char;
+			if(!okTab) { goto enc_char; }
 		}
 		else if(*p == '\x20')
 		{
-			if(!okSpc) goto enc_char;
+			if(!okSpc) { goto enc_char; }
 		}
 		else
 		{
 			int chr = *p;
+
 			if(0x21 <= chr && chr <= 0x7e || 0xa1 <= chr && chr <= 0xdf)
-			{} else
+			{
+				// noop
+			}
+			else
 			{
 			enc_char:
 				*p = (*p & 0x1f) | 0xc0;

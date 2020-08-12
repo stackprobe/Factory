@@ -409,7 +409,8 @@ readArgs:
 		goto readArgs;
 	}
 
-	if(!rootDir) {
+	if(!rootDir)
+	{
 		rootDir = makeFreeDir();
 		useFreeDir = 1;
 		cout("ROOT %s\n", rootDir);
@@ -422,7 +423,8 @@ readArgs:
 
 	unaddCwd();
 
-	if(useFreeDir) {
+	if(useFreeDir)
+	{
 		recurRemoveDir(rootDir);
 		memFree(rootDir);
 	}

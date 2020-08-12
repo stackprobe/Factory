@@ -118,9 +118,13 @@ static void RenameEx(void)
 				memFree((void *)unaddElement(newPaths));
 		}
 		else if(RenumberPaths(newPaths))
-		{}
+		{
+			// noop
+		}
 		else if(AntiSamePaths(newPaths))
-		{}
+		{
+			// noop
+		}
 		else
 		{
 			break;

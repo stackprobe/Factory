@@ -143,15 +143,24 @@ static void BackupFile(char *file)
 
 #if 1 // 別のプロセスが使用中です。対策 @ 2016.5.11
 	// 無い場合もあるよ。@ 2017.7.2
-	if(existFile(file)) {
-		for(; ; ) {
+	if(existFile(file))
+	{
+		for(; ; )
+		{
 			coExecute_x(xcout("DEL \"%s\"", oldFile));
-			if(!existFile(oldFile)) break;
+
+			if(!existFile(oldFile))
+				break;
+
 			coSleep(2000);
 		}
-		for(; ; ) {
+		for(; ; )
+		{
 			coExecute_x(xcout("REN \"%s\" \"%s\"", file, getLocal(oldFile)));
-			if(!existFile(file)) break;
+
+			if(!existFile(file))
+				break;
+
 			coSleep(2000);
 		}
 	}

@@ -58,7 +58,10 @@ static void DispRange(sint64 start, sint64 end, sint64 fileSize)
 			chr = ReadChar((uint64)index);
 
 			if(0x20 <= chr && chr <= 0x7e || 0xa1 <= chr && chr <= 0xdf)
-			{} else
+			{
+				// noop
+			}
+			else
 			{
 				chr = 0xc0 | chr & 0x1f;
 			}

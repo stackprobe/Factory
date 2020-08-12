@@ -155,11 +155,17 @@ int isNECSpecialChar(int mbchr)
 	if(0x8740 <= mbchr && mbchr <= 0x879c) // NEC特殊文字の範囲
 	{
 		if(mbchr == 0x875e) // 未使用
-		{}
+		{
+			// noop
+		}
 		else if(0x8776 <= mbchr && mbchr <= 0x877d) // 未使用
-		{}
+		{
+			// noop
+		}
 		else if(mbchr == 0x877f) // 第２バイトの範囲外
-		{}
+		{
+			// noop
+		}
 		else
 		{
 			return 1;
@@ -172,13 +178,21 @@ int isNECSelectIBMExtendChar(int mbchr)
 	if(0xed40 <= mbchr && mbchr <= 0xeefc) // NEC選定IBM拡張文字の範囲
 	{
 		if(mbchr == 0xed7f) // 未使用
-		{}
+		{
+			// noop
+		}
 		else if(0xedfd <= mbchr && mbchr <= 0xee3f) // 未使用 (広域)
-		{}
+		{
+			// noop
+		}
 		else if(mbchr == 0xee7f) // 未使用
-		{}
+		{
+			// noop
+		}
 		else if(0xeeed <= mbchr && mbchr <= 0xeeee) // 未使用
-		{}
+		{
+			// noop
+		}
 		else
 		{
 			return 1;
@@ -191,13 +205,21 @@ int isIBMExtendChar(int mbchr)
 	if(0xfa40 <= mbchr && mbchr <= 0xfc4b) // IBM拡張文字の範囲
 	{
 		if(mbchr == 0xfa7f) // 未使用
-		{}
+		{
+			// noop
+		}
 		else if(0xfafd <= mbchr && mbchr <= 0xfb3f) // 未使用 (広域)
-		{}
+		{
+			// noop
+		}
 		else if(mbchr == 0xfb7f) // 未使用
-		{}
+		{
+			// noop
+		}
 		else if(0xfbfd <= mbchr && mbchr <= 0xfc3f) // 未使用
-		{}
+		{
+			// noop
+		}
 		else
 		{
 			return 1;

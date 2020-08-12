@@ -752,26 +752,28 @@ void toAsciiLine(char *str, int okRet, int okTab, int okSpc)
 			else
 				*p = '\n';
 
-			goto found_n;
+			goto found_lf;
 		}
 		else if(*p == '\n')
 		{
-		found_n:
-			if(!okRet) goto enc_chr;
+		found_lf:
+			if(!okRet) { goto enc_char; }
 		}
 		else if(*p == '\t')
 		{
-			if(!okTab) goto enc_chr;
+			if(!okTab) { goto enc_char; }
 		}
 		else if(*p == ' ')
 		{
-			if(!okSpc) goto enc_chr;
+			if(!okSpc) { goto enc_char; }
 		}
 		else if(m_isRange(*p, '\x21', '\x7e'))
-		{}
+		{
+			// noop
+		}
 		else
 		{
-		enc_chr:
+		enc_char:
 			*p = (*p & 0x1f) | 0x40;
 		}
 	}

@@ -10,8 +10,8 @@ static char *TrimValueString(char *str)
 	if(!*str)
 		return addChar(str, '0');
 
-	for(p = str; *p == '0' && p[1]; p++)
-	{}
+	for(p = str; *p == '0' && p[1]; )
+		p++;
 
 	copyLine(str, p);
 

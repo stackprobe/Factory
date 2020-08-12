@@ -90,7 +90,8 @@ static void BookmarkToText(char *file)
 			errorCase(*p);
 
 			// .url をカットする。win7には無い！
-			if(!_stricmp(getExt(title), "url")) {
+			if(!_stricmp(getExt(title), "url"))
+			{
 				p = mbs_strrchr(title, '.');
 				errorCase(!p);
 				*p = '\0';
