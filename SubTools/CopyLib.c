@@ -19,19 +19,19 @@ static int IsCSharpFile(char *file)
 	return !_stricmp("cs", getExt(file));
 }
 
-// ---- AutoComment-SyncEntered ----
+// ---- Dis-Comment (discmt) Entered ----
 
-static int ACSE_SyncEntered;
+static int DCE_DisCmtEntered;
 
-static void ACSE_Start(void)
+static void DCE_Start(void)
 {
-	errorCase(ACSE_SyncEntered);
+	errorCase(DCE_DisCmtEntered);
 }
-static void ACSE_End(void)
+static void DCE_End(void)
 {
-	errorCase(ACSE_SyncEntered);
+	errorCase(DCE_DisCmtEntered);
 }
-static void ACSE_SetLine(char *line)
+static void DCE_SetLine(char *line)
 {
 	int enter;
 	int leave;
@@ -41,26 +41,26 @@ static void ACSE_SetLine(char *line)
 
 		ucTrim(tmp);
 
-		enter = startsWith(tmp, "// sync >");
-		leave = startsWith(tmp, "// < sync");
+		enter = startsWith(tmp, "// discmt >");
+		leave = startsWith(tmp, "// < discmt");
 
 		memFree(tmp);
 	}
 
 	if(enter)
 	{
-		errorCase(ACSE_SyncEntered);
-		ACSE_SyncEntered = 1;
+		errorCase(DCE_DisCmtEntered);
+		DCE_DisCmtEntered = 1;
 	}
 	else if(leave)
 	{
-		errorCase(!ACSE_SyncEntered);
-		ACSE_SyncEntered = 0;
+		errorCase(!DCE_DisCmtEntered);
+		DCE_DisCmtEntered = 0;
 	}
 }
-static int ACSE_IsOutSync(void)
+static int DCE_IsOutDisCmt(void)
 {
-	return !ACSE_SyncEntered;
+	return !DCE_DisCmtEntered;
 }
 
 // ----
@@ -77,14 +77,14 @@ static void AutoComment(autoList_t *ranges)
 	int commentEntered = 0;
 	int classEntered = 0;
 
-	ACSE_Start();
+	DCE_Start();
 
 	foreach(ranges, range, range_index)
 	foreach(range, line, index)
 	{
 		int insCmt;
 
-		ACSE_SetLine(line);
+		DCE_SetLine(line);
 
 		line = strx(line);
 		nn_strstr(line, "//")[0] = '\0'; // インラインコメントの除去
@@ -148,7 +148,7 @@ static void AutoComment(autoList_t *ranges)
 
 		// < set insCmt
 
-		if(insCmt && ACSE_IsOutSync() && range_index % 2 != 1) // ? .. && .. && アプリ固有コード以外
+		if(insCmt && DCE_IsOutDisCmt() && range_index % 2 != 1) // ? .. && .. && アプリ固有コード以外
 		{
 			char *comment;
 			uint comment_index;
@@ -186,7 +186,7 @@ static void AutoComment(autoList_t *ranges)
 	errorCase(commentEntered);
 	errorCase(classEntered);
 
-	ACSE_End();
+	DCE_End();
 }
 static void AutoComment_CS(autoList_t *ranges)
 {
@@ -195,7 +195,7 @@ static void AutoComment_CS(autoList_t *ranges)
 	char *line;
 	uint index;
 
-	ACSE_Start();
+	DCE_Start();
 
 	foreach(ranges, range, range_index)
 	foreach(range, line, index)
@@ -203,7 +203,7 @@ static void AutoComment_CS(autoList_t *ranges)
 		char *prevLine = index ? getLine(range, index - 1) : "";
 		char *insCmtIndent = NULL;
 
-		ACSE_SetLine(line);
+		DCE_SetLine(line);
 
 		if(!startsWith(prevLine, "\t/// "))
 		if(
@@ -227,7 +227,7 @@ static void AutoComment_CS(autoList_t *ranges)
 			)
 			insCmtIndent = "\t\t";
 
-		if(insCmtIndent && ACSE_IsOutSync() && range_index % 2 != 1) // ? .. && .. && アプリ固有コード以外
+		if(insCmtIndent && DCE_IsOutDisCmt() && range_index % 2 != 1) // ? .. && .. && アプリ固有コード以外
 		{
 			char *comment;
 			uint comment_index;
@@ -241,7 +241,7 @@ static void AutoComment_CS(autoList_t *ranges)
 		// TODO @" など、いずれ対応が必要になると思う。
 	}
 
-	ACSE_End();
+	DCE_End();
 }
 static autoList_t *ReadCommonAndAppSpecRanges(char *file)
 {

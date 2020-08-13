@@ -32,13 +32,13 @@ void ChangePETimeDateStamp(char *file, uint t)
 
 	cout("PE optional header size: %u\n", optHedSize);
 
-errorCase(optHedSize != 224); // HACK: これ以外のサイズに出会うかもしれない。
+errorCase(optHedSize != 224); // HACK: これ以外のサイズに出会ったら、CheckSum の位置に問題無いことを確認した上で、新しいサイズを許可する｜このチェックを削除する。
 
-	if(0x44 <= optHedSize)
+	if(0x44 <= optHedSize) // ? CheckSum までのサイズはある。
 	{
-		fileSeek(fp, SEEK_CUR, 0x42);
+		fileSeek(fp, SEEK_CUR, 0x02 + 0x40); // COFF header 残り + optional header の CheckSum まで
 
-		writeValue(fp, 0x00000000); // clear checksum
+		writeValue(fp, 0x00000000); // CheckSum クリア
 	}
 	fileClose(fp);
 
