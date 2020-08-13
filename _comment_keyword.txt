@@ -73,6 +73,39 @@
 
 
 ----
+機能を持つコメント
+
+// app > @ xxx
+// < app
+
+	アプリ固有コード
+	xxx は任意の識別名
+	https://github.com/stackprobe/Factory/blob/master/SubTools/CopyLib.c
+
+// discmt >
+// < discmt
+
+	自動コメント抑止
+	https://github.com/stackprobe/Factory/blob/master/SubTools/CopyLib.c
+
+// ^ sync @ xxx
+
+	同期コード
+	xxx は任意の識別名
+	https://github.com/stackprobe/Factory/blob/master/DevTools/SyncDevUsing.c
+
+// sync > @ xxx
+// < sync
+
+	同期コード
+	xxx は任意の識別名
+	https://github.com/stackprobe/Factory/blob/master/DevTools/SyncDevRange.c
+
+
+★ _memo_Cx.txt にも記載あり。
+
+
+----
 固有の意味を持つ識別子内の接頭辞・接尾辞・パターン
 
 x_

@@ -1,8 +1,8 @@
 #include "C:\Factory\Common\all.h"
 #include "libs\SolutionOrder.h"
 
-#define CLSTDERR "_$e.tmp"
-#define CLSTDOUT "_$o.tmp"
+#define CLSTDERR "_Cx_e.tmp"
+#define CLSTDOUT "_Cx_o.tmp"
 
 #define CLOPTIONS "/W2 /w24013 /WX /Oxt /J /GF"
 
@@ -115,7 +115,7 @@ static autoList_t *GetResponse(char *source, int buildFlag)
 				if(!existFile(p))
 				{
 					cout("存在しないインクルード先: %s -> %s\n", file, p);
-					continue; // #if 0 の中の可能性があるのでスキップ
+					continue; // #if 0 の中の可能性があるので、エラーにせず続行する。
 				}
 				p = makeFullPath(p);
 
@@ -217,9 +217,7 @@ static int IsGitMaskedSource(char *source)
 
 	while(line = readLine(fp))
 	{
-		p = line;
-
-		while(*p && *p <= ' ') // 行頭のインデント等の空白をスキップ
+		for(p = line; *p && *p <= ' '; ) // 行頭のインデント等の空白をスキップ
 			p++;
 
 		if(*p && (p[0] != '/' || p[1] != '/')) // ? ! (空行 || "//" で始まる行)
