@@ -24,6 +24,10 @@ static FILE *LogFp;
 static char *LogFileBase = NULL; // NULL == ログ出力ファイル名の更新、無効
 static uint NextChangeTime;
 
+static char *AutoGenLogFileFilter(char *file)
+{
+	return toCreatablePath(file, 9999); // 毎分 40 個 (60～99), 毎時 4000 個 (6000～9999) の存在しない分秒の中で見つかるはず。という想定
+}
 static char *GetNextLogFile(void)
 {
 	return xcout("%s%s.log", LogFileBase, c_makeCompactStamp(NULL));
@@ -45,6 +49,7 @@ static void WrLog(char *line)
 		{
 			memFree(LogFile);
 			LogFile = GetNextLogFile();
+			LogFile = AutoGenLogFileFilter(LogFile);
 
 			fileClose(LogFp);
 			LogFp = fileOpen(LogFile, "wt");
@@ -111,7 +116,9 @@ int main(int argc, char **argv)
 		char *dir = nextArg();
 		char *localFile = xcout("%s.log", c_makeCompactStamp(NULL));
 
-		LogFile = combine(dir, localFile); // ネットワークパスng
+//		LogFile = combine(dir, localFile); // ネットワークパス不可
+		LogFile = xcout("%s\\%s", dir, localFile); // dir にネットワークパスも想定する。
+		LogFile = AutoGenLogFileFilter(LogFile);
 		PipeLogger();
 		memFree(localFile);
 		return;
@@ -121,8 +128,9 @@ int main(int argc, char **argv)
 		char *dir = nextArg();
 		char *localFile = xcout("%s_%s.log", getEnvLine("USERNAME"), c_makeCompactStamp(NULL));
 
-		LogFile = xcout("%s\\%s", dir, localFile);
-//		LogFile = combine(dir, localFile); // ネットワークパスng
+//		LogFile = combine(dir, localFile); // ネットワークパス不可
+		LogFile = xcout("%s\\%s", dir, localFile); // dir にネットワークパスも想定する。
+		LogFile = AutoGenLogFileFilter(LogFile);
 		PipeLogger();
 		memFree(localFile);
 		return;
@@ -132,6 +140,7 @@ int main(int argc, char **argv)
 		char *fileBase = nextArg();
 
 		LogFile = xcout("%s%s.log", fileBase, c_makeCompactStamp(NULL));
+		LogFile = AutoGenLogFileFilter(LogFile);
 		PipeLogger();
 		return;
 	}
@@ -140,6 +149,7 @@ int main(int argc, char **argv)
 		LogFileBase = nextArg();
 
 		LogFile = GetNextLogFile();
+		LogFile = AutoGenLogFileFilter(LogFile);
 		NextChangeTime = now() + LOGFILE_CHANGE_PERIOD_SEC;
 
 		PipeLogger();

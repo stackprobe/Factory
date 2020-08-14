@@ -47,22 +47,22 @@ static void OpenLogFile(void)
 	memFree(stamp);
 	LogFileTime = now();
 }
-void setCoutLogFile(char *fileBase)
+void setCoutLogFile(char *fileBase) // 自動的にファイルを切り替える。
 {
 	errorCase(WrFP);
 	LogFileBase = fileBase;
 	OpenLogFile();
 	addFinalizer(CloseWrFP);
 }
-void setCoutLogFileAdd(char *fileBase)
+void setCoutLogFileAdd(char *fileBase) // 自動的にファイルを切り替えない。
 {
 	char *file;
 	char *stamp;
 
 	errorCase(WrFP);
 	stamp = makeCompactStamp(NULL);
-	stamp[10] = '\0'; // １時間で区切る。サイズは見ない！デカくなってもファイルを切り替えない！
-	file = xcout("%s_%s0000.log", fileBase, stamp);
+	stamp[10] = '\0'; // 分秒を切り捨てる。
+	file = xcout("%s_%s0000.log", fileBase, stamp); // 分秒に "0000"
 	WrFP = fileOpen(file, "ab");
 	addFinalizer(CloseWrFP);
 	memFree(file);
