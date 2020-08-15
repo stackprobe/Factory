@@ -161,7 +161,9 @@ static autoList_t *ParseUrls(char *resBodyFile)
 			break;
 
 		*s = '\0';
-		addElement(urls, (uint)strx(r));
+		r = strx(r);
+		r = replaceLine(r, "\\u0026", "&", 0);
+		addElement(urls, (uint)r);
 		p = s + 1;
 	}
 	memFree(resBody);
@@ -271,7 +273,8 @@ static void Main2(void)
 	char *resBodyFile = makeTempPath(NULL);
 
 	Account = strx(nextArg());
-	line2csym(Account);
+//	line2csym(Account); // old
+	line2csym_ext(Account, "."); // todo: アカウントに使える文字を追加
 	DestDir = makeFullPath(nextArg());
 
 	cout("アカウント: %s\n", Account);
