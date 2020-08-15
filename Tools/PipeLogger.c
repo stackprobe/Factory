@@ -19,10 +19,9 @@
 #define LOGFILE_CHANGE_PERIOD_SEC 3600
 
 static char *LogFile;
+static char *LogFileBase = NULL; // NULL == ログ出力ファイル名の更新を行わない。
+static uint LogFileNextChangeTime; // 次にログ出力ファイル名の更新を行う時刻
 static FILE *LogFp;
-
-static char *LogFileBase = NULL; // NULL == ログ出力ファイル名の更新、無効
-static uint LogFileNextChangeTime;
 
 static char *GetLogFile(char *prefix, char *prefix2, char *prefix3, char *prefix4)
 {
@@ -40,7 +39,7 @@ static void WrLog(char *line)
 	line = xcout("[%s] %s", c_makeJStamp(NULL, 0), line);
 	writeLine(LogFp, line);
 	fflush(LogFp);
-	line2JLine(line, 1, 0, 1, 1); // 表示向けに矯正
+	line2JLine(line, 1, 0, 1, 1); // 表示のため
 	cout("%s\n", line);
 	memFree(line);
 

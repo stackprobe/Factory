@@ -7,6 +7,13 @@
 #include "C:\Factory\Common\Options\TimeData.h"
 #include "C:\Factory\OpenSource\md5.h"
 
+#define HGET_OPTION_01 "/H"
+#define HGET_OPTION_02 "cookie"
+////////////////////////////////////////////////// $_git:secret
+///// $_git:secret
+#define HGET_OPTION_03 "ds_user_id=0000000000;"
+//*/
+
 // ---- known url ----
 
 #define KNOWN_URL_FILE "C:\\appdata\\instagram-dl\\known-url.txt"
@@ -224,6 +231,9 @@ static int Download(char *url) // ret: ? successful
 	cout("url: %s\n", url);
 
 	writeOneLineNoRet_b_cx(prmFile, xcout(
+		HGET_OPTION_01 "\n"
+		HGET_OPTION_02 "\n"
+		HGET_OPTION_03 "\n"
 		"/RSF\n"
 		"%s\n"
 		"/RHF\n"
@@ -283,8 +293,18 @@ static void Main2(void)
 	errorCase(!existDir(DestDir));
 
 	coExecute_x(xcout(
-		"START \"\" /B /WAIT \"%s\" /RSF \"%s\" /RHF \"%s\" /RBF \"%s\" /L https://www.instagram.com/%s/"
+		"START \"\" /B /WAIT \"%s\""
+		" \"%s\""
+		" \"%s\""
+		" \"%s\""
+		" /RSF \"%s\""
+		" /RHF \"%s\""
+		" /RBF \"%s\""
+		" /L https://www.instagram.com/%s/"
 		,HGetExeFile()
+		,HGET_OPTION_01
+		,HGET_OPTION_02
+		,HGET_OPTION_03
 		,successfulFlag
 		,resHeaderFile
 		,resBodyFile
