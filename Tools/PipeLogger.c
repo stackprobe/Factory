@@ -22,15 +22,18 @@ static char *LogFile;
 static FILE *LogFp;
 
 static char *LogFileBase = NULL; // NULL == ログ出力ファイル名の更新、無効
-static uint NextChangeTime;
+static uint LogFileNextChangeTime;
 
-static char *AutoGenLogFileFilter(char *file)
+static char *GetLogFile(char *prefix, char *prefix2, char *prefix3, char *prefix4)
 {
-	return toCreatablePath(file, 9999); // 毎分 40 個 (60～99), 毎時 4000 個 (6000～9999) の存在しない分秒の中で見つかるはず。という想定
+	char *file = xcout("%s%s%s%s%s000.log", prefix, prefix2, prefix3, prefix4, c_makeCompactStamp(NULL));
+
+	file = toCreatablePath(file, 999);
+	return file;
 }
 static char *GetNextLogFile(void)
 {
-	return xcout("%s%s.log", LogFileBase, c_makeCompactStamp(NULL));
+	return GetLogFile(LogFileBase, "", "", "");
 }
 static void WrLog(char *line)
 {
@@ -45,16 +48,14 @@ static void WrLog(char *line)
 	{
 		uint currTime = now();
 
-		if(NextChangeTime < currTime)
+		if(LogFileNextChangeTime < currTime)
 		{
 			memFree(LogFile);
 			LogFile = GetNextLogFile();
-			LogFile = AutoGenLogFileFilter(LogFile);
+			LogFileNextChangeTime = currTime + LOGFILE_CHANGE_PERIOD_SEC;
 
 			fileClose(LogFp);
 			LogFp = fileOpen(LogFile, "wt");
-
-			NextChangeTime = currTime + LOGFILE_CHANGE_PERIOD_SEC;
 		}
 	}
 }
@@ -114,33 +115,27 @@ int main(int argc, char **argv)
 	if(argIs("/DT"))
 	{
 		char *dir = nextArg();
-		char *localFile = xcout("%s.log", c_makeCompactStamp(NULL));
 
-//		LogFile = combine(dir, localFile); // ネットワークパス不可
-		LogFile = xcout("%s\\%s", dir, localFile); // dir にネットワークパスも想定する。
-		LogFile = AutoGenLogFileFilter(LogFile);
+		LogFile = GetLogFile(dir, "\\", "", "");
+
 		PipeLogger();
-		memFree(localFile);
 		return;
 	}
 	if(argIs("/UDT"))
 	{
 		char *dir = nextArg();
-		char *localFile = xcout("%s_%s.log", getEnvLine("USERNAME"), c_makeCompactStamp(NULL));
 
-//		LogFile = combine(dir, localFile); // ネットワークパス不可
-		LogFile = xcout("%s\\%s", dir, localFile); // dir にネットワークパスも想定する。
-		LogFile = AutoGenLogFileFilter(LogFile);
+		LogFile = GetLogFile(dir, "\\", getEnvLine("USERNAME"), "_");
+
 		PipeLogger();
-		memFree(localFile);
 		return;
 	}
 	if(argIs("/B"))
 	{
 		char *fileBase = nextArg();
 
-		LogFile = xcout("%s%s.log", fileBase, c_makeCompactStamp(NULL));
-		LogFile = AutoGenLogFileFilter(LogFile);
+		LogFile = GetLogFile(fileBase, "", "", "");
+
 		PipeLogger();
 		return;
 	}
@@ -149,8 +144,7 @@ int main(int argc, char **argv)
 		LogFileBase = nextArg();
 
 		LogFile = GetNextLogFile();
-		LogFile = AutoGenLogFileFilter(LogFile);
-		NextChangeTime = now() + LOGFILE_CHANGE_PERIOD_SEC;
+		LogFileNextChangeTime = now() + LOGFILE_CHANGE_PERIOD_SEC;
 
 		PipeLogger();
 		return;
@@ -161,13 +155,16 @@ int main(int argc, char **argv)
 	if(hasArgs(1))
 	{
 		LogFile = nextArg();
+
 		PipeLogger();
 		return;
 	}
 
 	{
 		LogFile = getOutFile_x(xcout("PipeLog_%s.txt", c_makeCompactStamp(NULL)));
+
 		PipeLogger();
+
 		openOutDir();
 		return;
 	}

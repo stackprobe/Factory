@@ -1,6 +1,6 @@
 #include "all.h"
 
-#define LOGFILESIZE_MAX 10000000 // 10m
+#define LOGFILESIZE_MAX 10000000 // 10 MB
 #define LOGFILE_PERIOD 3600
 
 int coutOff;
@@ -40,8 +40,8 @@ static void OpenLogFile(void)
 	char *file;
 	char *stamp = makeCompactStamp(NULL);
 
-	file = xcout("%s_%s000.log", LogFileBase, stamp);
-	file = toCreatablePath(file, 1000);
+	file = xcout("%s_%s000.log", LogFileBase, stamp); // LogFileBase + _YYYYMMDDhhmmss000.log
+	file = toCreatablePath(file, 999);
 	WrFP = fileOpen(file, "wb");
 	memFree(file);
 	memFree(stamp);
@@ -61,8 +61,8 @@ void setCoutLogFileAdd(char *fileBase) // 自動的にファイルを切り替えない。
 
 	errorCase(WrFP);
 	stamp = makeCompactStamp(NULL);
-	stamp[10] = '\0'; // 分秒を切り捨てる。
-	file = xcout("%s_%s0000.log", fileBase, stamp); // 分秒に "0000"
+	stamp[10] = '\0';
+	file = xcout("%s_%s0000.log", fileBase, stamp); // fileBase + _YYYYMMDDhh0000.log
 	WrFP = fileOpen(file, "ab");
 	addFinalizer(CloseWrFP);
 	memFree(file);
@@ -234,7 +234,7 @@ void coutLongText(char *text)
 			if(LOGFILESIZE_MAX <= LogFileSize || LOGFILE_PERIOD <= now() - LogFileTime)
 			{
 				fileClose(WrFP);
-				WrFP = NULL; // error(); 対策
+				WrFP = NULL; // error(); になっても書き込まないように
 				OpenLogFile();
 				LogFileSize = 0;
 			}

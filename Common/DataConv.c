@@ -35,7 +35,9 @@ char *incrementColumnDigits(char *column, char *digits) // ret: strr(column)
 
 		if(!dp)
 		{
-			if(!p[1]) column = addChar(column, COLDIG_DLMTR); // column の最後に digits が無い -> column と digits のデリミタを付加
+			if(!p[1])
+				column = addChar(column, COLDIG_DLMTR); // column の最後に digits が無い -> column と digits のデリミタを付加
+
 			break;
 		}
 		if(dp < enddp)
@@ -78,6 +80,10 @@ char *incrementPath(char *path)
 	return incrementPathDigits(path, decimal);
 }
 
+/*
+	toCreatablePath(strx("abc123000.txt"), 999);  -> 想定される戻り値 : "abc123000.txt" ～ "abc123999.txt"
+	toCreatablePath(strx("abc123000.txt"), 1000); -> 想定される戻り値 : "abc123000.txt" ～ "abc124000.txt"
+*/
 char *toCreatablePath(char *path, uint faultCountMax) // ret: strr(path)
 {
 	uint faultCount = 0;
