@@ -289,7 +289,6 @@ static void Main2(void)
 	char *successfulFlag = makeTempPath(NULL);
 	char *resHeaderFile = makeTempPath(NULL);
 	char *resBodyFile = makeTempPath(NULL);
-	uint tryCount;
 
 	if(argIs("/DLE"))
 	{
@@ -308,78 +307,53 @@ static void Main2(void)
 
 	errorCase(!existDir(DestDir));
 
-	LOGPOS();
+//	HGetOption_03 = xcout("ds_user_id=%010I64u;", getCryptoRand64() % 10000000000ui64); // old
+	HGetOption_03 = xcout("sessionid=%s;", getAppDataEnv("INSTAGRAM_SESSION_ID", "9999999999%%3Axxxxxxxxxxxxxx%%3A9"));
 
-	for(tryCount = 1; tryCount <= 30; tryCount++)
+	coExecute_x(xcout(
+		"START \"\" /B /WAIT \"%s\""
+		" \"%s\""
+		" \"%s\""
+		" \"%s\""
+		" /RSF \"%s\""
+		" /RHF \"%s\""
+		" /RBF \"%s\""
+		" /L"
+		" https://www.instagram.com/%s/"
+		,HGetExeFile()
+		,HGET_OPTION_01
+		,HGET_OPTION_02
+		,HGET_OPTION_03
+		,successfulFlag
+		,resHeaderFile
+		,resBodyFile
+		,Account
+		));
+
+	if(existFile(successfulFlag))
 	{
-		int retry_flag = 0;
+		autoList_t *urls = ParseUrls(resBodyFile);
+		char *url;
+		uint index;
 
-		cout("tryCount: %u\n", tryCount);
-
-		if(checkKey(0x1b)) // ? エスケープ押下
-		{
-			LOGPOS();
-			break;
-		}
-		memFree(HGetOption_03);
-		HGetOption_03 = xcout("ds_user_id=%010I64u;", getCryptoRand64() % 10000000000ui64);
-
-		coExecute_x(xcout(
-			"START \"\" /B /WAIT \"%s\""
-			" \"%s\""
-			" \"%s\""
-			" \"%s\""
-			" /RSF \"%s\""
-			" /RHF \"%s\""
-			" /RBF \"%s\""
-			" /L"
-			" https://www.instagram.com/%s/"
-			,HGetExeFile()
-			,HGET_OPTION_01
-			,HGET_OPTION_02
-			,HGET_OPTION_03
-			,successfulFlag
-			,resHeaderFile
-			,resBodyFile
-			,Account
-			));
-
-		if(existFile(successfulFlag))
-		{
-			autoList_t *urls = ParseUrls(resBodyFile);
-			char *url;
-			uint index;
-
-			LOGPOS();
-			retry_flag = !getCount(urls);
-
-			foreach(urls, url, index)
-				if(IsKnownUrl(url))
-					break;
-
-			while(index)
-			{
-				LOGPOS();
-				index--;
-				url = getLine(urls, index);
-
-				if(!Download(url))
-					break;
-
-				AddKnownUrl(url);
-			}
-			releaseDim(urls, 1);
-		}
-		if(!retry_flag)
-		{
-			LOGPOS();
-			break;
-		}
 		LOGPOS();
-		sleep(3000);
-		LOGPOS();
+
+		foreach(urls, url, index)
+			if(IsKnownUrl(url))
+				break;
+
+		while(index)
+		{
+			LOGPOS();
+			url = getLine(urls, --index);
+
+			if(!Download(url))
+				break;
+
+			AddKnownUrl(url);
+		}
+		releaseDim(urls, 1);
 	}
-	LOGPOS();
 	removeFileIfExist(successfulFlag);
 	removeFileIfExist(resHeaderFile);
 	removeFileIfExist(resBodyFile);
@@ -387,7 +361,6 @@ static void Main2(void)
 	memFree(successfulFlag);
 	memFree(resHeaderFile);
 	memFree(resBodyFile);
-	LOGPOS();
 }
 int main(int argc, char **argv)
 {

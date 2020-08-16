@@ -1,22 +1,10 @@
 /*
-	SendTextMail.exe /S サーバー [/P ポート番号] /U ユーザー名 パスワード /MF 送信元メールアドレス /MT 送信先メールアドレス /T 表題 [/L テキスト行 | /F テキストファイル]...
+	SendTextMail.exe [/E] /S サーバー [/P ポート番号] /U ユーザー名 パスワード /MF 送信元メールアドレス /MT 送信先メールアドレス /T 表題 [/L テキスト行 | /F テキストファイル]...
 
-	SendTextMail.exe /E /MT 送信先メールアドレス /T 表題 [/L テキスト行 | /F テキストファイル]...
-
-		envから設定を読み込む
+		/E ... envから設定を読み込む
 
 			SMTPS_SERVER      ... サーバー
-			SMTPS_SERVER_PORT ... ポート番号 (省略可能)
-			SMTPS_USER        ... ユーザー名
-			SMTPS_PASS        ... パスワード
-			SMTPS_FROM        ... 送信元メールアドレス
-
-	SendTextMail.exe /E2 /T 表題 [/L テキスト行 | /F テキストファイル]...
-
-		envから設定を読み込む
-
-			SMTPS_SERVER      ... サーバー
-			SMTPS_SERVER_PORT ... ポート番号 (省略可能)
+			SMTPS_SERVER_PORT ... ポート番号
 			SMTPS_USER        ... ユーザー名
 			SMTPS_PASS        ... パスワード
 			SMTPS_FROM        ... 送信元メールアドレス
@@ -131,18 +119,6 @@ static void SendTextMail(void)
 		releaseAutoBlock(mail);
 	}
 }
-static void LoadEnv_01(void)
-{
-	SmtpServer      = getAppDataEnv("SMTPS_SERVER",        SmtpServer);
-	Portno          = getAppDataEnv32("SMTPS_SERVER_PORT", Portno);
-	User            = getAppDataEnv("SMTPS_USER",          User);
-	Pass            = getAppDataEnv("SMTPS_PASS",          Pass);
-	MailAddressFrom = getAppDataEnv("SMTPS_FROM",          MailAddressFrom);
-}
-static void LoadEnv_02(void)
-{
-	MailAddressTo = getAppDataEnv("SMTPS_TO", MailAddressTo);
-}
 int main(int argc, char **argv)
 {
 	BodyLines = newList();
@@ -189,15 +165,16 @@ readArgs:
 		addElements_x(BodyLines, readLines(nextArg()));
 		goto readArgs;
 	}
-	if(argIs("/E"))
+	if(argIs("/E")
+		|| argIs("/E2") // TODO: 不要になったら消す。
+		)
 	{
-		LoadEnv_01();
-		goto readArgs;
-	}
-	if(argIs("/E2"))
-	{
-		LoadEnv_01();
-		LoadEnv_02();
+		SmtpServer      = getAppDataEnv("SMTPS_SERVER",        SmtpServer);
+		Portno          = getAppDataEnv32("SMTPS_SERVER_PORT", Portno);
+		User            = getAppDataEnv("SMTPS_USER",          User);
+		Pass            = getAppDataEnv("SMTPS_PASS",          Pass);
+		MailAddressFrom = getAppDataEnv("SMTPS_FROM",          MailAddressFrom);
+		MailAddressTo   = getAppDataEnv("SMTPS_TO",            MailAddressTo);
 		goto readArgs;
 	}
 
