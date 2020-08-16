@@ -1,42 +1,18 @@
 /*
-	InstagramDL.exe [/H HGET追加オプション]... アカウント名 出力先DIR
+	InstagramDL.exe アカウント名 出力先DIR
 */
 
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Collabo.h"
+#include "C:\Factory\Common\Options\CryptoRand.h"
 #include "C:\Factory\Common\Options\TimeData.h"
 #include "C:\Factory\OpenSource\md5.h"
 
-static autoList_t *HGetAddedOptions;
+static char *HGetOption_03;
 
-static char *GetJoinedHGetAddedOptions(char *optPrefix, char *optSuffix, char *optJoint) // ret: c_
-{
-	autoBlock_t *buff = newBlock();
-	char *option;
-	uint index;
-	char *ret;
-
-	foreach(HGetAddedOptions, option, index)
-	{
-		if(index)
-			ab_addLine(buff, optJoint);
-
-		ab_addLine(buff, optPrefix);
-		ab_addLine(buff, option);
-		ab_addLine(buff, optSuffix);
-	}
-	ret = unbindBlock2Line(buff);
-
-	// c_
-	{
-		static char *stock;
-
-		memFree(stock);
-		stock = ret;
-	}
-
-	return ret;
-}
+#define HGET_OPTION_01 "/H"
+#define HGET_OPTION_02 "cookie"
+#define HGET_OPTION_03 HGetOption_03
 
 // ---- known url ----
 
@@ -255,7 +231,9 @@ static int Download(char *url) // ret: ? successful
 	cout("url: %s\n", url);
 
 	writeOneLineNoRet_b_cx(prmFile, xcout(
-		"%s"
+		"%s\n"
+		"%s\n"
+		"%s\n"
 		"/RSF\n"
 		"%s\n"
 		"/RHF\n"
@@ -267,7 +245,9 @@ static int Download(char *url) // ret: ? successful
 		"5000000\n" // 5 MB
 		"/-\n"
 		"%s"
-		,GetJoinedHGetAddedOptions("", "\n", "")
+		,HGET_OPTION_01
+		,HGET_OPTION_02
+		,HGET_OPTION_03
 		,successfulFlag
 		,resHeaderFile
 		,resBodyFile
@@ -304,11 +284,7 @@ static void Main2(void)
 	char *successfulFlag = makeTempPath(NULL);
 	char *resHeaderFile = makeTempPath(NULL);
 	char *resBodyFile = makeTempPath(NULL);
-
-	HGetAddedOptions = newList();
-
-	while(argIs("/H"))
-		addElement(HGetAddedOptions, (uint)nextArg());
+	uint loopCount;
 
 	Account = strx(nextArg());
 //	line2csym(Account); // old
@@ -322,41 +298,50 @@ static void Main2(void)
 
 	errorCase(!existDir(DestDir));
 
-	coExecute_x(xcout(
-		"START \"\" /B /WAIT \"%s\""
-		" %s"
-		" /RSF \"%s\""
-		" /RHF \"%s\""
-		" /RBF \"%s\""
-		" /L https://www.instagram.com/%s/"
-		,HGetExeFile()
-		,GetJoinedHGetAddedOptions("\"", "\"", " ")
-		,successfulFlag
-		,resHeaderFile
-		,resBodyFile
-		,Account
-		));
-
-	if(existFile(successfulFlag))
+	for(loopCount = 0; loopCount < 10; loopCount++)
 	{
-		autoList_t *urls = ParseUrls(resBodyFile);
-		char *url;
-		uint index;
+		int retry_flag = 0;
 
-		LOGPOS();
+		cout("loopCount: %u\n", loopCount);
 
-		foreach(urls, url, index)
-			if(IsKnownUrl(url))
-				break;
+		memFree(HGetOption_03);
+		HGetOption_03 = xcout("ds_user_id=%010I64u;", getCryptoRand64() % 10000000000ui64);
 
-		if(index)
+		coExecute_x(xcout(
+			"START \"\" /B /WAIT \"%s\""
+			" \"%s\""
+			" \"%s\""
+			" \"%s\""
+			" /RSF \"%s\""
+			" /RHF \"%s\""
+			" /RBF \"%s\""
+			" /L https://www.instagram.com/%s/"
+			,HGetExeFile()
+			,HGET_OPTION_01
+			,HGET_OPTION_02
+			,HGET_OPTION_03
+			,successfulFlag
+			,resHeaderFile
+			,resBodyFile
+			,Account
+			));
+
+		if(existFile(successfulFlag))
 		{
+			autoList_t *urls = ParseUrls(resBodyFile);
+			char *url;
+			uint index;
+
 			LOGPOS();
+			retry_flag = !getCount(urls);
+
+			foreach(urls, url, index)
+				if(IsKnownUrl(url))
+					break;
 
 			while(index)
 			{
 				LOGPOS();
-
 				index--;
 				url = getLine(urls, index);
 
@@ -365,9 +350,19 @@ static void Main2(void)
 
 				AddKnownUrl(url);
 			}
+			LOGPOS();
+			releaseDim(urls, 1);
 		}
-		releaseDim(urls, 1);
+		if(!retry_flag)
+		{
+			LOGPOS();
+			break;
+		}
+		LOGPOS();
+		sleep(3000);
+		LOGPOS();
 	}
+	LOGPOS();
 	removeFileIfExist(successfulFlag);
 	removeFileIfExist(resHeaderFile);
 	removeFileIfExist(resBodyFile);
@@ -375,6 +370,7 @@ static void Main2(void)
 	memFree(successfulFlag);
 	memFree(resHeaderFile);
 	memFree(resBodyFile);
+	LOGPOS();
 }
 int main(int argc, char **argv)
 {
