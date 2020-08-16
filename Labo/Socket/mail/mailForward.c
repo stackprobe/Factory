@@ -337,8 +337,9 @@ static void Distribute(autoList_t *mail, autoList_t *memberList, char *groupName
 		}
 		else
 		{
-			cout("★即返信・連続送信すると失敗することがあるっぽいのでちょっと待つ。\n");
-			coSleep(3000);
+			// 待ちは mutexUnlock() で行うことにした。
+//			cout("★即返信・連続送信すると失敗することがあるっぽいのでちょっと待つ。\n");
+//			coSleep(3000);
 
 			DistributeOne(mail, groupName, memberFrom, member, counter);
 		}
