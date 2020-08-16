@@ -298,12 +298,20 @@ static void Main2(void)
 
 	errorCase(!existDir(DestDir));
 
-	for(loopCount = 0; loopCount < 10; loopCount++)
+	LOGPOS();
+
+	for(loopCount = 0; loopCount < 30; loopCount++)
 	{
+		uint currTime = now();
 		int retry_flag = 0;
 
 		cout("loopCount: %u\n", loopCount);
 
+		if(checkKey(0x1b)) // ? エスケープ押下
+		{
+			LOGPOS();
+			break;
+		}
 		memFree(HGetOption_03);
 		HGetOption_03 = xcout("ds_user_id=%010I64u;", getCryptoRand64() % 10000000000ui64);
 
@@ -315,7 +323,8 @@ static void Main2(void)
 			" /RSF \"%s\""
 			" /RHF \"%s\""
 			" /RBF \"%s\""
-			" /L https://www.instagram.com/%s/"
+			" /L"
+			" https://www.instagram.com/%s/"
 			,HGetExeFile()
 			,HGET_OPTION_01
 			,HGET_OPTION_02
@@ -350,7 +359,6 @@ static void Main2(void)
 
 				AddKnownUrl(url);
 			}
-			LOGPOS();
 			releaseDim(urls, 1);
 		}
 		if(!retry_flag)
