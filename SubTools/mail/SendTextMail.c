@@ -165,9 +165,7 @@ readArgs:
 		addElements_x(BodyLines, readLines(nextArg()));
 		goto readArgs;
 	}
-	if(argIs("/E")
-		|| argIs("/E2") // TODO: ïsóvÇ…Ç»Ç¡ÇΩÇÁè¡Ç∑ÅB
-		)
+	if(argIs("/E"))
 	{
 		SmtpServer      = getAppDataEnv("SMTPS_SERVER",        SmtpServer);
 		Portno          = getAppDataEnv32("SMTPS_SERVER_PORT", Portno);
