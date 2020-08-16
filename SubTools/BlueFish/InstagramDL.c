@@ -1,5 +1,5 @@
 /*
-	InstagramDL.exe アカウント名 出力先DIR
+	InstagramDL.exe [/DLE ダウンロード時に実行するコマンド] アカウント名 出力先DIR
 */
 
 #include "C:\Factory\Common\all.h"
@@ -13,6 +13,8 @@ static char *HGetOption_03;
 #define HGET_OPTION_01 "/H"
 #define HGET_OPTION_02 "cookie"
 #define HGET_OPTION_03 HGetOption_03
+
+static char *DownloadedEventCommand;
 
 // ---- known url ----
 
@@ -193,6 +195,9 @@ static void Downloaded(autoBlock_t *imageData)
 
 	memFree(imgLocal);
 	memFree(imgFile);
+
+	if(DownloadedEventCommand)
+		coExecute(DownloadedEventCommand);
 }
 static int CheckDownloaded(autoBlock_t *imageData) // ret: ? 保存する。
 {
@@ -240,7 +245,7 @@ static int Download(char *url) // ret: ? successful
 		"%s\n"
 		"/RBF\n"
 		"%s\n"
-		"/L\n"
+		"/L\n" // /RBFX より先に
 		"/RBFX\n"
 		"5000000\n" // 5 MB
 		"/-\n"
@@ -284,7 +289,12 @@ static void Main2(void)
 	char *successfulFlag = makeTempPath(NULL);
 	char *resHeaderFile = makeTempPath(NULL);
 	char *resBodyFile = makeTempPath(NULL);
-	uint loopCount;
+	uint tryCount;
+
+	if(argIs("/DLE"))
+	{
+		DownloadedEventCommand = nextArg();
+	}
 
 	Account = strx(nextArg());
 //	line2csym(Account); // old
@@ -300,12 +310,11 @@ static void Main2(void)
 
 	LOGPOS();
 
-	for(loopCount = 0; loopCount < 30; loopCount++)
+	for(tryCount = 1; tryCount <= 30; tryCount++)
 	{
-		uint currTime = now();
 		int retry_flag = 0;
 
-		cout("loopCount: %u\n", loopCount);
+		cout("tryCount: %u\n", tryCount);
 
 		if(checkKey(0x1b)) // ? エスケープ押下
 		{
