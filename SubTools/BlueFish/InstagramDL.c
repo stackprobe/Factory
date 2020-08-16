@@ -1,5 +1,5 @@
 /*
-	InstagramDL.exe アカウント名 出力先DIR
+	InstagramDL.exe [/H HGET追加オプション]... アカウント名 出力先DIR
 */
 
 #include "C:\Factory\Common\all.h"
@@ -7,12 +7,36 @@
 #include "C:\Factory\Common\Options\TimeData.h"
 #include "C:\Factory\OpenSource\md5.h"
 
-#define HGET_OPTION_01 "/H"
-#define HGET_OPTION_02 "cookie"
-////////////////////////////////////////////////// $_git:secret
-///// $_git:secret
-#define HGET_OPTION_03 "ds_user_id=0000000000;"
-//*/
+static autoList_t *HGetAddedOptions;
+
+static char *GetJoinedHGetAddedOptions(char *optPrefix, char *optSuffix, char *optJoint) // ret: c_
+{
+	autoBlock_t *buff = newBlock();
+	char *option;
+	uint index;
+	char *ret;
+
+	foreach(HGetAddedOptions, option, index)
+	{
+		if(index)
+			ab_addLine(buff, optJoint);
+
+		ab_addLine(buff, optPrefix);
+		ab_addLine(buff, option);
+		ab_addLine(buff, optSuffix);
+	}
+	ret = unbindBlock2Line(buff);
+
+	// c_
+	{
+		static char *stock;
+
+		memFree(stock);
+		stock = ret;
+	}
+
+	return ret;
+}
 
 // ---- known url ----
 
@@ -231,9 +255,7 @@ static int Download(char *url) // ret: ? successful
 	cout("url: %s\n", url);
 
 	writeOneLineNoRet_b_cx(prmFile, xcout(
-		HGET_OPTION_01 "\n"
-		HGET_OPTION_02 "\n"
-		HGET_OPTION_03 "\n"
+		"%s"
 		"/RSF\n"
 		"%s\n"
 		"/RHF\n"
@@ -245,6 +267,7 @@ static int Download(char *url) // ret: ? successful
 		"5000000\n" // 5 MB
 		"/-\n"
 		"%s"
+		,GetJoinedHGetAddedOptions("", "\n", "")
 		,successfulFlag
 		,resHeaderFile
 		,resBodyFile
@@ -282,10 +305,17 @@ static void Main2(void)
 	char *resHeaderFile = makeTempPath(NULL);
 	char *resBodyFile = makeTempPath(NULL);
 
+	HGetAddedOptions = newList();
+
+	while(argIs("/H"))
+		addElement(HGetAddedOptions, (uint)nextArg());
+
 	Account = strx(nextArg());
 //	line2csym(Account); // old
 	line2csym_ext(Account, "."); // todo: アカウントに使える文字を追加
 	DestDir = makeFullPath(nextArg());
+
+	errorCase_m(hasArgs(1), "不明なコマンド引数");
 
 	cout("アカウント: %s\n", Account);
 	cout("追加出力先: %s\n", DestDir);
@@ -294,17 +324,13 @@ static void Main2(void)
 
 	coExecute_x(xcout(
 		"START \"\" /B /WAIT \"%s\""
-		" \"%s\""
-		" \"%s\""
-		" \"%s\""
+		" %s"
 		" /RSF \"%s\""
 		" /RHF \"%s\""
 		" /RBF \"%s\""
 		" /L https://www.instagram.com/%s/"
 		,HGetExeFile()
-		,HGET_OPTION_01
-		,HGET_OPTION_02
-		,HGET_OPTION_03
+		,GetJoinedHGetAddedOptions("\"", "\"", " ")
 		,successfulFlag
 		,resHeaderFile
 		,resBodyFile
