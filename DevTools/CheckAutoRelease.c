@@ -1,7 +1,7 @@
 /*
-	CheckAutoRelease [/LCC] [/D 直接チェックDIR | ルートDIR]
+	CheckAutoRelease [/CLC] [/D 直接チェックDIR | ルートDIR]
 
-		/LCC ... 最終コメントをチェックする。エラーがあれば NEED_RELEASE_BAT を出力する。
+		/CLC ... 最終コメントをチェックする。エラーがあれば NEED_RELEASE_BAT を出力する。
 
 			HTT_RPC は AutoRelease.bat 未設置なので注意 @ 2020.6.19
 */
@@ -14,7 +14,7 @@
 static autoList_t *AutoReleaseBatTemplateLines;
 static autoList_t *NeedReleaseDirs;
 
-static int LastCommentCheck;
+static int CheckLastCommentFlag;
 
 #define LOCAL_AUTO_RELEASE_BAT "AutoRelease.bat"
 #define LOCAL_LEGACY_RELEASE_BAT "_Release.bat"
@@ -112,7 +112,7 @@ static void CheckAutoRelease(char *dir)
 			lastComment = readFirstLine(lastCommentFile);
 
 			if(
-				LastCommentCheck &&
+				CheckLastCommentFlag &&
 				strcmp(lastComment, "rel") &&
 				!startsWith(lastComment, "rel, ")
 				)
@@ -170,9 +170,9 @@ int main(int argc, char **argv)
 	AutoReleaseBatTemplateLines = readLines(AUTO_RELEASE_BAT_TEMPLATE_FILE);
 	NeedReleaseDirs = newList();
 
-	if(argIs("/LCC"))
+	if(argIs("/CLC"))
 	{
-		LastCommentCheck = 1;
+		CheckLastCommentFlag = 1;
 	}
 
 	errorCase_m(argIs("/C"),  "廃止オプション"); // zantei

@@ -46,22 +46,22 @@ void HGet_Reset(void)
 	NoTrafficTimeoutMillis  = 15000;
 	strzp(&Url, "http://localhost/");
 	HTTPVersion = 11;
-	if(Header)    releaseDim(Header, 2);
-	if(ResHeader) releaseDim(ResHeader, 2);
+	if(Header)    { releaseDim(Header, 2);    }
+	if(ResHeader) { releaseDim(ResHeader, 2); }
 	Header = newList();
 	ResHeader = newList();
-	if(Body1) releaseAutoBlock(Body1);
+	if(Body1) { releaseAutoBlock(Body1); }
 	memFree(Body2File);
-	if(Body3) releaseAutoBlock(Body3);
+	if(Body3) { releaseAutoBlock(Body3); }
 	Body1 = NULL;
 	Body2File = NULL;
 	Body3 = NULL;
-	if(!Body1TmpFile)   Body1TmpFile   = makeTempPath("HGet_Body1.tmp");
-	if(!Body3TmpFile)   Body3TmpFile   = makeTempPath("HGet_Body3.tmp");
-	if(!SuccessfulFile) SuccessfulFile = makeTempPath("HGet_Successful.flg.tmp");
-	if(!ResHeaderFile)  ResHeaderFile  = makeTempPath("HGet_ResHeader.tmp");
-	if(!ResBodyFile)    ResBodyFile    = makeTempPath("HGet_ResBody.tmp");
-	if(!ParamFile)      ParamFile      = makeTempPath("HGet_Param.tmp");
+	if(!Body1TmpFile)   { Body1TmpFile   = makeTempPath("HGet_Body1.tmp");          }
+	if(!Body3TmpFile)   { Body3TmpFile   = makeTempPath("HGet_Body3.tmp");          }
+	if(!SuccessfulFile) { SuccessfulFile = makeTempPath("HGet_Successful.flg.tmp"); }
+	if(!ResHeaderFile)  { ResHeaderFile  = makeTempPath("HGet_ResHeader.tmp");      }
+	if(!ResBodyFile)    { ResBodyFile    = makeTempPath("HGet_ResBody.tmp");        }
+	if(!ParamFile)      { ParamFile      = makeTempPath("HGet_Param.tmp");          }
 	ResBodySizeMax = IMAX_64;
 	Resetted = 1;
 
