@@ -13,7 +13,9 @@ void mailLock(void)
 void mailUnlock(void)
 {
 	cout("★立て続けにメールの送受信を行わないようにちょっと待つ。\n");
-	coSleep(3000);
+	LOGPOS();
+	sleep(3000);
+	LOGPOS();
 
 	cout("mailUnlock() started.\n");
 	mutexUnlock(MailMutexHandle);
