@@ -1,7 +1,7 @@
 /*
 	CheckAutoRelease [/CLC] [/D 直接チェックDIR | ルートDIR]
 
-		/CLC ... 最終コメントをチェックする。エラーがあれば NEED_RELEASE_BAT を出力する。
+		/CLC ... 最終コメントをチェックする。最終コメントが rel (リリース済み) でなければ NEED_RELEASE_BAT に出力する。
 
 			HTT_RPC は AutoRelease.bat 未設置なので注意 @ 2020.6.19
 */
@@ -11,31 +11,31 @@
 #define AUTO_RELEASE_BAT_TEMPLATE_FILE "C:\\Factory\\Resource\\AutoRelease.bat_template.txt"
 #define NEED_RELEASE_BAT "C:\\Factory\\tmp\\NeedRelease.bat"
 
-static autoList_t *AutoReleaseBatTemplateLines;
-static autoList_t *NeedReleaseDirs;
-
-static int CheckLastCommentFlag;
-
 #define LOCAL_AUTO_RELEASE_BAT "AutoRelease.bat"
 #define LOCAL_LEGACY_RELEASE_BAT "_Release.bat"
 #define LOCAL_LEGACY_CLEAN_BAT "_Clean.bat"
 #define LOCAL_RELEASE_BAT "Release.bat"
 #define LOCAL_CLEAN_BAT "Clean.bat"
 
-static uint ErrorCount;
+static autoList_t *AutoReleaseBatTemplateLines;
+static autoList_t *NeedReleaseDirs;
+static autoList_t *ErrorFiles;
+static int CheckLastCommentFlag;
+static int ErrorFound;
 
 static void FoundError(char *message)
 {
 	cout("★ %s\n", message);
-
-	ErrorCount++;
+	ErrorFound = 1;
 }
 static void RemoveIndentedLines(autoList_t *lines)
 {
 	uint index;
 
-	for(index = getCount(lines); --index; )
+	for(index = getCount(lines); index; )
 	{
+		index--;
+
 		if(getLine(lines, index)[0] == '\t')
 		{
 			do
@@ -49,8 +49,8 @@ static void RemoveIndentedLines(autoList_t *lines)
 static void CheckAutoRelease(char *dir)
 {
 	dir = makeFullPath(dir);
-
 	cout("チェック対象ディレクトリ ⇒ %s\n", dir);
+	ErrorFound = 0;
 
 	addCwd(dir);
 
@@ -132,6 +132,9 @@ static void CheckAutoRelease(char *dir)
 
 	unaddCwd();
 
+	if(ErrorFound)
+		addElement(ErrorFiles, (uint)combine(dir, LOCAL_AUTO_RELEASE_BAT));
+
 	memFree(dir);
 }
 
@@ -169,6 +172,7 @@ int main(int argc, char **argv)
 
 	AutoReleaseBatTemplateLines = readLines(AUTO_RELEASE_BAT_TEMPLATE_FILE);
 	NeedReleaseDirs = newList();
+	ErrorFiles = newList();
 
 	if(argIs("/CLC"))
 	{
@@ -193,9 +197,9 @@ int main(int argc, char **argv)
 
 	cout("\n");
 
-	if(ErrorCount)
+	if(getCount(ErrorFiles))
 	{
-		cout("★★★ [ %u ] 件のエラーが見つかりました。\n", ErrorCount);
+		cout("★★★ [ %u ] 件のエラーが見つかりました。\n", getCount(ErrorFiles));
 	}
 	else
 	{
@@ -216,14 +220,19 @@ int main(int argc, char **argv)
 		foreach(NeedReleaseDirs, dir, index)
 		{
 			writeLine_x(fp, xcout("CD /D \"%s\"", dir));
-			writeLine(fp, "PAUSE");
-			writeLine(fp, "CALL AutoRelease.bat");
+			writeLine(fp, "C:\\Factory\\Tools\\wait.exe 108");
+			writeLine(fp, "IF ERRORLEVEL 1 GOTO END");
+			writeLine(fp, "CALL AutoRelease.bat /-P");
 			writeLine(fp, "CD /D C:\\temp"); // 安全のため
 			writeLine(fp, "");
 		}
+		writeLine(fp, ":END");
+
 		fileClose(fp);
 
 		cout("\n");
 		cout(NEED_RELEASE_BAT " を出力しました。\n");
 	}
+
+	writeLines(FOUNDLISTFILE, ErrorFiles);
 }
