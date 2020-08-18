@@ -215,6 +215,7 @@ int main(int argc, char **argv)
 		fp = fileOpen(NEED_RELEASE_BAT, "wt");
 
 		writeLine(fp, "CD /D C:\\temp"); // ˆÀ‘S‚Ì‚½‚ß
+		writeLine(fp, "SET zip_NoPause=1"); // C:\Factory\SubTools\zip.c —p
 		writeLine(fp, "");
 
 		foreach(NeedReleaseDirs, dir, index)
@@ -227,6 +228,7 @@ int main(int argc, char **argv)
 			writeLine(fp, "");
 		}
 		writeLine(fp, ":END");
+		writeLine(fp, "SET zip_NoPause="); // C:\Factory\SubTools\zip.c —p
 
 		fileClose(fp);
 

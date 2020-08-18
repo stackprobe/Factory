@@ -57,6 +57,13 @@
 			不要な最上位階層を除去する！
 			OUT-DIR の既存のファイルに対してディレクトリの上書きは成功する。
 			OUT-DIR の既存のディレクトリに対してファイルの上書きは成功する。
+
+	----
+	環境変数
+
+	zip_NoPause
+
+		... "1" のとき入力待ちを行わない。
 */
 
 #include "C:\Factory\Common\all.h"
@@ -79,6 +86,10 @@
 
 #define BASENAME_AUTO "$"
 
+static int IsBatchMode(void)
+{
+	return !strcmp("1", getEnvLine("zip_NoPause"));
+}
 static char *GetZip7File(void)
 {
 	static char *file;
@@ -159,6 +170,11 @@ static uint InputVersion(void) // ret: 0 == cancel, 1 ～ 999 == "0.01" ～ "9.99"
 	char *sVersion;
 	uint version;
 
+	if(IsBatchMode())
+	{
+		LOGPOS();
+		return VER_BETA;
+	}
 	cout("######################################################################\n");
 	cout("## バージョン番号を入力して下さい。[1-999] as 0.01-9.99, [] as BETA ##\n");
 	cout("######################################################################\n");
