@@ -79,7 +79,7 @@
 // < app
 
 	アプリ固有コード
-	xxx は任意の識別名
+	xxx は任意の識別名, xxx は <> であること。(何でも良い)
 	https://github.com/stackprobe/Factory/blob/master/SubTools/CopyLib.c
 
 // discmt >
@@ -91,14 +91,14 @@
 // ^ sync @ xxx
 
 	同期コード
-	xxx は任意の識別名
+	xxx は任意の識別名, xxx は <1,,__09AZaz> であること。
 	https://github.com/stackprobe/Factory/blob/master/DevTools/SyncDevUsing.c
 
 // sync > @ xxx
 // < sync
 
 	同期コード
-	xxx は任意の識別名
+	xxx は任意の識別名, xxx は <1,,__09AZaz> であること。
 	https://github.com/stackprobe/Factory/blob/master/DevTools/SyncDevRange.c
 
 
