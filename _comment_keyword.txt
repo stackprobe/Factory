@@ -80,6 +80,7 @@
 
 	アプリ固有コード
 	xxx は任意の識別名, xxx は <> であること。(何でも良い)
+	同じ xxx 同士のインデント幅は同じでなければならない。
 	https://github.com/stackprobe/Factory/blob/master/SubTools/CopyLib.c
 
 // discmt >
@@ -92,6 +93,7 @@
 
 	同期コード
 	xxx は任意の識別名, xxx は <1,,__09AZaz> であること。
+	同じ xxx 同士のインデント幅は違っていても良い。同期時にインデント幅は調整される。
 	https://github.com/stackprobe/Factory/blob/master/DevTools/SyncDevUsing.c
 
 // sync > @ xxx
@@ -99,6 +101,7 @@
 
 	同期コード
 	xxx は任意の識別名, xxx は <1,,__09AZaz> であること。
+	同じ xxx 同士のインデント幅は違っていても良いが、同期時にインデント幅は調整されない。
 	https://github.com/stackprobe/Factory/blob/master/DevTools/SyncDevRange.c
 
 
