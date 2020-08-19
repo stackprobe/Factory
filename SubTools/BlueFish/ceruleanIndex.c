@@ -38,7 +38,7 @@ static void MakeIndex(char *indexDir, char *templateDir)
 	errorCase(m_isEmpty(indexDir));
 	errorCase(m_isEmpty(templateDir));
 
-	// gomi >
+	// g >
 
 	indexDir    = makeFullPath(indexDir);
 	templateDir = makeFullPath(templateDir);
@@ -66,7 +66,7 @@ static void MakeIndex(char *indexDir, char *templateDir)
 
 	unaddCwd();
 
-	// < gomi
+	// < g
 
 	LOGPOS();
 

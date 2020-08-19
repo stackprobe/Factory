@@ -1,13 +1,16 @@
 #include "C:\Factory\Common\all.h"
 
-#define REV_MAX 1000
-#define REV_TOTAL_SIZE_MAX 10000000000ui64 // 10 GB
+#define REV_MIN 3
+#define REV_MAX 100
+#define REV_TOTAL_SIZE_MAX 1000000000ui64 // 1 GB
 
-#define VER_MAX 1000
-#define VER_TOTAL_SIZE_MAX 10000000000ui64 // 10 GB
+#define VER_MIN 3
+#define VER_MAX 100
+#define VER_TOTAL_SIZE_MAX 1000000000ui64 // 1 GB
 
-#define BETA_MAX 1000
-#define BETA_TOTAL_SIZE_MAX 10000000000ui64 // 10 GB
+#define BETA_MIN 3
+#define BETA_MAX 100
+#define BETA_TOTAL_SIZE_MAX 1000000000ui64 // 1 GB
 
 #define GAME_ORDER_FILE "order.txt"
 #define GAME_TITLE_FILE "title.txt"
@@ -63,7 +66,7 @@ static void TrimRev(char *appDir)
 	sortJLinesICase(revDirs);
 	reverseElements(revDirs); // 終端 == 最も旧いリビジョン
 
-	while(REV_MAX < getCount(revDirs) || REV_TOTAL_SIZE_MAX < GetTotalSize_Paths(revDirs))
+	while(REV_MIN < getCount(revDirs) && (REV_MAX < getCount(revDirs) || REV_TOTAL_SIZE_MAX < GetTotalSize_Paths(revDirs)))
 	{
 		char *revDir = (char *)unaddElement(revDirs); // 最も旧いリビジョンを取り出す。
 
@@ -95,7 +98,7 @@ static void TrimVer(char *appDir)
 	foreach(files, file, index)
 		cout("[VER] %s\n", file); // test-out
 
-	while(VER_MAX < getCount(files) || VER_TOTAL_SIZE_MAX < GetTotalSize_Paths(files))
+	while(VER_MIN < getCount(files) && (VER_MAX < getCount(files) || VER_TOTAL_SIZE_MAX < GetTotalSize_Paths(files)))
 	{
 		file = (char *)unaddElement(files);
 
@@ -132,7 +135,7 @@ static void TrimBeta(char *appDir)
 	foreach(files, file, index)
 		cout("[BETA] %s\n", file); // test-out
 
-	while(BETA_MAX < getCount(files) || BETA_TOTAL_SIZE_MAX < GetTotalSize_Paths(files))
+	while(BETA_MIN < getCount(files) && (BETA_MAX < getCount(files) || BETA_TOTAL_SIZE_MAX < GetTotalSize_Paths(files)))
 	{
 		file = (char *)unaddElement(files);
 
