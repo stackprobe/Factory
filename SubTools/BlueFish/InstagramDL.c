@@ -149,10 +149,19 @@ static autoList_t *ParseUrls(char *resBodyFile)
 
 	for(; ; )
 	{
-		char *q  = strstr(p, "display_src");
-		char *q2 = strstr(p, "display_url");
+		char *q;
+		char *q2;
 		char *r;
 		char *s;
+
+		p = strstr(p, "GraphImage"); // __typename == GraphImage, GraphVideo ‚ª‚ ‚éBGraphVideo ‚ğœŠO‚·‚éB
+		cout("GI: %08x\n", p);
+
+		if(!p)
+			break;
+
+		q  = strstr(p, "display_src");
+		q2 = strstr(p, "display_url");
 
 		q = (char *)GetMinNotZero((uint)q, (uint)q2);
 
