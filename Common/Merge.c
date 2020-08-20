@@ -304,15 +304,15 @@ autoList_t *autoDistinctLines(autoList_t *lines) // lines: äJï˙Ç∑ÇÈÅB
 	rapidSortLines(lines); // strcmp2 == strcmp (-> simpleComp îpé~)
 
 	{
-	autoList_t *result = newList();
-	autoList_t *dust = newList();
+		autoList_t *result = newList();
+		autoList_t *dust = newList();
 
-	distinctLines(lines, result, dust); // strcmp
+		distinctLines(lines, result, dust); // strcmp
 
-	releaseAutoList(lines);
-	releaseDim(dust, 1);
+		releaseAutoList(lines);
+		releaseDim(dust, 1);
 
-	return result;
+		return result;
 	}
 }
 autoList_t *autoDistinctJLinesICase(autoList_t *lines) // lines: äJï˙Ç∑ÇÈÅB
@@ -320,15 +320,15 @@ autoList_t *autoDistinctJLinesICase(autoList_t *lines) // lines: äJï˙Ç∑ÇÈÅB
 	rapidSortJLinesICase(lines); // strcmp3 == mbs_stricmp -> strcmp (-> simpleComp îpé~)
 
 	{
-	autoList_t *result = newList();
-	autoList_t *dust = newList();
+		autoList_t *result = newList();
+		autoList_t *dust = newList();
 
-	distinctJLinesICase(lines, result, dust); // mbs_stricmp
+		distinctJLinesICase(lines, result, dust); // mbs_stricmp
 
-	releaseAutoList(lines);
-	releaseDim(dust, 1);
+		releaseAutoList(lines);
+		releaseDim(dust, 1);
 
-	return result;
+		return result;
 	}
 }
 

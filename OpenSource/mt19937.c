@@ -1,23 +1,28 @@
 #include "mt19937.h"
 
-void mt19937_initByArray(autoBlock_t *initKey)
+static void PostInit(void)
 {
-	errorCase(getSize(initKey) < sizeof(uint));
-	mt19937_init_by_array((uint *)directGetBuffer(initKey), getSize(initKey) / sizeof(uint));
-}
-void mt19937_init32(uint seed)
-{
+#if 0 // よーわからん
 	uint count;
 
-	mt19937_init_genrand(seed);
-
-#if 0 // よーわからん
 //	for(count = 1000000; count; count--) // デフォルトの初期化後 50 - 100 万件程度読み捨てた方がいいらしい。
 	for(count = 100000000; count; count--) // もっと盛大に読み捨てた方がいいようだ。
 	{
 		mt19937_genrand_int32();
 	}
 #endif
+}
+void mt19937_initByArray(autoBlock_t *initKey)
+{
+	errorCase(getSize(initKey) < sizeof(uint));
+
+	mt19937_init_by_array((uint *)directGetBuffer(initKey), getSize(initKey) / sizeof(uint));
+	PostInit();
+}
+void mt19937_init32(uint seed)
+{
+	mt19937_init_genrand(seed);
+	PostInit();
 }
 void mt19937_init(void)
 {

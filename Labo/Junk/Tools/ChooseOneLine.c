@@ -1,5 +1,10 @@
 /*
-	ChooseOneLine.exe 入力ファイル [/ER 最近の出力のキャッシュファイル] [/L | /R | /M]
+	ChooseOneLine.exe 入力ファイル [/ER 最近の出力のキャッシュファイル] (/L | /R | /M 同じ行を表示し続ける秒数 | /I インデックス)
+
+		/L ... 全行表示する。
+		/R ... ランダムに選ばれた１行を表示する。
+		/M ... 時間で選ばれた１行を表示する。
+		/I ... 指定された１行を表示する。
 */
 
 #include "C:\Factory\Common\all.h"
@@ -25,7 +30,7 @@ static void DoModTime(uint timePerLine)
 {
 	errorCase(!m_isRange(timePerLine, 1, IMAX));
 
-	PrintLine((uint)(time(NULL) / timePerLine) % getCount(Lines));
+	PrintLine((uint)((time(NULL) / timePerLine) % getCount(Lines)));
 }
 int main(int argc, char **argv)
 {
@@ -80,6 +85,13 @@ int main(int argc, char **argv)
 	if(argIs("/M"))
 	{
 		DoModTime(toValue(nextArg()));
+		return;
+	}
+	if(argIs("/I"))
+	{
+		uint index = toValue(nextArg());
+
+		PrintLine(index);
 		return;
 	}
 	error_m("不明なコマンド引数");
