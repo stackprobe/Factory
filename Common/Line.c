@@ -379,6 +379,32 @@ char *stristrEnd(char *line, char *ptn) // mbs_
 	return strstrEndCase(line, ptn, 1);
 }
 
+char *strrstrCase(char *line, char *ptn, int ignoreCase) // mbs_
+{
+	char *ret = NULL;
+
+	for(; ; )
+	{
+		char *p = mbs_strstrCase(line, ptn, ignoreCase);
+
+		if(!p)
+			break;
+
+		ret = p;
+		line = mbsNext(p);
+//		line = p + strlen(ptn); // ‰½‚©ˆá‚¤Bstrrstr("ABABA", "ABA"); ‚İ‚½‚¢‚È
+	}
+	return ret;
+}
+char *strrstr(char *line, char *ptn) // mbs_
+{
+	return strrstrCase(line, ptn, 0);
+}
+char *strristr(char *line, char *ptn) // mbs_
+{
+	return strrstrCase(line, ptn, 1);
+}
+
 void replacePtn(char *line, char *ptn1, char *ptn2, int ignoreCase) // mbs_
 {
 	char *p = line;
