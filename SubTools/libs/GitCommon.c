@@ -39,7 +39,7 @@ void EscapeUnusableResPath(char *path)
 }
 void PostGitMaskFile(char *file)
 {
-	char *maskedMarkFile = changeLocal(file, "====== MASKED ======");
+	char *maskedMarkFile = changeLocal(file, "______MASKED");
 
 	cout("[MASKED] %s\n", file);
 	cout("-------> %s\n", maskedMarkFile);
@@ -53,7 +53,7 @@ void PostGitMaskFile(char *file)
 }
 void PostGitIgnoreFile(char *file)
 {
-	char *ignoredMarkFile = changeLocal(file, "====== IGNORED ======");
+	char *ignoredMarkFile = changeLocal(file, "______IGNORED");
 
 	cout("[IGNORED] %s\n", file);
 	cout("--------> %s\n", ignoredMarkFile);
