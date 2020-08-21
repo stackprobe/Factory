@@ -489,7 +489,7 @@ static void DeepBuild(int shallowMode)
 	uint index;
 	uint beginRemCount = hasArgs(1) ? toValue(nextArg()) : UINTMAX;
 
-#if 0 // 廃止 @ 2017.12.26
+#if 1 // 廃止 @ 2017.12.26 // 復活 @ 2020.8.20
 	// 作業環境の配下であるかチェック
 	{
 		char *curdirY = addChar(getCwd(), '\\');

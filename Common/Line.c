@@ -391,8 +391,8 @@ char *strrstrCase(char *line, char *ptn, int ignoreCase) // mbs_
 			break;
 
 		ret = p;
-		line = mbsNext(p);
-//		line = p + strlen(ptn); // 何か違う。strrstr("ABABA", "ABA"); みたいな
+		line = mbsNext(p);      // strrstr("ABABA", "ABA"); のとき "ABABA" + 2 を返す。
+//		line = p + strlen(ptn); // strrstr("ABABA", "ABA"); のとき "ABABA" + 0 を返す。
 	}
 	return ret;
 }
@@ -470,7 +470,7 @@ static uchar CB_Buff[CB_MINSIZE];
 
 void copyBlock(void *dest, void *src, uint size) // memcpy() と異なり、領域の重複を許可する。
 {
-	if(dest == src) // 無限再帰の恐れ？
+	if(dest == src)
 		return;
 
 	if(!size) // memcpy(,,0) しても大丈夫だと思うけど、念のため回避
@@ -647,7 +647,7 @@ void eraseLine(char *line, uint count)
 	errorCase(strlen(line) < count);
 	copyLine(line, line + count);
 }
-// memo
+// memo:
 // 文字列から特定の文字を削除する。--> removeChar
 // 文字列から空白とコントロール文字を削除する。--> removeBlank
 void eraseChar(char *line)
