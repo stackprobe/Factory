@@ -14,7 +14,7 @@ static char *GetCachedFile(char *categoly, char *keyFile)
 
 	memFree(file);
 
-//	createDirIfNotExist(CACHE_DIR);
+	createDirIfNotExist(CACHE_DIR);
 	file = combine_cx(CACHE_DIR, xcout("%s_%s.dat", categoly, c_md5_makeHexHashFile(keyFile)));
 	cout("cached_file: %s\n", file);
 	return file;
