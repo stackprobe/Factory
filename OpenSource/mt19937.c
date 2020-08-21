@@ -2,11 +2,16 @@
 
 static void PostInit(void)
 {
-#if 0 // よーわからん
+#if 1 // zantei -- 初期化に不安 @ 2020.8.20
 	uint count;
 
-//	for(count = 1000000; count; count--) // デフォルトの初期化後 50 - 100 万件程度読み捨てた方がいいらしい。
-	for(count = 100000000; count; count--) // もっと盛大に読み捨てた方がいいようだ。
+//	                                          測定 @ 2020.8.20
+//	for(count = 1000000; count; count--)   // だいたい    3 millis
+	for(count = 3000000; count; count--)   // だいたい   10 millis
+//	for(count = 10000000; count; count--)  // だいたい   30 millis
+//	for(count = 30000000; count; count--)  // だいたい  100 millis
+//	for(count = 100000000; count; count--) // だいたい  300 millis
+//	for(count = 300000000; count; count--) // だいたい 1000 millis
 	{
 		mt19937_genrand_int32();
 	}
