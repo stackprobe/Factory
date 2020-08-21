@@ -1,5 +1,5 @@
 /*
-	SyncDevUsing.exe [/D ルートDIR] [/E 拡張子リスト]
+	SyncDevUsing.exe [/D ルートDIR]... [/E 拡張子リスト]
 
 		拡張子リスト ... 拡張子を '.' 区切りで指定する。例 "js", "js.jsp", "js.jsp.java"
 
@@ -13,7 +13,9 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\OpenSource\md5.h"
 
-static char *RootDir = "C:\\Dev";
+#define DEF_ROOT_DIR "C:\\Dev"
+
+static autoList_t *RootDirs;
 static char *S_TargetExts = "c.h.cpp.cs";
 static autoList_t *TargetExts;
 
@@ -63,9 +65,13 @@ static char *LinesToText(autoList_t *lines)
 }
 static void Search(void)
 {
-	autoList_t *files = lssFiles(RootDir);
+	autoList_t *files = newList();
+	char *dir;
 	char *file;
 	uint index;
+
+	foreach(RootDirs, dir, index)
+		addElements_x(files, lssFiles(dir));
 
 	foreach(files, file, index)
 	if(findLineCase(TargetExts, getExt(file), 1) < getCount(TargetExts))
@@ -270,13 +276,17 @@ static void ProcAllHeaders(void)
 
 int main(int argc, char **argv)
 {
+	char *dir;
+	uint index;
+
+	RootDirs = newList();
 	Headers = newList();
 	NeedSyncHeaderNames = newList();
 
 readArgs:
 	if(argIs("/D"))
 	{
-		RootDir = nextArg();
+		addElement(RootDirs, (uint)nextArg());
 		goto readArgs;
 	}
 	if(argIs("/E"))
@@ -286,7 +296,11 @@ readArgs:
 	}
 	errorCase(hasArgs(1)); // 不明なコマンド引数
 
-	errorCase(!existDir(RootDir));
+	if(!getCount(RootDirs))
+		addElement(RootDirs, (uint)DEF_ROOT_DIR);
+
+	foreach(RootDirs, dir, index)
+		errorCase(!existDir(dir));
 
 	TargetExts = tokenize(S_TargetExts, '.');
 	trimLines(TargetExts);
