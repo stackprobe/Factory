@@ -268,7 +268,7 @@ endFunc:
 
 // ššš ProcHTTP ššš
 
-static char *HeaderRepValueFltr(char *value) // ret: strx(value)
+static char *HeaderRepValueFltr(char *value) // ret: strx()
 {
 	if(*value == '$')
 	{

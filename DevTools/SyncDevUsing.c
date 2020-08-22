@@ -5,7 +5,13 @@
 
 	----
 
-	中身が空の場合はコピー元にならないようにした。
+	以下のように中身が空の場合はコピー元にならないようにした。
+
+		ファイルの先頭
+		空行または空白だけの行 × (0～INF)
+--		// ^ sync @ xxx
+
+	- - -
 
 	★空かどうかの判定 -> Eval_NotEmptyEmpty()
 */
@@ -26,7 +32,7 @@ typedef struct Header_st
 	uint64 Stamp;
 	char *Name;
 	autoList_t *Lines;
-	char *Text; // { 行1 + CRLF + 行2 + CRLF + ... + 行(n-1) + CRLF + 行n + CRLF }
+	char *Text; // { 行1 + LF + 行2 + LF + ... + 行(n-1) + LF + 行n + LF }
 	char *TextMD5;
 	uint SymLineIndex;
 }
@@ -104,6 +110,7 @@ static void Search(void)
 				addElement(Headers, (uint)header);
 
 				LOGPOS();
+				break;
 			}
 		}
 		releaseDim(lines, 1);

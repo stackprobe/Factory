@@ -7,9 +7,9 @@
 
 	以下のように中身が空の range は、そうでない最新の range によって上書きされる。
 
-		// sync > @ xxx
+--		// sync > @ xxx
 
-		// < sync
+--		// < sync
 
 	- - -
 
@@ -23,7 +23,7 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\OpenSource\md5.h"
 
-#define CHR_INDENTED '\x01'
+#define CHR_ESC_RANGE_INDENT '\x01'
 
 #define DEF_ROOT_DIR_01 "C:\\Dev"
 #define DEF_ROOT_DIR_02 "C:\\Factory"
@@ -88,9 +88,9 @@ static char *LinesToText(autoList_t *lines)
 }
 static int IsFairRangeLine(char *line)
 {
-	return !strchr(line, CHR_INDENTED);
+	return !strchr(line, CHR_ESC_RANGE_INDENT);
 }
-static char *UnputIndentRangeLine(char *line, uint indentLen) // ret: strx()
+static char *EscapeIndentRangeLine(char *line, uint indentLen) // ret: strx()
 {
 	uint index;
 
@@ -99,7 +99,7 @@ static char *UnputIndentRangeLine(char *line, uint indentLen) // ret: strx()
 			break;
 
 	if(index == indentLen)
-		line = xcout("%c%s", CHR_INDENTED, line + indentLen);
+		line = xcout("%c%s", CHR_ESC_RANGE_INDENT, line + indentLen);
 	else
 		line = strx(line);
 
@@ -144,7 +144,7 @@ static void Search_File(char *file)
 		{
 			errorCase(!IsFairRangeLine(line));
 
-			addElement(range->Lines, (uint)UnputIndentRangeLine(line, range->IndentLen));
+			addElement(range->Lines, (uint)EscapeIndentRangeLine(line, range->IndentLen));
 		}
 	}
 	errorCase(range);
@@ -296,14 +296,14 @@ static void SRG_AddIndent(autoBlock_t *buff, uint indentLen)
 	for(index = 0; index < indentLen; index++)
 		addByte(buff, '\t');
 }
-static char *SRG_PutIndentToText(char *text, uint indentLen)
+static char *SRG_UnescapeIndentRangeText(char *text, uint indentLen)
 {
 	autoBlock_t *buff = newBlock();
 	char *p;
 
 	for(p = text; *p; p++)
 	{
-		if(*p == CHR_INDENTED)
+		if(*p == CHR_ESC_RANGE_INDENT)
 			SRG_AddIndent(buff, indentLen);
 		else
 			addByte(buff, *p);
@@ -328,7 +328,7 @@ static void SRG_SyncFile(Range_t *masterRange, Range_t *targetRange)
 	{
 		char *wkText = masterRange->Text;
 
-		wkText = SRG_PutIndentToText(wkText, targetRange->IndentLen);
+		wkText = SRG_UnescapeIndentRangeText(wkText, targetRange->IndentLen);
 
 		writeToken_x(fp, wkText);
 	}
