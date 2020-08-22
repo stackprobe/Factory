@@ -23,6 +23,8 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\OpenSource\md5.h"
 
+#define CHR_INDENTED '\x01'
+
 #define DEF_ROOT_DIR_01 "C:\\Dev"
 #define DEF_ROOT_DIR_02 "C:\\Factory"
 
@@ -84,21 +86,24 @@ static char *LinesToText(autoList_t *lines)
 	}
 	return text;
 }
-static int IsFairRangeLine(char *line, uint indentLen)
+static int IsFairRangeLine(char *line)
+{
+	return !strchr(line, CHR_INDENTED);
+}
+static char *UnputIndentRangeLine(char *line, uint indentLen) // ret: strx()
 {
 	uint index;
 
-	if(!*line)
-		return 1;
-
 	for(index = 0; index < indentLen; index++)
 		if(line[index] != '\t')
-			return 0;
+			break;
 
-	if(!line[indentLen])
-		return 0;
+	if(index == indentLen)
+		line = xcout("%c%s", CHR_INDENTED, line + indentLen);
+	else
+		line = strx(line);
 
-	return 1;
+	return line;
 }
 static void Search_File(char *file)
 {
@@ -137,9 +142,9 @@ static void Search_File(char *file)
 		}
 		else if(range)
 		{
-			errorCase(!IsFairRangeLine(line, range->IndentLen));
+			errorCase(!IsFairRangeLine(line));
 
-			addElement(range->Lines, (uint)strx(*line ? line + range->IndentLen : ""));
+			addElement(range->Lines, (uint)UnputIndentRangeLine(line, range->IndentLen));
 		}
 	}
 	errorCase(range);
@@ -295,15 +300,13 @@ static char *SRG_PutIndentToText(char *text, uint indentLen)
 {
 	autoBlock_t *buff = newBlock();
 	char *p;
-	int postLf = 1;
 
 	for(p = text; *p; p++)
 	{
-		if(postLf && *p != '\n')
+		if(*p == CHR_INDENTED)
 			SRG_AddIndent(buff, indentLen);
-
-		addByte(buff, *p);
-		postLf = *p == '\n';
+		else
+			addByte(buff, *p);
 	}
 	return unbindBlock2Line(buff);
 }
