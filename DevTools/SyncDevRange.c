@@ -23,7 +23,8 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\OpenSource\md5.h"
 
-#define DEF_ROOT_DIR "C:\\Dev"
+#define DEF_ROOT_DIR_01 "C:\\Dev"
+#define DEF_ROOT_DIR_02 "C:\\Factory"
 
 static autoList_t *RootDirs;
 static char *S_TargetExts = "c.h.cpp.cs";
@@ -586,8 +587,10 @@ readArgs:
 	errorCase(hasArgs(1)); // 不明なコマンド引数
 
 	if(!getCount(RootDirs))
-		addElement(RootDirs, (uint)DEF_ROOT_DIR);
-
+	{
+		addElement(RootDirs, (uint)DEF_ROOT_DIR_01);
+		addElement(RootDirs, (uint)DEF_ROOT_DIR_02);
+	}
 	foreach(RootDirs, dir, index)
 		errorCase(!existDir(dir));
 
