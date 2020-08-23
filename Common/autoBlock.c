@@ -2,7 +2,7 @@
 
 #define BASE_SIZE_UNRESIZABLE (UINTMAX - 0)
 #define BASE_SIZE_EXPAND_ONLY (UINTMAX - 1)
-#define BLOCK_SIZE_MAX        (UINTMAX - 2)
+#define BLOCK_SIZE_MAX        (UINTMAX - 2) // autoBlock_t ÇÃ Size, AllocSize, BaseSize ÇÃ(é¿ëïè„ÇÃ)ç≈ëÂílÇ∆Ç∑ÇÈÅB
 
 autoBlock_t *createAutoBlock(void *block, uint size, uint allocSize)
 {

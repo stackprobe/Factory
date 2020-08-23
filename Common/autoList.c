@@ -29,6 +29,7 @@ autoList_t *copyAutoList(autoList_t *i)
 void releaseAutoList(autoList_t *i)
 {
 	errorCase(!i);
+	errorCase(i->Unresizable);
 
 	memFree(i->Elements);
 	memFree(i);
@@ -36,6 +37,8 @@ void releaseAutoList(autoList_t *i)
 void releaseList(autoList_t *i)
 {
 	errorCase(!i);
+	errorCase(i->Unresizable);
+
 	memFree(i);
 }
 
@@ -193,29 +196,24 @@ void putElement(autoList_t *i, uint index, uint element)
 		errorCase(UINTMAX / sizeof(uint) <= index); // ? Overflow
 		newCount = index + 1;
 
-		if(i->Unresizable)
+		if(i->AllocCount < newCount)
 		{
-			errorCase(i->AllocCount < newCount);
-		}
-		else
-		{
-			if(i->AllocCount < newCount)
-			{
-				uint allocCount = newCount;
+			uint allocCount = newCount;
 
-				if(allocCount < 16)
-				{
-					// noop
-				}
-				else
-				{
-					allocCount += allocCount / 2; // allocCount *= 1.5
-				}
-				errorCase(allocCount < newCount); // 2bs
-				errorCase(UINTMAX / sizeof(uint) < allocCount); // ? Overflow
-				i->Elements = memRealloc(i->Elements, allocCount * sizeof(uint));
-				i->AllocCount = allocCount;
+			errorCase(i->Unresizable);
+
+			if(allocCount < 16)
+			{
+				// noop
 			}
+			else
+			{
+				allocCount += allocCount / 2; // allocCount *= 1.5
+			}
+			errorCase(allocCount < newCount); // 2bs
+			errorCase(UINTMAX / sizeof(uint) < allocCount); // ? Overflow
+			i->Elements = memRealloc(i->Elements, allocCount * sizeof(uint));
+			i->AllocCount = allocCount;
 		}
 		// ‚±‚ÌŽž“_‚Å i->Count < newCount ‚Å‚ ‚é‚±‚Æ‚ÍŠmŽÀ
 		do
@@ -224,7 +222,7 @@ void putElement(autoList_t *i, uint index, uint element)
 			i->Count++;
 		}
 		while(i->Count < newCount);
-//		memset(i->Elements + i->Count, 0x00, (newCount - i->Count) * sizeof(uint)); // ‚Ù‚Ú addElement ‚É‚æ‚Á‚ÄŠg’£‚³‚ê‚éBaddElement ‚Ìê‡‚P—v‘f‚µ‚©Šg’£‚µ‚È‚¢‚Ì‚ÅA
+//		memset(i->Elements + i->Count, 0x00, (newCount - i->Count) * sizeof(uint)); // –w‚Ç‚Ìê‡ addElement ‚É‚æ‚Á‚ÄŠg’£‚³‚ê‚éBaddElement ‚Ìê‡‚P—v‘f‚µ‚©Šg’£‚µ‚È‚¢‚Ì‚ÅA
 	}
 	i->Elements[index] = element;
 }
@@ -362,14 +360,17 @@ void setAllocCount(autoList_t *i, uint allocCount)
 void setCount(autoList_t *i, uint count)
 {
 	errorCase(!i);
-	errorCase(i->Unresizable);
 	errorCase(UINTMAX / sizeof(uint) < count); // ? Overflow
 
 	if(i->Count < count)
 	{
-		i->Elements = (uint *)memRealloc(i->Elements, count * sizeof(uint));
-		i->AllocCount = count;
+		if(i->AllocCount < count)
+		{
+			errorCase(i->Unresizable);
 
+			i->Elements = (uint *)memRealloc(i->Elements, count * sizeof(uint));
+			i->AllocCount = count;
+		}
 		memset(i->Elements + i->Count, 0x00, (count - i->Count) * sizeof(uint));
 	}
 	i->Count = count;
