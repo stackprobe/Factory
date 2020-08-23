@@ -34,6 +34,7 @@ autoBlock_t *copyAutoBlock(autoBlock_t *i)
 void releaseAutoBlock(autoBlock_t *i)
 {
 	errorCase(!i);
+	errorCase(i->BaseSize == BASE_SIZE_UNRESIZABLE);
 
 	memFree(i->Block);
 	memFree(i);
@@ -41,6 +42,8 @@ void releaseAutoBlock(autoBlock_t *i)
 void releaseBlock(autoBlock_t *i)
 {
 	errorCase(!i);
+	errorCase(i->BaseSize == BASE_SIZE_UNRESIZABLE);
+
 	memFree(i);
 }
 
@@ -121,7 +124,7 @@ static void Resize(autoBlock_t *i, uint newSize)
 {
 	if(i->BaseSize == BASE_SIZE_UNRESIZABLE)
 	{
-		error();
+		errorCase(i->AllocSize < newSize);
 	}
 	else if(i->BaseSize == BASE_SIZE_EXPAND_ONLY)
 	{
@@ -383,8 +386,8 @@ void resetSize(autoBlock_t *i, uint size)
 
 /*
 	g‚¢•û
-		autoBlock_t block = gndBlock(buff, size);
-		reverseBytes(&block);
+		autoBlock_t gab = gndBlock(statically_declared_block, size);
+		reverseBytes(&gab);
 		ŠJ•ú‚µ‚È‚­‚Ä—Ç‚¢B
 */
 autoBlock_t gndBlock(void *block, uint size)

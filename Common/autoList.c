@@ -9,6 +9,8 @@ autoList_t *createAutoList(uint allocCount)
 	i->Elements = (uint *)memAlloc(allocCount * sizeof(uint));
 	i->Count = 0;
 	i->AllocCount = allocCount;
+	i->Unresizable = 0;
+	i->Reserved_01 = 0;
 
 	return i;
 }
@@ -19,6 +21,8 @@ autoList_t *copyAutoList(autoList_t *i)
 	j->Elements = (uint *)memClone(i->Elements, i->Count * sizeof(uint));
 	j->Count = i->Count;
 	j->AllocCount = i->Count;
+	j->Unresizable = 0;
+	j->Reserved_01 = 0;
 
 	return j;
 }
@@ -45,6 +49,8 @@ autoList_t *bindAutoList(uint *list, uint count)
 	i->Elements = list;
 	i->Count = count;
 	i->AllocCount = count;
+	i->Unresizable = 0;
+	i->Reserved_01 = 0;
 
 	return i;
 }
@@ -80,6 +86,7 @@ autoList_t *nobCreateList(uint count)
 void nobSetCount(autoList_t *i, uint count)
 {
 	errorCase(!i);
+	errorCase(i->Unresizable);
 	errorCase(UINTMAX / sizeof(uint) < count); // ? Overflow
 
 	i->Elements = (uint *)memRealloc(i->Elements, count * sizeof(uint));
@@ -107,10 +114,8 @@ void resetCount(autoList_t *i, uint count)
 
 /*
 	使い方
-
-		autoList_t list = gndAutoList(buff, num);
-		rapidSort(&list, simpleComp);
-
+		autoList_t gal = gndAutoList(statically_declared_block, num);
+		rapidSort(&gal, simpleComp);
 		開放しなくて良い。
 */
 autoList_t gndAutoList(uint *list, uint count)
@@ -120,6 +125,8 @@ autoList_t gndAutoList(uint *list, uint count)
 	i.Elements = list;
 	i.Count = count;
 	i.AllocCount = count;
+	i.Unresizable = 1;
+	i.Reserved_01 = 0;
 
 	return i;
 }
@@ -179,25 +186,45 @@ void putElement(autoList_t *i, uint index, uint element)
 {
 	errorCase(!i);
 
-	while(i->Count <= index)
+	if(i->Count <= index)
 	{
-		if(i->AllocCount <= i->Count)
-		{
-			if(i->AllocCount < 16)
-			{
-				i->AllocCount++;
-			}
-			else
-			{
-				i->AllocCount += i->AllocCount >> 1; // * 1.5
-			}
-			errorCase(i->AllocCount <= i->Count);
-			errorCase(UINTMAX / sizeof(uint) < i->AllocCount); // ? Overflow
+		uint newCount;
 
-			i->Elements = memRealloc(i->Elements, i->AllocCount * sizeof(uint));
+		errorCase(UINTMAX / sizeof(uint) <= index); // ? Overflow
+		newCount = index + 1;
+
+		if(i->Unresizable)
+		{
+			errorCase(i->AllocCount < newCount);
 		}
-		i->Elements[i->Count] = 0; // 未定義値
-		i->Count++;
+		else
+		{
+			if(i->AllocCount < newCount)
+			{
+				uint allocCount = newCount;
+
+				if(allocCount < 16)
+				{
+					// noop
+				}
+				else
+				{
+					allocCount += allocCount / 2; // allocCount *= 1.5
+				}
+				errorCase(allocCount < newCount); // 2bs
+				errorCase(UINTMAX / sizeof(uint) < allocCount); // ? Overflow
+				i->Elements = memRealloc(i->Elements, allocCount * sizeof(uint));
+				i->AllocCount = allocCount;
+			}
+		}
+		// この時点で i->Count < newCount であることは確実
+		do
+		{
+			i->Elements[i->Count] = 0; // 未定義値
+			i->Count++;
+		}
+		while(i->Count < newCount);
+//		memset(i->Elements + i->Count, 0x00, (newCount - i->Count) * sizeof(uint)); // ほぼ addElement によって拡張される。addElement の場合１要素しか拡張しないので、
 	}
 	i->Elements[index] = element;
 }
@@ -314,6 +341,8 @@ void removeElement(autoList_t *i, uint target)
 void fixElements(autoList_t *i)
 {
 	errorCase(!i);
+	errorCase(i->Unresizable);
+
 	setAllocCount(i, 0);
 }
 /*
@@ -322,6 +351,7 @@ void fixElements(autoList_t *i)
 void setAllocCount(autoList_t *i, uint allocCount)
 {
 	errorCase(!i);
+	errorCase(i->Unresizable);
 	errorCase(UINTMAX / sizeof(uint) < allocCount); // ? Overflow
 
 	allocCount = m_max(allocCount, i->Count);
@@ -332,6 +362,7 @@ void setAllocCount(autoList_t *i, uint allocCount)
 void setCount(autoList_t *i, uint count)
 {
 	errorCase(!i);
+	errorCase(i->Unresizable);
 	errorCase(UINTMAX / sizeof(uint) < count); // ? Overflow
 
 	if(i->Count < count)

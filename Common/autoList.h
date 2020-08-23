@@ -2,7 +2,9 @@ typedef struct autoList_st
 {
 	uint *Elements;
 	uint Count;
-	uint AllocCount;
+	uint AllocCount : 30; // Count ‚Ì(À‘•ã‚Ì)Å‘å’l‚Å‚ ‚é UINTMAX / sizeof(uint) ‚ªƒMƒŠƒMƒŠ“ü‚éB
+	uint Unresizable : 1;
+	uint Reserved_01 : 1;
 }
 autoList_t;
 

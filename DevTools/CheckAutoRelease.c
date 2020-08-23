@@ -1,5 +1,5 @@
 /*
-	CheckAutoRelease [/X] [/CLC] [/D 直接チェックDIR | ルートDIR]
+	CheckAutoRelease [/CLC] [/D 直接チェックDIR | ルートDIR]
 
 		/CLC ... 最終コメントをチェックする。最終コメントが rel (リリース済み) でなければ NEED_RELEASE_BAT に出力する。
 
