@@ -18,6 +18,7 @@ static void SetTitleEnd(void)
 }
 static void Monitor(void)
 {
+	uint waitMillis = 2000;
 	uint loopCount;
 
 	cout("モニター開始 @ %s\n", c_makeJStamp(NULL, 0));
@@ -25,9 +26,11 @@ static void Monitor(void)
 
 	for(loopCount = 0; ; loopCount++)
 	{
-		int key = waitKey(2000);
+		int key = waitKey(waitMillis);
 		uint64 diskFree;
 		uint64 diskSize;
+		double rate;
+		double rateLmt;
 
 		if(key == 0x1b)
 			break;
@@ -57,7 +60,16 @@ static void Monitor(void)
 			cout("%s\n", c_makeJStamp(NULL, 0));
 			cout("----\n");
 		}
-		cout("DiskFree: %I64u, DiskFreeLimit: %I64u, rate: %.3f / %.3f\n", diskFree, DiskFreeLimit, diskFree * 1.0 / diskSize, DiskFreeLimit * 1.0 / diskSize);
+		rate    = diskFree      * 1.0 / diskSize;
+		rateLmt = DiskFreeLimit * 1.0 / diskSize;
+
+		     if(rateLmt * 10.0 < rate) { waitMillis = 20000; }
+		else if(rateLmt *  7.5 < rate) { waitMillis = 15000; }
+		else if(rateLmt *  5.0 < rate) { waitMillis = 10000; }
+		else if(rateLmt *  2.5 < rate) { waitMillis =  5000; }
+		else                           { waitMillis =  2000; }
+
+		cout("DiskFree: %I64u / %I64u, rate: %.3f / %.3f, wait: %u\n", diskFree, DiskFreeLimit, rate, rateLmt, waitMillis);
 
 		if(diskFree < DiskFreeLimit)
 		{

@@ -19,6 +19,10 @@
 		標準入力の行数を表示する。
 
 		ex. dir /b | linenum   ... カレントディレクトリのファイルとディレクトリの数を表示する。
+
+	----
+
+	HACK: .\Count.c と被ってる。
 */
 
 #include "C:\Factory\Common\all.h"
@@ -30,13 +34,15 @@ static int SkipLine(FILE *fp)
 	if(chr == EOF) // ? 0文字のEOFで終わる行 <- 行と見なさない。
 		return 0;
 
-	while(chr != '\n') // ? ! 改行
+	do
 	{
 		chr = readChar(fp);
 
 		if(chr == EOF) // ? 1文字以上のEOFで終わる行 <- 行と見なす。
 			break;
 	}
+	while(chr != '\n'); // ? ! 改行
+
 	return 1;
 }
 static void LineMid(char *file, uint64 minLineNo, uint64 maxLineNo)

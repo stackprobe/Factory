@@ -1,5 +1,5 @@
 /*
-	ListFmt.exe [(/F 入力ファイル | /LSS | /C 初期値 最大値 増分 Z-PAD)]... [/-M] [/X] [/-] フォーマット...
+	ListFmt.exe (/F 入力ファイル | /LSS | /C 初期値 最大値 増分 Z-PAD)... [/-M | /X] [/-] フォーマット...
 
 		初期値   ... 0 ～ IMAX
 		最大値   ... 初期値 ～ IMAX
@@ -9,7 +9,7 @@
 	- - -
 	例:
 
-	ListFmt.exe /C 1 999 1 3 /F ListFmt.c /-M "$DListFmt.c$D の $1 行目: $2"
+	ListFmt.exe /C 1 9999 1 3 /F ListFmt.c /-M "$DListFmt.c$D の $1 行目: $2"
 */
 
 #include "C:\Factory\Common\all.h"
@@ -221,7 +221,7 @@ readArgs:
 	}
 	argIs("/-");
 
-	Format = untokenize(allArgs(), " "); // gomi
+	Format = untokenize(allArgs(), " "); // g
 	ListFmt();
 
 	// remove work-files

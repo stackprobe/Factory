@@ -1,5 +1,9 @@
 /*
 	Count.exe [/-S] [/LSS | 入力ディレクトリ | 入力ファイル]
+
+	----
+
+	HACK: .\linenum.c と被ってる。
 */
 
 #include "C:\Factory\Common\all.h"

@@ -1,9 +1,10 @@
 /*
-	CheckAutoRelease [/CLC] [/D 直接チェックDIR | ルートDIR]
+	CheckAutoRelease [/X] [/CLC] [/D 直接チェックDIR | ルートDIR]
 
 		/CLC ... 最終コメントをチェックする。最終コメントが rel (リリース済み) でなければ NEED_RELEASE_BAT に出力する。
 
 			HTT_RPC は AutoRelease.bat 未設置なので注意 @ 2020.6.19
+			全ての AutoRelease.bat を実行したい場合は C:\Dev\AutoReleaseAll.bat を実行すること。
 */
 
 #include "C:\Factory\Common\all.h"
