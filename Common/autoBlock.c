@@ -1,7 +1,7 @@
 #include "all.h"
 
 #define BASE_SIZE_UNRESIZABLE (UINTMAX - 0)
-#define BASE_SIZE_UNREDUCIBLE (UINTMAX - 1)
+#define BASE_SIZE_EXPAND_ONLY (UINTMAX - 1)
 #define BLOCK_SIZE_MAX        (UINTMAX - 2)
 
 autoBlock_t *createAutoBlock(void *block, uint size, uint allocSize)
@@ -115,7 +115,7 @@ void swapByte(autoBlock_t *i, uint index1, uint index2)
 	i->Block[index2] = swap;
 }
 
-#define EXTEND_SPAN 16000000 // 16 MB
+#define EXPAND_SPAN 16000000 // 16 MB
 
 static void Resize(autoBlock_t *i, uint newSize)
 {
@@ -123,10 +123,12 @@ static void Resize(autoBlock_t *i, uint newSize)
 	{
 		error();
 	}
-	else if(i->BaseSize == BASE_SIZE_UNREDUCIBLE)
+	else if(i->BaseSize == BASE_SIZE_EXPAND_ONLY)
 	{
 		if(i->AllocSize < newSize)
 		{
+			cout("[AB-Expand] %p %u -> %u\n", i->Block, i->AllocSize, newSize);
+
 			errorCase(BLOCK_SIZE_MAX < newSize); // ? ブロックサイズの上限を超える。
 
 			i->AllocSize = newSize;
@@ -143,17 +145,17 @@ static void Resize(autoBlock_t *i, uint newSize)
 				i->BaseSize  = newSize;
 				i->AllocSize = newSize;
 			}
-			else if(newSize < EXTEND_SPAN * 2)
+			else if(newSize < EXPAND_SPAN * 2)
 			{
 				i->BaseSize  = newSize / 2;
 				i->AllocSize = newSize + newSize / 2; // newSize * 1.5
 			}
 			else
 			{
-				errorCase(BLOCK_SIZE_MAX - EXTEND_SPAN < newSize); // ? ブロックサイズの上限を超える。
+				errorCase(BLOCK_SIZE_MAX - EXPAND_SPAN < newSize); // ? ブロックサイズの上限を超える。
 
-				i->BaseSize  = newSize - EXTEND_SPAN;
-				i->AllocSize = newSize + EXTEND_SPAN;
+				i->BaseSize  = newSize - EXPAND_SPAN;
+				i->AllocSize = newSize + EXPAND_SPAN;
 			}
 			i->Block = memRealloc(i->Block, i->AllocSize);
 		}
@@ -319,7 +321,7 @@ void setAllocSize(autoBlock_t *i, uint size)
 
 	i->Block = memRealloc(i->Block, size);
 	i->AllocSize = size;
-	i->BaseSize = BASE_SIZE_UNREDUCIBLE;
+	i->BaseSize = BASE_SIZE_EXPAND_ONLY;
 }
 void setSize(autoBlock_t *i, uint size)
 {
