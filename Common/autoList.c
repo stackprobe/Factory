@@ -308,11 +308,17 @@ void removeElement(autoList_t *i, uint target)
 	}
 }
 
+/*
+	バッファの長さを要素数に合わせる。
+*/
 void fixElements(autoList_t *i)
 {
 	errorCase(!i);
 	setAllocCount(i, 0);
 }
+/*
+	バッファの長さを少なくとも allocCount 個にする。
+*/
 void setAllocCount(autoList_t *i, uint allocCount)
 {
 	errorCase(!i);

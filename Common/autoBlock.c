@@ -309,11 +309,19 @@ void removeBytes(autoBlock_t *i, uint index, uint count)
 #endif
 }
 
+/*
+	バッファサイズを実際のデータサイズに合わせる。
+	以後、拡張のみ行うようにする。Resize()での挙動に注意すること。
+*/
 void fixBytes(autoBlock_t *i)
 {
 	errorCase(!i);
 	setAllocSize(i, 0);
 }
+/*
+	バッファサイズを少なくとも size バイトにする。
+	以後、拡張のみ行うようにする。Resize()での挙動に注意すること。
+*/
 void setAllocSize(autoBlock_t *i, uint size)
 {
 	errorCase(!i);
