@@ -127,13 +127,14 @@ static void Resize(autoBlock_t *i, uint newSize)
 	{
 		if(i->AllocSize < newSize)
 		{
-			cout("[AB-Expand] %p %u -> %u\n", i->Block, i->AllocSize, newSize);
+			void *bkBlock = i->Block;
 
 			errorCase(BLOCK_SIZE_MAX < newSize); // ? ブロックサイズの上限を超える。
 
 			i->AllocSize = newSize;
-
 			i->Block = memRealloc(i->Block, i->AllocSize);
+
+			cout("[AB-Expand] %p -> %p [%c] (%u -> %u)\n", bkBlock, i->Block, bkBlock == i->Block ? ' ' : 'R', i->AllocSize, newSize);
 		}
 	}
 	else
