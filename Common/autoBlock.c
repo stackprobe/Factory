@@ -1,5 +1,9 @@
 #include "all.h"
 
+#define BASE_SIZE_UNRESIZABLE (UINTMAX - 0)
+#define BASE_SIZE_UNREDUCIBLE (UINTMAX - 1)
+#define BLOCK_SIZE_MAX        (UINTMAX - 2)
+
 autoBlock_t *createAutoBlock(void *block, uint size, uint allocSize)
 {
 	autoBlock_t *i = (autoBlock_t *)memAlloc(sizeof(autoBlock_t));
@@ -84,7 +88,7 @@ void putByte(autoBlock_t *i, uint index, uint byte)
 
 	if(i->Size <= index)
 	{
-		errorCase(index == UINTMAX);
+		errorCase(BLOCK_SIZE_MAX <= index); // ? ブロックサイズの上限を超える。
 		setSize(i, index + 1);
 	}
 	i->Block[index] = byte;
@@ -111,30 +115,48 @@ void swapByte(autoBlock_t *i, uint index1, uint index2)
 	i->Block[index2] = swap;
 }
 
-#define HUGE_EXSIZE (16 * 1024 * 1024)
+#define EXTEND_SPAN 16000000 // 16 MB
 
 static void Resize(autoBlock_t *i, uint newSize)
 {
-	if(newSize < i->BaseSize || i->AllocSize < newSize)
+	if(i->BaseSize == BASE_SIZE_UNRESIZABLE)
 	{
-		if(newSize < 16)
+		error();
+	}
+	else if(i->BaseSize == BASE_SIZE_UNREDUCIBLE)
+	{
+		if(i->AllocSize < newSize)
 		{
-			i->BaseSize = newSize;
-			i->AllocSize = newSize;
-		}
-		else if(newSize < 128 * 1024 * 1024)
-		{
-			i->BaseSize = newSize / 2;
-			i->AllocSize = newSize + newSize / 2; // * 1.5
-		}
-		else
-		{
-			errorCase(UINTMAX - HUGE_EXSIZE < newSize); // ? Overflow
+			errorCase(BLOCK_SIZE_MAX < newSize); // ? ブロックサイズの上限を超える。
 
-			i->BaseSize = newSize - HUGE_EXSIZE;
-			i->AllocSize = newSize + HUGE_EXSIZE;
+			i->AllocSize = newSize;
+
+			i->Block = memRealloc(i->Block, i->AllocSize);
 		}
-		i->Block = memRealloc(i->Block, i->AllocSize);
+	}
+	else
+	{
+		if(newSize < i->BaseSize || i->AllocSize < newSize)
+		{
+			if(newSize < 16)
+			{
+				i->BaseSize  = newSize;
+				i->AllocSize = newSize;
+			}
+			else if(newSize < EXTEND_SPAN * 2)
+			{
+				i->BaseSize  = newSize / 2;
+				i->AllocSize = newSize + newSize / 2; // newSize * 1.5
+			}
+			else
+			{
+				errorCase(BLOCK_SIZE_MAX - EXTEND_SPAN < newSize); // ? ブロックサイズの上限を超える。
+
+				i->BaseSize  = newSize - EXTEND_SPAN;
+				i->AllocSize = newSize + EXTEND_SPAN;
+			}
+			i->Block = memRealloc(i->Block, i->AllocSize);
+		}
 	}
 	i->Size = newSize;
 }
@@ -162,7 +184,7 @@ void insertBytes(autoBlock_t *i, uint index, autoBlock_t *bytes)
 {
 	errorCase(!i);
 	errorCase(i->Size < index);
-	errorCase(UINTMAX - i->Size < bytes->Size); // ? Overflow
+	errorCase(BLOCK_SIZE_MAX - i->Size < bytes->Size); // ? ブロックサイズの上限を超える。
 
 	if(bytes->Size)
 	{
@@ -195,7 +217,7 @@ void insertByteRepeat(autoBlock_t *i, uint index, uint byte, uint count)
 {
 	errorCase(!i);
 	errorCase(i->Size < index);
-	errorCase(UINTMAX - i->Size < count); // ? Overflow
+	errorCase(BLOCK_SIZE_MAX - i->Size < count); // ? ブロックサイズの上限を超える。
 
 	if(count)
 	{
@@ -296,9 +318,8 @@ void setAllocSize(autoBlock_t *i, uint size)
 	size = m_max(size, i->Size);
 
 	i->Block = memRealloc(i->Block, size);
-	i->Size = size;
 	i->AllocSize = size;
-	i->BaseSize = size / 2;
+	i->BaseSize = BASE_SIZE_UNREDUCIBLE;
 }
 void setSize(autoBlock_t *i, uint size)
 {
@@ -362,7 +383,7 @@ autoBlock_t gndBlock(void *block, uint size)
 	i.Block = (uchar *)block;
 	i.Size = size;
 	i.AllocSize = size;
-	i.BaseSize = 0;
+	i.BaseSize = BASE_SIZE_UNRESIZABLE;
 
 	return i;
 }
@@ -428,7 +449,7 @@ void addBytes(autoBlock_t *i, autoBlock_t *bytes)
 #if 1
 	errorCase(!i);
 	errorCase(!bytes);
-	errorCase(UINTMAX - i->Size < bytes->Size);
+	errorCase(BLOCK_SIZE_MAX - i->Size < bytes->Size); // ブロックサイズの上限を超える。
 
 	Resize(i, i->Size + bytes->Size);
 	memcpy(i->Block + i->Size - bytes->Size, bytes->Block, bytes->Size);

@@ -3,7 +3,7 @@ typedef struct autoBlock_st
 	uchar *Block;
 	uint Size;
 	uint AllocSize;
-	uint BaseSize;
+	uint BaseSize; // UINTMAX == èkè¨ÇµÇ»Ç¢ÅB
 }
 autoBlock_t;
 
