@@ -20,7 +20,7 @@
 #include "C:\Factory\Common\Options\rbTree.h"
 #include "C:\Factory\Common\Options\SockServer.h"
 
-#define REAL_CONNECT_MAX (ConnectMax + 10)
+#define REAL_CONNECT_MAX ((uint)m_min((uint64)ConnectMax + 10, (uint64)UINTMAX))
 
 static uint PortNo;
 static char *FwdHost;
@@ -430,13 +430,15 @@ readArgs:
 	errorCase(!m_isRange(SockTimeoutSec, 1, 86400));
 	errorCase(!m_isRange(NoConnectTimeoutSec, 1, 86400));
 
+	cmdTitle_x(xcout("boomServer - %u %s:%u %u %u %u %u %u", PortNo, FwdHost, FwdPortNo, ConnectMax, SendSizeMax, RecvSizeMax, SockTimeoutSec, NoConnectTimeoutSec));
+
 	SendSizeMax -= HEADER_SIZE; // to データサイズ
 
 	SessionTree = rbCreateTree(ST_DuplKey, ST_CompKey, ST_ReleaseKey);
 
 	SockStartup(); // sockServerUserTransmit() 終了後も接続が残るため
 
-	critical();
+	critical(); // HACK: ここを ciritcal() ～ uncritical() で囲っている理由が分からない。不要ではないだろうか。@ 2020.8.xx
 	{
 		sockServerUserTransmit(Perform, CreateInfo, ReleaseInfo, PortNo, REAL_CONNECT_MAX, Idle);
 	}
@@ -445,6 +447,8 @@ readArgs:
 	rbtCallAllValue(SessionTree, (void (*)(uint))ReleaseSession); // ここで全て切断する。
 
 	SockCleanup();
+
+	cmdTitle("boomServer");
 
 endFunc:
 	termination(0);

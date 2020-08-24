@@ -416,6 +416,8 @@ readArgs:
 		cout("ROOT %s\n", rootDir);
 	}
 
+	cmdTitle_x(xcout("ncpServer - P:%u C:%u X:%I64u %s [%c]", portno, connectmax, uploadmax, c_makeFullPath(rootDir), useFreeDir ? 'F' : '-'));
+
 	addCwd(rootDir);
 
 	RootDirLen = strlen(c_getCwd());
@@ -428,4 +430,6 @@ readArgs:
 		recurRemoveDir(rootDir);
 		memFree(rootDir);
 	}
+
+	cmdTitle("ncpServer");
 }
