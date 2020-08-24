@@ -12,7 +12,7 @@ Cで書いたツールとライブラリの寄せ集めです。
 --------
 
 Windows 10 (Pro | Home)
-Visual C++ 2010 Express
+Visual C++ 2010 Express | Visual Studio Community 2019
 
 システムドライブ = C
 
@@ -33,34 +33,38 @@ Visual C++ 2010 Express
 ビルド手順
 ----------
 
--1. Windows 10 Pro または Windows 10 Home 環境を用意する。
+1. Windows 10 Pro または Windows 10 Home 環境を用意する。
 
-	-1.1. アップデートを全て適用する。
+	1.1. アップデートを全て適用する。
 
-0. Visual C++ 2010 Express をインストールする。
+2. Visual C++ 2010 Express または Visual Studio Community 2019 をインストールする。
 
-	0.1. アップデートを全て適用する。
+	Visual Studio Community 2019 の場合「ワークロード」で "C++ によるデスクトップ開発" を選択する。
 
-1. 全てのファイルをローカルに展開する。
+	2.1. アップデートを全て適用する。
+
+3. 全てのファイルをローカルに展開する。
 
 	このファイルが C:\Factory\Readme.txt となるように配置する。
 
-2. コンソールを開く。
+4. コンソールを開く。
 
-	2.1. OpenConsole.bat を実行する。
+	4.1. OpenConsole.bat を実行する。
 
-3. 以下のコマンドを実行する。-- 全てのソースをコンパイル・リンクする。
+5. 以下のコマンドを実行する。-- 全てのソースをコンパイル・リンクする。
 
-	> cd build\_cx
+	> ff
+	> cd build
+	> cd _cx
 	> rebuild
 	> ff
 	> cx **
 
-4. 以下のコマンドを実行する。-- 改行コードをCR-LFにする。
+6. 以下のコマンドを実行する。-- 改行コードをCR-LFにする。
 
 	> fcrlf
 
-5. 以下のコマンドを実行する。-- 一時ファイルを削除する。
+7. 以下のコマンドを実行する。-- 一時ファイルを削除する。
 
 	> zz
 
@@ -71,4 +75,8 @@ Visual C++ 2010 Express
 /J コンパイラオプションにより char は unsigned char になります。
 
 習慣で unsigned を多用しています。
+
+型の想定
+
+	---> _memo_Types.txt
 
