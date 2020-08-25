@@ -49,7 +49,7 @@ static void Divide(char *file)
 
 			divblock = readBinaryStream(fp, readsize);
 
-			cout("divblock: %08x (%u)", divblock, divblock ? getSize(divblock) : 0);
+			cout("divblock: %p (%u)", divblock, divblock ? getSize(divblock) : 0);
 
 			if(!divblock)
 				break;
@@ -100,7 +100,7 @@ static void Restore(char *file)
 		{
 			autoBlock_t *divblock = readBinaryStream(divfp, BUFFSIZE);
 
-			cout("divblock: %08x (%u)\n", divblock, divblock ? getSize(divblock) : 0);
+			cout("divblock: %p (%u)\n", divblock, divblock ? getSize(divblock) : 0);
 
 			if(!divblock)
 				break;

@@ -26,7 +26,7 @@ static void DispRecvData(Info_t *i)
 	{
 		char *line = toPrintLine(i->RecvQueue, 1);
 
-		cout("%08x > %s\n", i, line);
+		cout("%p > %s\n", i, line);
 		memFree(line);
 
 		if(RecvFp)
@@ -40,7 +40,7 @@ static void *CreateInfo(void)
 {
 	Info_t *i = (Info_t *)memAlloc(sizeof(Info_t));
 
-	cout("%08x ê⁄ë±\n", i);
+	cout("%p ê⁄ë±\n", i);
 
 	ConnectCount++;
 	cmdTitle_x(xcout("Server - Connect %u", ConnectCount));
@@ -61,7 +61,7 @@ static void ReleaseInfo(void *vi)
 {
 	Info_t *i = (Info_t *)vi;
 
-	cout("%08x êÿíf\n", i);
+	cout("%p êÿíf\n", i);
 
 	ConnectCount--;
 	cmdTitle_x(xcout("Server - Connect %u", ConnectCount));

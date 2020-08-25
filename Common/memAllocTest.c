@@ -145,7 +145,7 @@ static void DebugOutputBlocks(void) // •W€ŠÖ”‚Ì‚İ‚ÅAA
 
 	for(index = 0; index < BlockCount; index++)
 	{
-		fprintf(fp, "[%u] %08x(%u): ", index, Blocks[index], BlockSizes[index]);
+		fprintf(fp, "[%u] %p(%u): ", index, Blocks[index], BlockSizes[index]);
 
 		for(bPos = 0; bPos < BlockSizes[index]; bPos++)
 			fprintf(fp, "%02x", Blocks[index][bPos]);

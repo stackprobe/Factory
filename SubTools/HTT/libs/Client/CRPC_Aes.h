@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RPC.h"
+#include "sRPC.h"
 #include "..\Aes.h"
 
 void ClientCRPC_Begin(SockStream_t *ss);

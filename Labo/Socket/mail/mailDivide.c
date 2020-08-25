@@ -83,7 +83,7 @@ static void RecvEvent(autoList_t *mail)
 	}
 	found:
 	memFree(from);
-	cout("ptn, index: %08x, %u\n", ptn, index);
+	cout("ptn, index: %p, %u\n", ptn, index);
 
 	if(!ptn) // Not found ptn.
 		return;

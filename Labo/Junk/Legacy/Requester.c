@@ -97,7 +97,7 @@ static void MainLoop(void)
 
 			cout("REQUEST START %I64u\n", getFileSize(ParamsFile));
 			ansFile = sockClient((uchar *)&ip, ServerDomain, ServerPort, ParamsFile, Idle);
-			cout("REQUEST END %08x\n", ansFile);
+			cout("REQUEST END %p\n", ansFile);
 
 			if(StopAppEventCaught || !DoLock())
 			{

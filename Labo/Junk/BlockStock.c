@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 		bindex = mt19937_rnd(BLOCK_MAX);
 		block = blocks[bindex];
 
-		cout("%3u: %08x (%3u)\n", bindex, block, GetBlockCount());
+		cout("%3u: %p (%3u)\n", bindex, block, GetBlockCount());
 
 		if(block == NULL) // add
 		{

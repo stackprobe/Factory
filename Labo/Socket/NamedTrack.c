@@ -164,7 +164,7 @@ static void NTCrossChannel(ChannelInfo_t channels[2])
 {
 	uint thhdls[2];
 
-	cout("ã‰ºÚ‘±: %08x\n", channels);
+	cout("ã‰ºÚ‘±: %p\n", channels);
 
 	channels[0].SendSockDead = 0;
 	channels[1].SendSockDead = 0;
@@ -181,7 +181,7 @@ static void NTCrossChannel(ChannelInfo_t channels[2])
 	}
 	inner_critical();
 
-	cout("ã‰ºØ’f: %08x\n", channels);
+	cout("ã‰ºØ’f: %p\n", channels);
 }
 static autoList_t *WaitInfos;
 

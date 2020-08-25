@@ -60,7 +60,7 @@
 		-> 受信開始～終了で無通信タイムアウト・送信開始～終了で無通信タイムアウト、どちらかでタイムアウト・エラー・切断する。
 */
 
-#include "RPC.h"
+#include "sRPC.h"
 
 #define PHASE_FILE "Phase.dat"
 #define RECVSIZEMAX_FILE "RecvSizeMax.dat"

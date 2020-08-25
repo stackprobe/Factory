@@ -91,7 +91,7 @@ static int Perform(void)
 	HFS_PadFile(ParamsFile, 0);
 	AnswerFile = sockClient(ip, ServerDomain, ServerPort, ParamsFile, Idle);
 
-	cout("AnswerFile: [%08x]\n", AnswerFile);
+	cout("AnswerFile: [%p]\n", AnswerFile);
 
 	if(!AnswerFile)
 	{
@@ -232,7 +232,7 @@ static void UploadFile(char *file, char *svrPath)
 	{
 		autoBlock_t *block = readBinaryStream(fp, TransferBlockSize);
 
-		cout("block: [%08x]\n", block);
+		cout("block: [%p]\n", block);
 
 		if(!block)
 			break;

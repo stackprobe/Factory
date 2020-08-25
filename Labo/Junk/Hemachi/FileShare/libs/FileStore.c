@@ -198,7 +198,7 @@ static void UploadPart(char *realPath, FILE *rfp, uint64 startPos)
 
 	cout("UploadPart() Start\n");
 	cout("realPath: %s\n", realPath);
-	cout("rfp: %08x\n", rfp);
+	cout("rfp: %p\n", rfp);
 	cout("startPos: %I64u\n", startPos);
 
 	if(existFile(realPath))
@@ -257,7 +257,7 @@ static void DownloadPart(char *realPath, FILE *wfp, uint64 startPos, uint readSi
 {
 	cout("DownloadPart() Start\n");
 	cout("realPath: %s\n", realPath);
-	cout("wfp: %08x\n", wfp);
+	cout("wfp: %p\n", wfp);
 	cout("startPos: %I64u\n", startPos);
 	cout("readSize: %u\n", readSize);
 
@@ -464,7 +464,7 @@ char *HFS_GetRealPath(char *virPath) // ret: strx(), NULL == ロック失敗
 		memFree(realPath);
 		realPath = NULL;
 	}
-	cout("realPath: %08x -> %s\n", realPath, realPath ? realPath : "(null)");
+	cout("realPath: %p -> %s\n", realPath, realPath ? realPath : "(null)");
 	return realPath;
 }
 void HFS_ReleaserealPath(char *realPath) // realPath: 開放する。

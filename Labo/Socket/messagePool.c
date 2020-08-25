@@ -210,7 +210,7 @@ static int Perform(int sock, void *vi)
 	autoBlock_t *retBody;
 	int doPutOnload = 0;
 
-	cout("Perform: %08x %s [%s]\n", (uint)i, swrk = makeStamp(0), SockIp2Line(sockClientIp));
+	cout("Perform: %p %s [%s]\n", i, swrk = makeStamp(0), SockIp2Line(sockClientIp));
 	memFree(swrk);
 
 	if(TIMEOUT_SEC <= SockCurrTime - i->ConnectTime) // ? time-out
@@ -445,14 +445,14 @@ static void *CreateInfo(void)
 	i->SendData = NULL;
 	i->ConnectTime = SockCurrTime;
 
-	cout("Ctor: %08x [%s]\n", (uint)i, SockIp2Line(sockClientIp));
+	cout("Ctor: %p [%s]\n", i, SockIp2Line(sockClientIp));
 	return i;
 }
 static void ReleaseInfo(void *vi)
 {
 	Info_t *i = (Info_t *)vi;
 
-	cout("Dtor: %08x [%s]\n", (uint)i, SockIp2Line(sockClientIp));
+	cout("Dtor: %p [%s]\n", i, SockIp2Line(sockClientIp));
 
 	releaseAutoBlock(i->RecvData);
 	if(i->SendData) releaseAutoBlock(i->SendData);

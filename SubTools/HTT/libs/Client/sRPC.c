@@ -1,4 +1,4 @@
-#include "RPC.h"
+#include "sRPC.h"
 
 uint RPC_RecvSizeMax = 1000000; // 受信データサイズの上限、実行前に設定すること。
 

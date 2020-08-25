@@ -49,7 +49,7 @@ static void DoFRenum(void)
 	char *file;
 	uint index;
 	uint no = StartNum;
-	char *unqptn = xcout("_$u=%08x_", time(NULL)); // “K“–..
+	char *unqptn = xcout("_$u=%I64x_", time(NULL)); // “K“–..
 
 	eraseParents(files);
 	sortJLinesICase(files);

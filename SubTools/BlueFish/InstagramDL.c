@@ -155,7 +155,7 @@ static autoList_t *ParseUrls(char *resBodyFile)
 		char *s;
 
 		p = strstr(p, "GraphImage"); // __typename == GraphImage, GraphVideo ‚ª‚ ‚éBGraphVideo ‚ğœŠO‚·‚éB
-		cout("GI: %08x\n", p);
+		cout("GI: %p\n", p);
 
 		if(!p)
 			break;

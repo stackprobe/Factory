@@ -17,13 +17,13 @@ static HHOOK H_SMF;
 
 static void Listener(int command, HWND hwnd, uint prm, int callType)
 {
-	cout("%c %08x %08x %c\n", command, hwnd, prm, callType);
+	cout("%c %p %08x %c\n", command, hwnd, prm, callType);
 
 	if(command == 'C')
 	{
 		HCURSOR cursor = GetCursor();
 
-		cout("cursor=%08x\n", (uint)cursor);
+		cout("cursor=%p\n", cursor);
 	}
 }
 
@@ -147,10 +147,10 @@ cout("* %u\n", GetLastError());
 	H_SMF  = SetWindowsHookEx(WH_SYSMSGFILTER,   F_SMF,  hm, tid);
 cout("* %u\n", GetLastError());
 
-	cout("%08x\n", H_CWP);
-	cout("%08x\n", H_CWPR);
-	cout("%08x\n", H_GM);
-	cout("%08x\n", H_SMF);
+	cout("%p\n", H_CWP);
+	cout("%p\n", H_CWPR);
+	cout("%p\n", H_GM);
+	cout("%p\n", H_SMF);
 
 	LOGPOS();
 	getKey();
