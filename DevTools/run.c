@@ -1,5 +1,5 @@
 /*
-	run.exe [/D] [/-R] PROGRAM-NAME
+	run.exe [/D] [/-R] PROGRAM-NAME [PARAM]...
 
 		/D ... プログラムの場所へ移動して実行する。
 

@@ -4,9 +4,7 @@ autoList_t *PrintScreen(void)
 {
 	char *dir = makeTempDir(NULL);
 	char *fileBase;
-	autoList_t *files;
-	char *file;
-	uint index;
+	uint screenNo;
 	autoList_t *bmps = newList();
 
 	errorCase(!existFile(FILE_TOOLKIT_EXE)); // 外部コマンド存在確認
@@ -15,18 +13,22 @@ autoList_t *PrintScreen(void)
 
 	coExecute_x(xcout(FILE_TOOLKIT_EXE " /PRINT-SCREEN %s", fileBase));
 
-	files = lsFiles(dir);
-	sortJLinesICase(files);
-
-	foreach(files, file, index)
+	for(screenNo = 1; ; screenNo++)
 	{
+		char *file = xcout("%s%02u.bmp", fileBase, screenNo);
+
+		if(!existFile(file))
+		{
+			memFree(file);
+			break;
+		}
 		addElement(bmps, (uint)readBinary(file));
 		removeFile(file);
+		memFree(file);
 	}
 	removeDir(dir);
 	memFree(dir);
 	memFree(fileBase);
-	releaseDim(files, 1);
 	return bmps;
 }
 void PrintScreen_Dir(char *dir)

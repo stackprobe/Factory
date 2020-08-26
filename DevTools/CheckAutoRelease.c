@@ -1,16 +1,14 @@
 /*
 	CheckAutoRelease [/CLC] [/D 直接チェックDIR | ルートDIR]
 
-		/CLC ... 最終コメントをチェックする。最終コメントが rel (リリース済み) でなければ NEED_RELEASE_BAT に出力する。
+		/CLC ... 最終コメントをチェックする。
 
-			HTT_RPC は AutoRelease.bat 未設置なので注意 @ 2020.6.19
-			全ての AutoRelease.bat を実行したい場合は C:\Dev\AutoReleaseAll.bat を実行すること。
+			HTT_RPC は AutoRelease.bat 未設置なのでチェックされないことに注意 @ 2020.6.19
 */
 
 #include "C:\Factory\Common\all.h"
 
 #define AUTO_RELEASE_BAT_TEMPLATE_FILE "C:\\Factory\\Resource\\AutoRelease.bat_template.txt"
-#define NEED_RELEASE_BAT "C:\\Factory\\tmp\\NeedRelease.bat"
 
 #define LOCAL_AUTO_RELEASE_BAT "AutoRelease.bat"
 #define LOCAL_LEGACY_RELEASE_BAT "_Release.bat"
@@ -19,7 +17,6 @@
 #define LOCAL_CLEAN_BAT "Clean.bat"
 
 static autoList_t *AutoReleaseBatTemplateLines;
-static autoList_t *NeedReleaseDirs;
 static autoList_t *ErrorFiles;
 static int CheckLastCommentFlag;
 static int ErrorFound;
@@ -119,8 +116,6 @@ static void CheckAutoRelease(char *dir)
 				)
 			{
 				FoundError("最終コメントが rel ではありません。");
-
-				addElement(NeedReleaseDirs, (uint)strx(dir));
 			}
 
 			memFree(revRootDir);
@@ -169,10 +164,7 @@ static void CheckDir(char *dir)
 }
 int main(int argc, char **argv)
 {
-	removeFileIfExist(NEED_RELEASE_BAT);
-
 	AutoReleaseBatTemplateLines = readLines(AUTO_RELEASE_BAT_TEMPLATE_FILE);
-	NeedReleaseDirs = newList();
 	ErrorFiles = newList();
 
 	if(argIs("/CLC"))
@@ -206,36 +198,5 @@ int main(int argc, char **argv)
 	{
 		cout("エラーは見つかりませんでした。\n");
 	}
-
-	if(getCount(NeedReleaseDirs))
-	{
-		char *dir;
-		uint index;
-		FILE *fp;
-
-		fp = fileOpen(NEED_RELEASE_BAT, "wt");
-
-		writeLine(fp, "CD /D C:\\temp"); // 安全のため
-		writeLine(fp, "SET zip_NoPause=1"); // C:\Factory\SubTools\zip.c 用
-		writeLine(fp, "");
-
-		foreach(NeedReleaseDirs, dir, index)
-		{
-			writeLine_x(fp, xcout("CD /D \"%s\"", dir));
-			writeLine(fp, "C:\\Factory\\Tools\\wait.exe 108");
-			writeLine(fp, "IF ERRORLEVEL 1 GOTO END");
-			writeLine(fp, "CALL AutoRelease.bat /-P");
-			writeLine(fp, "CD /D C:\\temp"); // 安全のため
-			writeLine(fp, "");
-		}
-		writeLine(fp, ":END");
-		writeLine(fp, "SET zip_NoPause="); // C:\Factory\SubTools\zip.c 用
-
-		fileClose(fp);
-
-		cout("\n");
-		cout(NEED_RELEASE_BAT " を出力しました。\n");
-	}
-
 	writeLines(FOUNDLISTFILE, ErrorFiles);
 }
