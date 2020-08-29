@@ -9,13 +9,13 @@
 #define LOCAL_LICENSE "LICENSE"
 #define LOCAL_LICENSE_IGNORE "LIGNORE" // LICENSEファイルをまだ？設定しない場合、暫定的に？これを置いておく。
 
-static uint ErrorCount;
+static autoList_t *ErrorFiles;
+static int ErrorFound;
 
 static void FoundError(char *message)
 {
 	cout("★ %s\n", message);
-
-	ErrorCount++;
+	ErrorFound = 1;
 }
 static char *ProjectLocalDirToRepositoryName(char *localDir)
 {
@@ -27,7 +27,9 @@ static char *ProjectLocalDirToRepositoryName(char *localDir)
 }
 static void CheckGitRelease(char *dir)
 {
+	dir = makeFullPath(dir);
 	cout("チェック対象ディレクトリ ⇒ %s\n", dir);
+	ErrorFound = 0;
 
 	addCwd(dir);
 
@@ -40,6 +42,8 @@ static void CheckGitRelease(char *dir)
 		{
 			char *text = readText_b(LOCAL_GIT_RELEASE_BAT);
 			char *text2 = xcout(
+				"@rem このフォルダのローカル名は Repo または x99999999_Repo (Repo=リリース先のリポジトリ名) であること。\r\n"
+				"\r\n"
 				"IF NOT EXIST .\\GitRelease.bat GOTO END\r\n"
 				"CALL qq\r\n"
 				"C:\\Factory\\SubTools\\GitFactory.exe /ow . C:\\huge\\GitHub\\%s\r\n"
@@ -100,6 +104,11 @@ static void CheckGitRelease(char *dir)
 	}
 
 	unaddCwd();
+
+	if(ErrorFound)
+		addElement(ErrorFiles, (uint)combine(dir, LOCAL_GIT_RELEASE_BAT));
+
+	memFree(dir);
 }
 
 static void CheckDir(char *dir);
@@ -132,6 +141,8 @@ static void CheckDir(char *dir)
 }
 int main(int argc, char **argv)
 {
+	ErrorFiles = newList();
+
 	errorCase_m(argIs("/C"), "廃止オプション"); // zantei
 
 	if(argIs("/D"))
@@ -149,12 +160,13 @@ int main(int argc, char **argv)
 
 	cout("\n");
 
-	if(ErrorCount)
+	if(getCount(ErrorFiles))
 	{
-		cout("★★★ [ %u ] 件のエラーが見つかりました。\n", ErrorCount);
+		cout("★★★ [ %u ] 件のエラーが見つかりました。\n", getCount(ErrorFiles));
 	}
 	else
 	{
 		cout("エラーは見つかりませんでした。\n");
 	}
+	writeLines(FOUNDLISTFILE, ErrorFiles);
 }
