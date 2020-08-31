@@ -379,9 +379,9 @@ static int DoConnect(char *fwdHost, uint fwdPortNo) // ret: -1 == ê⁄ë±Ç≈Ç´Ç»Ç©Ç¡
 		HttpDat_t backup;
 		int sock;
 
-		backup = EvacuateHttpDat();
+		backup = LocalizeHttpDat();
 		sock = sockConnect_NB(ip, NULL, fwdPortNo);
-		RestoreHttpDat(backup);
+		UnlocalizeHttpDat(backup);
 
 		return sock;
 	}
