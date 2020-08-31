@@ -211,3 +211,8 @@ autoBlock_t *ab_eject(autoBlock_t *i)
 	ab_swap(i, j);
 	return j;
 }
+void ab_uneject(autoBlock_t *i, autoBlock_t *j)
+{
+	ab_swap(i, j);
+	releaseAutoBlock(j);
+}

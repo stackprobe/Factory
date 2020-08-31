@@ -25,14 +25,14 @@ static void ClearHttpDat(void)
 	memset(&HttpDat, 0x00, sizeof(HttpDat_t));
 }
 
-HttpDat_t LocalizeHttpDat(void)
+HttpDat_t EjectHttpDat(void)
 {
 	HttpDat_t backup = HttpDat;
 
 	memset(&HttpDat, 0x00, sizeof(HttpDat_t));
 	return backup;
 }
-void UnlocalizeHttpDat(HttpDat_t backup)
+void UnejectHttpDat(HttpDat_t backup)
 {
 	ClearHttpDat();
 	HttpDat = backup;

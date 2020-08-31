@@ -20,8 +20,8 @@ extern HttpDat_t HttpDat;
 
 int HTTPParse(autoBlock_t *buff);
 
-HttpDat_t LocalizeHttpDat(void);
-void UnlocalizeHttpDat(HttpDat_t backup);
+HttpDat_t EjectHttpDat(void);
+void UnejectHttpDat(HttpDat_t backup);
 
 #define DEF_HTTP_DAT_FILE "HTTPParse_HttpDat.tmp"
 
