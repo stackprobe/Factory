@@ -154,6 +154,8 @@ void readWAVFileToCSVFile(char *rFile, char *wFile)
 	}
 	else // 16
 	{
+		errorCase(RawData.Size & 1);
+
 		for(index = 0; index < RawData.Size; index += 2)
 		{
 			uint v1;
