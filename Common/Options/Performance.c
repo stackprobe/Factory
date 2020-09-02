@@ -8,10 +8,12 @@ uint64 GetPerformanceCounter(void)
 	{
 		error();
 	}
+#if 0
 	if(i.QuadPart <= 0i64)
 	{
 		error();
 	}
+#endif
 	return (uint64)i.QuadPart;
 }
 uint64 GetPerformanceFrequency(void)
