@@ -10,6 +10,7 @@ Header;
 
 static struct
 {
+	int Loaded;
 	uint FormatID;
 	uint ChannelNum;
 	uint Hz;
@@ -68,6 +69,9 @@ autoList_t *readWAVFile(char *file)
 
 		if(!strcmp(name, "fmt "))
 		{
+			errorCase_m(Fmt.Loaded, "複数のフォーマットチャンクは処理出来ません。"); // ? 2回目のフォーマットチャンク
+
+			Fmt.Loaded       = 1;
 			Fmt.FormatID     = readValueWidth(fp, 2);
 			Fmt.ChannelNum   = readValueWidth(fp, 2);
 			Fmt.Hz           = readValue(fp);
@@ -98,20 +102,30 @@ autoList_t *readWAVFile(char *file)
 	errorCase(Fmt.BytePerSec != Fmt.Hz * Fmt.BlockSize);
 	errorCase(!RawData);
 
+	/*
+		波形値: 0x8000 を波形高ゼロ, 値域 0x0000 ～ 0xffff (波形高さ -32728 ～ 32767)
+		要素: { 上位16ビット, 下位16ビット } == { 左側の波形値, 右側の波形値 }
+	*/
 	wavData = newList();
 
 	if(Fmt.BitPerSample == 8)
 	{
+		setAllocCount(wavData, getSize(RawData));
+
 		for(index = 0; index < getSize(RawData); index++)
 		{
-			addElement(wavData, getByte(RawData, index) * 0x0101);
+			addElement(wavData, getByte(RawData, index) * 0x0100); // 8ビットの場合は符号なし整数
 		}
 	}
 	else // 16
 	{
+		errorCase(getSize(RawData) & 1);
+
+		setAllocCount(wavData, getSize(RawData) / 2);
+
 		for(index = 0; index < getSize(RawData); index += 2)
 		{
-			addElement(wavData, (getByte(RawData, index) | getByte(RawData, index + 1) << 8) ^ 0x8000);
+			addElement(wavData, (getByte(RawData, index) | getByte(RawData, index + 1) << 8) ^ 0x8000); // 16ビットの場合は符号あり整数
 		}
 	}
 	if(Fmt.ChannelNum == 1) // monoral
@@ -123,9 +137,11 @@ autoList_t *readWAVFile(char *file)
 	}
 	else // stereo
 	{
+		errorCase(getCount(wavData) & 1);
+
 		for(index = 0; index * 2 < getCount(wavData); index++)
 		{
-			*directGetPoint(wavData, index) = getElement(wavData, index * 2) << 16 | getElement(wavData, index * 2 + 1);
+			*directGetPoint(wavData, index) = getElement(wavData, index * 2) << 16 | getElement(wavData, index * 2 + 1); // { 上位16ビット, 下位16ビット } == { 左側の波形値, 右側の波形値 }
 		}
 		setCount(wavData, index);
 	}
@@ -162,8 +178,8 @@ void writeWAVFile(char *file, autoList_t *wavData, uint hz)
 		uint v1 = value >> 16;
 		uint v2 = value & 0xffff;
 
-		writeValueWidth(fp, v1 ^ 0x8000, 2);
-		writeValueWidth(fp, v2 ^ 0x8000, 2);
+		writeValueWidth(fp, v1 ^ 0x8000, 2); // 左側の波形値
+		writeValueWidth(fp, v2 ^ 0x8000, 2); // 右側の波形値
 	}
 	fileClose(fp);
 }

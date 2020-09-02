@@ -118,7 +118,7 @@ static void ShowPwOnTime(void)
 
 	for(index = 0; index < getCount(pwOnSpans); index += 2)
 	{
-		cout("%s から%s まで電源オンでした。\n",
+		cout("%s から %s まで電源オンでした。\n",
 			getLine(pwOnSpans, index + 0),
 			getLine(pwOnSpans, index + 1)
 			);

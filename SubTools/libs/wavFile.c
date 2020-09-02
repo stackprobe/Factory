@@ -13,6 +13,7 @@ Header;
 
 static struct
 {
+	int Loaded;
 	uint FormatID;
 	uint ChannelNum;
 	uint Hz;
@@ -33,7 +34,13 @@ static int AV_Return;
 
 /*
 	各行 11 バイト (改行を含むと 12 バイト) になるように 0 補填する。
+	wfp は "wb" で開いているので改行は LF のみ
 	NNNNN,NNNNN<改行>
+
+	1列目 == 左側の波形値
+	2列目 == 右側の波形値
+
+	波形値: 32768 を波形高ゼロ, 値域 00000 ～ 65535 (波形高さ -32728 ～ 32767)
 */
 static void AddValue(FILE *wfp, uint value)
 {
@@ -100,6 +107,9 @@ void readWAVFileToCSVFile(char *rFile, char *wFile)
 
 		if(!strcmp(name, "fmt "))
 		{
+			errorCase_m(Fmt.Loaded, "複数のフォーマットチャンクは処理出来ません。"); // ? 2回目のフォーマットチャンク
+
+			Fmt.Loaded       = 1;
 			Fmt.FormatID     = readValueWidth(rfp, 2);
 			Fmt.ChannelNum   = readValueWidth(rfp, 2);
 			Fmt.Hz           = readValue(rfp);
@@ -139,7 +149,7 @@ void readWAVFileToCSVFile(char *rFile, char *wFile)
 	{
 		for(index = 0; index < RawData.Size; index++)
 		{
-			AddValue(wfp, (uint)readChar(rfp) * 0x0100);
+			AddValue(wfp, (uint)readChar(rfp) * 0x0100); // 8ビットの場合は符号なし整数
 		}
 	}
 	else // 16
@@ -152,7 +162,7 @@ void readWAVFileToCSVFile(char *rFile, char *wFile)
 			v1 = readChar(rfp);
 			v2 = readChar(rfp);
 
-			AddValue(wfp, (v1 | v2 << 8) ^ 0x8000);
+			AddValue(wfp, (v1 | v2 << 8) ^ 0x8000); // 16ビットの場合は符号あり整数
 		}
 	}
 	fileClose(rfp);
@@ -202,8 +212,8 @@ void writeWAVFileFromCSVFile(char *rFile, char *wFile, uint hz)
 		errorCase(!m_isRange(v1, 0, 0xffff));
 		errorCase(!m_isRange(v2, 0, 0xffff));
 
-		writeValueWidth(wfp, v1 ^ 0x8000, 2);
-		writeValueWidth(wfp, v2 ^ 0x8000, 2);
+		writeValueWidth(wfp, v1 ^ 0x8000, 2); // 左側の波形値
+		writeValueWidth(wfp, v2 ^ 0x8000, 2); // 右側の波形値
 
 		wavSize += 4;
 	}
