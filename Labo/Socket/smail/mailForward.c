@@ -344,6 +344,9 @@ static void Distribute(autoList_t *memberList, char *groupName, char *mailFrom) 
 		addElement(bodyLines, (uint)xcout("From: %s", fromField));
 		addElement(bodyLines, (uint)xcout("Date: %s", dateField));
 		addElement(bodyLines, (uint)xcout("Message-Id: %s", messageId));
+		addElement(bodyLines, (uint)xcout("Counter: %u", counter));
+		addElement(bodyLines, (uint)strx("--"));
+		addElement(bodyLines, (uint)strx("このメールは「エラーになったメールの送信元」にのみ送信しています。"));
 
 		DoSendTextMail(mailFrom, "メール配信エラーのお知らせ", bodyLines);
 
