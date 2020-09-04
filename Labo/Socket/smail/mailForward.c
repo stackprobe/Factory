@@ -334,18 +334,18 @@ static void Distribute(autoList_t *memberList, char *groupName, char *mailFrom) 
 		if(!messageId)
 			messageId = strx("<NONE>");
 
-		toAsciiLine(fromField, 0, 0, 1); // 送信テキストにするため
-		toAsciiLine(dateField, 0, 0, 1); // 送信テキストにするため
-		toAsciiLine(messageId, 0, 0, 1); // 送信テキストにするため
+		toAsciiLine(fromField, 0, 0, 1); // 送信テキストに使用するため
+		toAsciiLine(dateField, 0, 0, 1); // 送信テキストに使用するため
+		toAsciiLine(messageId, 0, 0, 1); // 送信テキストに使用するため
 
-		addElement(bodyLines, (uint)strx("以下に示すメールの配信中にエラーが発生しました。"));
+		addElement(bodyLines, (uint)strx("以下のメール配信中にエラーが発生しました。"));
 		addElement(bodyLines, (uint)strx("メールが大きすぎるのかもしれません。"));
 		addElement(bodyLines, (uint)strx("--"));
 		addElement(bodyLines, (uint)xcout("From: %s", fromField));
 		addElement(bodyLines, (uint)xcout("Date: %s", dateField));
 		addElement(bodyLines, (uint)xcout("Message-Id: %s", messageId));
 
-		DoSendTextMail(mailFrom, "メール送信エラーのお知らせ", bodyLines);
+		DoSendTextMail(mailFrom, "メール配信エラーのお知らせ", bodyLines);
 
 		memFree(dateField);
 		memFree(messageId);
