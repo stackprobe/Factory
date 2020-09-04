@@ -1,3 +1,12 @@
+/*
+	Run.exe 実行ファイル
+
+	----
+
+	実行ファイルが存在する場合のみ実行する。
+	実行ファイルと同じ場所に移動してから実行する。
+*/
+
 #include "C:\Factory\Common\all.h"
 
 static void Run_EE(char *file, int exeFlag, int escapedFlag)
@@ -18,6 +27,9 @@ static void Run_EE(char *file, int exeFlag, int escapedFlag)
 				localFileOrig = localFile;
 				localFile     = changeExt(localFile, exeFlag ? "exe"      : "bat");
 				localFileDone = changeExt(localFile, exeFlag ? "exe_done" : "bat_done");
+
+				removeFileIfExist(localFile);
+				removeFileIfExist(localFileDone);
 
 				moveFile(localFileOrig, localFile);
 			}
