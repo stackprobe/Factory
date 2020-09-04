@@ -108,6 +108,7 @@ void readWAVFileToCSVFile(char *rFile, char *wFile)
 		if(!strcmp(name, "fmt "))
 		{
 			errorCase_m(Fmt.Loaded, "複数のフォーマットチャンクは処理出来ません。"); // ? 2回目のフォーマットチャンク
+			errorCase(size < 16);
 
 			Fmt.Loaded       = 1;
 			Fmt.FormatID     = readValueWidth(rfp, 2);
