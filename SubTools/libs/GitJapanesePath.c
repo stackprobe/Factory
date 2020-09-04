@@ -1,5 +1,8 @@
 #include "GitJapanesePath.h"
 
+#define RESTORE_BATCH "_run_me_for_restore_non_ascii_path_name.bat_"
+//#define RESTORE_BATCH "_run_me_for_restore_japanese_path_name.bat_"
+
 #define ESC_LOCALPATH "[Includes-Non-ASCII-characters]_0001"
 //#define ESC_LOCALPATH "[Japanese-path-name]_0001"
 //#define ESC_LOCALPATH "JP_0001"
@@ -132,7 +135,7 @@ static void SolveJpnPath(char *rootDir, char *realRootDir)
 }
 void SolveJapanesePath(char *rootDir)
 {
-	char *batFile = combine(rootDir, "_run_me_for_restore_japanese_path_name.bat_");
+	char *batFile = combine(rootDir, RESTORE_BATCH);
 
 	LOGPOS();
 
