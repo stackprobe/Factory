@@ -24,6 +24,7 @@ autoList_t *GetMailList(char *popServer, uint portno, char *user, char *pass)
 		,outFile
 		));
 
+	cout("lastSystemRet: %d\n", lastSystemRet);
 	LOGPOS_T();
 	mailUnlock();
 
@@ -89,6 +90,7 @@ autoBlock_t *RecvMail(char *popServer, uint portno, char *user, char *pass, uint
 		,outFile
 		));
 
+	cout("lastSystemRet: %d\n", lastSystemRet);
 	LOGPOS_T();
 	mailUnlock();
 
@@ -129,6 +131,7 @@ void DeleteMail(char *popServer, uint portno, char *user, char *pass, uint mailn
 		,pass
 		));
 
+	cout("lastSystemRet: %d\n", lastSystemRet);
 	LOGPOS_T();
 	mailUnlock();
 }

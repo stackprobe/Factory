@@ -27,6 +27,7 @@ void SendMail(char *smtpServer, uint portno, char *user, char *pass, char *fromM
 		,upFile
 		));
 
+	cout("lastSystemRet: %d\n", lastSystemRet);
 	LOGPOS_T();
 	mailUnlock();
 
