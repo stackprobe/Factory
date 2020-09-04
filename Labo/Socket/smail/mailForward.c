@@ -28,6 +28,45 @@ static autoList_t *SendOnlyMemberList;
 static char *CounterFileBase;
 static int RecvAndDeleteMode = 1;
 
+static void DoSendTextMail(char *mailAddressTo, char *subject, autoList_t *bodyLines)
+{
+	char *prmFile = makeTempPath(NULL);
+	FILE *prmFp;
+	char *bodyLine;
+	uint bodyLineIndex;
+
+	LOGPOS();
+
+	prmFp = fileOpen(prmFile, "wt");
+
+	writeLine(prmFp, "/S");
+	writeLine(prmFp, asLine(SmtpServer));
+	writeLine(prmFp, "/P");
+	writeLine_x(prmFp, xcout("%u", SmtpPortno));
+	writeLine(prmFp, "/U");
+	writeLine(prmFp, asLine(UserName));
+	writeLine(prmFp, asLine(Passphrase));
+	writeLine(prmFp, "/MF");
+	writeLine(prmFp, asLine(SelfMailAddress));
+	writeLine(prmFp, "/MT");
+	writeLine(prmFp, asLine(mailAddressTo));
+	writeLine(prmFp, "/T");
+	writeLine(prmFp, asLine(subject));
+
+	foreach(bodyLines, bodyLine, bodyLineIndex)
+	{
+		writeLine(prmFp, "/L");
+		writeLine(prmFp, asLine(bodyLine));
+	}
+	fileClose(prmFp);
+
+	coExecute_x(xcout("C:\\Factory\\SubTools\\mail\\SendTextMail.exe //R \"%s\"", prmFile));
+
+	removeFile(prmFile);
+	memFree(prmFile);
+
+	LOGPOS();
+}
 static char *GetCounterFile(char *groupName)
 {
 	static char *file;
@@ -135,6 +174,8 @@ static int IsKnownMessageId(void) // ret: ? 既知のメール
 	return 0;
 }
 
+static int DistributeOne_ErrorFlag;
+
 static void DistributeOne(char *groupName, char *memberFrom, char *memberTo, uint counter) // 引数は全て安全(書式を満たす文字列か数値)である。
 {
 	autoBlock_t *mail = newBlock();
@@ -199,6 +240,9 @@ static void DistributeOne(char *groupName, char *memberFrom, char *memberTo, uin
 
 	SendMail(SmtpServer, SmtpPortno, UserName, Passphrase, SelfMailAddress, memberTo, mail);
 
+	DistributeOne_ErrorFlag |= SendMailLastErrorFlag;
+	cout("DistributeOne_ErrorFlag: %d (%d)\n", DistributeOne_ErrorFlag, SendMailLastErrorFlag);
+
 	releaseAutoBlock(mail);
 	memFree(mimeVersion);
 	memFree(contentType);
@@ -243,6 +287,8 @@ static void Distribute(autoList_t *memberList, char *groupName, char *mailFrom) 
 	shuffledMemberList = copyAutoList(memberList);
 	shuffle(shuffledMemberList);
 
+	DistributeOne_ErrorFlag = 0;
+
 	foreach(shuffledMemberList, member, index)
 	{
 		int sendonly = findLine(SendOnlyMemberList, member) < getCount(SendOnlyMemberList); // ? 'member' is sendonly member
@@ -269,6 +315,44 @@ static void Distribute(autoList_t *memberList, char *groupName, char *mailFrom) 
 		}
 	}
 	releaseAutoList(shuffledMemberList);
+
+	if(DistributeOne_ErrorFlag)
+	{
+		autoList_t *bodyLines = newList();
+		char *fromField = MP_GetHeaderValue("From");
+		char *dateField = MP_GetHeaderValue("Date");
+		char *messageId = MP_GetHeaderValue("Message-Id");
+
+		LOGPOS();
+
+		if(!fromField)
+			fromField = strx("<NONE>");
+
+		if(!dateField)
+			dateField = strx("<NONE>");
+
+		if(!messageId)
+			messageId = strx("<NONE>");
+
+		toAsciiLine(fromField, 0, 0, 1); // 送信テキストにするため
+		toAsciiLine(dateField, 0, 0, 1); // 送信テキストにするため
+		toAsciiLine(messageId, 0, 0, 1); // 送信テキストにするため
+
+		addElement(bodyLines, (uint)strx("以下に示すメールの配信中にエラーが発生しました。"));
+		addElement(bodyLines, (uint)strx("メールが大きすぎるのかもしれません。"));
+		addElement(bodyLines, (uint)strx("--"));
+		addElement(bodyLines, (uint)xcout("From: %s", fromField));
+		addElement(bodyLines, (uint)xcout("Date: %s", dateField));
+		addElement(bodyLines, (uint)xcout("Message-Id: %s", messageId));
+
+		DoSendTextMail(mailFrom, "メール送信エラーのお知らせ", bodyLines);
+
+		memFree(dateField);
+		memFree(messageId);
+		releaseDim(bodyLines, 1);
+
+		LOGPOS();
+	}
 }
 static void RecvEvent(void)
 {
@@ -332,6 +416,7 @@ static void RecvEvent(void)
 			if(!subject || !mbs_stristr(subject, "[]")) // ? 空のグループパターンが無い
 			{
 				errorCase(!mail_myself);
+				DistributeOne_ErrorFlag = 0;
 				DistributeOne("", mail_myself, mail_myself, 0);
 				setCount(indexes, 0);
 			}
