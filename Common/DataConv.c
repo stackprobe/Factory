@@ -486,6 +486,8 @@ endfunc:
 
 /*
 	ex. lineToFairLocalPath(file, strlen( file が存在するディレクトリのフルパス ));
+
+	実際に作成可能なローカル名より基準が厳しい。
 */
 char *lineToFairLocalPath(char *line, uint dirSize)
 {
@@ -544,7 +546,7 @@ char *lineToFairLocalPath_x(char *line, uint dirSize)
 	memFree(line);
 	return retLine;
 }
-int isFairLocalPath(char *path, uint dirSize)
+int isFairLocalPath(char *path, uint dirSize) // dirSize: path が存在するディレクトリのフルパスの長さ、考慮しない場合は 0 を指定すること。
 {
 	char *swrk;
 	int retval;
@@ -585,7 +587,7 @@ char *lineToFairRelPath_x(char *line, uint dirSize)
 	memFree(line);
 	return retLine;
 }
-int isFairRelPath(char *path, uint dirSize)
+int isFairRelPath(char *path, uint dirSize) // dirSize: path が存在するディレクトリのフルパスの長さ、考慮しない場合は 0 を指定すること。
 {
 	char *tmp;
 	int retval;
@@ -595,6 +597,36 @@ int isFairRelPath(char *path, uint dirSize)
 
 	memFree(tmp);
 	return retval;
+}
+int isFairHrefPath(char *path, int pathDelim) // pathDelim: "/\\"
+{
+	autoList_t *tokens;
+	char *token;
+	uint index;
+
+	if(1000 < strlen(path)) // ? いくらなんでも長すぎる。
+		return 0;
+
+	if(pathDelim == '/')
+	{
+		tokens = tokenize(path, '/');
+	}
+	else if(pathDelim == '\\')
+	{
+		if(strchr(path, '/'))
+			return 0;
+
+		tokens = tokenizeYen(path);
+	}
+	else
+		error();
+
+	foreach(tokens, token, index)
+		if(strcmp(token, ".") && strcmp(token, "..") && !isFairLocalPath(token, 0))
+			break;
+
+	releaseDim(tokens, 1);
+	return !token;
 }
 char *toFairFullPathFltr(char *path) // path が不正な場合は error();
 {

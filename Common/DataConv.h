@@ -58,6 +58,7 @@ int isFairLocalPath(char *path, uint dirSize);
 char *lineToFairRelPath(char *line, uint dirSize);
 char *lineToFairRelPath_x(char *line, uint dirSize);
 int isFairRelPath(char *path, uint dirSize);
+int isFairHrefPath(char *path, int pathDelim);
 char *toFairFullPathFltr(char *path);
 char *toFairFullPathFltr_x(char *path);
 
