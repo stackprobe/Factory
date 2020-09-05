@@ -5,7 +5,6 @@ int SendMailLastErrorFlag; // ? 最後のメール送信は送信エラーだった。
 void SendMail(char *smtpServer, uint portno, char *user, char *pass, char *fromMailAddress, char *toMailAddress, autoBlock_t *mail)
 {
 	char *upFile = makeTempPath(NULL);
-	int ret;
 
 	LOGPOS();
 
@@ -30,9 +29,9 @@ void SendMail(char *smtpServer, uint portno, char *user, char *pass, char *fromM
 		,upFile
 		));
 
+	LOGPOS_T();
 	cout("lastSystemRet: %d\n", lastSystemRet);
 	SendMailLastErrorFlag = lastSystemRet != 0; // 終了コード 0 以外は送信エラーと見なす。
-	LOGPOS_T();
 	mailUnlock();
 
 	removeFile(upFile);

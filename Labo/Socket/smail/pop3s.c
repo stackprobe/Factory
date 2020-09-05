@@ -24,8 +24,8 @@ autoList_t *GetMailList(char *popServer, uint portno, char *user, char *pass)
 		,outFile
 		));
 
-	cout("lastSystemRet: %d\n", lastSystemRet);
 	LOGPOS_T();
+	cout("lastSystemRet: %d\n", lastSystemRet);
 	mailUnlock();
 
 	createFileIfNotExist(outFile); // リストが空でも作成されるはずだが、念の為
@@ -90,8 +90,8 @@ autoBlock_t *RecvMail(char *popServer, uint portno, char *user, char *pass, uint
 		,outFile
 		));
 
-	cout("lastSystemRet: %d\n", lastSystemRet);
 	LOGPOS_T();
+	cout("lastSystemRet: %d\n", lastSystemRet);
 	mailUnlock();
 
 	createFileIfNotExist(outFile); // メールが無ければ作成されない。-- メールの有無は GetMailList() で確認すること。本関数は何かしら返す。
@@ -131,7 +131,7 @@ void DeleteMail(char *popServer, uint portno, char *user, char *pass, uint mailn
 		,pass
 		));
 
-	cout("lastSystemRet: %d\n", lastSystemRet);
 	LOGPOS_T();
+	cout("lastSystemRet: %d\n", lastSystemRet);
 	mailUnlock();
 }

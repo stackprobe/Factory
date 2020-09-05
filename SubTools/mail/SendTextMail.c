@@ -1,7 +1,7 @@
 /*
 	SendTextMail.exe [/E] /S サーバー [/P ポート番号] /U ユーザー名 パスワード /MF 送信元メールアドレス /MT 送信先メールアドレス /T 表題 [/L テキスト行 | /F テキストファイル]...
 
-		/E ... envから設定を読み込む
+		/E ... env から設定を読み込む
 
 			SMTPS_SERVER      ... サーバー
 			SMTPS_SERVER_PORT ... ポート番号
@@ -9,6 +9,13 @@
 			SMTPS_PASS        ... パスワード
 			SMTPS_FROM        ... 送信元メールアドレス
 			SMTPS_TO          ... 送信先メールアドレス
+
+	----
+	例：送信先メールアドレス以外を env から読み込んで、送信先メールアドレスは引数で指定したい場合
+
+	SendTextMail.exe /E /MT aaaaaaaa@example.test /T 表題 /F 本文.txt
+
+		/E で env から読み込んだ値は以降のオプションによって上書き可能です。
 */
 
 #include "C:\Factory\Common\all.h"
