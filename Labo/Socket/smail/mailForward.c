@@ -338,9 +338,9 @@ static void Distribute(autoList_t *memberList, char *groupName, char *mailFrom) 
 		toAsciiLine(dateField, 0, 0, 1); // 送信テキストに使用するため
 		toAsciiLine(messageId, 0, 0, 1); // 送信テキストに使用するため
 
-		addElement(bodyLines, (uint)strx("以下のメール配信中にエラーが発生しました。"));
+		addElement(bodyLines, (uint)strx("メールの配信中にエラーが発生しました。"));
 		addElement(bodyLines, (uint)strx("添付ファイルや、埋め込まれたコンテンツに問題があるかもしれません。"));
-		addElement(bodyLines, (uint)strx("--"));
+		addElement(bodyLines, (uint)strx("-- メールの情報"));
 		addElement(bodyLines, (uint)xcout("From: %s", fromField));
 		addElement(bodyLines, (uint)xcout("Date: %s", dateField));
 		addElement(bodyLines, (uint)xcout("Message-Id: %s", messageId));

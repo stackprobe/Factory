@@ -15,7 +15,7 @@ static void Run_EE(char *file, int exeFlag, int escapedFlag)
 
 	if(existFile(file))
 	{
-		char *dir = changeLocal(file, "");
+		char *dir = getParent(file);
 		char *localFile = strx(getLocal(file));
 		char *localFileOrig = NULL;
 		char *localFileDone = NULL;
