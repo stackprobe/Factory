@@ -485,7 +485,9 @@ endfunc:
 #define L2FLP_DEFCHR '_'
 
 /*
-	ex. lineToFairLocalPath(file, strlen( file が存在するディレクトリのフルパス ));
+	使い方：
+		lineToFairLocalPath(file, strlen( file が存在するディレクトリのフルパス ));   ... フルパスの長さを考慮する。
+		lineToFairLocalPath(file, 0);                                                 ... フルパスの長さを考慮しない。それでも PATH_SIZE の制限は受ける。
 
 	実際に作成可能なローカル名より基準が厳しい。
 */
