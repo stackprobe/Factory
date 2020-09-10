@@ -2,6 +2,7 @@
 	rev.exe [/D 年 月 日 時 分 秒 | /T | /U リビジョン | [/P] [POSIX-Time]]
 
 		/D ... 指定日時から POSIX-時間 を表示する。
+		/E ... 指定の POSIX-時間 から年月日時分秒を表示する。但し 0 のときは現時刻, 32535244800 以上のときは 1970/1/1 0:0:0 を表示する。
 		/T ... 現在の POSIX-時間 を表示する。
 		/U ... 指定リビジョンから日時を表示する。
 		/P ... 表示のみ。(エディタを開かない)
@@ -115,6 +116,24 @@ int main(int argc, char **argv)
 
 		errorCase(!isAllowStampData(&sd));
 		cout("%I64d\n", stampDataToTime(&sd));
+		return;
+	}
+	if(argIs("/E"))
+	{
+		time_t t = (time_t)toValue64(nextArg());
+		stampData_t *sd;
+
+		sd = getStampDataTime(t);
+
+		cout("%04u/%02u/%02u (%s) %02u:%02u:%02u\n"
+			,sd->year
+			,sd->month
+			,sd->day
+			,getJWeekDay(sd->weekday)
+			,sd->hour
+			,sd->minute
+			,sd->second
+			);
 		return;
 	}
 	if(argIs("/T"))

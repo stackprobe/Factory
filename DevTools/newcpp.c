@@ -120,4 +120,6 @@ int main(int argc, char **argv)
 		return;
 	}
 	cout("usage: newcpp (GbG2bG3b?) ƒvƒƒWƒFƒNƒg–¼\n");
+	cout("                      ª\n");
+	cout("                     ’è”Ô\n");
 }
