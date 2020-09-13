@@ -13,7 +13,7 @@
 
 	----
 
-	保存したディレクトリは ld NAME で移動する。
+	保存したディレクトリへは ld NAME で移動する。
 */
 
 #include "C:\Factory\Common\all.h"

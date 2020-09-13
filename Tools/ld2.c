@@ -26,7 +26,7 @@
 
 	----
 
-	ディレクトリは sd [NAME] [DIR] で保存する。
+	保存は sd [NAME] [DIR] で行う。
 */
 
 #include "C:\Factory\Common\all.h"
