@@ -155,7 +155,7 @@ static void CheckDyIP(char *domain)
 	{
 		dyIP = strx(RecentDyIP);
 
-		coutJLine_x(xcout("Recved_IP.C=[%s]", dyIP)); // test
+		coutJLine_x(xcout("Recved_IP.C=[%s]", dyIP)); // test // HACK: cout Ç≈ó«Ç¢ÇÒÇ∂Ç·Ç»Ç¢ÅH
 	}
 	domainIP = GetDomainIP(domain);
 
@@ -179,7 +179,7 @@ static void CheckDyIP(char *domain)
 	if(LastUpdatedTime + 35 * 86400 < currTime) // ? timeout
 		retCode = 1;
 
-	if(retCode == 1)
+	if(retCode)
 	{
 		NoIPCount = 0;
 		LastUpdatedTime = currTime;
