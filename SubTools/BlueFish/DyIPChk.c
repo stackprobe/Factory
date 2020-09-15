@@ -206,7 +206,7 @@ int main(int argc, char **argv)
 		lineExp("<>..<>", domain) ||
 		!lineExp("<1,100,-.09AZaz>", domain) || // ファイル名に使用するため短め
 //		!lineExp("<1,300,-.09AZaz>", domain) ||
-		1,
+		0,
 		"不正なドメイン名"
 		);
 

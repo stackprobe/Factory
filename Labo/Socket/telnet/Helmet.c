@@ -37,6 +37,7 @@ char *TelnetServerPerform(char *inputLine, void *vi)
 			"*==============================================================================\r\n"
 			"Masshirosoft Helmet Server.\r\n"
 			"*==============================================================================\r\n"
+			"\r\n"
 			DUMMY_PROMPT
 			);
 	}
@@ -52,6 +53,7 @@ char *TelnetServerPerform(char *inputLine, void *vi)
 		if(*inputLine)
 			return strx(
 				"The filename, directory name, or volume label syntax is incorrect.\r\n"
+				"\r\n"
 				DUMMY_PROMPT
 				);
 
