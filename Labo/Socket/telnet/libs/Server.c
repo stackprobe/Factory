@@ -1,1 +1,154 @@
+/*
+	<PROGRAM>.exe [待受ポート番号]
+*/
+
 #include "Server.h"
+
+#define CONNECT_MAX 30
+#define TIMEOUT_SEC 180
+#define RECV_BUFF_MAX 1000
+#define SEND_BUFF_MAX 16000000 // 16 MB
+
+static uint ConnectCount;
+
+typedef struct Info_st
+{
+	autoBlock_t *RecvQueue;
+	autoBlock_t *SendQueue;
+	char *SendQueueTmpFile;
+	uint Timeout;
+	void *TSP_Info;
+}
+Info_t;
+
+static void *CreateInfo(void)
+{
+	Info_t *i = (Info_t *)memAlloc(sizeof(Info_t));
+
+	ConnectCount++;
+
+	i->RecvQueue = newBlock();
+	i->SendQueue = newBlock();
+	i->SendQueueTmpFile = makeTempFile(NULL);
+	i->Timeout = now() + TIMEOUT_SEC;
+	i->TSP_Info = CreateTelnetServerPerformInfo();
+
+	sleep(30); // 一定時間内における接続数の調整。短命ポート枯渇対策。適当だがジョークサービスなのでこれで良い。
+
+	return i;
+}
+static void ReleaseInfo(void *vi)
+{
+	Info_t *i = (Info_t *)vi;
+
+	ConnectCount--;
+
+	removeFile(i->SendQueueTmpFile);
+
+	releaseAutoBlock(i->RecvQueue);
+	releaseAutoBlock(i->SendQueue);
+	memFree(i->SendQueueTmpFile);
+	ReleaseTelnetServerPerformInfo(i->TSP_Info);
+
+	memFree(i);
+}
+
+static void LoadSendQueue(Info_t *i)
+{
+	releaseAutoBlock(i->SendQueue);
+	i->SendQueue = readBinary(i->SendQueueTmpFile);
+	createFile(i->SendQueueTmpFile); // 空にする。
+}
+static void SaveSendQueue(Info_t *i)
+{
+	writeBinary(i->SendQueueTmpFile, i->SendQueue);
+	releaseAutoBlock(i->SendQueue);
+	i->SendQueue = newBlock();
+}
+
+static char *ParseLine(autoBlock_t *buff) // ret: NULL == 入力行無し
+{
+	char *line = NULL;
+	uint index;
+
+	for(index = 0; index < getSize(buff); index++)
+		if(getByte(buff, index) == '\n')
+			break;
+
+	if(index < getSize(buff))
+	{
+		line = unbindBlock2Line(desertBytes(buff, 0, index + 1));
+		ucTrimEdge(line);
+		toAsciiLine(line, 0, 0, 1);
+	}
+	return line;
+}
+
+static int StopServer;
+
+static int Perform(int sock, void *vi)
+{
+	Info_t *i = (Info_t *)vi;
+	char *inputLine;
+	char *outputText;
+
+	LoadSendQueue(i);
+
+	if(CONNECT_MAX < ConnectCount)
+		return 0;
+
+	if(StopServer)
+		return 0;
+
+	if(SockRecvSequ(sock, i->RecvQueue, sockUserTransmitIndex ? 0 : 100) == -1)
+		return 0;
+
+	if(SockSendSequ(sock, i->SendQueue, 0) == -1)
+		return 0;
+
+	if(RECV_BUFF_MAX < getSize(i->RecvQueue))
+		return 0;
+
+	if(SEND_BUFF_MAX < getSize(i->SendQueue))
+		return 0;
+
+	if(i->Timeout < now())
+		return 0;
+
+	do
+	{
+		inputLine = ParseLine(i->RecvQueue);
+		outputText = TelnetServerPerform(inputLine, i->TSP_Info);
+		memFree(inputLine); // return 0; があるのでここで開放しておく。開放しても後で値を判定するので注意すること。
+
+		if(!outputText)
+			return 0;
+
+		ab_addLine(i->SendQueue, outputText);
+		memFree(outputText);
+
+		if(SockSendSequ(sock, i->SendQueue, 0) == -1)
+			return 0;
+	}
+	while(inputLine);
+
+	SaveSendQueue(i);
+	return 1;
+}
+static int Idle(void)
+{
+	while(hasKey())
+		if(getKey() == 0x1b)
+			StopServer = 1;
+
+	return !StopServer;
+}
+int main(int argc, char **argv)
+{
+	uint portno = 23;
+
+	if(hasArgs(1))
+		portno = toValue(nextArg());
+
+	sockServerUserTransmit(Perform, CreateInfo, ReleaseInfo, portno, IMAX, Idle); // 最大同時接続数の制限は Perform() でやっている。
+}

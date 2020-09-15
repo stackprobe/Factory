@@ -24,7 +24,7 @@ void *memRealloc(void *block, uint size)
 	}
 	return block;
 }
-void memFree(void *block)
+void memFree(void *block) // block: NULL ok
 {
 	free(block);
 }

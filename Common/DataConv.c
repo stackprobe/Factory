@@ -996,7 +996,14 @@ int isLine(char *line)
 }
 /*
 	単一行だろうけど、絶対に単一行でないと困る文字列用フィルタ
-	改行区切りの引数ファイルの行データ専用？
+	改行区切りの引数ファイルの行データに使用することを想定
+	例：
+		writeLine(optFp, asLine(option_01));
+		writeLine(optFp, asLine(option_02));
+		writeLine(optFp, asLine(option_03));
+
+	行データに改行が存在すると、それ以降の引数が改行の個数分ずれてしまい、どのような作用をもたらすか想定しづらい。
+	出力ファイル名がずれて意図しない文字列になってしまい、システムや重要なファイルを破壊するかもしれない。
 */
 char *asLine(char *line)
 {

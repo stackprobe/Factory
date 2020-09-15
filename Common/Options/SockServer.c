@@ -182,7 +182,7 @@ static void PerformTransmit(Transmission_t *t, uint waitMillis)
 	{
 		uint64 fileSize;
 
-		if(InterruptMode)
+		if(InterruptMode) // funcPerform() 再帰呼び出し防止
 			return;
 
 		*(uint *)sockClientIp = *(uint *)t->ClientIp;
@@ -245,7 +245,7 @@ static void Transmission(void)
 		else
 		{
 			if(!t)
-				continue;
+				continue; // ここへ到達するケース：切断があってから sockServerPerformInterrupt() から再帰的に呼び出された。
 
 			PerformTransmit(t, index || InterruptMode ? 0 : MILLIS_TIMEOUT_SELECT_SEND_RECV);
 
@@ -278,7 +278,7 @@ void sockServerPerformInterrupt(void)
 		if(SockWait(SSPISock, 0, 0)) // ? 接続あり
 			putElement(Transmissions, index, (uint)CreateTransmissionEx(SSPISock));
 
-	InterruptMode = 1;
+	InterruptMode = 1; // PerformTransmit() から再帰的に funcPerform を呼び出さないように
 	Transmission();
 	InterruptMode = 0;
 }
