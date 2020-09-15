@@ -2,7 +2,8 @@
 
 typedef struct Info_st
 {
-	int Inited;
+	int Status; // "CUPL" == connected, input user, input password, logged in
+	char *User;
 }
 Info_t;
 
@@ -10,7 +11,8 @@ void *CreateTelnetServerPerformInfo(void)
 {
 	Info_t *i = (Info_t *)memAlloc(sizeof(Info_t));
 
-	i->Inited = 0;
+	i->Status = 'C';
+	i->User = NULL;
 
 	return i;
 }
@@ -18,46 +20,83 @@ void ReleaseTelnetServerPerformInfo(void *vi)
 {
 	Info_t *i = (Info_t *)vi;
 
-	// none
-
+	memFree(i->User);
 	memFree(i);
 }
 
-#define DUMMY_PROMPT "C:/Users/Administrator>"
+#define DUMMY_PROMPT_FORMAT "C:/Users/%s.ADMINISTRATOR>"
 
 char *TelnetServerPerform(char *inputLine, void *vi)
 {
 	Info_t *i = (Info_t *)vi;
 
-	if(!i->Inited)
+	switch(i->Status)
 	{
-		i->Inited = 1;
+	case 'C':
+		i->Status = 'U';
 
 		return strx(
-			"*==============================================================================\r\n"
-			"Masshirosoft Helmet Server.\r\n"
-			"*==============================================================================\r\n"
+			"Welcome to Masshirosoft Helmet Service\r\n"
 			"\r\n"
-			DUMMY_PROMPT
+			"login: "
 			);
-	}
-	if(inputLine)
-	{
-		if(
-			!_stricmp(inputLine, "EXIT") ||
-			!_stricmp(inputLine, "QUIT") ||
-			!_stricmp(inputLine, "BYE")
-			)
-			return NULL;
 
-		if(*inputLine)
-			return strx(
-				"The filename, directory name, or volume label syntax is incorrect.\r\n"
+	case 'U':
+		if(inputLine && *inputLine)
+		{
+			i->Status = 'P';
+			i->User = strx(inputLine);
+			i->User = setStrLenRng(i->User, 4, 12, '_');
+			line2csym(i->User);
+
+			return strx("password: ");
+		}
+		break;
+
+	case 'P':
+		if(inputLine && *inputLine)
+		{
+			i->Status = 'L';
+
+			return xcout(
 				"\r\n"
-				DUMMY_PROMPT
+				"*==============================================================================\r\n"
+				"Masshirosoft Helmet Server.\r\n"
+				"*==============================================================================\r\n"
+				"\r\n"
+				DUMMY_PROMPT_FORMAT
+				,i->User
 				);
+		}
+		break;
 
-		return strx(DUMMY_PROMPT);
+	case 'L':
+		if(inputLine)
+		{
+			if(*inputLine)
+			{
+				cout("[%s] Somebody typed: %s\n", c_makeJStamp(NULL, 1), inputLine);
+
+				if(
+					!_stricmp(inputLine, "EXIT") ||
+					!_stricmp(inputLine, "QUIT") ||
+					!_stricmp(inputLine, "BYE")
+					)
+					return NULL;
+
+				return xcout(
+					"The filename, directory name, or volume label syntax is incorrect.\r\n"
+					"\r\n"
+					DUMMY_PROMPT_FORMAT
+					,i->User
+					);
+			}
+			return xcout(DUMMY_PROMPT_FORMAT, i->User);
+		}
+		break;
+
+	default:
+		error();
 	}
 	return strx("");
 }

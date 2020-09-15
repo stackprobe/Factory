@@ -762,8 +762,12 @@ char *setStrLenMin(char *str, uint lenmin, int defchr) // ret: strlen(str) < len
 }
 void setStrLenMax(char *str, uint lenmax)
 {
+#if 1
+	str[strlen_max(str, lenmax)] = '\0';
+#else // old_almost_same
 	if(lenmax < strlen(str))
 		str[lenmax] = '\0';
+#endif
 }
 void toAsciiLine(char *str, int okRet, int okTab, int okSpc)
 {
