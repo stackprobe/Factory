@@ -11,6 +11,52 @@ static int InputJTextMode;
 	_kbhit() 互換性 Vista, 7 明記無し, XPでは再現せず -> Vista 以降で発生するのか?
 
 	この現象を回避するには sock_hasKey() を使用すること。---> sock_hasKey() は押してないのに !0 を返すことがある。
+
+	----
+	2020.9.15
+
+	_kbhit() の動作に問題がある。
+
+	-- ソースここから (正常に動くプログラム)
+
+	#include <stdio.h>
+
+	main()
+	{
+		for(; ; )
+			printf("%02x", _getch());
+	}
+
+	-- ソースここまで
+
+	これを実行し標準入力から文字列を入力した場合の標準出力
+
+	ABC      --->   414243
+	いろは   --->   82a282eb82cd
+
+	-- ソースここから (正常に動かないプログラム)
+
+	#include <stdio.h>
+
+	main()
+	{
+		for(; ; )
+			while(_kbhit())
+				printf("%02x", _getch());
+	}
+
+	-- ソースここまで
+
+	これを実行し標準入力から文字列を入力した場合の標準出力
+
+	ABC      --->   414243
+	いろは   --->   a2a2a2a2a2 ...(省略)... a2a2a2a2a282a0a4a4a4a4a4 ...(省略, この辺でエンター押下)... a4a4a4a4a482a282a40d
+
+	と、日本語を入力した場合明らかにおかしい。
+	影響を受けるのは coInputLinePrn くらいだと思う。
+	coInputLinePrn で日本語入力しなければならないような運用はしていないので、対応はせず、様子見とする。
+
+	Visual C++ 2010 Express で発現する。Visual Studio Community 2019 では発現しない。
 */
 static int TrueHasKey(void)
 {
