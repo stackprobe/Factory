@@ -53,7 +53,7 @@ char *TelnetServerPerform(char *inputLine, void *vi)
 	case INPUT_USER:
 		if(inputLine && *inputLine)
 		{
-			cout("[%s] user: %s\n", c_makeJStamp(NULL, 1), inputLine);
+			cout("[%s] %p user: %s\n", c_makeJStamp(NULL, 1), i, inputLine);
 
 			i->Status = INPUT_PASSWORD;
 
@@ -68,7 +68,7 @@ char *TelnetServerPerform(char *inputLine, void *vi)
 	case INPUT_PASSWORD:
 		if(inputLine && *inputLine)
 		{
-			cout("[%s] password: %s\n", c_makeJStamp(NULL, 1), inputLine);
+			cout("[%s] %p password: %s\n", c_makeJStamp(NULL, 1), i, inputLine);
 
 			i->Status = LOGGED_IN;
 
@@ -89,7 +89,7 @@ char *TelnetServerPerform(char *inputLine, void *vi)
 		{
 			if(*inputLine)
 			{
-				cout("[%s] command: %s\n", c_makeJStamp(NULL, 1), inputLine);
+				cout("[%s] %p command: %s\n", c_makeJStamp(NULL, 1), i, inputLine);
 
 				if(
 					!_stricmp(inputLine, "EXIT") ||

@@ -171,7 +171,8 @@ static void CheckDyIP(char *domain)
 	else
 		NoIPCount++;
 
-	if(10 < NoIPCount)
+	if(2 <= NoIPCount)
+//	if(10 < NoIPCount)
 		retCode = 1;
 
 	cout("currTime - LastUpdatedTime == %.3f\n", (currTime - LastUpdatedTime) / 86400.0);
