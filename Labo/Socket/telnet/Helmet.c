@@ -1,8 +1,17 @@
 #include "libs\Server.h"
 
+typedef enum Status_et
+{
+	CONNECTED,
+	INPUT_USER,
+	INPUT_PASSWORD,
+	LOGGED_IN,
+}
+Status_t;
+
 typedef struct Info_st
 {
-	int Status; // "CUPL" == connected, input user, input password, logged in
+	Status_t Status;
 	char *User;
 }
 Info_t;
@@ -11,7 +20,7 @@ void *CreateTelnetServerPerformInfo(void)
 {
 	Info_t *i = (Info_t *)memAlloc(sizeof(Info_t));
 
-	i->Status = 'C';
+	i->Status = CONNECTED;
 	i->User = NULL;
 
 	return i;
@@ -32,8 +41,8 @@ char *TelnetServerPerform(char *inputLine, void *vi)
 
 	switch(i->Status)
 	{
-	case 'C':
-		i->Status = 'U';
+	case CONNECTED:
+		i->Status = INPUT_USER;
 
 		return strx(
 			"Welcome to Masshirosoft Helmet Service\r\n"
@@ -41,10 +50,13 @@ char *TelnetServerPerform(char *inputLine, void *vi)
 			"login: "
 			);
 
-	case 'U':
+	case INPUT_USER:
 		if(inputLine && *inputLine)
 		{
-			i->Status = 'P';
+			cout("[%s] user: %s\n", c_makeJStamp(NULL, 1), inputLine);
+
+			i->Status = INPUT_PASSWORD;
+
 			i->User = strx(inputLine);
 			i->User = setStrLenRng(i->User, 4, 12, '_');
 			line2csym(i->User);
@@ -53,10 +65,12 @@ char *TelnetServerPerform(char *inputLine, void *vi)
 		}
 		break;
 
-	case 'P':
+	case INPUT_PASSWORD:
 		if(inputLine && *inputLine)
 		{
-			i->Status = 'L';
+			cout("[%s] password: %s\n", c_makeJStamp(NULL, 1), inputLine);
+
+			i->Status = LOGGED_IN;
 
 			return xcout(
 				"\r\n"
@@ -70,12 +84,12 @@ char *TelnetServerPerform(char *inputLine, void *vi)
 		}
 		break;
 
-	case 'L':
+	case LOGGED_IN:
 		if(inputLine)
 		{
 			if(*inputLine)
 			{
-				cout("[%s] Somebody typed: %s\n", c_makeJStamp(NULL, 1), inputLine);
+				cout("[%s] command: %s\n", c_makeJStamp(NULL, 1), inputLine);
 
 				if(
 					!_stricmp(inputLine, "EXIT") ||
