@@ -6,8 +6,7 @@
 
 #define CONNECT_MAX 30
 #define TIMEOUT_SEC 180
-#define RECV_BUFF_MAX 1000
-#define SEND_BUFF_MAX 16000000 // 16 MB
+#define RECV_BUFF_MAX 2000
 
 static uint ConnectCount;
 
@@ -15,7 +14,6 @@ typedef struct Info_st
 {
 	autoBlock_t *RecvQueue;
 	autoBlock_t *SendQueue;
-	char *SendQueueTmpFile;
 	uint Timeout;
 	void *TSP_Info;
 }
@@ -29,7 +27,6 @@ static void *CreateInfo(void)
 
 	i->RecvQueue = newBlock();
 	i->SendQueue = newBlock();
-	i->SendQueueTmpFile = makeTempFile(NULL);
 	i->Timeout = now() + TIMEOUT_SEC;
 	i->TSP_Info = CreateTelnetServerPerformInfo();
 
@@ -43,27 +40,11 @@ static void ReleaseInfo(void *vi)
 
 	ConnectCount--;
 
-	removeFile(i->SendQueueTmpFile);
-
 	releaseAutoBlock(i->RecvQueue);
 	releaseAutoBlock(i->SendQueue);
-	memFree(i->SendQueueTmpFile);
 	ReleaseTelnetServerPerformInfo(i->TSP_Info);
 
 	memFree(i);
-}
-
-static void LoadSendQueue(Info_t *i)
-{
-	releaseAutoBlock(i->SendQueue);
-	i->SendQueue = readBinary(i->SendQueueTmpFile);
-	createFile(i->SendQueueTmpFile); // 空にする。
-}
-static void SaveSendQueue(Info_t *i)
-{
-	writeBinary(i->SendQueueTmpFile, i->SendQueue);
-	releaseAutoBlock(i->SendQueue);
-	i->SendQueue = newBlock();
 }
 
 static char *ParseLine(autoBlock_t *buff) // ret: NULL == 入力行無し
@@ -83,14 +64,11 @@ static char *ParseLine(autoBlock_t *buff) // ret: NULL == 入力行無し
 	}
 	return line;
 }
-
 static int Perform(int sock, void *vi)
 {
 	Info_t *i = (Info_t *)vi;
 	char *inputLine;
 	char *outputText;
-
-	LoadSendQueue(i);
 
 	if(CONNECT_MAX < ConnectCount)
 		return 0;
@@ -104,14 +82,14 @@ static int Perform(int sock, void *vi)
 	if(RECV_BUFF_MAX < getSize(i->RecvQueue))
 		return 0;
 
-	if(SEND_BUFF_MAX < getSize(i->SendQueue))
-		return 0;
-
 	if(i->Timeout < now())
 		return 0;
 
 	do
 	{
+		if(getSize(i->SendQueue))
+			break;
+
 		inputLine = ParseLine(i->RecvQueue);
 		outputText = TelnetServerPerform(inputLine, i->TSP_Info);
 		memFree(inputLine); // return 0; があるのでここで開放しておく。開放しても後で値を判定するので注意すること。
@@ -127,7 +105,6 @@ static int Perform(int sock, void *vi)
 	}
 	while(inputLine);
 
-	SaveSendQueue(i);
 	return 1;
 }
 static int Idle(void)

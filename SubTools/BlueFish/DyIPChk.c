@@ -171,7 +171,7 @@ static void CheckDyIP(char *domain)
 	else
 		NoIPCount++;
 
-	if(2 <= NoIPCount)
+	if(3 <= NoIPCount)
 //	if(10 < NoIPCount)
 		retCode = 1;
 
