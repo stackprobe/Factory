@@ -306,7 +306,7 @@ static void Main2(void)
 
 	Account = strx(nextArg());
 //	line2csym(Account); // old
-	line2csym_ext(Account, "."); // todo: アカウントに使える文字を追加
+	line2csym_ext(Account, "."); // アカウントに使える文字を必要に応じて追加
 	DestDir = makeFullPath(nextArg());
 
 	errorCase_m(hasArgs(1), "不明なコマンド引数");
