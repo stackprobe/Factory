@@ -284,7 +284,7 @@ char *zPad64(uint64 value, char *digits, uint minlen)
 	reverseBytes(buff);
 	return unbindBlock2Line(buff);
 }
-char *zPad(uint64 value, char *digits, uint minlen)
+char *zPad(uint value, char *digits, uint minlen)
 {
 	return zPad64((uint64)value, digits, minlen);
 }

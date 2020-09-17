@@ -1,3 +1,5 @@
+// use int
+
 #include "C:\Factory\Common\all.h"
 
 static void PrintRep(int chr, int n)

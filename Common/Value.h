@@ -53,7 +53,7 @@ uint revEndian(uint value);
 uint64 revEndian64(uint64 value);
 
 char *zPad64(uint64 value, char *digits, uint minlen);
-char *zPad(uint64 value, char *digits, uint minlen);
+char *zPad(uint value, char *digits, uint minlen);
 
 // c_
 char *c_toLineValue64Digits(uint64 value, char *digits);
