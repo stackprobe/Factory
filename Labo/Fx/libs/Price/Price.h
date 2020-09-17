@@ -1,4 +1,4 @@
-typedef struct Price_st
+typedef struct Price_st // static member
 {
 	double Bid;
 	double Ask;

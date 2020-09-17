@@ -3,7 +3,7 @@
 #include "C:\Factory\Common\all.h"
 #include "Prime.h"
 
-typedef struct Fraction_st
+typedef struct Fraction_st // static member
 {
 	uint Numer; // 0 Å` SINTMAX
 	uint Denom; // 1 Å` SINTMAX

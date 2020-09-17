@@ -4,7 +4,7 @@
 
 #define NECTAR2_E_MAX 10
 
-typedef struct Nectar2_st
+typedef struct Nectar2_st // static member
 {
 	uint Handles[NECTAR2_E_MAX];
 	autoBlock_t *RecvBuff;

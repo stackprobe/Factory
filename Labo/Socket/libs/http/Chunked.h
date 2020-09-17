@@ -2,7 +2,7 @@
 
 #include "C:\Factory\Common\Options\SockStream.h"
 
-typedef struct httpChunkedRecver_st
+typedef struct httpChunkedRecver_st // static member
 {
 	SockStream_t *Stream;
 	uint RemSize;

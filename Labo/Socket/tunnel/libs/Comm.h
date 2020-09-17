@@ -4,7 +4,7 @@
 #include "CCCCommon.h"
 #include "IntSleep.h"
 
-typedef struct Comm_st
+typedef struct Comm_st // static member
 {
 	int Sock;
 	int SockClosedFlag;

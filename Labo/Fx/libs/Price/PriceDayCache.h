@@ -1,4 +1,4 @@
-typedef struct PriceDayCache_st
+typedef struct PriceDayCache_st // static member
 {
 	rbTree_t *Tree;
 }

@@ -52,3 +52,15 @@ Encluded
 lssファイルリストを編集
 
 	ef
+
+----
+
+ｎ以下の文字列の長さ
+
+	strlen_max
+
+文字列をｎ以上ｍ未満の長さに
+
+	setStrLenMin
+	setStrLenMax
+	setStrLenRng

@@ -3,7 +3,7 @@
 #include "C:\Factory\Common\all.h"
 #include "bitList.h"
 
-typedef struct bitTable_st
+typedef struct bitTable_st // static member
 {
 	bitList_t *Buffer;
 	uint W;

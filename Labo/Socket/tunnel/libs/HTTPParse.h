@@ -2,7 +2,7 @@
 
 #include "C:\Factory\Common\all.h"
 
-typedef struct HttpDat_st
+typedef struct HttpDat_st // global member
 {
 	autoList_t *Header;
 	char *H_Request;

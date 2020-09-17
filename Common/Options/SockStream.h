@@ -2,7 +2,7 @@
 
 #include "Socket.h"
 
-typedef struct SockBuffer_st
+typedef struct SockBuffer_st // static member
 {
 	uchar *Buffer;
 	uint Size;
@@ -10,7 +10,7 @@ typedef struct SockBuffer_st
 }
 SockBuffer_t;
 
-typedef struct SockStream_st
+typedef struct SockStream_st // static member
 {
 	int Sock;
 	SockBuffer_t R_Buff;
@@ -19,7 +19,7 @@ typedef struct SockStream_st
 	uint BlockTimeout;
 	uint CurrBlockTimeout;
 
-	struct // access free
+	struct // global member
 	{
 		char *SaveFile;
 		char *ServerName;

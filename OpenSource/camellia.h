@@ -3,7 +3,7 @@
 #include "C:\Factory\Common\all.h"
 #include "camellia\camellia.h"
 
-typedef struct camellia_keyTable_st
+typedef struct camellia_keyTable_st // static member
 {
 	camellia_KeyTableType KeyTable;
 	uint KeyBitLength;

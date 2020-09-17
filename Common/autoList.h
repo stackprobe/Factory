@@ -1,4 +1,4 @@
-typedef struct autoList_st
+typedef struct autoList_st // static member
 {
 	uint *Elements;
 	uint Count;

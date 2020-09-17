@@ -3,7 +3,7 @@
 #include "C:\Factory\Common\all.h"
 #include "aes128\aes128.h"
 
-typedef struct AES128_KeyTable_st
+typedef struct AES128_KeyTable_st // static member
 {
 	uint Ctx[44];
 	uint DoEncrypt;

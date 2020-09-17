@@ -13,7 +13,7 @@ void waitThread(uint hdl);
 int waitThreadEx(uint hdl, uint millis);
 void collectDeadThreads(autoList_t *hdls);
 
-typedef struct critical_st
+typedef struct critical_st // static member
 {
 	CRITICAL_SECTION Csec;
 }
@@ -29,7 +29,7 @@ void uncritical(void);
 void inner_uncritical(void);
 void inner_critical(void);
 
-typedef struct semaphore_st
+typedef struct semaphore_st // static member
 {
 	uint EvLeave;
 	uint Count;

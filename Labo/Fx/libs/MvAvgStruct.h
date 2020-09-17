@@ -1,4 +1,4 @@
-typedef struct MvAvg_st
+typedef struct MvAvg_st // static member
 {
 	uint Span;
 	char *Pair;

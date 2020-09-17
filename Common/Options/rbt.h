@@ -2,7 +2,7 @@
 
 #include "C:\Factory\Common\all.h"
 
-typedef struct rbtNode_st // 内部でのみ使用
+typedef struct rbtNode_st // static member // 内部でのみ使用
 {
 	void *Element;
 	int Red;
@@ -11,7 +11,7 @@ typedef struct rbtNode_st // 内部でのみ使用
 }
 rbtNode_t;
 
-typedef struct rbtTree_st
+typedef struct rbtTree_st // static member
 {
 	sint (*FuncComp)(void *, void *, void *);
 	void (*FuncRelease)(void *, void *);

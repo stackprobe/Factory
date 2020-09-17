@@ -103,14 +103,14 @@ typedef unsigned __int64 uint64;
 #define m_noz(a, b) \
 	((a) ? (a) : (b))
 
-typedef struct i2D_st // access free
+typedef struct i2D_st
 {
 	int X;
 	int Y;
 }
 i2D_t;
 
-typedef struct d2D_st // access free
+typedef struct d2D_st
 {
 	double X;
 	double Y;

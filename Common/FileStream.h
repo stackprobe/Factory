@@ -66,7 +66,7 @@ void writeOneValue(char *file, uint value);
 uint64 readFirstValue64(char *file);
 void writeOneValue64(char *file, uint64 value);
 
-typedef struct BUFF_st
+typedef struct BUFF_st // static member
 {
 	FILE *Fp;
 	autoBlock_t *Buffer;

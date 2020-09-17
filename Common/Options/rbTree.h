@@ -3,7 +3,7 @@
 #include "C:\Factory\Common\all.h"
 #include "rbt.h"
 
-typedef struct rbtElement_st // 内部でのみ使用
+typedef struct rbtElement_st // static member // 内部でのみ使用
 {
 	uint Key;
 	uint Value;
@@ -11,7 +11,7 @@ typedef struct rbtElement_st // 内部でのみ使用
 }
 rbtElement_t;
 
-typedef struct rbTree_st
+typedef struct rbTree_st // static member
 {
 	rbtTree_t *Tree;
 	uint (*FuncDuplexKey)(uint);

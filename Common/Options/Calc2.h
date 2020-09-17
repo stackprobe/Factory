@@ -2,7 +2,7 @@
 
 #include "C:\Factory\Common\all.h"
 
-typedef struct calcOperand_st
+typedef struct calcOperand_st // static member
 {
 	autoBlock_t *F;
 	sint E;

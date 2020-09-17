@@ -2,7 +2,7 @@
 
 #include "C:\Factory\Common\all.h"
 
-typedef struct bitList_st
+typedef struct bitList_st // static member
 {
 	autoList_t *Buffer;
 }

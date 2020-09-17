@@ -2,7 +2,7 @@
 
 #include "C:\Factory\Common\all.h"
 
-typedef struct autoQueue_st
+typedef struct autoQueue_st // static member
 {
 	autoBlock_t *Buffer;
 	uint NextPos;

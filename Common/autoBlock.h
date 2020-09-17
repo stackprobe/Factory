@@ -1,4 +1,4 @@
-typedef struct autoBlock_st
+typedef struct autoBlock_st // static member
 {
 	uchar *Block;
 	uint Size;

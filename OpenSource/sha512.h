@@ -3,7 +3,7 @@
 #include "C:\Factory\Common\all.h"
 #include "sha512\sha512.h"
 
-typedef struct sha512_st
+typedef struct sha512_st // static member
 {
 	SHA512_CTX Context;
 }

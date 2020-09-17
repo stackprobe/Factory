@@ -1,4 +1,4 @@
-typedef struct map_st // access free
+typedef struct map_st
 {
 	autoList_t *K;
 	autoList_t *V;

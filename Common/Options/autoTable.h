@@ -2,7 +2,7 @@
 
 #include "C:\Factory\Common\all.h"
 
-typedef struct autoTable_st
+typedef struct autoTable_st // static member
 {
 	autoList_t *Rows;
 	uint (*CreateCell)(void);

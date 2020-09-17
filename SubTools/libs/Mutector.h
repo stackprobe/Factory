@@ -5,7 +5,7 @@
 
 #define MUTECTOR_MTX_MAX 11
 
-typedef struct Mutector_st
+typedef struct Mutector_st // static member
 {
 	uint Mtxs[MUTECTOR_MTX_MAX];
 	int Statuses[MUTECTOR_MTX_MAX];

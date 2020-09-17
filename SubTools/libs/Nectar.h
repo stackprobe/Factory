@@ -3,7 +3,7 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\OpenSource\sha512.h"
 
-typedef struct Nectar_st
+typedef struct Nectar_st // static member
 {
 	uint EvData;
 	uint EvCtrl;

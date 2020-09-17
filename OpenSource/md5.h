@@ -5,7 +5,7 @@
 
 extern void (*md5_interrupt)(void);
 
-typedef struct md5_st
+typedef struct md5_st // static member
 {
 	md5_CTX Context;
 }

@@ -5,7 +5,7 @@
 #include "..\Serializer.h"
 #include "..\Tools.h"
 
-typedef struct Frtwv_st
+typedef struct Frtwv_st // static member
 {
 	char *Ident;
 	uint Mutex;

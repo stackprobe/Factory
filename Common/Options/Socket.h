@@ -26,7 +26,7 @@ void SockLine2Ip(uchar ip[4], char *strip);
 
 extern time_t SockCurrTime;
 
-typedef struct SockBlock_st
+typedef struct SockBlock_st // static member
 {
 	uchar *Block;
 	uint BlockSize;
@@ -35,7 +35,7 @@ typedef struct SockBlock_st
 }
 SockBlock_t;
 
-typedef struct SockFile_st
+typedef struct SockFile_st // static member
 {
 	char *File;
 	uint64 FileSize;

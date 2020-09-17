@@ -11,7 +11,7 @@ int sockConnect(uchar ip[4], char *domain, uint portno);
 int sockConnect_NB(uchar ip[4], char *domain, uint portno);
 void sockDisconnect(int sock);
 
-typedef struct sockClientStatus_st
+typedef struct sockClientStatus_st // static member
 {
 	SockFile_t *PrmFile;
 	SockFile_t *AnsFile;
