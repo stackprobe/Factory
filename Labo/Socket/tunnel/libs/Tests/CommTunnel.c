@@ -52,7 +52,7 @@ static void Perform(int sock, int fwdSock)
 		if(m_01(IsCommDeadAndEmpty(a)) & m_01(IsCommDeadAndEmpty(b))) // —¼•ûŽÀs‚µ‚½‚¢B
 			break;
 
-		// FIXME
+		// HACK
 		// ‚â‚Á‚Â‚¯‘Îô
 		// ‚±‚Ì–â‘è‚ÉŠÖŒW‚ ‚é‚©‚à --> C:\Dev\wb\t20200122_GBCTunnelTest\memo.txt
 		{
