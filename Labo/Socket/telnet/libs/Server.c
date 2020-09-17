@@ -84,8 +84,6 @@ static char *ParseLine(autoBlock_t *buff) // ret: NULL == ì¸óÕçsñ≥Çµ
 	return line;
 }
 
-static int StopServer;
-
 static int Perform(int sock, void *vi)
 {
 	Info_t *i = (Info_t *)vi;
@@ -95,9 +93,6 @@ static int Perform(int sock, void *vi)
 	LoadSendQueue(i);
 
 	if(CONNECT_MAX < ConnectCount)
-		return 0;
-
-	if(StopServer)
 		return 0;
 
 	if(SockRecvSequ(sock, i->RecvQueue, sockUserTransmitIndex ? 0 : 100) == -1)
@@ -137,11 +132,13 @@ static int Perform(int sock, void *vi)
 }
 static int Idle(void)
 {
+	static int endFlag;
+
 	while(hasKey())
 		if(getKey() == 0x1b)
-			StopServer = 1;
+			endFlag = 1;
 
-	return !StopServer;
+	return !endFlag;
 }
 int main(int argc, char **argv)
 {

@@ -80,7 +80,7 @@ static int Perform(int sock, void *vi)
 {
 	Info_t *i = (Info_t *)vi;
 
-	if(StopServer)
+	if(StopServer) // NOTE: sockServerUserTransmit の場合 Idle(funcIdle) が 0 を返したら即切断・終了するので、ここで判定して 0 を返す必要は無い。でも無害なので放置する。
 		return 0;
 
 	if(SockRecvSequ(sock, i->RecvQueue, 1) == -1)
