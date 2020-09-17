@@ -1,7 +1,7 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Thread.h"
 
-static void TestFunc(void *prm) // ts_
+static void TestFunc(uint prm) // ts_
 {
 	uint c;
 
@@ -28,13 +28,13 @@ int main(int argc, char **argv)
 
 	critical();
 	{
-		ths[0] = runThread(TestFunc, "Th_0");
-		ths[1] = runThread(TestFunc, "Th_1");
-		ths[2] = runThread(TestFunc, "Th_2");
+		ths[0] = runThread(TestFunc, (uint)"Th_0");
+		ths[1] = runThread(TestFunc, (uint)"Th_1");
+		ths[2] = runThread(TestFunc, (uint)"Th_2");
 	}
 	uncritical();
 
-	TestFunc("Th_M");
+	TestFunc((uint)"Th_M");
 
 	waitThread(ths[0]);
 	waitThread(ths[1]);

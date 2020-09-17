@@ -2,7 +2,7 @@
 
 #define BUFF_FULL 65000
 
-static void Recv_Th(void *prm)
+static void Recv_Th(uint prm)
 {
 	Comm_t *i = (Comm_t *)prm;
 	autoBlock_t *tmpBuff;
@@ -53,7 +53,7 @@ static void Recv_Th(void *prm)
 	}
 	uncritical();
 }
-static void Send_Th(void *prm)
+static void Send_Th(uint prm)
 {
 	Comm_t *i = (Comm_t *)prm;
 	autoBlock_t *tmpBuff;
@@ -141,8 +141,8 @@ Comm_t *CreateComm(int sock)
 	i->DeadFlag = 0;
 	i->KillFlag = 0;
 	i->ThreadEndedFlag = 0;
-	i->RecvTh = runThread(Recv_Th, i);
-	i->SendTh = runThread(Send_Th, i);
+	i->RecvTh = runThread(Recv_Th, (uint)i);
+	i->SendTh = runThread(Send_Th, (uint)i);
 
 	return i;
 }

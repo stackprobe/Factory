@@ -135,7 +135,7 @@ LOGPOS(); // test
 						sockPair[0] = sock;
 						sockPair[1] = fwdSock;
 
-						runThread(TransmitTh, sockPair);
+						runThread((void (*)(uint))TransmitTh, (uint)sockPair);
 LOGPOS(); // test
 
 						continue; // sock の切断, スリープをすっ飛ばす。

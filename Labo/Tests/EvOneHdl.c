@@ -1,10 +1,8 @@
 #include "C:\Factory\Common\all.h"
 #include "C:\Factory\Common\Options\Thread.h"
 
-static void Test2Th(void *prm)
+static void Test2Th(uint ev)
 {
-	uint ev = (uint)prm;
-
 	LOGPOS();
 	handleWaitForever(ev); // HACK: no crit
 	LOGPOS();
@@ -29,7 +27,7 @@ int main(int argc, char **argv)
 
 	// ---- 2 ----
 
-	th = runThread(Test2Th, (void *)ev);
+	th = runThread(Test2Th, ev);
 
 	sleep(100);
 
@@ -46,11 +44,11 @@ int main(int argc, char **argv)
 
 	// ---- 3 ----
 
-	th1 = runThread(Test2Th, (void *)ev);
+	th1 = runThread(Test2Th, ev);
 	sleep(100);
-	th2 = runThread(Test2Th, (void *)ev);
+	th2 = runThread(Test2Th, ev);
 	sleep(100);
-	th3 = runThread(Test2Th, (void *)ev);
+	th3 = runThread(Test2Th, ev);
 
 	sleep(100);
 

@@ -7,7 +7,7 @@
 
 static uint Eh;
 
-static void WakeUpTh(void * dummy)
+static void WakeUpTh(uint dummy)
 {
 	critical();
 	{
@@ -17,7 +17,7 @@ static void WakeUpTh(void * dummy)
 	}
 	uncritical();
 }
-static void WakeUpTh_S(void * dummy)
+static void WakeUpTh_S(uint dummy)
 {
 	critical();
 	{
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 	critical();
 	{
 		LOGPOS();
-		th = runThread(WakeUpTh, NULL);
+		th = runThread(WakeUpTh, 0);
 		LOGPOS();
 	}
 	uncritical();
@@ -73,7 +73,7 @@ int main(int argc, char **argv)
 	critical();
 	{
 		LOGPOS();
-		th = runThread(WakeUpTh_S, NULL);
+		th = runThread(WakeUpTh_S, 0);
 		LOGPOS();
 	}
 	uncritical();

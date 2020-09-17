@@ -15,7 +15,7 @@ static void HeavyProc(void)
 }
 
 #define FUNC(funcname, sleep_op) \
-	static void funcname(void *dmy) { \
+	static void funcname(uint dummy) { \
 		uint c, d; \
 		EnterCriticalSection(&CrSec); \
 		for(c = 1000; c && KeepTh; c--) { \
@@ -33,7 +33,7 @@ FUNC(Th_02, sleep(0)) // my sleep, will be context switching
 
 #undef FUNC
 
-static void Test01(void (*funcTh)(void *))
+static void Test01(void (*funcTh)(uint))
 {
 	uint th;
 	uint c;
@@ -42,7 +42,7 @@ static void Test01(void (*funcTh)(void *))
 
 	EnterCriticalSection(&CrSec);
 	{
-		th = runThread(funcTh, NULL);
+		th = runThread(funcTh, 0);
 	}
 	LeaveCriticalSection(&CrSec);
 

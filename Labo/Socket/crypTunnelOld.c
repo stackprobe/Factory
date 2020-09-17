@@ -112,9 +112,9 @@ static void UnaddCounter2(autoBlock_t *block, uint64 counter2[2])
 	cout("uaC2: %020I64u, %020I64u\n", counter2[0], counter2[1]);
 }
 
-static void ChannelTh(void *vi)
+static void ChannelTh(uint prm)
 {
-	ChannelInfo_t *i = (ChannelInfo_t *)vi;
+	ChannelInfo_t *i = (ChannelInfo_t *)prm;
 
 	critical();
 	{
@@ -385,8 +385,8 @@ LOGPOS(); // test
 	decChannel->CarryRecvBuffer = rippedBuffer;
 	encChannel->EncryptMode = 1;
 
-	thhdls[0] = runThread(ChannelTh, encChannel);
-	thhdls[1] = runThread(ChannelTh, decChannel);
+	thhdls[0] = runThread(ChannelTh, (uint)encChannel);
+	thhdls[1] = runThread(ChannelTh, (uint)decChannel);
 
 	inner_uncritical();
 	{

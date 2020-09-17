@@ -24,7 +24,7 @@ static void RndSleep(void)
 		inner_critical();
 	}
 }
-static void Th(void *prm)
+static void Th(uint index)
 {
 	critical();
 	{
@@ -66,7 +66,7 @@ static void SemaphoreMain(void)
 	{
 		for(index = 0; index < TH_NUM; index++)
 		{
-			Ths[index] = runThread(Th, (void *)index);
+			Ths[index] = runThread(Th, index);
 		}
 	}
 	uncritical();

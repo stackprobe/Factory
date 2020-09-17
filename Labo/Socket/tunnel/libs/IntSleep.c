@@ -86,7 +86,7 @@ void IntSleep(uint millis) // ts_, critical()ÇÃíÜÇ©ÇÁåƒÇ—èoÇ≥Ç»Ç¢Ç±Ç∆ÅI
 	}
 	uncritical();
 }
-static void EntryGateLockTh(void *dummy)
+static void EntryGateLockTh(uint dummy)
 {
 	enterCritical(&EntryGate);
 	collectEvents(EntryGateUnlockEvHdl, INFINITE);
@@ -108,7 +108,7 @@ void IntSleepInt(void) // ts_
 		if(WaitCount && !EntryGateLockThHdl)
 		{
 			eventSet(WakeupEvHdl);
-			EntryGateLockThHdl = runThread(EntryGateLockTh, NULL);
+			EntryGateLockThHdl = runThread(EntryGateLockTh, 0);
 		}
 	}
 	uncritical();

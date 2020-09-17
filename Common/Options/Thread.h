@@ -8,7 +8,7 @@
 #define thread_tls \
 	__declspec(thread)
 
-uint runThread(void (*userFunc)(void *), void *userInfo);
+uint runThread(void (*userFunc)(uint), uint userInfo);
 void waitThread(uint hdl);
 int waitThreadEx(uint hdl, uint millis);
 void collectDeadThreads(autoList_t *hdls);

@@ -36,9 +36,9 @@ ChannelInfo_t;
 
 static int KeepTheServer = 1;
 
-static void ChannelTh(void *vi)
+static void ChannelTh(uint prm)
 {
-	ChannelInfo_t *i = (ChannelInfo_t *)vi;
+	ChannelInfo_t *i = (ChannelInfo_t *)prm;
 
 	critical();
 	{
@@ -113,8 +113,8 @@ static void PerformTh(int sock, char *strip)
 	channels[1].SendSockDead = 0;
 	channels[1].OtherSideSendSockDead = &channels[0].SendSockDead;
 
-	thhdls[0] = runThread(ChannelTh, channels + 0);
-	thhdls[1] = runThread(ChannelTh, channels + 1);
+	thhdls[0] = runThread(ChannelTh, (uint)(channels + 0));
+	thhdls[1] = runThread(ChannelTh, (uint)(channels + 1));
 
 	inner_uncritical();
 	{

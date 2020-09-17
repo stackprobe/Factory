@@ -121,9 +121,9 @@ WaitInfo_t;
 
 static int KeepTheServer = 1;
 
-static void ChannelTh(void *vi)
+static void ChannelTh(uint prm)
 {
-	ChannelInfo_t *i = (ChannelInfo_t *)vi;
+	ChannelInfo_t *i = (ChannelInfo_t *)prm;
 
 	critical();
 	{
@@ -171,8 +171,8 @@ static void NTCrossChannel(ChannelInfo_t channels[2])
 	channels[0].OtherSideSendSockDead = &channels[1].SendSockDead;
 	channels[1].OtherSideSendSockDead = &channels[0].SendSockDead;
 
-	thhdls[0] = runThread(ChannelTh, channels + 0);
-	thhdls[1] = runThread(ChannelTh, channels + 1);
+	thhdls[0] = runThread(ChannelTh, (uint)(channels + 0));
+	thhdls[1] = runThread(ChannelTh, (uint)(channels + 1));
 
 	inner_uncritical();
 	{
@@ -356,10 +356,10 @@ static void PerformTh(int sock, char *strip)
 endConnect:
 	cout("êÿíf: %d\n", sock);
 }
-static void RefluxChannelTh(void *vi)
+static void RefluxChannelTh(uint prm)
 {
 	ChannelInfo_t channels[2];
-	int *socks = (int *)vi;
+	int *socks = (int *)prm;
 
 	channels[0].SendBuffer = NULL;
 	channels[0].RecvSock = socks[0];
@@ -422,7 +422,7 @@ static void RefluxPerform(uint connectmax)
 							socks[0] = sock;
 							socks[1] = fwdSock;
 
-							addElement(thhdls, runThread(RefluxChannelTh, socks));
+							addElement(thhdls, runThread(RefluxChannelTh, (uint)socks));
 							goto endConnect;
 						}
 					}

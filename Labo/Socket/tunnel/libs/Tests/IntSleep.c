@@ -3,10 +3,8 @@
 
 static int DeadFlag;
 
-static void SleepTh(void *prm)
+static void SleepTh(uint millis)
 {
-	uint millis = (uint)prm;
-
 	for(; ; )
 	{
 		IntSleep(millis);
@@ -29,7 +27,7 @@ int main(int argc, char **argv)
 			uint millis = toValue(nextArg());
 
 			cout("THREAD %u\n", millis);
-			addElement(thList, runThread(SleepTh, (void *)millis));
+			addElement(thList, runThread(SleepTh, millis));
 		}
 	}
 	uncritical();

@@ -14,8 +14,10 @@ Channel_t;
 int ProcDeadFlag;
 int ChannelDeadFlag; // tlsではないので、DataFltr実行中にスレッドが切り替わった先で変更されるかもしれない事に注意！
 
-static void ChannelTransmit(Channel_t *i)
+static void ChannelTransmit(uint prm)
 {
+	Channel_t *i = (Channel_t *)prm;
+
 	critical();
 	{
 		autoBlock_t *rBuff = newBlock();
@@ -224,8 +226,8 @@ void CrossChannel(
 	bToA.P_DeadFlag = &deadFlag;
 	bToA.P_NoDataTimeoutTime = &noDatTmoutTime;
 
-	aToBTh = runThread(ChannelTransmit, &aToB);
-	bToATh = runThread(ChannelTransmit, &bToA);
+	aToBTh = runThread(ChannelTransmit, (uint)&aToB);
+	bToATh = runThread(ChannelTransmit, (uint)&bToA);
 
 	inner_uncritical();
 	{

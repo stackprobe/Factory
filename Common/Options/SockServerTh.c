@@ -46,9 +46,9 @@ static uint TransInfoDeadCount;
 
 static void (*FuncTransmit)(int, char *);
 
-static void PerformTransmit(void *vi)
+static void PerformTransmit(uint prm)
 {
-	TransInfo_t *i = (TransInfo_t *)vi;
+	TransInfo_t *i = (TransInfo_t *)prm;
 
 	critical();
 	{
@@ -190,7 +190,7 @@ void sockServerTh(void (*funcTransmit)(int, char *), uint portno, uint connectma
 
 					i->Sock = clsock;
 					strcpy(i->ClientStrIp, inet_ntoa(clsa.sin_addr));
-					i->Handle = runThread(PerformTransmit, i);
+					i->Handle = runThread(PerformTransmit, (uint)i);
 
 					sockConnectedCount++;
 					sockConnectMonUpdated();

@@ -3,8 +3,8 @@
 typedef struct Info_st
 {
 	uint Busy;
-	void (*UserFunc)(void *);
-	void *UserInfo;
+	void (*UserFunc)(uint);
+	uint UserInfo;
 }
 Info_t;
 
@@ -15,9 +15,9 @@ static uint InfoIndex;
 
 static uint __stdcall Perform(void *prm)
 {
-	Info_t info = *(Info_t *)prm;
+	Info_t info = *(Info_t *)prm; // 実体をコピー
 
-	((Info_t *)prm)->Busy = 0;
+	((Info_t *)prm)->Busy = 0; // 実体をコピーしたので prm の指す先は不要
 
 	info.UserFunc(info.UserInfo);
 	return 0;
@@ -25,7 +25,7 @@ static uint __stdcall Perform(void *prm)
 
 /*
 	スレッドの終了を待つには waitThread() を使用すること。
-	waitThread(runThread(FuncTh));
+	waitThread(runThread(FuncTh, 0));
 	_beginthreadex() で生成したスレッドは明示的に CloseHandle() する必要があるらしいので、waitThread() は必須
 
 	どの関数がスレッドセーフかとかぜんぜん把握していないので、原則として全関数「非スレッドセーフ」とする。この関数もスレッドセーフではない。
@@ -38,7 +38,7 @@ static uint __stdcall Perform(void *prm)
 	runThread() を呼び出した側で critical() されていると、runThread() 側で uncritical() されるまで userFunc() 側の critical() は待たされる。
 	userFunc() 側で uncritical() しても runThread() 側の critical() はアンロックされない！(スレッドが違うから！)
 */
-uint runThread(void (*userFunc)(void *), void *userInfo)
+uint runThread(void (*userFunc)(uint), uint userInfo)
 {
 	Info_t *info;
 	uint hdl;
