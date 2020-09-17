@@ -29,7 +29,7 @@ static void RecvHTTPHeader(SockStream_t *ss)
 		memFree(line);
 	}
 }
-static int Perform(int sock, void *dummy)
+static int Perform(int sock, uint dummy)
 {
 	SockStream_t *ss = CreateSockStream(sock, SESSION_TIMEOUT_SEC);
 
@@ -58,7 +58,7 @@ static int Idle(void)
 static void Main_Res(autoBlock_t *res)
 {
 	ResData = res;
-	sockServerUserTransmit(Perform, (void *(*)(void))getZero, (void (*)(void *))noop_u, PortNo, 1, Idle);
+	sockServerUserTransmit(Perform, getZero, noop_u, PortNo, 1, Idle);
 	ResData = NULL;
 }
 static void Main_ResFile(char *file)

@@ -74,7 +74,7 @@ static uint Port = 80;
 
 static int KeepTheServer = 1;
 
-static int Perform(int sock, void *dummy)
+static int Perform(int sock, uint dummy)
 {
 	int reqcmd;
 	char *requrl;
@@ -230,11 +230,11 @@ static int Perform(int sock, void *dummy)
 	return 0;
 }
 
-static void *CreateInfo(void)
+static uint CreateInfo(void)
 {
-	return NULL;
+	return 0;
 }
-static void ReleaseInfo(void *dummy)
+static void ReleaseInfo(uint dummy)
 {
 	// noop
 }

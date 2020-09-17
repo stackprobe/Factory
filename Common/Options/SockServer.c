@@ -59,7 +59,7 @@ typedef struct Transmission_st
 	SockFile_t *AnsFile;
 	SockBlock_t *AnsAck;
 	time_t ConnectedTime;
-	void *UserInfo;
+	uint UserInfo;
 	uint UserInfoInited;
 }
 Transmission_t;
@@ -68,9 +68,9 @@ static autoList_t *Transmissions;
 static int InterruptMode;
 
 static int (*FuncPerform)(char *, char *);
-static int (*FuncTransmit)(int, void *);
-static void *(*FuncCreateUserInfo)(void);
-static void (*FuncReleaseUserInfo)(void *);
+static int (*FuncTransmit)(int, uint);
+static uint (*FuncCreateUserInfo)(void);
+static void (*FuncReleaseUserInfo)(uint);
 static uint64 PrmFileSizeMax;
 
 uchar sockClientIp[4];
@@ -91,7 +91,7 @@ static Transmission_t *CreateTransmission(int sock, char *strip)
 	i->AnsFile = SockCreateFile(makeTempFile("sock-ans"), 0);
 	i->AnsAck = SockCreateBlock(1);
 	i->ConnectedTime = SockCurrTime;
-	i->UserInfo = NULL;
+	i->UserInfo = 0;
 	i->UserInfoInited = 0;
 
 	return i;
@@ -303,7 +303,7 @@ void sockServerPerformInterrupt(void)
 
 		prmFile, ansFile 共に誤り検出・訂正を行わない。-> PadFile.c を使うように..
 
-	void funcTransmit(int sock, void *userInfo);
+	void funcTransmit(int sock, uint userInfo);
 		呼び出し側の方法で通信を行う。
 		funcTransmit(), funcCreateUserInfo(), funcReleaseUserInfo() 何れの呼び出し中も sockClientIp が有効
 
@@ -311,8 +311,8 @@ void sockServerPerformInterrupt(void)
 			接続中のソケット、funcTransmit() 内で shutdown(), closesocket() してはならない。
 
 		userInfo
-			void *funcCreateUserInfo(void); の戻り値
-			切断時に void funcReleaseUserInfo(void *userInfo); に渡す。
+			uint funcCreateUserInfo(void); の戻り値
+			切断時に void funcReleaseUserInfo(uint userInfo); に渡す。
 
 		戻り値
 			0 以外 == 正常終了
@@ -335,9 +335,9 @@ void sockServerPerformInterrupt(void)
 			0      == サーバーを停止する。
 */
 void sockServerEx(int (*funcPerform)(char *, char *),
-	int (*funcTransmit)(int, void *),
-	void *(*funcCreateUserInfo)(void),
-	void (*funcReleaseUserInfo)(void *),
+	int (*funcTransmit)(int, uint),
+	uint (*funcCreateUserInfo)(void),
+	void (*funcReleaseUserInfo)(uint),
 	uint portno, uint connectmax, uint64 uploadmax, int (*funcIdle)(void))
 {
 	int retval;
@@ -428,9 +428,9 @@ void sockServer(int (*funcPerform)(char *, char *), uint portno, uint connectmax
 	sockServerEx(funcPerform, NULL, NULL, NULL, portno, connectmax, uploadmax, funcIdle);
 }
 void sockServerUserTransmit(
-	int (*funcTransmit)(int, void *),
-	void *(*funcCreateUserInfo)(void),
-	void (*funcReleaseUserInfo)(void *),
+	int (*funcTransmit)(int, uint),
+	uint (*funcCreateUserInfo)(void),
+	void (*funcReleaseUserInfo)(uint),
 	uint portno, uint connectmax, int (*funcIdle)(void))
 {
 	sockServerEx(NULL, funcTransmit, funcCreateUserInfo, funcReleaseUserInfo, portno, connectmax, 0ui64, funcIdle);

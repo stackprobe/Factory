@@ -19,7 +19,7 @@ typedef struct Info_st
 }
 Info_t;
 
-static void *CreateInfo(void)
+static uint CreateInfo(void)
 {
 	Info_t *i = (Info_t *)memAlloc(sizeof(Info_t));
 
@@ -32,11 +32,11 @@ static void *CreateInfo(void)
 
 	sleep(30); // 一定時間内における接続数の調整。短命ポート枯渇対策。適当だがジョークサービスなのでこれで良い。
 
-	return i;
+	return (uint)i;
 }
-static void ReleaseInfo(void *vi)
+static void ReleaseInfo(uint prm)
 {
-	Info_t *i = (Info_t *)vi;
+	Info_t *i = (Info_t *)prm;
 
 	ConnectCount--;
 
@@ -64,9 +64,9 @@ static char *ParseLine(autoBlock_t *buff) // ret: NULL == 入力行無し
 	}
 	return line;
 }
-static int Perform(int sock, void *vi)
+static int Perform(int sock, uint prm)
 {
-	Info_t *i = (Info_t *)vi;
+	Info_t *i = (Info_t *)prm;
 	char *inputLine;
 	char *outputText;
 

@@ -196,9 +196,9 @@ typedef struct Info_st
 }
 Info_t;
 
-static int Perform(int sock, void *vi)
+static int Perform(int sock, uint prm)
 {
-	Info_t *i = (Info_t *)vi;
+	Info_t *i = (Info_t *)prm;
 	char *line;
 	char *swrk;
 	autoList_t *tokens;
@@ -437,7 +437,7 @@ made_retBody_line:
 	return 1;
 }
 
-static void *CreateInfo(void)
+static uint CreateInfo(void)
 {
 	Info_t *i = (Info_t *)memAlloc(sizeof(Info_t));
 
@@ -446,11 +446,11 @@ static void *CreateInfo(void)
 	i->ConnectTime = SockCurrTime;
 
 	cout("Ctor: %p [%s]\n", i, SockIp2Line(sockClientIp));
-	return i;
+	return (uint)i;
 }
-static void ReleaseInfo(void *vi)
+static void ReleaseInfo(uint prm)
 {
-	Info_t *i = (Info_t *)vi;
+	Info_t *i = (Info_t *)prm;
 
 	cout("Dtor: %p [%s]\n", i, SockIp2Line(sockClientIp));
 

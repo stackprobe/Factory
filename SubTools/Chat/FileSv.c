@@ -161,18 +161,18 @@ typedef struct ConnInfo_st
 }
 ConnInfo_t;
 
-static void *CreateConnInfo(void)
+static uint CreateConnInfo(void)
 {
 	ConnInfo_t *i = nb_(ConnInfo_t);
 
 	i->ConnectedTime = now();
 	i->RecvBuff = newBlock();
 
-	return i;
+	return (uint)i;
 }
-static void ReleaseConnInfo(void *vi)
+static void ReleaseConnInfo(uint prm)
 {
-	ConnInfo_t *i = (ConnInfo_t *)vi;
+	ConnInfo_t *i = (ConnInfo_t *)prm;
 
 	releaseAutoBlock(i->RecvBuff);
 
@@ -483,9 +483,9 @@ static int ParseHeaderTokens(ConnInfo_t *i, autoList_t *tokens)
 	}
 	return 0;
 }
-static int Perform(int sock, void *vi)
+static int Perform(int sock, uint prm)
 {
-	ConnInfo_t *i = (ConnInfo_t *)vi;
+	ConnInfo_t *i = (ConnInfo_t *)prm;
 
 	if(!i->SendBuff)
 	{

@@ -35,7 +35,7 @@ static char *FwdDomain = "localhost";
 static uint FwdPort = 80;
 static uint SilentMode;
 
-static void *CreateInfo(void)
+static uint CreateInfo(void)
 {
 	uchar ip[4];
 	int sock;
@@ -44,20 +44,20 @@ static void *CreateInfo(void)
 	sock = sockConnect(ip, FwdDomain, FwdPort);
 
 	cout("ê⁄ë±: %d\n", sock);
-	return (void *)sock;
+	return (uint)sock;
 }
-static void ReleaseInfo(void *vi)
+static void ReleaseInfo(uint prm)
 {
-	int sock = (int)vi;
+	int sock = (int)prm;
 
 	if(sock != -1)
 		sockDisconnect(sock);
 
 	cout("êÿíf: %d\n", sock);
 }
-static int Perform(int sock, void *vi)
+static int Perform(int sock, uint prm)
 {
-	int fwdSock = (int)vi;
+	int fwdSock = (int)prm;
 	int retval = 0;
 	autoBlock_t *sendData = newBlock();
 	autoBlock_t *recvData = newBlock();

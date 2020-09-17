@@ -28,7 +28,7 @@ typedef struct Info_st
 }
 Info_t;
 
-static void *CreateInfo(void)
+static uint CreateInfo(void)
 {
 	Info_t *i = (Info_t *)memAlloc(sizeof(Info_t));
 
@@ -38,11 +38,11 @@ static void *CreateInfo(void)
 	i->UpBuffer = newBlock();
 	i->UpMode = 0;
 
-	return i;
+	return (uint)i;
 }
-static void ReleaseInfo(void *vi)
+static void ReleaseInfo(uint prm)
 {
-	Info_t *i = (Info_t *)vi;
+	Info_t *i = (Info_t *)prm;
 
 	if(i->DLBuffer)
 		releaseAutoBlock(i->DLBuffer);
@@ -50,9 +50,9 @@ static void ReleaseInfo(void *vi)
 	releaseAutoBlock(i->UpBuffer);
 	memFree(i);
 }
-static int Perform(int sock, void *vi)
+static int Perform(int sock, uint prm)
 {
-	Info_t *i = (Info_t *)vi;
+	Info_t *i = (Info_t *)prm;
 	FILE *fp;
 	static char *line;
 

@@ -211,7 +211,7 @@ netError:
 	releaseDim(files, 1);
 	LOGPOS();
 }
-static int Perform(int sock, void *dummyPrm)
+static int Perform(int sock, uint dummyPrm)
 {
 	SockStream_t *ss = CreateSockStream(sock, 30);
 	char *command;
@@ -268,6 +268,6 @@ int main(int argc, char **argv)
 	createDirIfNotExist(ROOTDIR);
 
 	LOGPOS();
-	sockServerUserTransmit(Perform, (void *(*)(void))getZero, (void (*)(void *))noop_u, PORTNO, 1, Idle);
+	sockServerUserTransmit(Perform, getZero, noop_u, PORTNO, 1, Idle);
 	LOGPOS();
 }

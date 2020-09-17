@@ -48,7 +48,7 @@ static int TryExecuteInnerCommand(char *cmdln, char *stdoutFile, char *stderrFil
 	}
 	return 0;
 }
-static int Perform(int sock, void *userInfo)
+static int Perform(int sock, uint userInfo)
 {
 	SockStream_t *i = CreateSockStream(sock, 3600);
 	char *header;
@@ -143,11 +143,11 @@ static int Perform(int sock, void *userInfo)
 	return 0;
 }
 
-static void *CreateInfo(void)
+static uint CreateInfo(void)
 {
-	return NULL;
+	return 0;
 }
-static void ReleaseInfo(void *userInfo)
+static void ReleaseInfo(uint userInfo)
 {
 	// noop
 }

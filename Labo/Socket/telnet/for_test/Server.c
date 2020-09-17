@@ -36,7 +36,7 @@ static void DispRecvData(Info_t *i)
 	}
 }
 
-static void *CreateInfo(void)
+static uint CreateInfo(void)
 {
 	Info_t *i = (Info_t *)memAlloc(sizeof(Info_t));
 
@@ -55,11 +55,11 @@ static void *CreateInfo(void)
 	if(SendData)
 		addBytes(i->SendQueue, SendData);
 
-	return i;
+	return (uint)i;
 }
-static void ReleaseInfo(void *vi)
+static void ReleaseInfo(uint prm)
 {
-	Info_t *i = (Info_t *)vi;
+	Info_t *i = (Info_t *)prm;
 
 	cout("%p 切断\n", i);
 
@@ -76,9 +76,9 @@ static void ReleaseInfo(void *vi)
 
 static int StopServer;
 
-static int Perform(int sock, void *vi)
+static int Perform(int sock, uint prm)
 {
-	Info_t *i = (Info_t *)vi;
+	Info_t *i = (Info_t *)prm;
 
 	if(StopServer) // sockServerUserTransmit の場合 Idle(funcIdle) が 0 を返したら即切断・終了するので、ここで判定して 0 を返す必要は無い。でも無害なので放置する。
 		return 0;

@@ -52,7 +52,7 @@ static void Perform_C(SockStream_t *ss)
 {
 	coExecute("C:\\Factory\\SubTools\\nrun.exe /S localhost /P 60123 /R 3 KCamera\\start");
 }
-static int Perform(int sock, void *dummyPrm)
+static int Perform(int sock, uint dummyPrm)
 {
 	SockStream_t *ss = CreateSockStream(sock, 2);
 	char *command;
@@ -93,6 +93,6 @@ int main(int argc, char **argv)
 	cmdTitle("oCServer");
 
 	LOGPOS();
-	sockServerUserTransmit(Perform, (void *(*)(void))getZero, (void (*)(void *))noop_u, PORTNO, 1, Idle);
+	sockServerUserTransmit(Perform, getZero, noop_u, PORTNO, 1, Idle);
 	LOGPOS();
 }

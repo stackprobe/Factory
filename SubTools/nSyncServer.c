@@ -58,7 +58,7 @@ static void SendDirsAndFiles(SockStream_t *ss, char *dir)
 
 	SockSendLine(ss, "");
 }
-static int Perform(int sock, void *dummyPrm)
+static int Perform(int sock, uint dummyPrm)
 {
 	SockStream_t *ss = CreateSockStream(sock, 2);
 	char *command = NULL;
@@ -241,7 +241,7 @@ int main(int argc, char **argv)
 	cmdTitle(NS_AppTitle);
 
 	// memo: 同時接続禁止。Perform が切断してから次の接続を取りに行くので、connectmax は 1 で良い！
-	sockServerUserTransmit(Perform, (void *(*)(void))getZero, (void (*)(void *))noop_u, RecvPort, 1, Idle);
+	sockServerUserTransmit(Perform, getZero, noop_u, RecvPort, 1, Idle);
 
 	cmdTitle(NS_AppTitle);
 

@@ -182,7 +182,7 @@ static autoBlock_t *SendCredential;
 static int SendFlag;
 static autoBlock_t *SendData;
 
-static int Perform(int sock, void *prm)
+static int Perform(int sock, uint prm)
 {
 	SockStream_t *ss = *(SockStream_t **)prm;
 	Session_t *session;
@@ -288,18 +288,18 @@ errorEnd:
 	AddTimeWait();
 	return 0;
 }
-static void *CreateInfo(void)
+static uint CreateInfo(void)
 {
-	return nb_(SockStream_t *);
+	return (uint)nb_(SockStream_t *);
 }
-static void ReleaseInfo(void *prm)
+static void ReleaseInfo(uint prm)
 {
 	SockStream_t *ss = *(SockStream_t **)prm;
 
 	if(ss)
 		ReleaseSockStream(ss);
 
-	memFree(prm);
+	memFree((SockStream_t **)prm);
 }
 
 // ---- stop event ----
