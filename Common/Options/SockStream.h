@@ -19,7 +19,7 @@ typedef struct SockStream_st // static member
 	uint BlockTimeout;
 	uint CurrBlockTimeout;
 
-	struct // global member
+	struct // pub_member
 	{
 		char *SaveFile;
 		char *ServerName;

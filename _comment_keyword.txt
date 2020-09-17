@@ -9,10 +9,9 @@
 
 	マルチバイト文字を考慮している。
 
-// global member
+// pub_member
 
 	構造体メンバは何処からでも自由にアクセスして良い。
-	特にコメントが無い場合は言語仕様上、必然的に // global member として扱うことになる。
 
 // static member
 

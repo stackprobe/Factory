@@ -2,7 +2,10 @@
 
 #include "C:\Factory\Common\all.h"
 
-typedef struct XNode_st // global member
+/*
+	pub_member
+*/
+typedef struct XNode_st
 {
 	char *Name; // このノードの名前
 	char *Text; // このノードの値
