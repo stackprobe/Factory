@@ -72,7 +72,7 @@ void rcphrEncryptorBlock(autoBlock_t *block, autoList_t *keyTableList, uint64 co
 	SwapCounter2(block);
 	rcphrEncryptor(block, keyTableList, 1);
 }
-int rcphrDecryptorBlock(autoBlock_t *block, autoList_t *keyTableList, uint64 counter2[2]) // ret == 0: block ‚Í”j‘¹‚µ‚Ä‚¢‚éB
+int rcphrDecryptorBlock(autoBlock_t *block, autoList_t *keyTableList, uint64 counter2[2]) // ret: 0 == block ‚Í”j‘¹‚µ‚Ä‚¢‚éB
 {
 	errorCase(!block);
 //	errorCase(!keyTableList); // ‰º‚ÌŠÖ”‚É“n‚·B

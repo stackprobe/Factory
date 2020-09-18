@@ -1,5 +1,7 @@
 /*
-	keyBundle (鍵束)
+	keyBundle:
+		鍵束
+		鍵の束
 		少なくとも一つ以上のキー
 		キーサイズは 16, 24, 32 bytes の何れか、鍵束中のキーサイズは統一
 		キーの端数バイトを認めない。
@@ -14,12 +16,11 @@
 
 #include "Cipher.h"
 
-#define MD5_SIZE 16
-#define BLOCK_SIZE 16
+#define MD5_SIZE 16   // メッセージダイジェストのサイズ (MD5)
+#define BLOCK_SIZE 16 // ブロック暗号 (camellia) のブロックサイズ
 
-// BLOCK_SIZE の倍数であること。
-#define DIV_BLOCK_SIZE_MIN (1024 * 16)
-#define DIV_BLOCK_SIZE_MAX (1024 * 1024 * 128)
+#define DIV_BLOCK_SIZE_MIN (1024 * 16)         // BLOCK_SIZE の倍数であること。
+#define DIV_BLOCK_SIZE_MAX (1024 * 1024 * 128) // BLOCK_SIZE の倍数であること。
 
 autoList_t *cphrCreateKeyTableList(autoBlock_t *keyBundle, uint keySize)
 {
@@ -210,7 +211,7 @@ void cphrAddHash(autoBlock_t *block)
 	addBytes(block, hash);
 	releaseAutoBlock(hash);
 }
-int cphrUnaddHash(autoBlock_t *block) // ret == 0: block は破損している。
+int cphrUnaddHash(autoBlock_t *block) // ret: 0 == block は破損している。
 {
 	autoBlock_t *expectedHash;
 	autoBlock_t *hash;
@@ -252,7 +253,7 @@ void cphrAddPadding(autoBlock_t *block) // 少なくとも block は BLOCK_SIZE バイト
 	errorCase(getSize(block) < BLOCK_SIZE); // 2bs
 	errorCase(getSize(block) % BLOCK_SIZE != 0); // 2bs
 }
-int cphrUnaddPadding(autoBlock_t *block) // ret == 0: block は破損している。
+int cphrUnaddPadding(autoBlock_t *block) // ret: 0 == block は破損している。
 {
 	uint size;
 
@@ -352,7 +353,7 @@ void cphrEncryptorBlock(autoBlock_t *block, autoList_t *keyTableList)
 	releaseAutoBlock(iv);
 	releaseAutoBlock(jv);
 }
-int cphrDecryptorBlock(autoBlock_t *block, autoList_t *keyTableList) // ret == 0: block は破損している。
+int cphrDecryptorBlock(autoBlock_t *block, autoList_t *keyTableList) // ret: 0 == block は破損している。
 {
 	autoBlock_t *iv;
 	int retval = 0;
@@ -401,11 +402,11 @@ static uint GetDivBlockSize(void)
 	return size;
 }
 /*
-	srcFile, destFile
+	srcFile, destFile:
 		同時にストリームを開くので、異なるファイルであること。
 
-	interlude
-		特に必要なければ noop() を指定してね。
+	interlude:
+		特に必要なければ noop() を指定すること。
 */
 void cphrEncryptorFile(char *srcFile, char *destFile, autoList_t *keyTableList, void (*interlude)(void))
 {
@@ -462,7 +463,7 @@ void cphrEncryptorFile(char *srcFile, char *destFile, autoList_t *keyTableList, 
 	releaseAutoBlock(iv);
 	md5_release(md5);
 }
-int cphrDecryptorFile(char *srcFile, char *destFile, autoList_t *keyTableList, void (*interlude)(void)) // ret == 0: srcFile の内容が破損している。
+int cphrDecryptorFile(char *srcFile, char *destFile, autoList_t *keyTableList, void (*interlude)(void)) // ret: 0 == srcFile の内容が破損している。
 {
 	uint64 srcFileSize;
 	uint64 srcIndex = 0ui64;
@@ -555,11 +556,11 @@ endfunc:
 	fileClose(rfp);
 	fileClose(wfp);
 
-	if(iv)    releaseAutoBlock(iv);
-	if(block) releaseAutoBlock(block);
-	if(hash)  releaseAutoBlock(hash);
+	if(iv)           releaseAutoBlock(iv);
+	if(block)        releaseAutoBlock(block);
+	if(hash)         releaseAutoBlock(hash);
 	if(expectedHash) releaseAutoBlock(expectedHash);
-	if(md5) md5_release(md5);
+	if(md5)          md5_release(md5);
 
 	return retval;
 }

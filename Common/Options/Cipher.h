@@ -6,10 +6,12 @@
 #include "C:\Factory\OpenSource\camellia.h"
 #include "C:\Factory\OpenSource\md5.h"
 
-// InputPassphrase2KeyBundle() —p {
+// -- InputPassphrase2KeyBundle() —p ‚±‚±‚©‚ç
+
 #include "C:\Factory\OpenSource\sha512.h"
 #include "C:\Factory\Common\Options\crc.h"
-// }
+
+// -- InputPassphrase2KeyBundle() —p ‚±‚±‚Ü‚Å
 
 autoList_t *cphrCreateKeyTableList(autoBlock_t *keyBundle, uint keySize);
 void cphrReleaseKeyTableList(autoList_t *keyTableList);

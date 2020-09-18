@@ -203,7 +203,7 @@ int SockRecv(int sock, uchar *buffData, uint dataSize)
 
 	return retval;
 }
-int SockTransmit(int sock, uchar *buffData, uint dataSize, uint waitMillis, uint forWrite) // ret == -1: エラー
+int SockTransmit(int sock, uchar *buffData, uint dataSize, uint waitMillis, uint forWrite) // ret: -1 == エラー
 {
 	int retval;
 
@@ -388,7 +388,7 @@ int SockRecvSequ(int sock, autoBlock_t *messageQueue, uint waitMillis)
 {
 	return SockRecvSequ_RM(sock, messageQueue, waitMillis, RECV_MAX);
 }
-char *SockNextLine(autoBlock_t *messageQueue) // ret == NULL: まだ次の行が無い。
+char *SockNextLine(autoBlock_t *messageQueue) // ret: NULL == まだ次の行が無い。
 {
 	uint index;
 

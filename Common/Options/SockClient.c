@@ -206,7 +206,7 @@ endfunc:
 		}
 		SockCleanup();
 */
-int sockConnectEx(uchar ip[4], char *domain, uint portno, int nonBlocking) // ret == -1: ¸”s, -1 ˆÈŠO: ¬Œ÷, ¬Œ÷‚Ì‚Æ‚«‚Í sockDisconnect() ‚ğ–Y‚ê‚¸‚É
+int sockConnectEx(uchar ip[4], char *domain, uint portno, int nonBlocking) // ret: -1 == ¸”s, -1 ˆÈŠO == ¬Œ÷, ¬Œ÷‚Ì‚Æ‚«‚Í sockDisconnect() ‚ğ–Y‚ê‚¸‚É
 {
 	char *strip;
 	int sock;
