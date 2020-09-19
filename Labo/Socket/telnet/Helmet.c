@@ -16,18 +16,18 @@ typedef struct Info_st
 }
 Info_t;
 
-void *CreateTelnetServerPerformInfo(void)
+uint CreateTelnetServerPerformInfo(void)
 {
 	Info_t *i = (Info_t *)memAlloc(sizeof(Info_t));
 
 	i->Status = CONNECTED;
 	i->User = NULL;
 
-	return i;
+	return (uint)i;
 }
-void ReleaseTelnetServerPerformInfo(void *vi)
+void ReleaseTelnetServerPerformInfo(uint prm)
 {
-	Info_t *i = (Info_t *)vi;
+	Info_t *i = (Info_t *)prm;
 
 	memFree(i->User);
 	memFree(i);
@@ -35,9 +35,9 @@ void ReleaseTelnetServerPerformInfo(void *vi)
 
 #define DUMMY_PROMPT_FORMAT "C:/Users/%s.ADMINISTRATOR>"
 
-char *TelnetServerPerform(char *inputLine, void *vi)
+char *TelnetServerPerform(char *inputLine, uint prm)
 {
-	Info_t *i = (Info_t *)vi;
+	Info_t *i = (Info_t *)prm;
 
 	switch(i->Status)
 	{

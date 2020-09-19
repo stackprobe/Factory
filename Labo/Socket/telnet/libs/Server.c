@@ -15,7 +15,7 @@ typedef struct Info_st
 	autoBlock_t *RecvQueue;
 	autoBlock_t *SendQueue;
 	uint Timeout;
-	void *TSP_Info;
+	uint TSP_Prm;
 }
 Info_t;
 
@@ -28,7 +28,7 @@ static uint CreateInfo(void)
 	i->RecvQueue = newBlock();
 	i->SendQueue = newBlock();
 	i->Timeout = now() + TIMEOUT_SEC;
-	i->TSP_Info = CreateTelnetServerPerformInfo();
+	i->TSP_Prm = CreateTelnetServerPerformInfo();
 
 	sleep(30); // 一定時間内における接続数の調整。短命ポート枯渇対策。適当だがジョークサービスなのでこれで良い。
 
@@ -42,7 +42,7 @@ static void ReleaseInfo(uint prm)
 
 	releaseAutoBlock(i->RecvQueue);
 	releaseAutoBlock(i->SendQueue);
-	ReleaseTelnetServerPerformInfo(i->TSP_Info);
+	ReleaseTelnetServerPerformInfo(i->TSP_Prm);
 
 	memFree(i);
 }
@@ -91,7 +91,7 @@ static int Perform(int sock, uint prm)
 			break;
 
 		inputLine = ParseLine(i->RecvQueue);
-		outputText = TelnetServerPerform(inputLine, i->TSP_Info);
+		outputText = TelnetServerPerform(inputLine, i->TSP_Prm);
 		memFree(inputLine); // return 0; があるのでここで開放しておく。開放しても後で値を判定するので注意すること。
 
 		if(!outputText)
