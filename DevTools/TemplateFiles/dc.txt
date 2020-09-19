@@ -2,11 +2,9 @@
 
 typedef struct $UDc_st
 {
-	// Params {
-	// }
+	// <---- prm
 
-	// Return {
-	// }
+	// <---- ret
 
 	int Dummy;
 }

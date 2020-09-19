@@ -90,25 +90,24 @@ static void LoadRemarks(void)
 			i->Ident = nnReadLine(fp);
 			i->Message = nnReadLine(fp);
 
-			// adjust {
-
-			m_range(i->Stamp, 10000101000000ui64, 99991231235959ui64);
-
-			if(getCount(Remarks))
+			// •â³
 			{
-				uint64 nxtLwStmp = ((Remark_t *)getLastElement(Remarks))->Stamp + 1ui64;
+				m_range(i->Stamp, 10000101000000ui64, 99991231235959ui64);
 
-				m_maxim(i->Stamp, nxtLwStmp);
+				if(getCount(Remarks))
+				{
+					uint64 nxtLwStmp = ((Remark_t *)getLastElement(Remarks))->Stamp + 1ui64;
+
+					m_maxim(i->Stamp, nxtLwStmp);
+				}
+
+				setStrLenMax(i->Ident, IDENT_LENMAX);
+				line2JLine(i->Ident, 1, 0, 0, 1); // " @ " ‚ª‚ ‚é‚Ì‚ÅAokSpc == 1
+
+				setStrLenMax(i->Message, MESSAGE_LENMAX);
+				line2JLine(i->Message, 1, 0, 0, 1);
+				trimEdge(i->Message, ' ');
 			}
-
-			setStrLenMax(i->Ident, IDENT_LENMAX);
-			line2JLine(i->Ident, 1, 0, 0, 1); // " @ " ‚ª‚ ‚é‚Ì‚ÅAokSpc == 1
-
-			setStrLenMax(i->Message, MESSAGE_LENMAX);
-			line2JLine(i->Message, 1, 0, 0, 1);
-			trimEdge(i->Message, ' ');
-
-			// }
 
 			addElement(Remarks, (uint)i);
 		}

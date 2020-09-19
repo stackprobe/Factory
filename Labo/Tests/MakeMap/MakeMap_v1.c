@@ -84,12 +84,13 @@ static void MM_BattlePos(int x, int y)
 		int sx = x + xc;
 		int sy = y + yc;
 
-		// 上下ループ化 {
-		sx += Map_W;
-		sx %= Map_W;
-		sy += Map_H;
-		sy %= Map_H;
-		// }
+		// 上下ループ化
+		{
+			sx += Map_W;
+			sx %= Map_W;
+			sy += Map_H;
+			sy %= Map_H;
+		}
 
 		if(
 			0 <= sx && sx < Map_W &&

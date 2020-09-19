@@ -470,12 +470,13 @@ static autoList_t *GetWindowsReservedNodeList(void)
 		addElement(nodes, (uint)xcout("LPT%u", i));
 	}
 
-	// グレーゾーン {
-	addElement(nodes, (uint)"COM0");
-	addElement(nodes, (uint)"LPT0");
-	addElement(nodes, (uint)"CLOCK$");
-	addElement(nodes, (uint)"CONFIG$");
-	// }
+	// グレーゾーン
+	{
+		addElement(nodes, (uint)"COM0");
+		addElement(nodes, (uint)"LPT0");
+		addElement(nodes, (uint)"CLOCK$");
+		addElement(nodes, (uint)"CONFIG$");
+	}
 
 endfunc:
 	return nodes;

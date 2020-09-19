@@ -1,4 +1,4 @@
-// íËî‘ {
+// íËî‘ --->
 #include <conio.h>
 #include <ctype.h>
 #include <direct.h>
@@ -17,7 +17,7 @@
 #include <sys\types.h> // sys/stat.h ÇÊÇËêÊÇ≈Ç†ÇÈÇ±Ç∆ÅB
 #include <sys\stat.h>
 #include <time.h>
-// }
+// <--- íËî‘
 
 #include <windows.h>
 
