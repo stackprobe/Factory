@@ -9,6 +9,7 @@
 #define LOCAL_LICENSE "LICENSE"
 #define LOCAL_LICENSE_IGNORE "LIGNORE" // LICENSEファイルをまだ？設定しない場合、暫定的に？これを置いておく。
 
+static autoList_t *KnownRepos;
 static autoList_t *ErrorFiles;
 static int ErrorFound;
 
@@ -68,6 +69,19 @@ static void CheckGitRelease(char *dir)
 				FoundError(LOCAL_GIT_RELEASE_BAT " の内容に問題があります。(no repoDir)");
 			}
 			memFree(repoDir);
+		}
+
+		{
+			char *repo = ProjectLocalDirToRepositoryName(getLocal(dir));
+
+			if(findJLineICase(KnownRepos, repo) < getCount(KnownRepos))
+			{
+				FoundError(LOCAL_GIT_RELEASE_BAT " の内容に問題があります。(リポジトリの重複)");
+			}
+			else
+			{
+				addElement(KnownRepos, (uint)strx(repo));
+			}
 		}
 	}
 
@@ -141,6 +155,7 @@ static void CheckDir(char *dir)
 }
 int main(int argc, char **argv)
 {
+	KnownRepos = newList();
 	ErrorFiles = newList();
 
 	errorCase_m(argIs("/C"), "廃止オプション"); // zantei
