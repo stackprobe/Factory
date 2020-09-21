@@ -14,6 +14,7 @@ static char *TextColor = "#b5cb8f";
 static char *BackColor = "#556b2f";
 static char *RootParentHRef;
 static int ImageTagDisabled;
+static int MD5Disabled;
 
 static int IsSimpleName(char *localPath)
 {
@@ -88,9 +89,15 @@ static char *MakeDivList(uint depth)
 			char *stamp;
 
 			lsize = thousandComma(lsize);
-			pab = md5_makeHashFile(path);
-			hash = makeHexLine(pab);
-			releaseAutoBlock(pab);
+
+			if(!MD5Disabled)
+			{
+				pab = md5_makeHashFile(path);
+				hash = makeHexLine(pab);
+				releaseAutoBlock(pab);
+			}
+			else
+				hash = strx("unknown (not calculated)");
 
 			updateFindData(path);
 			stamp = makeStamp(lastFindData.time_write);
@@ -238,6 +245,11 @@ readArgs:
 	if(argIs("/-I"))
 	{
 		ImageTagDisabled = 1;
+		goto readArgs;
+	}
+	if(argIs("/-M"))
+	{
+		MD5Disabled = 1;
 		goto readArgs;
 	}
 
