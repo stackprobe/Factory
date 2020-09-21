@@ -3,7 +3,9 @@
 
 		/CLC ... 最終コメントをチェックする。
 
-			HTT_RPC は AutoRelease.bat 未設置なのでチェックされないことに注意 @ 2020.6.19
+	----
+
+	HTT_RPC は AutoRelease.bat 未設置なのでチェックされないことに注意 @ 2020.6.19
 */
 
 #include "C:\Factory\Common\all.h"
