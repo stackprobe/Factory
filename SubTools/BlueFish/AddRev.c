@@ -9,8 +9,8 @@
 #define VER_TOTAL_SIZE_MAX 1000000000ui64 // 1 GB
 
 #define BETA_MIN 3
-#define BETA_MAX 100
-#define BETA_TOTAL_SIZE_MAX 1000000000ui64 // 1 GB
+#define BETA_MAX 10
+#define BETA_TOTAL_SIZE_MAX 150000000ui64 // 150 MB
 
 #define GAME_ORDER_FILE "order.txt"
 #define GAME_TITLE_FILE "title.txt"
