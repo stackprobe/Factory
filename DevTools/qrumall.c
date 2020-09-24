@@ -1,7 +1,7 @@
 /*
 	qrumall [(/D | ROOT-DIR [/R]) [COMMENT]]
 
-		/D ... Daily-Release 'sumire' only
+		/D ... Daily-Release 'soleil' only
 		/R ... ROOT-DIR ‚à rum ‚Ì‘ÎÛ‚Æ‚·‚éB
 */
 
