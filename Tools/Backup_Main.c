@@ -385,21 +385,23 @@ int main(int argc, char **argv)
 
 #if 1 // Toolkit が USB HDD への書き込みエラーを起こしたので、書き込み先をシステムドライブにして様子を見る。@ 2018.3.5
 	{
-	char *midDir = makeTempDir("Backup_Hash_txt_mid");
+		char *midDir = makeTempDir("Backup_Hash_txt_mid");
 
-	coExecute_x(xcout(FILE_TOOLKIT_EXE " /SHA-512-128 %s %s\\_Hash.txt", destDir, midDir));
+		coExecute_x(xcout(FILE_TOOLKIT_EXE " /SHA-512-128 %s %s\\_Hash.txt", destDir, midDir));
 
-	coExecute_x(xcout("COPY /Y %s\\_Hash.txt %s\\_Hash.txt", midDir, destDir));
-	coExecute_x(xcout("COPY /Y %s\\_Hash.txt C:\\tmp\\Backup_Hash.txt", midDir));
-	coExecute_x(xcout("COPY /Y %s\\_Hash.txt C:\\tmp\\Backup_Hash_old.txt", destBackDir)); // 無いかもしれない。
+		coExecute_x(xcout("COPY /Y %s\\_Hash.txt %s\\_Hash.txt", midDir, destDir));
+		coExecute_x(xcout("COPY /Y %s\\_Hash.txt C:\\tmp\\Backup_Hash.txt", midDir));
+		coExecute_x(xcout("COPY /Y %s\\_Hash.txt C:\\tmp\\Backup_Hash_old.txt", destBackDir)); // 無いかもしれない。
 
-	recurRemoveDir_x(midDir);
+		recurRemoveDir_x(midDir);
 	}
 #else // del @ 2018.3.5
-	coExecute_x(xcout(FILE_TOOLKIT_EXE " /SHA-512-128 %s %s\\_Hash.txt", destDir, destDir));
+	{
+		coExecute_x(xcout(FILE_TOOLKIT_EXE " /SHA-512-128 %s %s\\_Hash.txt", destDir, destDir));
 
-	coExecute_x(xcout("COPY /Y %s\\_Hash.txt C:\\tmp\\Backup_Hash.txt", destDir));
-	coExecute_x(xcout("COPY /Y %s\\_Hash.txt C:\\tmp\\Backup_Hash_old.txt", destBackDir)); // 無いかもしれない。
+		coExecute_x(xcout("COPY /Y %s\\_Hash.txt C:\\tmp\\Backup_Hash.txt", destDir));
+		coExecute_x(xcout("COPY /Y %s\\_Hash.txt C:\\tmp\\Backup_Hash_old.txt", destBackDir)); // 無いかもしれない。
+	}
 #endif
 
 	// Backup.bat との連携
