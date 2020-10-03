@@ -2,7 +2,7 @@
 
 tagRng_t lastTagRng;
 
-int updateTagRng(char *str, char *bgnPtn, char *endPtn, int ignoreCase)
+int updateTagRng(char *str, char *bgnPtn, char *endPtn, int ignoreCase) // mbs_
 {
 	tagRng_t *i = &lastTagRng;
 	char *p = mbs_strstrCase(str, bgnPtn, ignoreCase);
@@ -36,5 +36,26 @@ int updateTagRng(char *str, char *bgnPtn, char *endPtn, int ignoreCase)
 		i->end = p;
 	}
 #endif
+	return 1;
+}
+int updateAsciiTagRng(char *str, char *bgnPtn, char *endPtn)
+{
+	tagRng_t *i = &lastTagRng;
+	char *p = strstr(str, bgnPtn);
+
+	if(!p)
+		return 0;
+
+	i->bgn = p;
+	i->innerBgn = p + strlen(bgnPtn);
+
+	p = strstr(i->innerBgn, endPtn);
+
+	if(!p)
+		return 0;
+
+	i->innerEnd = p;
+	i->end = p + strlen(endPtn);
+
 	return 1;
 }

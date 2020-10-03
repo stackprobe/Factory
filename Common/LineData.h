@@ -10,3 +10,5 @@ tagRng_t;
 extern tagRng_t lastTagRng;
 
 int updateTagRng(char *str, char *bgnPtn, char *endPtn, int ignoreCase);
+int updateAsciiTagRng(char *str, char *bgnPtn, char *endPtn);
+

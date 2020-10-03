@@ -64,3 +64,11 @@ lssファイルリストを編集
 	setStrLenMin
 	setStrLenMax
 	setStrLenRng
+
+----
+
+StringTools.Island
+StringTools.Enclosed
+
+	updateTagRng
+	updateAsciiTagRng
