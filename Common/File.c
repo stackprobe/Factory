@@ -1042,12 +1042,13 @@ void semiRemovePath(char *path)
 	char *destPath;
 
 	if(!destDir)
+	{
 		destDir = makeFreeDir();
 
-	SRP_LogInit(destDir);
-
+		SRP_LogInit(destDir);
+	}
 	destPath = combine(destDir, getLocal(path));
-	destPath = toCreatablePath(destPath, destCount);
+	destPath = toCreatableTildaPath(destPath, destCount);
 	movePath(path, destPath);
 
 	SRP_Log(destDir, destPath, path);

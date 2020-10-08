@@ -81,6 +81,8 @@ char *incrementPath(char *path)
 }
 
 /*
+	toCreatablePath(strx("abc123000.txt"), 0);    -> 想定される戻り値 : "abc123000.txt"
+	toCreatablePath(strx("abc123000.txt"), 1);    -> 想定される戻り値 : "abc123000.txt" ～ "abc123001.txt"
 	toCreatablePath(strx("abc123000.txt"), 999);  -> 想定される戻り値 : "abc123000.txt" ～ "abc123999.txt"
 	toCreatablePath(strx("abc123000.txt"), 1000); -> 想定される戻り値 : "abc123000.txt" ～ "abc124000.txt"
 */
@@ -97,6 +99,12 @@ char *toCreatablePath(char *path, uint faultCountMax) // ret: strr(path)
 	}
 	return path;
 }
+/*
+	toCreatableTildaPath(strx("abc123000.txt"), 0);    -> 想定される戻り値 : "abc123000.txt", "abc123000~0.txt"
+	toCreatableTildaPath(strx("abc123000.txt"), 1);    -> 想定される戻り値 : "abc123000.txt", "abc123000~0.txt" ～ "abc123000~1.txt"
+	toCreatableTildaPath(strx("abc123000.txt"), 999);  -> 想定される戻り値 : "abc123000.txt", "abc123000~0.txt" ～ "abc123000~999.txt"
+	toCreatableTildaPath(strx("abc123000.txt"), 1000); -> 想定される戻り値 : "abc123000.txt", "abc123000~0.txt" ～ "abc123000~1000.txt"
+*/
 char *toCreatableTildaPath(char *path, uint faultCountMax) // ret: strr(path)
 {
 	if(existPath(path))

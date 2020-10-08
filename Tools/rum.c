@@ -11,7 +11,7 @@
 	rum.exe [/E | /T | /HA | /H | /1A | /1 | /R] [/D] [.rum_ディレクトリ]
 
 		/E  ... コメント編集
-		/T  ... ごみファイル削除
+		/T  ... ごみファイル削除 + コメントが "削除予定" または "削除予定, " で始まるリビジョンを削除する。
 		/HA ... ファイルの変更履歴を取得、ファイルの一覧を全リビジョンから取得
 		/H  ... ファイルの変更履歴を取得、ファイルの一覧を最後のリビジョンから取得
 		/1A ... 最後のファイルを取得、ファイルの一覧を全リビジョンから取得
@@ -92,6 +92,9 @@
 #define FILE_REV_TREE "tree.txt"
 
 #define DEFAULT_COMMENT "コメント無し"
+
+#define DELETABLE_COMMENT_01 "削除予定"
+#define DELETABLE_COMMENT_02_START_PTN "削除予定, "
 
 #define AUTO_COMMENT_FILE "C:\\appdata\\rum-auto-comment.txt"
 //#define AUTO_COMMENT_FILE "C:\\Factory\\tmp\\auto-comment.txt" // qrumall /D で消される。
@@ -295,7 +298,45 @@ static void EditComment(char *storeDir)
 cancelled:
 	releaseDim(revisions, 1);
 }
-static void EraseLostEntries(char *storeDir)
+static void EraseDeletableRevisions(char *storeDir, int quietFlag)
+{
+	autoList_t *revisions;
+	char *stamp;
+	uint index;
+
+	addCwd(storeDir);
+	addCwd(DIR_REVISIONS);
+
+	revisions = ls(".");
+	foreach(revisions, stamp, index)
+	{
+		char *comment;
+
+		addCwd(stamp);
+		comment = readFirstLine(FILE_REV_COMMENT);
+		unaddCwd();
+
+		if(!strcmp(comment, DELETABLE_COMMENT_01) || startsWith(comment, DELETABLE_COMMENT_02_START_PTN))
+		{
+			cout("削除予定のリビジョンです。\n");
+			cout("%s\n", stamp);
+			cout("%s\n", comment);
+			cout("削除？\n");
+
+			if(quietFlag || clearGetKey() != 0x1b)
+			{
+				cout("削除します。\n");
+				semiRemovePath(stamp);
+			}
+		}
+		memFree(comment);
+	}
+	releaseDim(revisions, 1);
+
+	unaddCwd();
+	unaddCwd();
+}
+static void EraseLostEntries(char *storeDir, int quietFlag)
 {
 	autoList_t *stockFiles;
 	autoList_t *revisions;
@@ -338,7 +379,7 @@ static void EraseLostEntries(char *storeDir)
 				cout("%s\n", entry);
 				cout("削除？\n");
 
-				if(clearGetKey() != 0x1b)
+				if(quietFlag || clearGetKey() != 0x1b)
 				{
 					cout("削除します。\n");
 
@@ -354,6 +395,7 @@ static void EraseLostEntries(char *storeDir)
 		if(entriesModified)
 		{
 			cout("エントリー更新中...\n");
+			semiRemovePath(FILE_REV_FILES);
 			writeLines(FILE_REV_FILES, entries);
 			cout("エントリー更新終了\n");
 		}
@@ -380,6 +422,8 @@ static void TrimStoreDir(char *storeDir, int quietFlag)
 	cout("| 参照されないファイルの削除 |\n");
 	cout("+----------------------------+\n");
 	sleep(500);
+
+	EraseDeletableRevisions(storeDir, quietFlag);
 
 	addCwd(storeDir);
 
@@ -438,14 +482,14 @@ static void TrimStoreDir(char *storeDir, int quietFlag)
 			foreach(stockFiles, stockFile, index)
 			{
 				cout("! %s\n", stockFile);
-				removeFile(stockFile);
+				semiRemovePath(stockFile);
 			}
 		}
 	}
 	unaddCwd();
 	unaddCwd();
 
-	EraseLostEntries(storeDir);
+	EraseLostEntries(storeDir, quietFlag);
 }
 static void FileHistory(char *storeDir, int fromLastRevisionFlag, int lastFileOnly)
 {
