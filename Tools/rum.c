@@ -885,7 +885,7 @@ endFunc:
 static int WithoutExeObjMode;
 static int QuietMode;
 static int NoCheckCollision;
-static int NoNestingCheck;
+//static int NoNestingCheck; // 廃止 @ 2020.10.7
 
 static void Commit(char *dir) // dir: バックアップ元、存在するルートディレクトリではないディレクトリの絶対パス
 {
@@ -928,11 +928,16 @@ static void Commit(char *dir) // dir: バックアップ元、存在するルートディレクトリ
 			removeDir(storeDir);
 		}
 	}
+
+	// 廃止 @ 2020.10.7
+	/*
 	if(NoNestingCheck)
 	{
 		LOGPOS();
 		goto endNestingCheck;
 	}
+	*/
+
 	// 親 .rum チェック
 	{
 		char *parentDir = strx(dir);
@@ -950,15 +955,20 @@ static void Commit(char *dir) // dir: バックアップ元、存在するルートディレクトリ
 
 			if(existDir(parentDir))
 			{
+#if 1
+				error_m("親に .rum アリ");
+#else // del @ 2020.10.7
 				cout("####################\n");
 				cout("## 親に .rum アリ ##\n");
 				cout("####################\n");
 				cout("%s\n", parentDir);
 				sleep(500);
+#endif
 			}
 		}
 		memFree(parentDir);
 	}
+
 	// 子 .rum チェック
 	{
 		autoList_t *subDirs = lssDirs(dir);
@@ -969,11 +979,15 @@ static void Commit(char *dir) // dir: バックアップ元、存在するルートディレクトリ
 		{
 			if(!_stricmp(EXT_STOREDIR, getExt(subDir)))
 			{
+#if 1
+				error_m("子に .rum アリ");
+#else // del @ 2020.10.7
 				cout("####################\n");
 				cout("## 子に .rum アリ ##\n");
 				cout("####################\n");
 				cout("%s\n", subDir);
 				sleep(500);
+#endif
 			}
 		}
 		releaseDim(subDirs, 1);
@@ -1333,8 +1347,12 @@ readArgs:
 	}
 	if(argIs("/-NCHK"))
 	{
+#if 1
+		error_m("/-NCHK オプションは廃止されました。");
+#else // 廃止 @ 2020.10.7
 		NoNestingCheck = 1;
 		goto readArgs;
+#endif
 	}
 	if(argIs("/C"))
 	{
