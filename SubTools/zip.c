@@ -37,7 +37,7 @@
 
 		... OUT-DIR -> OUT-DIR \ { PROJ-NAME } .zip
 
-	zip.exe [/PE-] [/RVE-] /G OUT-DIR PROJ-NAME
+	zip.exe [/PE-] [/RVE-] [/B | /V VER-VAL] /G OUT-DIR PROJ-NAME
 
 		... OUT-DIR -> OUT-DIR \ { PROJ-NAME } _v123.zip
 
@@ -435,6 +435,8 @@ static void AdjustAllPETimeDateStamp(char *dir)
 }
 int main(int argc, char **argv)
 {
+	uint autoVersion = 0;
+
 	errorCase_m(!existFile(ZIP7_LOCAL_FILE) && !existFile(ZIP7_FILE), "7zÇ≥ÇÒÇ™ãèÇ‹ÇπÇÒÅB");
 
 readArgs:
@@ -448,6 +450,17 @@ readArgs:
 	{
 		LOGPOS();
 		ReplaceVersionExeFileDisabled = 1;
+		goto readArgs;
+	}
+	if(argIs("/B"))
+	{
+		autoVersion = VER_BETA;
+		goto readArgs;
+	}
+	if(argIs("/V"))
+	{
+		autoVersion = toValue(nextArg());
+		errorCase(!m_isRange(autoVersion, 1, 999));
 		goto readArgs;
 	}
 
@@ -588,7 +601,7 @@ readArgs:
 		char *projName;
 		char *destZipFile;
 		char *midZipFile;
-		uint version = InputVersion();
+		uint version = autoVersion ? autoVersion : InputVersion();
 
 		outDir = makeFullPath(nextArg());
 		projName = lineToFairLocalPath(nextArg(), 100);
