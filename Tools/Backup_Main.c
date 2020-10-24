@@ -74,7 +74,8 @@ static autoList_t *GetTargetDirs(void)
 		}
 	}
 	releaseDim(paths, 1);
-	rapidSortLines(retDirs);
+	sortJLinesICase(retDirs);
+//	rapidSortLines(retDirs); // old
 
 	userName = getenv("UserName");
 
@@ -119,6 +120,58 @@ static void CheckTargetDirs(autoList_t *dirs)
 
 #define BATCH_BACKUP "C:\\Factory\\tmp\\Backup.bat"
 
+static int ELTD_IsTargetDir(char *destDir, autoList_t *targetDirs)
+{
+	char *targetDir;
+	uint index;
+
+	foreach(targetDirs, targetDir, index)
+		if(!_stricmp(destDir, getLocal(targetDir)))
+			return 1;
+
+	return 0;
+}
+static void EraseLostTargetDirs(autoList_t *targetDirs)
+{
+	autoList_t *destDirs = lsDirs(".");
+	char *destDir;
+	uint index;
+
+	eraseParents(destDirs);
+	sortJLinesICase(destDirs);
+
+	foreach(destDirs, destDir, index)
+	{
+		FILE *fp;
+		char *line;
+
+		cout("%s\n", destDir);
+
+		if(ELTD_IsTargetDir(destDir, targetDirs))
+		{
+			cout("このフォルダはターゲットです。-> 削除しない。\n");
+			continue;
+		}
+		cout("このフォルダはターゲットではありません。-> 削除する。\n");
+
+		fp = fileOpen(BATCH_BACKUP, "wt");
+
+//		writeLine(fp, "SET COPYCMD=");
+		writeLine(fp, line = xcout("RD /S /Q \"%s\"", destDir)); memFree(line);
+//		writeLine(fp, line = xcout("ROBOCOPY.EXE \"%s\" \"%s\" /MIR", targetDir, destDir)); memFree(line);
+//		writeLine(fp, "ECHO ERRORLEVEL=%ERRORLEVEL%");
+
+		fileClose(fp);
+
+		cout("ロストしたフォルダを削除しています...\n");
+
+		execute(line = xcout("START /B /WAIT CMD /C %s", BATCH_BACKUP)); memFree(line);
+
+		cout("ロストしたフォルダを削除しました。\n");
+		cout("\n");
+	}
+	releaseDim(destDirs, 1);
+}
 static void BackupDirs(autoList_t *targetDirs)
 {
 	char *targetDir;
@@ -150,149 +203,12 @@ static void BackupDirs(autoList_t *targetDirs)
 	}
 	cmdTitle("Backup - done");
 }
-
-// ---- huge dir ----
-
-static autoList_t *GetCatalog(char *dir)
-{
-	autoList_t *files =lssFiles(dir);
-	char *file;
-	uint index;
-	autoList_t *catalog = newList();
-
-	foreach(files, file, index)
-	{
-		uint64 wTime;
-
-		getFileStamp(file, NULL, NULL, &wTime);
-		wTime &= ~1ui64; // for FAT
-		addElement(catalog, (uint)xcout("%020I64u*%020I64u*%s", wTime, getFileSize(file), eraseRoot(file, dir)));
-	}
-	releaseDim(files, 1);
-	sortJLinesICase(catalog);
-	return catalog;
-}
-static char *GetFileByCatalogLine(char *line, char *rootDir)
-{
-	char *p = line;
-
-	p = ne_strchr(p, '*') + 1;
-	p = ne_strchr(p, '*') + 1;
-	return combine(rootDir, p);
-}
-static uint64 GetWTimeByCatalogLine(char *line)
-{
-	uint64 wTime;
-
-	line = strx(line);
-	ne_strchr(line, '*')[0] = '\0';
-	wTime = toValue64(line);
-	memFree(line);
-	return wTime;
-}
-static void DeleteEmptyDirs(char *rootDir)
-{
-	autoList_t *dirs = lssDirs(rootDir);
-	char *dir;
-	uint index;
-
-	reverseElements(dirs);
-
-	foreach(dirs, dir, index)
-	{
-		uint count = lsCount(dir);
-
-		if(!count)
-		{
-			cout("# %s\n", dir);
-
-			removeDir(dir);
-		}
-	}
-	releaseDim(dirs, 1);
-}
-
-#define HUGE_DIR "C:\\huge"
-
-static void BackupHugeDir(char *destDir)
-{
-	autoList_t *rCatalog;
-	autoList_t *wCatalog;
-	autoList_t *addCatalog;
-	autoList_t *removeCatalog;
-	char *line;
-	uint index;
-
-	LOGPOS();
-
-	if(!existDir(HUGE_DIR))
-		return;
-
-	destDir = xcout("%s_huge", destDir);
-	createDirIfNotExist(destDir);
-
-	coExecute_x(xcout("Compact.exe /C \"%s\"", destDir));
-//	coExecute_x(xcout("Compact.exe /C /S:\"%s\"", destDir));
-
-	LOGPOS();
-
-	rCatalog = GetCatalog(HUGE_DIR);
-	wCatalog = GetCatalog(destDir);
-	addCatalog = newList();
-	removeCatalog = newList();
-
-	mergeLines2(rCatalog, wCatalog, addCatalog, NULL, removeCatalog);
-
-	foreach(removeCatalog, line, index)
-	{
-		char *file = GetFileByCatalogLine(line, destDir);
-
-		cout("! %s\n", file);
-
-		errorCase(!existFile(file)); // 2bs?
-
-		removeFile(file);
-		memFree(file);
-	}
-	DeleteEmptyDirs(destDir);
-
-	foreach(addCatalog, line, index)
-	{
-		char *rFile = GetFileByCatalogLine(line, HUGE_DIR);
-		char *wFile = GetFileByCatalogLine(line, destDir);
-		uint64 wTime = GetWTimeByCatalogLine(line);
-
-		cout("< %s\n", rFile);
-		cout("> %s\n", wFile);
-		cout("T %I64u\n", wTime);
-
-		errorCase(!existFile(rFile)); // 2bs?
-		errorCase( existFile(wFile)); // 2bs?
-
-		createPath(wFile, 'X');
-		copyFile(rFile, wFile);
-		setFileStamp(wFile, 0ui64, 0ui64, wTime);
-		memFree(rFile);
-		memFree(wFile);
-	}
-	memFree(destDir);
-	releaseDim(rCatalog, 1);
-	releaseDim(wCatalog, 1);
-	releaseAutoList(addCatalog);
-	releaseAutoList(removeCatalog);
-
-	LOGPOS();
-}
-
-// ----
-
 int main(int argc, char **argv)
 {
 	char *strDestDrv;
 	int destDrv;
 	char *pcname;
 	char *destDir;
-	char *destBackDir;
 	autoList_t *targetDirs;
 	char *cmdln;
 	int doShutdownFlag;
@@ -310,23 +226,31 @@ int main(int argc, char **argv)
 		cout("** 終了後シャットダウンします **\n");
 		cout("********************************\n");
 	}
+	cout("+----------------------------------+\n");
+	cout("| バックアップ先は P ドライブです。|\n");
+	cout("+----------------------------------+\n");
 	cout("+---------------------------------------------+\n");
 	cout("| メーラーなど、動作中のアプリを閉じて下さい。|\n");
 	cout("+---------------------------------------------+\n");
-	cout("+---------------------------------------+\n");
-	cout("| ウィルス対策ソフトを無効にして下さい。|\n");
-	cout("+---------------------------------------+\n");
-	cout("バックアップ先ドライブをドロップして下さい。\n");
+//	cout("+---------------------------------------+\n");
+//	cout("| ウィルス対策ソフトを無効にして下さい。|\n");
+//	cout("+---------------------------------------+\n");
 
-	strDestDrv = dropPath();
+	{
+		cout("続行？\n");
 
-	if(!strDestDrv)
-		termination(0);
+		if(clearGetKey() == 0x1b)
+			termination(0);
 
+		cout("続行します。\n");
+	}
+
+	strDestDrv = strx("P:\\");
+	errorCase_m(!existDir(strDestDrv), "バックアップ先の P ドライブが存在しません。");
 	destDrv = strDestDrv[0];
 
-	errorCase(!m_isalpha(destDrv));
-	errorCase(destDrv == 'C');
+//	errorCase(!m_isalpha(destDrv));
+//	errorCase(destDrv == 'C');
 
 	pcname = getenv("ComputerName");
 
@@ -338,52 +262,28 @@ int main(int argc, char **argv)
 	ToDecAlphaOnly(pcname);
 	ToOnomast(pcname);
 	destDir = xcout("%c:\\%s", destDrv, pcname);
-	destBackDir = xcout("%s_", destDir);
 	memFree(pcname);
 
-	cout("出力先: %s (%s)\n", destDir, destBackDir);
+	cout("出力先: %s\n", destDir);
 	cout("\n");
 
 	targetDirs = GetTargetDirs();
 	CheckTargetDirs(targetDirs);
 
-	if(existDir(destBackDir))
-	{
-		cout("前々回のバックアップを削除しています...\n");
-
-		cmdln = xcout("RD /S /Q %s", destBackDir);
-		execute(cmdln);
-		memFree(cmdln);
-
-		cout("削除しました。\n");
-		cout("\n");
-	}
-	errorCase(existPath(destBackDir));
-
-	if(existDir(destDir))
-	{
-		cout("前回のバックアップをバックアップしています...\n");
-
-		cmdln = xcout("REN %s %s", destDir, getLocal(destBackDir));
-		execute(cmdln);
-		memFree(cmdln);
-
-		cout("バックアップしました。\n");
-		cout("\n");
-	}
-	errorCase(existPath(destDir));
-	createDir(destDir);
-
+	createDirIfNotExist(destDir);
 	coExecute_x(xcout("Compact.exe /C /S:\"%s\"", destDir));
 
 	addCwd(destDir);
+	coExecute("DEL /Q *"); // destDir の直下のファイルを全て削除する。
+	EraseLostTargetDirs(targetDirs);
 	BackupDirs(targetDirs);
 	unaddCwd();
-//	BackupHugeDir(destDir); // del @ 2017.12.16
 
 	// _ 0～9 で始まる名前はバックアップ対象外なので、destDir の直下は _ 0～9 で始めておけば重複しないはず。
 
-#if 1 // Toolkit が USB HDD への書き込みエラーを起こしたので、書き込み先をシステムドライブにして様子を見る。@ 2018.3.5
+#if 0 // 抑止 @ 2020.10.24
+	// Toolkit が USB HDD への書き込みエラーを起こしたので、書き込み先をシステムドライブにして様子を見る。@ 2018.3.5
+	// ハッシュリスト作成
 	{
 		char *midDir = makeTempDir("Backup_Hash_txt_mid");
 
@@ -391,16 +291,8 @@ int main(int argc, char **argv)
 
 		coExecute_x(xcout("COPY /Y %s\\_Hash.txt %s\\_Hash.txt", midDir, destDir));
 		coExecute_x(xcout("COPY /Y %s\\_Hash.txt C:\\tmp\\Backup_Hash.txt", midDir));
-		coExecute_x(xcout("COPY /Y %s\\_Hash.txt C:\\tmp\\Backup_Hash_old.txt", destBackDir)); // 無いかもしれない。
 
 		recurRemoveDir_x(midDir);
-	}
-#else // del @ 2018.3.5
-	{
-		coExecute_x(xcout(FILE_TOOLKIT_EXE " /SHA-512-128 %s %s\\_Hash.txt", destDir, destDir));
-
-		coExecute_x(xcout("COPY /Y %s\\_Hash.txt C:\\tmp\\Backup_Hash.txt", destDir));
-		coExecute_x(xcout("COPY /Y %s\\_Hash.txt C:\\tmp\\Backup_Hash_old.txt", destBackDir)); // 無いかもしれない。
 	}
 #endif
 
@@ -414,7 +306,6 @@ int main(int argc, char **argv)
 
 	memFree(strDestDrv);
 	memFree(destDir);
-	memFree(destBackDir);
 	releaseDim(targetDirs, 1);
 
 	cout("\\e\n");
