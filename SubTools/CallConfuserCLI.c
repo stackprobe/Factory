@@ -81,7 +81,7 @@ static void CallConfuserCLI(char *rFile, char *wFile)
 
 	cout("FILE SIZE: %I64u -> %I64u (%.3f)\n", size1, size2, (double)size2 / size1);
 
-	errorCase((double)size2 / size1 < 1.1); // 難読化するとファイルサイズは4倍くらいになるっぽい。1割も増えてないなら、何かおかしいと見る。
+//	errorCase((double)size2 / size1 < 1.1); // 難読化するとファイルサイズは4倍くらいになるっぽい。1割も増えてないなら、何かおかしいと見る。<-- ルールによる
 
 	copyFile(midFile, wFile);
 
