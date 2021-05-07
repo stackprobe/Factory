@@ -2,9 +2,9 @@
 #include "C:\Factory\Meteor\HGet.h"
 
 /*
-	HGet.exe ‚Í“]‘—æ(301‚ÌLocation)‚ğŸè‚ÉèŒJ‚Á‚Äæ‚Á‚Ä‚«‚Ä‚­‚ê‚é‚Ì‚Å Kit/ ‚Å‚È‚­‚Ä‚àok @ 2017.2.27
+	HGet.exe ã¯è»¢é€å…ˆ(301ã®Location)ã‚’å‹æ‰‹ã«æ‰‹ç¹°ã£ã¦å–ã£ã¦ãã¦ãã‚Œã‚‹ã®ã§ Kit/ ã§ãªãã¦ã‚‚ok @ 2017.2.27
 
-	http://stackprobe.dip.jp:58946/_kit ‚Å‚à‚¢‚¯‚é‚Å
+	http://stackprobe.ccsp.mydns.jp:58946/_kit ã§ã‚‚ã„ã‘ã‚‹ã§
 */
 static char *DLUrl = "http://localhost/release/Kit";
 static char *DestDir = "C:\\app\\Kit";
@@ -35,11 +35,11 @@ readArgs:
 
 	HGet_Reset();
 	HGet_SetUrl(DLUrl);
-	errorCase_m(!HGet_GetOrPost(), "óM¸”s");
+	errorCase_m(!HGet_GetOrPost(), "å—ä¿¡å¤±æ•—");
 
 	LOGPOS();
 
-	// index ƒ_ƒEƒ“ƒ[ƒh & ˆ—
+	// index ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ & å‡¦ç†
 	{
 		char *indexFile = makeTempPath("KitDL.index.tmp");
 		autoList_t *lines;
@@ -70,7 +70,7 @@ readArgs:
 					{
 						char *appName = changeExt(appFile, "");
 
-						cout("ƒAƒvƒŠ: [%s]\n", appName);
+						cout("ã‚¢ãƒ—ãƒª: [%s]\n", appName);
 
 						addElement(AppNames, (uint)strx(appName));
 						addElement(AppUrls, (uint)xcout("%s/%s", DLUrl, appFile));
@@ -88,7 +88,7 @@ readArgs:
 
 	LOGPOS();
 
-	// ƒ_ƒEƒ“ƒ[ƒh & “WŠJ
+	// ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ & å±•é–‹
 	{
 		char *appName;
 		uint index;
@@ -105,13 +105,13 @@ readArgs:
 
 			HGet_Reset();
 			HGet_SetUrl(appUrl);
-			errorCase_m(!HGet_GetOrPost(), "ƒAƒvƒŠóM¸”s");
+			errorCase_m(!HGet_GetOrPost(), "ã‚¢ãƒ—ãƒªå—ä¿¡å¤±æ•—");
 			HGet_MvResBodyFile(appFile);
-			HGet_Reset(); // HGet ‚ğG‚é‚Ì‚ÅAˆê’U‰ğ•ú
+			HGet_Reset(); // HGet ã‚’è§¦ã‚‹ã®ã§ã€ä¸€æ—¦è§£æ”¾
 
 			LOGPOS();
 
-			coSleep(2000); // ‰½‚©’Í‚İ‚Á‚Ï‚Å HGet ‚ğíœo—ˆ‚È‚¢‚ÆŒ™‚È‚Ì‚ÅA­‚µ‘Ò‚ÂB
+			coSleep(2000); // ä½•ã‹æ´ã¿ã£ã±ã§ HGet ã‚’å‰Šé™¤å‡ºæ¥ãªã„ã¨å«Œãªã®ã§ã€å°‘ã—å¾…ã¤ã€‚
 
 			if(existDir(wDir))
 				semiRemovePath(wDir);
@@ -128,5 +128,5 @@ readArgs:
 
 	LOGPOS();
 
-	HGet_Reset(); // ‰ğ•ú
+	HGet_Reset(); // è§£æ”¾
 }
