@@ -1,7 +1,7 @@
 /*
 	HTTPProxy.exe RECV-PORT FWD-HOST FWD-PORT /S
 
-		/S ... ’â~‚·‚éB
+		/S ... åœæ­¢ã™ã‚‹ã€‚
 
 	HTTPProxy.exe RECV-PORT FWD-HOST FWD-PORT [/C CONNECT-MAX] [/T SOCK-TIMEOUT] [/MT MESSAGE-TIMEOUT]
 	                                          [/FBT U-FIRST-BYTE-TIMEOUT] [/FBT- D-FIRST-BYTE-TIMEOUT]
@@ -15,54 +15,54 @@
 	                                          [/F- FILTER-COMMAND]
 	                                          [/F+ FILTER-COMMAND]
 
-		CONNECT-MAX          ... Å‘åÚ‘±”, È—ª 100
-		SOCK-TIMEOUT         ... ’ÊMƒ^ƒCƒ€ƒAƒEƒg [•b] 0 == –³§ŒÀ, È—ª 10 “ú
-		U-FIRST-BYTE-TIMEOUT ... ã‚èÅ‰‚Ì‚PƒoƒCƒg‚Ìƒ^ƒCƒ€ƒAƒEƒg [•b] 0 == –³§ŒÀ, È—ª 3 •b
-		D-FIRST-BYTE-TIMEOUT ... ‰º‚èÅ‰‚Ì‚PƒoƒCƒg‚Ìƒ^ƒCƒ€ƒAƒEƒg [•b] 0 == –³§ŒÀ, È—ª 5 •b
-		U-NO-DATA-TIMEOUT    ... ã‚è–³’ÊMƒ^ƒCƒ€ƒAƒEƒg [•b] 0 == –³§ŒÀ, È—ª 3 •ª
-		D-NO-DATA-TIMEOUT    ... ‰º‚è–³’ÊMƒ^ƒCƒ€ƒAƒEƒg [•b] 0 == –³§ŒÀ, È—ª 5 •ª
-		MESSAGE-TIMEOUT      ... ‚P‰ñ(‚P‚Â)‚ÌƒƒbƒZ[ƒW‚Ì‘—MEóMƒ^ƒCƒ€ƒAƒEƒg [•b] 0 == –³§ŒÀ, È—ª 10 ŠÔ
-		MESSAGE-MAX          ... ƒƒbƒZ[ƒWƒoƒbƒtƒ@‚ÌÅ‘å‡ŒvƒTƒCƒY, È—ª‚Í 270 MB
-		/X  ... Hostƒ^ƒO‚ğŒ©‚Ä“]‘—æ‚ğ•ÏX‚·‚éB
-		/D  ... URL‚ÉƒXƒL[ƒ€EƒhƒƒCƒ“‚ğ‘}“ü‚·‚éB
-		/-D ... URL‚©‚çƒXƒL[ƒ€EƒhƒƒCƒ“‚ğœ‹‚·‚éB
-		/+C ... CONNECTƒƒ\ƒbƒh‚ğ‹–‰Â‚·‚éB(https“™‚ğ‹–‰Â‚·‚é)
-		OK-IP-PFX ... “]‘—æ‚Æ‚µ‚Ä‹–‰Â‚·‚éIPƒAƒhƒŒƒX‚ÌŠJnƒpƒ^[ƒ“
-		NG-IP-PFX ... “]‘—æ‚Æ‚µ‚Ä‹–‰Â‚µ‚È‚¢IPƒAƒhƒŒƒX‚ÌŠJnƒpƒ^[ƒ“
-		/HR  ... ƒwƒbƒ_ƒtƒB[ƒ‹ƒh‚Ì’u‚«Š·‚¦E’Ç‰Á (ã‚è‚Ì‚İ)
-		/HK  ... ƒwƒbƒ_ƒtƒB[ƒ‹ƒh‚Ìíœ           (ã‚è‚Ì‚İ)
-		/HR- ... ƒwƒbƒ_ƒtƒB[ƒ‹ƒh‚Ì’u‚«Š·‚¦E’Ç‰Á (‰º‚è‚Ì‚İ)
-		/HK- ... ƒwƒbƒ_ƒtƒB[ƒ‹ƒh‚Ìíœ           (‰º‚è‚Ì‚İ)
-		/HR+ ... ƒwƒbƒ_ƒtƒB[ƒ‹ƒh‚Ì’u‚«Š·‚¦E’Ç‰Á (ã‰º—¼•û)
-		/HK+ ... ƒwƒbƒ_ƒtƒB[ƒ‹ƒh‚Ìíœ           (ã‰º—¼•û)
-		/F   ... ƒtƒBƒ‹ƒ^[ƒRƒ}ƒ“ƒh (ã‚è‚Ì‚İ)
-		/F-  ... ƒtƒBƒ‹ƒ^[ƒRƒ}ƒ“ƒh (‰º‚è‚Ì‚İ)
-		/F+  ... ƒtƒBƒ‹ƒ^[ƒRƒ}ƒ“ƒh (ã‰º—¼•û)
+		CONNECT-MAX          ... æœ€å¤§æ¥ç¶šæ•°, çœç•¥æ™‚ 100
+		SOCK-TIMEOUT         ... é€šä¿¡ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆ [ç§’] 0 == ç„¡åˆ¶é™, çœç•¥æ™‚ 10 æ—¥
+		U-FIRST-BYTE-TIMEOUT ... ä¸Šã‚Šæœ€åˆã®ï¼‘ãƒã‚¤ãƒˆã®ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆ [ç§’] 0 == ç„¡åˆ¶é™, çœç•¥æ™‚ 3 ç§’
+		D-FIRST-BYTE-TIMEOUT ... ä¸‹ã‚Šæœ€åˆã®ï¼‘ãƒã‚¤ãƒˆã®ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆ [ç§’] 0 == ç„¡åˆ¶é™, çœç•¥æ™‚ 5 ç§’
+		U-NO-DATA-TIMEOUT    ... ä¸Šã‚Šç„¡é€šä¿¡ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆ [ç§’] 0 == ç„¡åˆ¶é™, çœç•¥æ™‚ 3 åˆ†
+		D-NO-DATA-TIMEOUT    ... ä¸‹ã‚Šç„¡é€šä¿¡ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆ [ç§’] 0 == ç„¡åˆ¶é™, çœç•¥æ™‚ 5 åˆ†
+		MESSAGE-TIMEOUT      ... ï¼‘å›(ï¼‘ã¤)ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®é€ä¿¡ãƒ»å—ä¿¡ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆ [ç§’] 0 == ç„¡åˆ¶é™, çœç•¥æ™‚ 10 æ™‚é–“
+		MESSAGE-MAX          ... ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒãƒƒãƒ•ã‚¡ã®æœ€å¤§åˆè¨ˆã‚µã‚¤ã‚º, çœç•¥æ™‚ã¯ 270 MB
+		/X  ... Hostã‚¿ã‚°ã‚’è¦‹ã¦è»¢é€å…ˆã‚’å¤‰æ›´ã™ã‚‹ã€‚
+		/D  ... URLã«ã‚¹ã‚­ãƒ¼ãƒ ãƒ»ãƒ‰ãƒ¡ã‚¤ãƒ³ã‚’æŒ¿å…¥ã™ã‚‹ã€‚
+		/-D ... URLã‹ã‚‰ã‚¹ã‚­ãƒ¼ãƒ ãƒ»ãƒ‰ãƒ¡ã‚¤ãƒ³ã‚’é™¤å»ã™ã‚‹ã€‚
+		/+C ... CONNECTãƒ¡ã‚½ãƒƒãƒ‰ã‚’è¨±å¯ã™ã‚‹ã€‚(httpsç­‰ã‚’è¨±å¯ã™ã‚‹)
+		OK-IP-PFX ... è»¢é€å…ˆã¨ã—ã¦è¨±å¯ã™ã‚‹IPã‚¢ãƒ‰ãƒ¬ã‚¹ã®é–‹å§‹ãƒ‘ã‚¿ãƒ¼ãƒ³
+		NG-IP-PFX ... è»¢é€å…ˆã¨ã—ã¦è¨±å¯ã—ãªã„IPã‚¢ãƒ‰ãƒ¬ã‚¹ã®é–‹å§‹ãƒ‘ã‚¿ãƒ¼ãƒ³
+		/HR  ... ãƒ˜ãƒƒãƒ€ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®ç½®ãæ›ãˆãƒ»è¿½åŠ  (ä¸Šã‚Šã®ã¿)
+		/HK  ... ãƒ˜ãƒƒãƒ€ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®å‰Šé™¤           (ä¸Šã‚Šã®ã¿)
+		/HR- ... ãƒ˜ãƒƒãƒ€ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®ç½®ãæ›ãˆãƒ»è¿½åŠ  (ä¸‹ã‚Šã®ã¿)
+		/HK- ... ãƒ˜ãƒƒãƒ€ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®å‰Šé™¤           (ä¸‹ã‚Šã®ã¿)
+		/HR+ ... ãƒ˜ãƒƒãƒ€ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®ç½®ãæ›ãˆãƒ»è¿½åŠ  (ä¸Šä¸‹ä¸¡æ–¹)
+		/HK+ ... ãƒ˜ãƒƒãƒ€ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®å‰Šé™¤           (ä¸Šä¸‹ä¸¡æ–¹)
+		/F   ... ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼ã‚³ãƒãƒ³ãƒ‰ (ä¸Šã‚Šã®ã¿)
+		/F-  ... ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼ã‚³ãƒãƒ³ãƒ‰ (ä¸‹ã‚Šã®ã¿)
+		/F+  ... ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼ã‚³ãƒãƒ³ãƒ‰ (ä¸Šä¸‹ä¸¡æ–¹)
 
-	“Áê‚ÈH-VAL
+	ç‰¹æ®ŠãªH-VAL
 
-		$$ ‚Ån‚Ü‚éê‡Aæ“ª‚Ì $$ ‚ğœ‹‚µ‚Ü‚·B
+		$$ ã§å§‹ã¾ã‚‹å ´åˆã€å…ˆé ­ã® $$ ã‚’é™¤å»ã—ã¾ã™ã€‚
 
-			—áF  $$$100-  ->  $100-
+			ä¾‹ï¼š  $$$100-  ->  $100-
 
-		$H ‚Ån‚Ü‚éê‡A‚R•¶š–ÚˆÈ~‚ğƒwƒbƒ_[ƒtƒB[ƒ‹ƒh–¼‚ÆŒ©‚È‚µA‚»‚Ì’l‚É’u‚«Š·‚¦‚Ü‚·B
+		$H ã§å§‹ã¾ã‚‹å ´åˆã€ï¼“æ–‡å­—ç›®ä»¥é™ã‚’ãƒ˜ãƒƒãƒ€ãƒ¼ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰åã¨è¦‹ãªã—ã€ãã®å€¤ã«ç½®ãæ›ãˆã¾ã™ã€‚
 
-			—áF  $HHost  ->  stackprobe.dip.jp:8080
+			ä¾‹ï¼š  $HHost  ->  stackprobe.ccsp.mydns.jp:8080
 
-	ƒtƒBƒ‹ƒ^[ƒRƒ}ƒ“ƒh
+	ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼ã‚³ãƒãƒ³ãƒ‰
 
-		systemŠÖ”‚É‚»‚Ì‚Ü‚Ü“n‚¹‚é•¶š—ñ‚Å‚ ‚é‚±‚ÆB
-		ƒRƒ}ƒ“ƒhÀs‚ÌƒJƒŒƒ“ƒg‚ÍA‚±‚ÌƒvƒƒZƒXÀs‚ÌƒJƒŒƒ“ƒg‚Æ“¯‚¶B
-		Às‚ÌƒJƒŒƒ“ƒg‚É HTTPParse_HttpDat.tmp ‚Æ‚¢‚¤ƒtƒ@ƒCƒ‹‚Éƒwƒbƒ_‚Æƒ{ƒfƒB‚ª‘‚«o‚³‚ê‚Ä‚¢‚é‚Ì‚ÅA
-		‚±‚ê‚ğ•ÏX‚·‚é‚ÆA‘—óMƒf[ƒ^‚É”½‰f‚³‚ê‚éB
+		systemé–¢æ•°ã«ãã®ã¾ã¾æ¸¡ã›ã‚‹æ–‡å­—åˆ—ã§ã‚ã‚‹ã“ã¨ã€‚
+		ã‚³ãƒãƒ³ãƒ‰å®Ÿè¡Œæ™‚ã®ã‚«ãƒ¬ãƒ³ãƒˆã¯ã€ã“ã®ãƒ—ãƒ­ã‚»ã‚¹å®Ÿè¡Œæ™‚ã®ã‚«ãƒ¬ãƒ³ãƒˆã¨åŒã˜ã€‚
+		å®Ÿè¡Œæ™‚ã®ã‚«ãƒ¬ãƒ³ãƒˆã« HTTPParse_HttpDat.tmp ã¨ã„ã†ãƒ•ã‚¡ã‚¤ãƒ«ã«ãƒ˜ãƒƒãƒ€ã¨ãƒœãƒ‡ã‚£ãŒæ›¸ãå‡ºã•ã‚Œã¦ã„ã‚‹ã®ã§ã€
+		ã“ã‚Œã‚’å¤‰æ›´ã™ã‚‹ã¨ã€é€å—ä¿¡ãƒ‡ãƒ¼ã‚¿ã«åæ˜ ã•ã‚Œã‚‹ã€‚
 
-		ƒRƒ}ƒ“ƒhˆø”‚ª‚ ‚éê‡‚Í "" ‚ÅˆÍ‚Á‚Ä‚ËB
+		ã‚³ãƒãƒ³ãƒ‰å¼•æ•°ãŒã‚ã‚‹å ´åˆã¯ "" ã§å›²ã£ã¦ã­ã€‚
 
-			—áF  /f- "HTTPPBodyFilter.exe image/ image/png sample\0005\Face.png"
+			ä¾‹ï¼š  /f- "HTTPPBodyFilter.exe image/ image/png sample\0005\Face.png"
 
 	----
 
-	2015.1.7 SEGV -> PfmConnect, buffTmp1 ‚ª•¡»‚³‚ê‚Ä‚¢‚È‚©‚Á‚½‚½‚ß ReallocSessionBuffs ‚ÌÄ”z’u‚Å•Ï‚É‚È‚Á‚½‚Ì‚©‚àH
+	2015.1.7 SEGV -> PfmConnect, buffTmp1 ãŒè¤‡è£½ã•ã‚Œã¦ã„ãªã‹ã£ãŸãŸã‚ ReallocSessionBuffs ã®å†é…ç½®ã§å¤‰ã«ãªã£ãŸã®ã‹ã‚‚ï¼Ÿ
 */
 
 #include "libs\Tunnel.h"
@@ -82,8 +82,8 @@ static int ChangeFwdMode;
 static int InsDomainMode;
 static int DelDomainMode;
 static int ConnectMethodOkMode;
-static autoList_t *OKIPPrfxList; // "" ‚ğŠÜ‚Ü‚È‚¢
-static autoList_t *NGIPPrfxList; // "" ‚ğŠÜ‚Ü‚È‚¢
+static autoList_t *OKIPPrfxList; // "" ã‚’å«ã¾ãªã„
+static autoList_t *NGIPPrfxList; // "" ã‚’å«ã¾ãªã„
 static autoList_t *UR_Keys;
 static autoList_t *UR_Values;
 static autoList_t *UK_Keys;
@@ -108,13 +108,13 @@ Session_t;
 static Session_t *SessionList;
 static autoList_t *SessionStock;
 
-// ššš RecvHTTPParse ššš
+// â˜…â˜…â˜… RecvHTTPParse â˜…â˜…â˜…
 
 static void ReallocBuff(autoBlock_t **pBuff)
 {
-	errorCase(!ConnectMax); // 2bs: ‹N“®‚ÉƒGƒ‰[‚É‚È‚é‚Í‚¸B
+	errorCase(!ConnectMax); // 2bs: èµ·å‹•æ™‚ã«ã‚¨ãƒ©ãƒ¼ã«ãªã‚‹ã¯ãšã€‚
 
-	if(getSize(*pBuff) < MessageTotalSizeMax / ConnectMax) // ? “K“–‚É¬‚³‚¢‚Ì
+	if(getSize(*pBuff) < MessageTotalSizeMax / ConnectMax) // ? é©å½“ã«å°ã•ã„ã®
 	{
 		autoBlock_t *tmp = copyAutoBlock(*pBuff);
 		releaseAutoBlock(*pBuff);
@@ -150,7 +150,7 @@ static uint GetMessageTotalSize(void)
 	}
 	return totalSize;
 }
-static int RecvHTTPParse(Session_t *i, int sock, uint firstByteTmoutSec, uint noDatTmoutSec, int oSSock) // ret: ? ¬Œ÷
+static int RecvHTTPParse(Session_t *i, int sock, uint firstByteTmoutSec, uint noDatTmoutSec, int oSSock) // ret: ? æˆåŠŸ
 {
 	SockStream_t *ss = CreateSockStream(sock, noDatTmoutSec);
 	SockStream_t *osss = oSSock != -1 ? CreateSockStream(oSSock, 0) : NULL;
@@ -167,10 +167,10 @@ static int RecvHTTPParse(Session_t *i, int sock, uint firstByteTmoutSec, uint no
 
 			if(chr == EOF)
 			{
-				cout("‘ÎŠİ‚©‚çØ’f‚³‚ê‚Ü‚µ‚½B\n");
+				cout("å¯¾å²¸ã‹ã‚‰åˆ‡æ–­ã•ã‚Œã¾ã—ãŸã€‚\n");
 				break;
 			}
-			addByte(i->BkBuff, chr); // memo: •Ğ•û‚©‚çóM’†‚ÉA‚à‚¤•Ğ•û‚©‚çƒf[ƒ^‚ª‘—M‚³‚ê‚é‚±‚Æ‚Á‚Ä‚ ‚é‚Ì‚©H
+			addByte(i->BkBuff, chr); // memo: ç‰‡æ–¹ã‹ã‚‰å—ä¿¡ä¸­ã«ã€ã‚‚ã†ç‰‡æ–¹ã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ãŒé€ä¿¡ã•ã‚Œã‚‹ã“ã¨ã£ã¦ã‚ã‚‹ã®ã‹ï¼Ÿ
 		}
 
 		while(SockRecvCharWait(ss, needTryParse ? 0 : 2000))
@@ -182,7 +182,7 @@ static int RecvHTTPParse(Session_t *i, int sock, uint firstByteTmoutSec, uint no
 				needBreak = 1;
 				break;
 			}
-			firstByteTmoutTime = UINTMAX; // ­‚È‚­‚Æ‚à‚PƒoƒCƒgóM‚µ‚½‚Ì‚Å–³Œø‰»‚·‚éB
+			firstByteTmoutTime = UINTMAX; // å°‘ãªãã¨ã‚‚ï¼‘ãƒã‚¤ãƒˆå—ä¿¡ã—ãŸã®ã§ç„¡åŠ¹åŒ–ã™ã‚‹ã€‚
 			needTryParse = 1;
 			addByte(i->Buff, chr);
 
@@ -199,7 +199,7 @@ static int RecvHTTPParse(Session_t *i, int sock, uint firstByteTmoutSec, uint no
 					if(MessageTotalSizeMax < GetMessageTotalSize())
 					{
 						cout("+--------------------------------------------------+\n");
-						cout("| ƒƒbƒZ[ƒWƒoƒbƒtƒ@ƒTƒCƒY‚Ì‡Œv‚ªãŒÀ‚É’B‚µ‚Ü‚µ‚½ |\n");
+						cout("| ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã®åˆè¨ˆãŒä¸Šé™ã«é”ã—ã¾ã—ãŸ |\n");
 						cout("+--------------------------------------------------+\n");
 						goto endFunc;
 					}
@@ -212,7 +212,7 @@ static int RecvHTTPParse(Session_t *i, int sock, uint firstByteTmoutSec, uint no
 
 						if(!rCnt2)
 						{
-							break; // ƒp[ƒX“™‹­§“I‚ÉÀ{‚·‚éB
+							break; // ãƒ‘ãƒ¼ã‚¹ç­‰å¼·åˆ¶çš„ã«å®Ÿæ–½ã™ã‚‹ã€‚
 						}
 					}
 				}
@@ -223,15 +223,15 @@ static int RecvHTTPParse(Session_t *i, int sock, uint firstByteTmoutSec, uint no
 		{
 			if(HttpDat.Expect100Continue)
 			{
-				cout("Expect: 100-continue ‚É‚Í‘Î‰‚µ‚Ä‚¢‚Ü‚¹‚ñB\n");
+				cout("Expect: 100-continue ã«ã¯å¯¾å¿œã—ã¦ã„ã¾ã›ã‚“ã€‚\n");
 				break;
 			}
 
-			// ProcHTTP(), MakeSendData() ‚Å HttpDat ‚ğG‚éB
-			// ‚±‚±‚©‚ç MakeSendData() ‚ªI‚í‚é‚Ü‚Å‚ÌŠÔ‚ÉƒXƒŒƒbƒh‚ªØ‚è‘Ö‚í‚é‚Æ‚Ü‚¸‚¢B
-			// <- •ÊƒXƒŒƒbƒh‚Ì HTTPParse() ‚É‚æ‚Á‚Ä HttpDat ‚ª•ÏX‚³‚ê‚é‚½‚ß
+			// ProcHTTP(), MakeSendData() ã§ HttpDat ã‚’è§¦ã‚‹ã€‚
+			// ã“ã“ã‹ã‚‰ MakeSendData() ãŒçµ‚ã‚ã‚‹ã¾ã§ã®é–“ã«ã‚¹ãƒ¬ãƒƒãƒ‰ãŒåˆ‡ã‚Šæ›¿ã‚ã‚‹ã¨ã¾ãšã„ã€‚
+			// <- åˆ¥ã‚¹ãƒ¬ãƒƒãƒ‰ã® HTTPParse() ã«ã‚ˆã£ã¦ HttpDat ãŒå¤‰æ›´ã•ã‚Œã‚‹ãŸã‚
 
-			removeBytes(i->Buff, 0, HttpDat.EndPos); // ƒp[ƒXÏ‚İ‚ÌóMƒf[ƒ^‚ğíœ
+			removeBytes(i->Buff, 0, HttpDat.EndPos); // ãƒ‘ãƒ¼ã‚¹æ¸ˆã¿ã®å—ä¿¡ãƒ‡ãƒ¼ã‚¿ã‚’å‰Šé™¤
 			retval = 1;
 			break;
 		}
@@ -241,12 +241,12 @@ static int RecvHTTPParse(Session_t *i, int sock, uint firstByteTmoutSec, uint no
 
 		if(ProcDeadFlag)
 		{
-			cout("ƒvƒƒZƒX‚ÌI—¹‚É‚æ‚éóMƒLƒƒƒ“ƒZƒ‹\n");
+			cout("ãƒ—ãƒ­ã‚»ã‚¹ã®çµ‚äº†ã«ã‚ˆã‚‹å—ä¿¡ã‚­ãƒ£ãƒ³ã‚»ãƒ«\n");
 			break;
 		}
 		if(firstByteTmoutTime < now())
 		{
-			cout("Å‰‚ÌˆëƒoƒCƒg‚Ìƒ^ƒCƒ€ƒAƒEƒg\n");
+			cout("æœ€åˆã®å£±ãƒã‚¤ãƒˆã®ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆ\n");
 			break;
 		}
 
@@ -266,7 +266,7 @@ endFunc:
 	return retval;
 }
 
-// ššš ProcHTTP ššš
+// â˜…â˜…â˜… ProcHTTP â˜…â˜…â˜…
 
 static char *HeaderRepValueFltr(char *value) // ret: strx()
 {
@@ -329,7 +329,7 @@ static void HeaderRepKill(autoList_t *r_keys, autoList_t *r_values, autoList_t *
 			cout("K_Val: noDef\n");
 	}
 }
-static int DoConnect(char *fwdHost, uint fwdPortNo) // ret: -1 == Ú‘±‚Å‚«‚È‚©‚Á‚½B
+static int DoConnect(char *fwdHost, uint fwdPortNo) // ret: -1 == æ¥ç¶šã§ããªã‹ã£ãŸã€‚
 {
 	uchar ip[4];
 	char *strIp;
@@ -341,7 +341,7 @@ static int DoConnect(char *fwdHost, uint fwdPortNo) // ret: -1 == Ú‘±‚Å‚«‚È‚©‚Á
 
 	if(!m_isRange(fwdPortNo, 1, 65535))
 	{
-		cout("šƒ|[ƒg”Ô†‚É–â‘è‚ª‚ ‚è‚Ü‚·B\n");
+		cout("â˜…ãƒãƒ¼ãƒˆç•ªå·ã«å•é¡ŒãŒã‚ã‚Šã¾ã™ã€‚\n");
 		return -1;
 	}
 	sockLookup(ip, fwdHost);
@@ -350,7 +350,7 @@ static int DoConnect(char *fwdHost, uint fwdPortNo) // ret: -1 == Ú‘±‚Å‚«‚È‚©‚Á
 
 	if(!*(uint *)ip)
 	{
-		cout("š“]‘—æ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB\n");
+		cout("â˜…è»¢é€å…ˆãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚\n");
 		return -1;
 	}
 	if(getCount(OKIPPrfxList))
@@ -362,7 +362,7 @@ static int DoConnect(char *fwdHost, uint fwdPortNo) // ret: -1 == Ú‘±‚Å‚«‚È‚©‚Á
 		}
 		if(!ipprfx)
 		{
-			cout("œ‹–‰Â‚³‚ê‚½IPƒAƒhƒŒƒX‚Å‚Í‚ ‚è‚Ü‚¹‚ñB\n");
+			cout("â—è¨±å¯ã•ã‚ŒãŸIPã‚¢ãƒ‰ãƒ¬ã‚¹ã§ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚\n");
 			return -1;
 		}
 	}
@@ -370,7 +370,7 @@ static int DoConnect(char *fwdHost, uint fwdPortNo) // ret: -1 == Ú‘±‚Å‚«‚È‚©‚Á
 	{
 		if(startsWith(strIp, ipprfx))
 		{
-			cout("¡‹–‰Â‚³‚ê‚È‚¢IPƒAƒhƒŒƒX‚Å‚·B\n");
+			cout("â– è¨±å¯ã•ã‚Œãªã„IPã‚¢ãƒ‰ãƒ¬ã‚¹ã§ã™ã€‚\n");
 			return -1;
 		}
 	}
@@ -409,7 +409,7 @@ static void DoConnect_HD(Session_t *i, uint defPortNo)
 
 		name = xcout("%s:%u", host, portNo);
 
-		if(strcmp(name, i->FwdName)) // ? ‘O‰ñ‚ÌÚ‘±æ‚ÆˆÙ‚È‚éB|| –¢Ú‘±
+		if(strcmp(name, i->FwdName)) // ? å‰å›ã®æ¥ç¶šå…ˆã¨ç•°ãªã‚‹ã€‚|| æœªæ¥ç¶š
 		{
 			if(i->FwdSock != -1)
 				sockDisconnect(i->FwdSock);
@@ -426,26 +426,26 @@ static void DoConnect_HD(Session_t *i, uint defPortNo)
 	}
 	else
 	{
-		if(i->FwdSock == -1) // ? –¢Ú‘±
+		if(i->FwdSock == -1) // ? æœªæ¥ç¶š
 			i->FwdSock = DoConnect(FwdHost, FwdPortNo);
 		else
 			cout("KeepConn_2\n");
 	}
 }
-static int ProcHTTP_Upload(Session_t *i) // ret: ? ¬Œ÷
+static int ProcHTTP_Upload(Session_t *i) // ret: ? æˆåŠŸ
 {
 	HeaderRepKill(UR_Keys, UR_Values, UK_Keys);
 
-	// Ú‘±
+	// æ¥ç¶š
 	{
 		DoConnect_HD(i, 80);
 
 		if(i->FwdSock == -1)
 		{
 			cout("+------------------------------+\n");
-			cout("| “]‘—æ‚ÉÚ‘±o—ˆ‚Ü‚¹‚ñ‚Å‚µ‚½ |\n");
+			cout("| è»¢é€å…ˆã«æ¥ç¶šå‡ºæ¥ã¾ã›ã‚“ã§ã—ãŸ |\n");
 			cout("+------------------------------+\n");
-			return 0; // ¸”s
+			return 0; // å¤±æ•—
 		}
 	}
 
@@ -453,7 +453,7 @@ static int ProcHTTP_Upload(Session_t *i) // ret: ? ¬Œ÷
 	{
 		char *p = strchr(HttpDat.H_Request, ' ');
 
-		if(p && p[1] == '/') // ? ƒXƒL[ƒ€EƒhƒƒCƒ“‚ª–³‚¢‚Á‚Û‚¢B
+		if(p && p[1] == '/') // ? ã‚¹ã‚­ãƒ¼ãƒ ãƒ»ãƒ‰ãƒ¡ã‚¤ãƒ³ãŒç„¡ã„ã£ã½ã„ã€‚
 		{
 			char *hostName = strx(refLine(HttpDat.H_Values, findLineCase(HttpDat.H_Keys, "Host", 1)));
 			char *insPtn;
@@ -486,7 +486,7 @@ static int ProcHTTP_Upload(Session_t *i) // ret: ? ¬Œ÷
 			{
 				q = strchr(q + 2, '/');
 
-				if(q) // ? ƒXƒL[ƒ€EƒhƒƒCƒ“‚ª—L‚é‚Á‚Û‚¢B
+				if(q) // ? ã‚¹ã‚­ãƒ¼ãƒ ãƒ»ãƒ‰ãƒ¡ã‚¤ãƒ³ãŒæœ‰ã‚‹ã£ã½ã„ã€‚
 				{
 					cout("DelDomain\n");
 					cout("< [%s]\n", HttpDat.H_Request);
@@ -499,16 +499,16 @@ static int ProcHTTP_Upload(Session_t *i) // ret: ? ¬Œ÷
 		}
 	}
 
-	return 1; // ¬Œ÷
+	return 1; // æˆåŠŸ
 }
-static int ProcHTTP_Download(Session_t *i) // ret: ? ¬Œ÷
+static int ProcHTTP_Download(Session_t *i) // ret: ? æˆåŠŸ
 {
 	HeaderRepKill(DR_Keys, DR_Values, DK_Keys);
 
-	return 1; // ¬Œ÷
+	return 1; // æˆåŠŸ
 }
 
-// ššš SendHTTP ššš
+// â˜…â˜…â˜… SendHTTP â˜…â˜…â˜…
 
 static char *HFldFolding(char *str)
 {
@@ -582,7 +582,7 @@ static autoBlock_t *MakeSendData(void)
 	*/
 	return buff;
 }
-static int SendHTTP(Session_t *i, int sock, uint noDatTmoutSec) // ret: ? ’ÊMƒGƒ‰[
+static int SendHTTP(Session_t *i, int sock, uint noDatTmoutSec) // ret: ? é€šä¿¡ã‚¨ãƒ©ãƒ¼
 {
 	autoBlock_t *sendData = MakeSendData();
 	uint endTime = GetTimeoutTime(MessageTimeoutSec);
@@ -594,20 +594,20 @@ static int SendHTTP(Session_t *i, int sock, uint noDatTmoutSec) // ret: ? ’ÊMƒG
 	{
 		if(!getSize(sendData))
 		{
-			cout("‘—MŠ®—¹\n");
+			cout("é€ä¿¡å®Œäº†\n");
 			retval = 1;
 			break;
 		}
 		if(endTime < now())
 		{
-			cout("‘—Mƒ^ƒCƒ€ƒAƒEƒg\n");
+			cout("é€ä¿¡ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆ\n");
 			break;
 		}
 		ret = SockSendSequ(sock, sendData, 2000);
 
 		if(ret == -1)
 		{
-			cout("‘—MƒGƒ‰[\n");
+			cout("é€ä¿¡ã‚¨ãƒ©ãƒ¼\n");
 			break;
 		}
 		if(ret)
@@ -616,12 +616,12 @@ static int SendHTTP(Session_t *i, int sock, uint noDatTmoutSec) // ret: ? ’ÊMƒG
 		}
 		else if(noDatTmoutTime < now())
 		{
-			cout("–³’ÊMƒ^ƒCƒ€ƒAƒEƒgI\n");
+			cout("ç„¡é€šä¿¡ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆï¼\n");
 			break;
 		}
 		if(ProcDeadFlag)
 		{
-			cout("‘—M’†~I(ProcDeadFlag)\n");
+			cout("é€ä¿¡ä¸­æ­¢ï¼(ProcDeadFlag)\n");
 			break;
 		}
 	}
@@ -629,7 +629,7 @@ static int SendHTTP(Session_t *i, int sock, uint noDatTmoutSec) // ret: ? ’ÊMƒG
 	return retval;
 }
 
-// ššš ‚±‚±‚Ü‚Å ššš
+// â˜…â˜…â˜… ã“ã“ã¾ã§ â˜…â˜…â˜…
 
 static void PreDataFltr(autoBlock_t *buff, uint uPData)
 {
@@ -653,16 +653,16 @@ static void PfmConnect(Session_t *i)
 {
 	autoBlock_t *sendData = newBlock();
 
-	if(i->FwdSock != -1) // ? Ú‘±’† -> Ø’f
+	if(i->FwdSock != -1) // ? æ¥ç¶šä¸­ -> åˆ‡æ–­
 	{
 		sockDisconnect(i->FwdSock);
 		i->FwdSock = -1;
 	}
 	DoConnect_HD(i, 443);
 
-	if(i->FwdSock != -1) // ? Ú‘±¬Œ÷
+	if(i->FwdSock != -1) // ? æ¥ç¶šæˆåŠŸ
 	{
-		autoBlock_t *iBuffTmp = copyAutoBlock(i->Buff); // i->Buff ‚Í ReallocSessionBuffs() ‚ÅG‚ç‚ê‚é‚Ì‚Å•¡»‚·‚éB
+		autoBlock_t *iBuffTmp = copyAutoBlock(i->Buff); // i->Buff ã¯ ReallocSessionBuffs() ã§è§¦ã‚‰ã‚Œã‚‹ã®ã§è¤‡è£½ã™ã‚‹ã€‚
 		autoBlock_t *buffTmp1;
 		autoBlock_t *buffTmp2 = sendData;
 
@@ -675,7 +675,7 @@ static void PfmConnect(Session_t *i)
 
 		releaseAutoBlock(iBuffTmp);
 	}
-	else // ? Ú‘±¸”s
+	else // ? æ¥ç¶šå¤±æ•—
 	{
 		ab_addLine(sendData, "HTTP/1.1 404 Emerald Mountain\r\n\r\n");
 		SockSendSequLoop(i->Sock, sendData, 2000);
@@ -705,7 +705,7 @@ static void PerformTh(int sock, char *strip)
 	Session_t *i = (Session_t *)unaddElement(SessionStock);
 	uint endTime = now() + SockTimeoutSec;
 
-	cout("Ú‘± %d\n", sock);
+	cout("æ¥ç¶š %d\n", sock);
 
 	i->Sock = sock;
 	i->FwdSock = -1; // 2bs
@@ -715,7 +715,7 @@ static void PerformTh(int sock, char *strip)
 
 	while(now() <= endTime)
 	{
-		// ---- ã‚è ----
+		// ---- ä¸Šã‚Š ----
 
 		if(!RecvHTTPParse(i, i->Sock, U_FirstByteTimeoutSec, U_NoDataTimeoutSec, i->FwdSock))
 			break;
@@ -738,7 +738,7 @@ static void PerformTh(int sock, char *strip)
 
 		ab_swap(i->Buff, i->BkBuff);
 
-		// ---- ‰º‚è ----
+		// ---- ä¸‹ã‚Š ----
 
 		if(!RecvHTTPParse(i, i->FwdSock, D_FirstByteTimeoutSec, D_NoDataTimeoutSec, i->Sock))
 			break;
@@ -767,7 +767,7 @@ static void PerformTh(int sock, char *strip)
 	setSize(i->Buff, 0);
 	setSize(i->BkBuff, 0);
 
-	cout("Ø’f %d\n", sock);
+	cout("åˆ‡æ–­ %d\n", sock);
 
 	addElement(SessionStock, (uint)i);
 }
@@ -789,22 +789,22 @@ static int ReadArgs(void)
 		SockTimeoutSec = toValue(nextArg());
 		return 1;
 	}
-	if(argIs("/FBT")) // ã‚èÅ‰‚Ì‚PƒoƒCƒg‚Ìƒ^ƒCƒ€ƒAƒEƒg
+	if(argIs("/FBT")) // ä¸Šã‚Šæœ€åˆã®ï¼‘ãƒã‚¤ãƒˆã®ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆ
 	{
 		U_FirstByteTimeoutSec = toValue(nextArg());
 		return 1;
 	}
-	if(argIs("/FBT-")) // ‰º‚èÅ‰‚Ì‚PƒoƒCƒg‚Ìƒ^ƒCƒ€ƒAƒEƒg
+	if(argIs("/FBT-")) // ä¸‹ã‚Šæœ€åˆã®ï¼‘ãƒã‚¤ãƒˆã®ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆ
 	{
 		D_FirstByteTimeoutSec = toValue(nextArg());
 		return 1;
 	}
-	if(argIs("/NDT")) // ã‚è–³’ÊMƒ^ƒCƒ€ƒAƒEƒg
+	if(argIs("/NDT")) // ä¸Šã‚Šç„¡é€šä¿¡ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆ
 	{
 		U_NoDataTimeoutSec = toValue(nextArg());
 		return 1;
 	}
-	if(argIs("/NDT-")) // ‰º‚è–³’ÊMƒ^ƒCƒ€ƒAƒEƒg
+	if(argIs("/NDT-")) // ä¸‹ã‚Šç„¡é€šä¿¡ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆ
 	{
 		D_NoDataTimeoutSec = toValue(nextArg());
 		return 1;
