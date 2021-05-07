@@ -5,7 +5,7 @@ Cで書いたツールとライブラリの寄せ集めです。
 必要に応じて必要な機能を書き足し続けてきたものなので雑然としています。
 実行形式を含むアーカイブは以下の場所から落とせます。
 
-http://stackprobe.dip.jp/_kit/Factory
+http://stackprobe.ccsp.mydns.jp/_kit/Factory
 
 
 開発環境
